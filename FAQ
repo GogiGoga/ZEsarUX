@@ -1,0 +1,500 @@
+This FAQ is divided in several sections:
+
+
+Accessibility
+-------------
+
+Q: How can I run the emulator with text to speech facilities?
+A: Run the emulator specifying a text to speech program (with path) like the festival scripts or mac os say script, for example:
+
+./zesarux BSLEEZE1.TAP --enableprintchartrap --textspeechprogram speech_filters/festival_filter.sh --linewidth 100 --linewidthwaitspace 
+
+Or, in Windows:
+zesarux BSLEEZE1.TAP --enableprintchartrap --textspeechprogram speech_filters\win_balabolka.bat --linewidth 100 --linewidthwaitspace
+
+Note: In Windows version, when you specify command line settings, the text console remains open. So speech programs start very fast.
+If you don't set command line settings, speech programs start slower.
+
+
+You can find some different speech scripts on folder speech_filters. 
+For Mac OS X, you can find macos_say_filter.sh on folder app/Contents/Resources/speech_filters/
+
+You may also want to specify the --textspeechmenu option, to activate speech also on the menu. To open the menu press the F5 key (or write the word "menu" on stdout driver).
+
+
+Q: How can I stop the current speech?
+A: With menu open, press ESC. With menu closed, any key stops the current speech.
+
+
+Q: Speech works well, but sometimes, specially with small phrases, they are not send until some seconds or when more text appears on screen.
+A: Pressing Enter forces sending the last words to speech system. Also try to adjust some parameters:
+-Text to Speech: Timeout no enter (or --textspeechtimeout <seconds> on the the command line. The default value for <seconds> is 0.).
+-Print Char traps: Line width (or --linewidth <characters> in the command line)
+-Print Char traps: Line width wait space (or --linewidthwaitspace in the command line)
+
+
+Q: Some text adventures can be played with the speech filters, but some other text adventures seem to send nothing to speech.
+A: By default, if you enable "trap print" on ZEsarUX, it only traps standard rom calls. I mean, when a program uses standard rom calls to print text,
+this text will be captured by the emulator. But if this game uses non standard rom calls, it won't be captured nor sent to speech.
+ZEsarUX has some settings to get this; you can write manually the memory address where the game calls to print text (parameter second trap address, for advanced users); even some games are detected by the emulator and get filled this second trap address parameter automatically.
+If previous does not work, or you are not an advanced user, you can enable "second trap detection" and set "Detect routine" to "Auto&all" (or you can also specify --automaticdetectchar in the command line) and the 
+emulator will try to find the best solution.
+
+
+Q: I'm using text to speech. When I press a key on the menu (or ESC with menu closed) the next speech items are not heard, but the current speech
+item is not stopped. How can I stop the current item also?
+A: Use Setting Text Speech Stop program (on menu or on command line: --textspeechstopprogram)
+
+
+Q: When I set the speech program on Windows, it returns me an error: "Full path to Text to Speech program ... has spaces. It won't work on Windows."
+A: Yes, it's a limitation on the Windows version of the emulator. The speech program and the stop speech program can not be located in a full path 
+with spaces. It won't work if you set a relative path, because the emulator will complete and convert it to a full path. 
+The solution is to move the Speech program and the Stop speech program to a path without spaces
+
+
+Q: All these speech programs included in the emulator are indeed speech synthesis programs, not screen readers. Can I use screen readers with ZEsarUX?
+A: Yes. There is a speech script which can be specified with --textspeechprogram ; See: http://github.com/sukiletxe/zesarux-ao2
+
+
+Q: How can I create my own speech script?
+A: Windows scripts receive on parameter %1 a file containing the text to send to speech, and on parameter %2 a temporal file that must be deleted
+just at the end of the script (this temporal file indicates ZEsarUX when the script has finished).
+Rest of operating systems (Linux, Mac, Raspberry and other Unix systems) receive the text to send to speech from standard input.
+See folder speech_filters for examples
+
+
+Q: Is there any audio guide to know how to enable Accesibility on ZEsarUX?
+A: Yes. Download audio file:
+https://www.dropbox.com/s/0ihotq5f2w3spqb/zesarux%20demo%20en.mp3?dl=1
+
+Notice that it was recorded without enabling "Text Speech Stop program"
+
+
+Q: Is there any Spanish quick guide to know how to enable Accesibility on ZEsarUX?
+A: Yes, see file docs/accesibilidad_instrucciones.txt
+
+
+----------------------------------------------------------------------------
+
+
+MMC/SD/IDE/CF emulation
+-----------------------
+
+Q: How can I use ZXMMC emulation?
+A: Run alternate ROM alternaterom_plus3e_mmcen3eE.rom with machine type Spectrum +2A. Of course you have first to select MMC file, enable MMC emulation,  and enable ZXMMC on the menu
+
+
+Q: How can I use DIVMMC emulation?
+A: The emulator uses by default esxdos 0.8.5 firmware (file esxmmc085.rom). It also needs a filesystem for the common esxdos files.
+So, first select MMC file, the emulator comes with two mmc images for esxdos:
+divmmcesx085.mmc : for esxdos 0.8.5
+zxuno.mmc : for esxdos 0.8.6 beta (use with ZX-Uno)
+Then enable MMC emulation,  and enable DIVMMC on the menu. Then reset the machine (and press space while booting if necessary)
+
+
+Q: Using MMC cards bigger than 1 GB makes the emulator slow and almost hangs it
+A: The emulator needs to assign as much RAM as the MMC card size. So working with a 2 GB MMC card needs 2 GB of RAM
+
+
+Q: How can I use ZXpand emulation?
+A: ZXpand emulation does not use a mmc/sd emulation, like ZXMMC/DIVMMC. Instead it uses files and folders stored in your computer.
+You must enable ZXpand when you are in ZX-81 machine mode, and set the root directory for emulation (it uses current directory by default).
+ZXpand root directory will be the root directory for ZXpand interface. Only files or folders with maximum 8 characters for name and 3 for extension will be shown. They are always shown on uppercase. Folders which are not uppercase, are shown but can not be accessed.
+
+
+Q: How can I use DIVIDE emulation?
+A: The emulator uses by default esxdos 0.8.5 firmware (file esxide085.rom). It also needs a filesystem for the common esxdos files.
+So, first select IDE file, the emulator comes with one ide image for esxdos:
+divideesx085.ide : for esxdos 0.8.5
+Then enable IDE emulation,  and enable DIVIDE on the menu. Then reset the machine (and press space while booting if necessary)
+
+
+Q: What are file formats with extensions .mmc and .ide?
+A: They are both the same, both are dumps of mmc or ide cards. I use different extensions to distinguish between mmc images and ide images.
+Besides using esxdos or other divide/divmmc firmware, you can also access those file image cards from Linux, Mac OS X, or Windows:
+-Linux: you can use command "mount" with option -o loop to mount these images. It file image has a partition, you must first use losetup utility
+-Mac OS X: change extension to .img and you can mount it using Finder. You should unmount it and change the extension back to .mmc or .ide for ZEsarUX 
+to list it in File Selector
+-Windows: Windows doesn't have native support for mounting file images. You may use ImDisk:
+http://www.ltr-data.se/opencode.html/#ImDisk
+Or find another program to access disk images
+
+
+----------------------------------------------------------------------------
+
+
+Audio Drivers
+-------------
+
+Q: Audio has much latency using SDL audio driver. This audio is used on Linux/Unix and Windows. What can I do to reduce latency?
+A: Try setting a lower value for --sdlsamplesize parameter
+
+Q: Audio does not sound well on Raspberry pi.
+A: Try using sdl audio driver.
+
+
+
+----------------------------------------------------------------------------
+
+
+Video Drivers
+-------------
+
+
+Q: There are a lot of video drivers. What is the difference between them?
+A: There are three kind of video drivers:
+
+1) Complete video drivers. They show a graphical window like the emulated machine:
+-XWindows: X11 Driver. Can run on Unix systems
+-SDL: SDL Driver. Can run on Unix systems and Windows (Mingw)
+-Cocoa: Cocoa Driver. Used on Mac OS X
+-FBdev: Framebuffer driver. Used on Linux
+
+2) Mixed graphical/text drivers. They are text drivers but simulate a graphical window using text:
+-AA. Ascii-Art video driver. Black & White text. Can run any support that has the library
+-Caca: Cacalib video driver. Like AA but with colours. Can run any support that has the library
+
+3) Text only drivers:
+-Curses: Text driver with colours. Can read keyboard. Can run on Unix systems
+-Stdout: Basic text printing and text-graphic simulation. Can trap character routines and speech capabilities. Can read keyboard. Can run on Unix systems
+-Simpletext: Like stdout but can not read keyboard, can not trap character routines and does not have speech capabilities. This driver is intended to work on any system, without any additional library.
+
+----------------------------------------------------------------------------
+
+
+Windows
+-------
+
+Q: Every time the speech program is run, a new window console opens. I'm using Windows.
+A: You have two options to solve it:
+1) Open the emulator from Windows console (cmd) and pass at least one parameter, or the --nodisableconsole parameter
+2) If you open the emulator by double clicking on the emulator, set the parameter --nodisableconsole on .zesaruxrc configuration file
+
+Q: How can I select files from other drives?
+A: On file selector window, you must switch to File name section (pressing TAB twice) and write letter number and ':', for example: C:
+Remember that : appears pressing symbol shift (Ctrl or Alt)+letter Z
+
+Q: I enabled the remote protocol, used a telnet client to client, but I only see the Welcome message and I can not type anything
+A: Try disabling Windows firewall
+
+
+----------------------------------------------------------------------------
+
+
+ZX-Spectrum
+-----------
+
+Q: My Spectrum game does rainbow/hi-colour effects but the emulator does not show them.
+A: Enable Real Video Setting. Real Video is a feature that uses a bit more cpu from your machine but displays the emulated machine as it should. Same reason as ZX-80/ZX-81
+
+
+----------------------------------------------------------------------------
+
+
+ZX-80 & ZX-81
+-------------
+
+Q: My ZX80 or ZX81 game uses hi-res resolution but the emulator does not show the display well.
+A: Enable Real Video Setting. Real Video is a feature that uses a bit more cpu from your machine but displays the emulated machine as it should. Same reason as ZX Spectrum. If you enabled real video and it does not show any image, try also enabling WRX.
+
+
+Q: I tried to run the ZX81 Sponzy ROM on the emulator but it doesn't work
+A: You will probably have set "Custom machine" from the menu. But the sponzy rom is 16KB long and the emulator loads only 8KB rom by default.
+To be able to use this rom, you must enable RAM on addresses 2000h-3fffh. So:
+
+1) Set normal ZX81 machine. Go to menu hardware->"ZX80/81 8K RAM in 2000H" and enable it
+2) Machine Selection->Custom machine. Select sponzy rom and machine type ZX81. It will load only the first 8 KB of ROM. It will hang the ZX81 and 
+the display will show "trash", also the "Real Video" setting is auto-enabled.
+3) The trick here is to load the rest of the ROM on addresses 2000h-3fffh. To do that, go to menu Debugging-> Load binary block. Select the same
+sponzy rom file, set address to 0, and set lenght to 0 (to load the whole file). The emulator will load the whole file, but addresses 0000-1fffh are
+write protected, but it is not a problem so these addresses are already loaded since pass 2. Addresses 2000h-3fffh will be written (so we enabled RAM here) with the rest of the Sponzy ROM
+4) Go to menu debugging->Reset
+5) The rom is working now but you will probably see only a white display. So, Sponzy rom uses WRX display mode. You must enable it on menu Display Settings->WRX
+
+
+----------------------------------------------------------------------------
+
+
+ZX-UNO
+------
+
+Q: Why DIVMMC on ZX-Uno uses esxdos 0.8.6 beta 4 and other Spectrum models use esxdos 0.8.5?
+A: When using ZX-Uno emulation, the esxdos firmware is included with the ZX-Uno Flash image zxuno.flash. ZX-Uno comes with esxdos 0.8.6 beta 4.
+When you are using divmmc on other Spectrum models, the emulator loads esxdos 0.8.5 firmware (file esxmmc085.rom).
+
+
+Q: Why using ZX-Uno some emulator settings on the menu are changed?
+A: Some settings on ZX-Uno are shared from the same ones on the menu. These are: DivMMC emulation, Keyboard Issue, Contended Memory and Timing (Timing can not be changed from the menu)
+So these settings on the emulator can be changed using the ZX-Uno bios, or even the ZX-Uno boot process changes them (specially divmmc emulation)
+
+
+Q: Where can I find the following keys of ZX-Uno: Edit, Break, Delete, etc..
+A: These keys are not new keys on ZX-Uno, instead they are combination of keys, like on Spectrum+, +2, etc. Original speccy only had 40 keys, to do function edit, for example, you had to press Shift+1. Break key is the combination of pressing Shift+Space. So, in Spectrum+, +2 and higher, these alternate keys are inded combinations of keys. When you press Edit, for example, the keyboard is pressing Shift+1. So, in the emulator, you must use Shift+key combinations to get them.
+There are some keyboard stickers for ZX-Uno that locate, for example, Break function on ESC key or Edit function on F2 key. These are not valid on the emulator, except ESC key,
+which is mapped to Break on ZX-Uno. Almost all F-function key have other meanings on the emulator. NMI function seems to be mapped to F5 in some ZX-Uno stickers, but F5 opens ZEsarUX menu; to generate a NMI you must go to Debug menu
+
+
+Q: How can I change the FPGA emulation core?
+A: You can not change it. ZEsarUX does not emulate the ZX-Uno FPGA. ZEsarUX emulates the following on ZX-Uno mode:
+-Z80
+-Normal hardware of a Spectrum +2A: Audio Chip, Beeper, Tape, etc...
+-Additional Memory of ZX-Uno
+-SPI Flash
+-DivMMC
+-Internal 256 ZX-Uno registers: Masterconf, Mastermapper, etc
+-Other additional features: ULAplus...
+
+So, you can not change the emulation core, you can not, for example, upload a FPGA core with emulation for Atari 2600...
+
+
+----------------------------------------------------------------------------
+
+
+Z88
+---
+
+Q: How can I write files from my local hard disk to a Z88 File Card?
+A: Take a look at this video:
+https://www.youtube.com/watch?v=mxaVURSAO3o
+
+Q: How can I use hybrid RAM+EPROM cards for writing?
+A: Although ZEsarUX supports these cards to be written on slot 3, OZ doesn't seem to recognize them to be written. 
+EPROM part is 512kb size and this is not a standard EPROM size. 
+But these cards are recognized for reading when have data like a new oz release (insert it on slot 1 to be boot)
+
+Q: I'm very interested in the Cambridge Z88, but I don't know how to use it. Where can I find the documentation?
+A: Look at https://cambridgez88.jira.com/wiki/display/UG45/
+
+----------------------------------------------------------------------------
+
+
+Chloe
+-----
+
+
+Q: What is Chloe?
+A: The Chloe 280SE is a new 8-bit computer.
+
+Operating System: esxDOS
+CPU: Zilog Z80A @ 3.5MHz
+Memory: 256 Kibibytes
+Firmware: SE Basic IV
+Palette: 256 colors
+Video modes: 40 column, 80 column, Spectrum and Timex compatible modes
+Audio: 6 channel AY
+
+
+----------------------------------------------------------------------------
+
+
+Prism
+-----
+
+Q: What is Prism?
+A: Prism is Jeff Braine's FPGA based "Spectrum Compatible" computer. As well as trying to stay compatible with as many pieces of Spectrum software as possible, the aim for Prism 
+was to add the many features Jeff used to wish were coming with the "next Spectrum" whenever a new model was rumored.  Extra memory, extra screen modes, new ways of decoding 
+the screen data, extra colours, redefinable colours... All these and more have been added to Prism, which is still being developed. 
+
+Some features of Prism include:
+
+* 512K SRAM. This can be addressed using a number of paging methods, compatible with different models
+     * Spectrum 128 (port 7FFD), 
+     * Spectrum +2A/+3 (ports 7FFD & 1FFD)
+     * Chloe 280SE (ports 7FFD, FF and F4)
+     * Pentagon 512 (port 7FFD - same as Spectrum 128 but also uses bit 6 and 7 to page in the extra banks of memory)
+
+* 1MB Flash memory used in place of the ROM which allows the user to install and choose between up to 256 different ROMs (assuming the ROM is 16K in size)
+
+* "ULA2" accesses up to 32K Video RAM divided into 4 pages of 8K, allowing new screen modes with higher resolution and/or numbers of colours and new methods of decoding the screen data:
+    * 128x96, 256x96, 128x192, 256x192, 512x192, 256x384, 512x384 resolutions possible
+    *  8, 16, 32, 64, 256 colours on screen at once without software tricks (depending on the screen mode and data decoding options)
+    * 4096 colours on screen at once using special "Brainebow" mode
+    * 8x8, 8x1 and 4x8 attribute square sizes available in hardware without needing software tricks (depending on the screen mode and data decoding options)
+    * 4 colours in a 4x8 attribute square using special "chunk-o-vision" mode (based on the screen mode of a common US competitor of the Spectrum with too many browns)
+    * 8 and 16 colour "planar" modes without colour clash available without needing software tricks (depending on the screen mode and data decoding options)
+    * User defined 256 colour palette chosen from a master 4096 colour palette (* the full ULA2 specification allows for 24 bit colour, but the development Prism only does 12 bit colour)
+
+* Compatibility options allow the user to turn off some of Prism's advanced features to allow certain software to work (eg it's possible to limit Prism to 128K so that Out Run, 
+Turbo Out Run and Carrier Command work)
+
+* Special "VRAM aperture" means VRAM is only presented to the CPU where it is necessary, allowing the user to use higher screen resolutions etc without the screen getting 
+corrupted by system variables and the beginning of BASIC. This option can be disabled at boot to retain compatibility with the small amount of software which expects 16K 
+of VRAM to be available (mainly Timex/Chloe/SpectrumSE software)
+
+* Special "VRAM Write" (aka "Planar Write") options allow the user to select which VRAM page or combination of pages are written to in the screen area of memory. This gives 
+the user easier access to the video memory when working with higher resolutions or planar video modes.
+
+* User selectable CPU speed 
+
+* Additionally Prism supports ULAplus, Radastan screen mode, Zesarux screen modes, Multiface 128 and DivMMC
+
+Take a look at http://zxprism.blogspot.com.es for more information and demos
+
+
+
+----------------------------------------------------------------------------
+
+
+TBBlue
+-----
+
+
+Q: I can't run TBBlue machine. I get the following error: "Erro ao inicializar cartao!"
+A: TBBlue machine needs a SD/MMC image to boot. You must select file image "tbblue.mmc" on Storage->MMC->MMC File.
+Then enable MMC emulation and DivMMC ports (but not DivMMC paging), and do a hard reset
+Or you can select it from the command line with:
+./zesarux --mmc-file tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
+
+
+----------------------------------------------------------------------------
+
+
+CPC 464
+-------
+
+
+Q: Why many games don't load, or hang on menu, or shows corrupted display?
+A: CPC emulation is currently experimental. Many features don't work well:
+* No full CRTC support
+* No joystick support
+* No hardware scroll full support
+
+
+----------------------------------------------------------------------------
+
+
+Sam Coupe
+---------
+
+
+Q: How are special keys (like edit or Symbol) mapped? 
+A: Key mapping is:
+-CTRL key is CNTRL on Sam Coupe
+-Left Alt is Symbol on Sam Coupe
+-Right Alt is Edit on Sam Coupe
+-Keypad numbers are mapped to F numbers on Sam Coupe
+
+Q: How can I load from Sam Coupe disk?
+A: Disk emulation is not finished yet. You can only load from tape
+
+----------------------------------------------------------------------------
+
+
+QL
+--
+
+
+Q: Does keyboard work?
+A: QL low level keyboard handling routines do not fully work yet but tries to do its best
+
+Q: Backspace on QL works. But why the native combination (CTRL+Left) does not work? I'm using Mac OS X
+A: You'd better use backspace. But if you want to use the native combination, try:
+-press and hold left key
+-it will move one position to the left
+-before it starts moving quickly to the left, hold CTRL
+
+Q: How can I stop a program?
+A: Try CTRL+Space
+
+Q: How can I load a program from microdrive or floppy?
+A: Microdrive or floppy emulation does not work. But you can simulate the load command from ZEsarUX menu "Debug->Load binary block".
+You must inspect the basic loader program and execute all the sentences except lbytes. lbytes must be simulated manually from that menu
+
+
+
+----------------------------------------------------------------------------
+
+
+
+Miscellaneous
+-------------
+
+Q: Alt key is not read on Mac OS X, using X11 (xquartz) driver. On Spectrum and ZX80/81 modes, Alt is the same as Ctrl, but on Z88, Alt is the Square key. So it is important on Z88 this key to be read.
+A: Go to X11 Preferences > Input > Option keys send Alt_L and Alt_R.
+
+
+Q: I'm using cacalib or curses driver, on pure text console. The emulator says it has kempston mouse support, but it does not work. What can I do?
+A: Install gpmmouse to have mouse support on these drivers. 
+
+
+Q: I'm using cacalib or curses driver and the position of the kempston mouse is not read when moving it. Only when I push left or right button.
+A: Mouse position on text mode drivers (cacalib and curses) is only read when you push a button, and not when you move the mouse.
+
+Q: How is pronounced the name of the emulator?
+A: Phonetically: ZEsarUX is pronounced: θesar´uks
+One by one, every letter:
+Z like th on think
+E like e on let
+S like s on sing
+A like a on cat
+R like r on round 
+U like u on put
+X like x on linux
+And saying the accent on the final syllable 
+You can also play zesarux.mp3 to hear how it sounds
+
+Q: What is the origin of the name of the emulator?
+A: Well... ZEsarUX comes from:
+ZX Second-Emulator And Released for UniX.
+I write second-emulator with a hyphen because I changed the order of the two words to have the final name... If not, name would be:
+ZsEarUX :P
+Second because it's my second emulator. The first was ZXSpectr:
+http://sourceforge.net/projects/zxspectr/
+Why the capital letters? Because one of the first names I thought was ZEUX, but it seems this name was already taken... I don't remember well but I think ZEUX it's another spectrum emulator.
+Then I thought some name like mine (Cesar) and adding letters zx (for zx spectrum) and also UX for UNIX/Linux, so Linux was the first supported platform. Then I simply joined all these letters and have a translation for every letter to a word, on a phrase with sense: 
+ZX Second-Emulator And Released for UniX.
+
+
+Q: Can this emulator run on MS-DOS?
+A: No, it can not, you can only run it on Windows, Mac, Linux, Raspberry pi and other Unix compatible systems. But you can try my old ZXSpectr emulator:
+https://sourceforge.net/projects/zxspectr/
+It does run on MS-DOS. It was created on June 1996, so it's more than 20 years old!
+
+
+Q: Is there any manual or documentation?
+A: There is no manual, and there won't be never. The reason is that, in the past, I spent lots of hours making documentation for my previous emulator, ZXSpectr, and I wasted lots of hours, more than doing the emulator. But you have the following:
+-This FAQ file
+-Menu entries with help (pressing F1 in most of them) and item tooltips when no key is pressed
+-docs folder with many information
+-youtube videos showing different features of ZEsarUX. https://www.youtube.com/user/chernandezba
+-And my own help. You can ask me by mail, forums, twitter and Facebook ZEsarUX group
+
+Q: Can I use ZEsarUX as a standalone AY player?
+A: Yes, you can run ZEsarUX from command line and enable a setting to exit emulator when finishing playing the ay file. 
+You can also specify a limit for "infinite" tracks (tracks defined with no limit length), for example:
+
+./zesarux media/ay_files/Games/CHASEHQ.AY --ayplayer-inf-length 60 --ayplayer-end-exit --vo null
+
+Using Linux or Mac you can also use ZEsarUX as a random ay file player, with the following piece of code:
+
+while [ 1 == 1 ]; do
+    ARCH=`ls -1 media/ay_files/Games/| python -c "import sys; import random; print(random.choice(sys.stdin.readlines()).rstrip())"`
+    echo $ARCH
+    ./zesarux media/ay_files/Games/$ARCH --ayplayer-inf-length 60 --ayplayer-end-exit --vo null
+done
+
+
+Q: What is Man Software?
+A: It's the brand name for software I have been making since I was a child on the Spectrum. Many programs and games you can find on folder media/spectrum/myself/ are signed by this brand. Many others are signed by my real name, but all are made by me.
+You can find also a "Man Software GUI Style" on the ZEsarUX menu, that uses a font type I invented when I was a child.
+
+Q: Why does the emulator size is so big? The uncompressed size is bigger than 300 MB!
+A: The emulator is really very small. But the installed files are:
+-Documentation. docs folder. 37 MB
+-Examples. media folder: 62 MB. snap_tests folder: 34 MB
+-Some .ide, .mmc, .flash image files: 229 MB
+These files are included for different reasons, read file INCLUDEDTAPES.
+
+The emulator only really needs the following files to run:
+-The executable file: "zesarux" or "zesarux.exe" which is 2 MB size aproximately
+-rom files: 5 MB
+-Some dll files on Windows version
+These three types of files doesn't use more than 10 MB.
+You can even try to delete all the unnecessary files and the emulator will also work. 
+
+
+
+Q: I have a question not listed here. What can I do?
+A: Send a mail to chernandezba (at) hotmail.com and I will answer you.
+
+

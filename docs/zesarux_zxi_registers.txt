@@ -1,0 +1,30 @@
+ZEsarUX ZXI Port register: 53051 (CF3BH)
+ZEsarUX ZXI Port data:     57147 (DF3BH)
+
+To write a register, first OUT to port register 0xCF3B and then OUT to port data 0xDF3B
+To read a register, first OUT to port register 0xCF3B and then IN from port data 0xDF3B
+You can also read the register selection doing a IN from port 0xCF3B
+Port register 0xCF3B is set to zero when doing a reset
+
+
+
+There are 256 possible registers:
+
+
+* Reg 0: CONTROL_BITS0. Set to 0 when doing a reset
+
+Bit 0: Set to 1 to map lower 16kb inves memory ram readable from 0000-3fffh
+Bits 1-7: Unused
+
+
+* Reg 1: HARDWARE_DEBUG_ASCII
+
+Write this register to output an ascii character to the pc console. Must be enabled on debug settings
+
+
+* Reg 2: HARDWARE_DEBUG_NUMBER 
+
+Write this register to output a number to the pc console. Must be enabled on debug settings
+
+
+* Reg 3-255: Unused

@@ -1,0 +1,1731 @@
+-cosas para la version 5.1
+
+-control menu raton no va bien en xwindows?
+
+-Soporte microdrive / floppy QL
+-Joystick en Mac,Win
+-Latencia sonido drivers audio sdl, coreaudio. quiza también es problema de cargar cinta 
+-Full screen cocoa gl
+-Grabar en archivo configuracion joystick: eventos, teclas, etc
+-GUI style QL
+-Proteccion escritura rom ql. revisar!
+
+-QL:
+*cpu stats
+*visualmem
+*menu poke
+*menu find
+*save binary block
+-Mensaje splash al cambiar de modo de video
+
+
+
+
+
+---Fin cosas para version 5.1
+
+
+
+
+--- audio - fallos ---
+
+-en alsa falla al cambiar velocidad cpu (tanto con pthreads con sin pthreads)
+->no falla con todas las velocidades. por ejemplo con 200% falla pero no con 300%
+
+-en dsp, con debian 8, mala calidad sonido dsp (eso cuando lo puede activar)
+parece que emula dsp con osspd que da muy mal resultado
+para poner oss por defecto (y NO usar alsa):
+->http://forums.debian.net/viewtopic.php?f=16&t=52919
+Ver alternativa con emulacion de oss por parte de alsa sin tener que sustituir todo alsa por oss
+otras alternativas: padsp, osspd (los dos se oye mal el sonido)
+
+-en pulse a veces falla al reiniciar driver audio. sucede incluso con sonido activo (audio_playing.v=1 y sin silencio) y cuando va a finalizar
+caso 1) el thread lo finaliza correctamente, y luego da error al iniciar driver sonido
+caso 2) error al finalizar pthread: Debug: Ending audiopulse thread
+zesarux: pthread_mutex_lock.c:321: __pthread_mutex_lock_full: Assertion `robust || (oldval & 0x40000000) == 0' failed.
+Aborted
+caso 1 esta gestionado por el emulador y hace fallback a audionull. caso 2 provoca la salida directa del programa
+probado agregando pausas al finalizar pero falla igualmente
+
+
+- En Mac, parece que timer mediante pthreads no va bien, se oye "lento". En cambio sin pthreads SI que va bien
+
+- En Mac, snap_tests/test3200z88.zx se oye entrecortado. En Linux por ejemplo con pulse se oye continuo (con algun cortecito de vez en cuando)
+
+
+--- audio - mejoras ---
+
+-dsp en cygwin distorsiona. se ha probado con buffer unsigned pero sigue distorsionando
+
+-quizá envelopes no se están gestionando bien….
+
+
+-------------
+
+
+-------------
+
+
+--- video - fallos ---
+
+
+**SDL**
+-Windows:
+SDL1 con threads: ok
+SDL1 sin threads: ok
+
+SDL2 con threads: petardea al mover/redimensionar
+SDL2 sin threads: petardea al mover/redimensionar
+->Quiza es un bug de SDL?
+http://gamedev.stackexchange.com/questions/127691/how-to-stop-sdl-from-freezing-the-rendering-while-resizing-the-window
+
+
+-Linux:
+SDL1 con threads: ok
+SDL1 sin threads: ok
+SDL2 con threads: petardea al intentar redimensionar ventana y no deja redimensionarla
+SDL2 sin threads: petardea al intentar redimensionar ventana y no deja redimensionarla
+
+
+-Mac:
+SDL1 con threads: no crea ventana aunque se escucha
+SDL1 sin threads: no crea ventana aunque se escucha
+SDL2 con threads: petardea al redimensionar ventana
+SDL2 sin threads: petardea al redimensionar ventana
+**Fin SDL**
+
+-en stdout, simpletext, cuando caracter de menu <32 o >127 mostrar '?'
+
+-card browser/tape browser en caso de stdout. Función en caso de stdout no puede retornar línea a la que apunta cursor. En esos casos retornar -1. Todas llamadas a dicha función deben controlar ese -1
+browser para flash. primer archivo es de “truco”
+
+-desactivar border dentro de aalib no va muy bien.. se queda que no redibuja el menu hasta al cabo de un rato y/o apretar teclas
+
+-cambio de driver video desde menu:
+*probar hacia aalib. a este, va pero no mueve el cursor hasta que redimensiona ventana
+
+-blue display en aalib no se ve nada
+
+-fadeout en aalib muy lento
+
+-mac os x: tecla borrar en curses no va. Parece que es codigo 127 pero solo en mac...hay que probarlo mas para saber que no haya otra tecla que tambien genere 127
+
+-en fbdev, si se usa use-all-res-fbdev, si se cambia zoom o border desde menu, peta con segmentation fault
+
+-en fbdev, lectura de tecla windows, usada en teclado chloe. parece que es una tecla compuesta
+
+-en fbdev fadeout no hace fadeout de footer
+
+-cocoa: fullscreen distorsiona
+
+-cocoa: en fullscreen, kempston mouse no se mueve
+
+-cocoa: tecla alt derecha distinguir de izquierda
+
+--fullscreen no hace bien en cocoa
+
+-cocoa: a veces al redimensionar ventana con raton se queda que no refresca
+a veces dice  en debug:
+Debug: putpixel with pendienteredimensionar active
+...continuo...
+eso tambien pasa al redimensionar desde easter egg
+
+a veces dice en consola:
+
+warning, deleted thread with uncommitted CATransaction; set CA_DEBUG_TRANSACTIONS=1 in environment to log backtraces.
+
+y si se activa esa variable hace el dump de:
+
+CoreAnimation: warning, deleted thread with uncommitted CATransaction; created by:
+0   QuartzCore                          0x00007fff9d748e5b _ZN2CA11Transaction4pushEv + 331
+1   QuartzCore                          0x00007fff9d74921f _ZN2CA11Transaction15ensure_implicitEv + 281
+2   QuartzCore                          0x00007fff9d8bb4b6 +[CATransaction(CATransactionPrivate) activateBackground:] + 34
+3   AppKit                              0x00007fff9567281c +[_NSCGSTransaction currentTransaction] + 75
+4   AppKit                              0x00007fff95672cd6 NSCGSTransactionSetObjectForKey + 49
+5   AppKit                              0x00007fff956fbba5 NSCGSWindowAddToBatchAction + 172
+6   AppKit                              0x00007fff956fba6b -[NSWindow _updateManagedDisplay] + 494
+7   AppKit                              0x00007fff956192d7 -[NSWindow _setFrameCommon:display:stashSize:] + 4114
+8   AppKit                              0x00007fff956182b7 -[NSWindow _setFrame:display:allowImplicitAnimation:stashSize:] + 222
+9   AppKit                              0x00007fff956f36ec -[NSWindow setFrameOrigin:] + 405
+10  AppKit                              0x00007fff9572a5a2 -[NSWindow center] + 287
+11  zesarux                             0x000000010a3dd7a3 -[ZesaruxCocoaWindow redimensionaVentana:height:] + 675
+12  zesarux                             0x000000010a3e17ca scrcocoa_refresca_pantalla + 106
+13  zesarux                             0x000000010a3fb9da cpu_loop_refresca_pantalla + 42
+14  zesarux                             0x000000010a45fe4c cpu_core_loop_spectrum + 1436
+15  zesarux                             0x000000010a3dc64c emulator_main_loop + 60
+16  zesarux                             0x000000010a3dc671 thread_main_loop_function + 17
+17  libsystem_pthread.dylib             0x00007fffad189aab _pthread_body + 180
+18  libsystem_pthread.dylib             0x00007fffad1899f7 _pthread_body + 0
+19  libsystem_pthread.dylib             0x00007fffad1891fd thread_start + 13
+
+
+
+
+-En Mac si tengo --vo curses y no está soportado, le específico otro driver por consola y no me hace caso
+
+
+-mejorar fullscreen en Xwindows . en portatil, con debian 8, no cambia modo de video
+
+-si arranca con ao sdl y vo sdl, si se cambia de driver desde gui settings a xwindows por ejemplo,
+no cierra la ventana sdl. si en cambio el driver audio no es sdl, al cambiar de video driver si que cierra ventana sdl
+
+-en windows, parece que en z88 no lee las dos mayusculas a la vez para hacer el suspendido del z88
+
+
+
+--- video - mejoras ---
+
+-Revisar xwindow con 16 bpp
+
+-y si hacemos clear putpixel cache cada vez que se cambie de oscuro a claro o al reves?
+
+-sdl: de momento xwindows tiene mas prioridad que sdl
+
+-footer para stdout y simpletext (cuando esta autoredraw activo)
+
+-con tooltip desactivados, no salen atajos ni repite texto speech de "Active item... ". Esto es normal dado que usan el contador de tooltip
+
+-compare_char_step de screen.c hacerla mas elegante, utiliza punteros a direcciones de memoria en vez de usar peek_byte_no_time...
+
+-opcion para reducir tamanyo border. Ahora solo se puede: completo o no visible. Se podria hacer algo para mostrar medio border o menos por ejemplo
+
+-al activar pentagon timing no deberia desplazarse texto footer hacia abajo
+
+-stdout. opciones que se activan con espacio  (como activar/desactivar breakpoints), poderlas activar en stdout tambien
+
+-------------
+
+
+--- QL ---
+
+
+-sonido y otros comandos parece que a veces dejan el ipc en estado inconsistente. Quiza tambien por eso algunos juegos, como el spacepods, se cuelga despues de una partida
+
+-debug y otros items de menu preparados para QL. condiciones peek/poke de debug en QL no funcionan en teoria
+-funciones peek, poke punteros a funciones legacy. luego con el tiempo hacer que las de ql llamen a las que sean correspondientes
+-en ql , funciones peek , poke etc desde menu, disassemble y otros sitios no deben tener en cuenta direcciones que son i/o mapeadas
+
+Funciones de peek y poke nested soporta punteros de Motorola?
+Quizá no funciona bien en ql en el momento que se activa debug
+
+NO. Dado que no usa peek byte y poke normales sino que tiene funciones propias a las que no le afecta el nested de peek y poke. 
+Solo le afecta el nested del core cpu
+
+-parpadeo de cursor
+-resolucion esta ok pero tamanyo pantalla deberia ser 4:3. hacer escalado chungo...
+
+-algunos archivos de juegos vienen con QDOS file header:
+http://foro.speccy.org/viewtopic.php?f=15&t=2008&start=4
+como el psion chess
+ver docs/ql/qdos_file_header.txt
+
+-software 
+http://www.dilwyn.me.uk/downloads.html
+
+-Pendiente todo lo relacionado con texto: drivers modo texto para curses, stdout, ocr, input spool file, etc
+
+-Emulacion microdrive y/o floppy. Mediante traps a la rom
+
+-Trap de F1 y F2 servirá para cuando se quiera hacer autoload. Por tanto no quitar estos traps
+
+
+-------------
+
+
+
+
+--- Jupiter Ace ---
+
+-tape browser en jupiter ace. esta mostrando el de spectrum??
+-emulacion joystick
+-quiza detectar magic de cabecera de archivo ace al cargar?
+-real video para poder hacer Video out to file
+Conversión de tap a wav en ace. Requiere rutina diferente que la de spectrum
+
+-Revisar contend en Ace: de momento no tiene contend
+-F4 (ocr) no implementado aun
+
+-------------
+
+
+
+--- Sprite Chip ZGX ---
+
+-Scroll circular sin relleno de nada?
+-Sprites que empiezan en coordenadas x -7 o más deben aparecer en pantalla. Ver vídeo 5
+-Limitar tabla de sprites a máximo 65536/40=1638 sprites
+-Limite de sprites por scanline? Tener en cuenta que sean sprites activos
+-Desactivar chip sprites si reset y máquina no spectrum. Pero en set_machine si se hace ahi, fuerza a desactivar aunque en el .config se haya habilitado
+-Sprites de 16x16?
+
+-----------------------
+
+
+--- Chloe ---
+
+-Contended memory. Solo contended paginas 5,7
+-Floating bus port?
+-Video out to file?
+-Bit de bloqueo de paginacion de 128 no le afecta. Deberia?
+Bit timex interrupciones en prism? Y chloe?
+Solo afecta a chloe
+
+-output save filter
+Activado de rainbow, timex y ulaplus de chloe genera algún error si se arranca con chloe desde línea de comandos?
+-revisar chloe keymap en windows y otros
+pasa lo mismo en Z88 y windows
+-Chloe y curses, con Chloe keyboard, da problemas en menu (no lee letras)
+
+-------------
+
+
+
+--- Timex ---
+
+-Floating bus port?
+-Video out to file?
+-Contended memory?
+Bit timex interrupciones en prism? Y chloe?
+Solo afecta a chloe
+
+-Revisar si border cambia (pasando de color rojo por ejemplo) en modo timex 512 cuando hay reset
+-aviso splash de 512x192 tener en cuenta setting y border
+-Putpixel cache para timex 512x192 nuevo metodo
+-Hacer que demo timex modo 6 cambie color papel
+-output save filter
+-Exrom debe estar replicado todos los 8kb?
+
+-------------
+
+
+--- Prism ---
+
+-Modo turbo tipo VGA. Modo turbo solo hago los tipo CPU aunque no igual que Jeff: el envia 100 interrupciones por segundo en turbo x2
+-Test franja borde vertical para prism, comparar en emulador y maquina real
+-no hace sprite chip
+-Bit de bloqueo de paginacion de 128 no le afecta. Deberia?
+-mejorar sonido. al grabar por ejemplo se oye entrecortado y hace que no se pueda luego cargar una cinta grabada
+-Modo interlaced en prism
+-modo 4,5 de atributos (256 color modes) tienen que usar buffer border prism de manera similar como hace el refresco del border
+Prism modo de atributo que usa color de border 0 ula2, no soportará más de un color por scanline. Habría que hacer un buffer similar al del border o de sonido que recoja cambios en el puerto ula2
+
+temporal 0100 - 256 Colour mode 1 - D0-D7 = ink colour. Paper colour is determined by ULA2 BORDER (IO 0x9E3B)
+
+de momento se coge el color del border tal cual
+
+-Bit de bloqueo de paginación se debería seguir en prism
+-Failsafe se debería mantener después de reset normal?
+-Video out to file?
+-output save filter
+-Activado de rainbow, timex y ulaplus de prism genera algún error si se arranca con prism desde línea de comandos?
+-Prism vmask debería tener en cuenta modos Dock de timex?
+-Modos de video leen atributos de memoria de pantalla en cada scanline, no usa scanline_buffer (que es el que usa el spectrum 48k por ejemplo).
+Pasa lo mismo que con spectra. No es prioritario pero tenerlo en cuenta para futuros efectos tipo overscan. Lo que si que se usa es el border buffer,
+que si que permite cambiar el border en una misma scanline
+-Modo gigablend. Estoy usando un valor medio para el color en vez del calculo que usa Jeff:
+                                                //Y montamos colores finales
+                                                //RED= REDa(3) & REDb(2) & REDb(1) & REDa(0)
+                                                //GREEN = REDa(3) & REDb(2) & REDb(1) & REDa(0)
+                                                //BLUE = REDa(3) & REDb(2) & REDb(1) & REDa(0)
+                                                int red_final=(red_a &8) | (red_b &4) | (red_b & 2) | (red_a & 1);
+                                                int green_final=(green_a &8) | (green_b &4) | (green_b & 2) | (green_a & 1);
+                                                int blue_final=(blue_a &8) | (blue_b &4) | (blue_b & 2) | (blue_a & 1);
+
+
+                                                //temp mi metodo de gigablend
+                                                red_final=(red_a+red_b)/2;
+                                                green_final=(green_a+green_b)/2;
+                                                blue_final=(blue_a+blue_b)/2;
+
+-Modos overlay y registro 7 acabar de probar
+-Cambio colores paleta en test program
+Test RAM con clear 32767
+Edición de colores de paleta 2
+
+
+-------------
+
+
+--- Pentagon ---
+
+-snapshot .zx
+-Agregar soporte TRD
+-No deja desactivar timing pentagon cuando la maquina seleccionada es pentagon. dado que reinicializa el valor
+
+-------------
+
+--- TBBLUE ---
+
+-snapshot .zx para tbblue
+-Sincronizar bits de joystick de puerto config2
+-divmmc tiene 256kb en tbblue real, pero por defecto emulo 128k. Algun problema? Tener en cuenta que en zxuno y resto de spectrum la divmmc es de 128kb.
+quiza hacer que cuando arranque tbblue, divmmc tenga 256k
+
+-a veces al arrancar la maquina no encuentra archivos de la sd. Quiza por algun registro de la mmc que no se inicializa correctamente?
+-para emulacion de +3e, la sd se utiliza la sd secundaria. emular segunda SD
+-considerar algunas escrituras de puertos que dicen:
+only in bootrom or config mode:
+
+-estoy considerando igual estado hard reset que estado power on
+Ver registro 2:
+(R/W)	02 => Reset:
+			bits 7-3 = Reserved, must be 0
+			bit 2 = (R) Power-on reset
+			bit 1 = (R/W) if 1 Hard Reset
+			bit 0 = (R/W) if 1 Soft Reset
+
+
+
+
+-------------
+
+--- SAM coupe ---
+
+-real video
+-Alt derecha en PC es altgr?
+-soporte snapshot .zx
+-refresco en curses:
+*al pulsar esc en curses en sam se queda pulsado??
+-refresco curses, text, stdout, F4
+*linea inferior no funciona. porque????
+
+-breakpoints para cuando pagina de ram o rom papeada, de tipo:
+seg0=xxx
+o ram0=xx ram1=xx ram2=xx ram3=xx
+rom0=xx rom1=xx
+-Mapeo cursores sam independientemente de tipo de joystick seleccionado?
+-Cintas para probar en ftp://ftp.nvg.org/pub/sam-coupe/tapes/
+-Interface trinity Ethernet /SD
+
+-echar un vistazo a:
+http://velesoft.speccy.cz/sam_zx128.htm
+
+-Atomlite... intentar poder convertir floppy a imagenes atom lite
+-atom lite: caso de lectura de reloj Dallas. Poner caso vacio
+
+-Emulacion de floppy
+-Beeper con real beeper no suena bien. Sin real beeper si
+-Parece que si ponemos 256 KB de memoria no lo detecta el basic
+-memoria contended. toda esta contenida?
+-velocidad es correcta? t-estados por linea, mhz...
+
+-rutina ascii_to_keyboard_port. la que permite enviar texto por spool o leer texto de drivers curses, stdout. Agregar simbolos?
+
+
+-------------
+
+--- CPC ---
+
+-ay player en modo cpc no borra debajo de pantalla diferentes ventanas
+-dibujado de border cuando pantalla es menor de lo habitual, temporal, no va bien en casos como paperboy. Esto seria mejor para solucionarlo implementar realvideo
+-debug i/o ports
+-teclas cpc y keymap para otros drivers. ahora solo esta para cocoa y xwindows y sdl y fbdev
+-Que pasa con keymap y otras teclas de cpc en drivers que no soportan keymap
+-Hardware scroll no va fino
+-Paginación de memoria cpc en la función por defecto array que tenga: 0,1,2,3
+Luego en cpc con más de 64 kb se puede re mapear según registro 3 del gate array
+-Modo realvideo
+-cpc664. disco y rom de 24 kb. Paginacion de diferentes roms mediante puerto DFXX. http://www.grimware.org/doku.php/documentations/devices/gatearray#upper.rom
+
+-Carga de .zx falla en uno (cara.zx)
+-Video out to file?
+-Cdt ahora entra siempre como real tape. Se debería detectar tipo si real tape o standard (para standard falta traps a ROM que aún no están)
+
+-parece que hay juegos que apagan el motor cuando no deben: MEnfin, bubble bobble, cabal.
+temporalmente desactivamos comando de stop real tape cuando motor off
+
+-Implementar registros 12 y 13 crtc del cpc para scroll y cambio de buffer video
+
+For a 16k screen:
+screen start byte offset = (((R12 & 0x03)*256) + (R13 & 255))*2
+For a 32k screen:
+screen start byte offset = (((R12 & 15)*256) + (R13 & 255))*2
+On a hardware scrolling screen, there is a problem:
+C7FF->C000
+CFFF->C800
+D7FF->D000
+DFFF->D800
+E7FF->E000
+EFFF->E800
+F7FF->F000
+FFFF->F800
+
+Quizá esto dice que al incrementar de c7ff pasa a c000 en vez de c800
+
+Seguramente al dibujar pantalla cuando se pasa de offset ffffh se vuelve a c000h, es decir, el offset cuenta siempre desde la base de pantalla y un contador que va de 0 a 16383 y luego resetea a 0 (si se define pantalla de 16k)
+
+http://www.cpcwiki.eu/index.php/Programming:Hardware_scrolling_the_screen_using_the_CRTC
+
+-Cpc traps Rom
+http://www.cpcwiki.eu/index.php/Format:TAP_tape_image_file_format
+-Cdt en amstrad es como tzx. Aprovechar rutinas de standard tape. pendiente
+
+-refresco en drivers de modo texto (de pantalla entera: curses, stdout, simpletext): falta colores curses
+
+-rutina ascii_to_keyboard_port. la que permite enviar texto por spool o leer texto de drivers curses, stdout. Agregar simbolos?
+
+-Sd en cpc
+http://www.spinpoint.org/2016/05/06/m4-board-retrofun-8-bit-amstrad-cpc-wifi/#comment-69
+
+
+-------------
+
+
+
+
+
+--- remote command ---
+
+-Protocolo remoto:
+Ver si la simulación de pulsado de escape desde smartload de remote protocol no se detecta como space-break en zxuno
+
+-al salir de socket en remote, ver si sock_conectat estaba asociado a algo
+
+-Lanzar un echo vacío a telnet puerto remote protocol cierra el emulador
+
+-enviando sentencia siguiente se cierra el emulador:
+command> ^C^C^C
+^]
+telnet> quit
+Parece que esto solo pasa con el cliente telnet de mac
+
+-en hexdump y hexdump internal, compara c>127 en caso de char? warning al compilar en linux
+
+-Mejorar load source code. Poder saber líneas siguientes a un label empezando en siguientes líneas a label. Cache? Indices?
+
+
+-------------
+
+
+
+--- menu - fallos ---
+
+
+-------------
+
+--- menu - mejoras ---
+
+-Browser de cintas .tzx/.cdt
+
+-Browser para imagenes sd, ide. tipo fat, plus3dos
+
+-Browser de snapshots .zx, .sp, .z80, etc
+
+-Quitar menu custom machine y meterlo dentro de machine selection, de tal manera que pida la ROM al seleccionar máquina
+
+-Permitir teclas numericas como atajos. Para ello hay que reasignar gestion de teclas cursores que las convierte a '6' y '7'
+
+-Al insertar mmc o ide debe ir primero a rutas shared, tal y como hace smartload por ejemplo. y tambien ir a ultima ruta al abrir selector archivos
+
+-Ventana selector archivos el máximo de grande?
+
+-ver espectro en modo pentagon timing se ve mal
+
+-teclado en pantalla. Poder dejado pulsado mas de una tecla a la vez. Para poder hacer cosas como el qazplm del test de rom +2a/+3
+
+-------------
+
+
+------------------
+
+--- FAQ ---
+
+-Documentar un poco modo paginación zx uno
+
+
+------------------
+
+--- Mac OS X ---
+
+-Poder asignar extensiones para abrir con zesarux en Mac OS X. Y de paso eliminar warnings de línea de comandos
+-cocoa: En Mac, si se pone en .zesaruxrc: --vo curses Inicializa la ventana en blanco de Cocoa y luego abre ventana de curses donde transcurre todo...
+Es poder saber antes las opciones de configuracion dado que la comprobacion del driver video (--vo) se hace en el main del scrcocoa.m
+-full screen con cocoa gl. desde menu, no redimensiona ventana
+y haciendo maximize desde ventana, hace full screen pero distorsionado
+-cerrar el emulador desde el boton de cerrar ventana, con driver opengl, acaba provocando segmentation fault
+-script de speech say falla cuando texto empieza con "-", como en README
+-con app de "loopback audio", ejecutando ZEsarUX como app de Mac se oye diferente. Sera algo que lee del info.plist??? parece alguna especie de eco.
+Desinstalando "loopback audio" no pasa
+
+
+------------------
+
+
+
+--- windows - mingw - fallos ---
+
+-footer en fullscreen no lo ubica bien. En SDL de Linux va bien
+
+-probar con sdl audio y video simpletext . parece que no se oye el sonido. En Linux va bien
+
+-Icono bmp para Windows. Y meter icono dentro del exe para que se vea en la barra de tareas
+http://stackoverflow.com/questions/708238/how-do-i-add-an-icon-to-a-mingw-gcc-compiled-executable
+
+-Utilidades aparte que vengan compiladas en Windows . quiza tambien para linux y mac?
+
+-latencia sonido sdl
+
+
+-------------
+
+
+
+------------------
+
+--- MMC y DIVMMC ---
+
+-Probar otros firmwares de divmmc, si es que los hay: fatware?
+
+-TODO. Bit MAPRAM can be set to '1' only (when it's '1', only power-on can return it to '0').
+
+-En Mac parece que siempre falla al escribir en imagenes de 2 GB (y superiores)
+retorna:
+ptr_mmcfile: 2017595472
+escritos: -2147483648
+
+-Revisar protección de escritura en páginas divmmc
+
+-quizá accesos a mmc se deberían hacer directamente a disco, combinando fseek, en vez de memoria. hacer flush de por ejemplo imagen de 512MB en mac tarda unos 4 segundos. Fseek en Windows que limitaciones hay?
+
+-Divmmc en teoría esto está mal:
+It's also mapped instantly (100ns after /MREQ of that fetch is falling down) after executing opcode from area 3d00..3dffh.
+->Debería paginar después de ejecutar opcode y en cambio lo está haciendo antes
+->Pero realmente si lo cambio no funciona
+
+-Tamanyos de tarjeta no estandar
+Tarjeta:             Bloques:   Capacidad:
+--------             --------   ----------
+SanDisk 64 Mb          121856   59.5 Mb
+Dane-Elec 512 Mb      1000448   488.5 Mb
+SanDisk 2 Gb          3862528   1.9 Gb
+(sin marca) 2Gb       3911680   1.9 Gb
+SanDisk 8 Gb         15523840   7.4 Gb
+Samsung Evo 16Gb     31291392   14.9 Gb
+
+http://foro.speccy.org/viewtopic.php?f=11&t=4860&start=15
+que el emulador acepte esos tamaños de tarjetas extraños. Lo que hará en esos casos es, por una parte, avisar al usuario de que es un tamaño no habitual, y por otra, cuando acceda a dicha tarjeta, leerá "ceros" cuando vaya mas allá de su capacidad.
+Y todos los cambios de escritura en la tarjeta se harán con el tamaño real de tarjeta, no escribiendo en ningún caso esos ceros de mas
+
+
+Tener dos contadores, uno de tamaño al escribir tarjeta y otro tamaño asignado en memoria
+
+Quizá al leer la primera vez:
+*variable leídos se guarda en nueva variable de leidos_to_save o algo asi
+*luego variable leídos se incrementa hasta siguiente valor admitido. Controlar que si se sale de rango aceptado (2 GB?) no aceptarla
+*al hacer flush usar nueva variable leidos_to_save
+*resto de operaciones utilizan variable leídos tal cual como ahora
+
+
+------------------
+
+--- IDE y DIVIDE ---
+
+-Códigos ide de identify deberían tener los textos con los bytes alternados a pares
+-No funciona IDE 8 bit
+
+------------------
+
+
+--- Interface 1 ---
+
+Hacer un CAT se queda en bucle
+Ahora de momento solo lee microdrive de prueba prueba.mdr
+No hace ni read, ni write, ni format...
+rom quitada de la distribucion. tiene nombre if1-v2.rom.demomento_desactivada
+
+-------------------
+
+
+--- SPECTRA ---
+
+-no hace correctamente modos rainbow, ya que lee los atributos de pantalla tal cual de la memoria, y no como un modo normal
+rainbow en que se coje del buffer buffer_atributos que se va escribiendo desde el core. Esto quiza es casi imposible de hacer,
+aparte que no creo que en spectra se contemple esto, pues ademas el timing de la pantalla es diferente
+Por tanto, solo tener en cuenta que con spectra activado, demos como la overscan no se ven bien
+
+-no funciona scroll de sprite chip. Dado que spectra actualiza la pantalla segun su memoria interna, que se replica en cada operacion de poke_byte.
+Pero el scroll del sprite chip no se realiza con poke_byte, sino con escritura directa a puntero de memoria
+
+------------------
+
+--- ZXPAND ---
+
+-en CMDR, al mover archivos, mete el current dir apuntando al directorio de la derecha. Por tanto esto falla. Se puede corregir yendo a la izquierda y volviendo a seleccionar el directorio actual (si es el directorio raiz, seleccionar ".."). Pero esto parece un fallo de CMDR y no del emulador
+-ordenacion de archivos en listado CAT
+
+-operaciones de archivos son case insensitive (da igual si esta en mayusculas o minusculas). Pero subcarpetas dentro del zxpand filesystem debe
+ser siempre en mayusculas. Carpetas siempre se muestran pero no se podran acceder las que no sean todo mayusculas
+
+
+-zxpand en zx80 se ven caracteres de config por ejemplo mal. pero la rom tambien muestra caracteres mal, dado que usa una overlay rom de zx81, no de zx80
+
+-lecturas que se producen al cargar CMDR pero despues de hacer fclose y sin hacer fopen. revisar:
+debido a funcion setjoy. los valores de joystick deben volver incorrectos y hacen que puerto BC (registro B) se corrompa
+(ver docs/zxpand_cmdr.txt)
+
+-sound tracker de andy rea se cuelga. porque?
+requiere ramtop en 24999 y CONFIG "M=H"
+
+
+------------------
+
+--- Genericos - fallos ---
+
+-breakpoint pc=0 no salta si debug->reset. Pero si que salta si se hace randomize usr 0
+
+
+
+-uso de cpu aumenta con el tiempo, dejando maquina spectrum 48k recien arrancada
+Al cabo de una hora pasa a consumir 60% cuando lo normal seria 17%
+**Haciendo reset no recupera. Cambiando de driver de video tampoco.
+**Parece que en Mac os X no sucede
+**pruebas: ao null vo null no sucede
+**ao null vo xwindows si que sucede. haciendo CTRL-Z y volviendo no se corrige
+**ao null vo xwindows sin pthreads tambien sucede.
+**parece que con SDL no sucede
+**con xwindows, al arrancar, sin rainbow, sin memptr, sin visualmem, sin cpustats, con contended memory, 48k, ao null, vo x11, zoom 1
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+ 5519 chernan+  20   0  208860   5692   3708 S  17,6  0,1   0:02.95 zesarux
+
+-cuando lleva un rato:
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+ 5519 chernan+  20   0  208860  46160   3708 S  65,7  0,6  26:10.33 zesarux
+
+-con disableshm:
+al arrancar:
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+ 6288 chernan+  20   0  208864   5564   3288 S  16,6  0,1   0:02.71 zesarux
+cuando lleva un rato:
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+ 6288 chernan+  20   0  208864   5568   3288 S  16,2  0,1   7:29.56 zesarux
+
+-Parece que es culpa de la shm!!
+-ni XSync ni XFlush poniendolos detiene el uso de cpu aumentativo... debe ser algo que falte de la SHM.. o algo que falte ejecutar...
+quiza solo falla en el portatil?
+-quiza hay que "FIXME: should wait for an ShmCompletion event here" tal y como dice en el codigo?
+
+
+-cintas de entrada (y de salida?) no realiza operacion fclose. Por tanto al abrir un archivo tap, tzx etc lo deja abierto. En
+sistemas Unix no pasa nada, pero en Windows significa que una cinta que se haya usado, se quedara abierta y si se quiere borrar dicho archivo
+tap, por ejemplo desde el windows explorer, dira que el archivo esta bloqueado, hasta que se cierre el emulador
+Hacer que las funciones eject (y de cambio de cinta) realizen fclose...
+
+
+-a veces al salir con CTRL-C no se cierra. la ventana se queda en negro
+Dice llamando a aofile_close y vofile_close pero nada mas
+Parece que se cuelga en el refresca pantalla inicial de fadeout, con menu abierto
+quiza es que pilla en medio de otra operacion de refresca_pantalla
+Falla con drivers: sdl
+
+
+en pruebas: -timer audio en raspberry, quiza pausa deberia ser menor en el caso de pthreads
+
+-simulacion de carga: en zx80 no se deben ver las franjas
+
+-con fbdev, full screen y zoom 1, en raspberry (con 16 pixeles de mas de margen) hace zoom escalado. sin fullscreen, no hace escalado. normal??
+
+
+
+
+--- Genericos - mejoras ---
+
+-remote command: Hexdump internal y de mapped memory debería ser misma función
+Luego flags para ver ascii o ver hexa o quitar espacios en hexa, etc 
+
+-remote command: poder hacer dump de codigo fuente de lineas concretas
+
+-funciones ram refresh se deberian implementar con nested core:
+void set_peek_byte_function_ram_refresh(void)
+{
+
+        debug_printf(VERBOSE_INFO,"Enabling RAM refresh on peek_byte");
+
+        peek_byte_no_ram_refresh=peek_byte;
+        peek_byte=peek_byte_spectrum_48k_refresh_memory;
+
+}
+
+void reset_peek_byte_function_ram_refresh(void)
+{
+        debug_printf(VERBOSE_INFO,"Setting normal peek_byte");
+        peek_byte=peek_byte_no_ram_refresh;
+}
+
+
+
+
+-SDL2 mejor usar scancodes en vez de keycodes, al menos para teclas extendidas
+
+-asumir opciones --enable-memptr --enable-visualmem --enable-cpustats por defecto activas
+Opciones en cambio para desactivarlas en script configure
+
+-en configure, al activar joystick, activa tambien pthread. porque???
+LDFLAGS="$LDFLAGS -lpthread"
+
+-Opción compilación para máquinas 'lentas':
+Activo para rpi1 pero no para 2
+
+-Comprobar si con rpi1, con el aumento de borde, sigue llenando la pantalla
+rpi2 no? quizá es porque no he usado parámetro fullscreen y por tanto no ha redimensionado ventana
+
+-Make utils al construir binario
+Incluir bmp a sprite y bmp a prism en utils
+
+-formato .zx:
+Agregar:
+-divmmc
+-zxmmc
+-zxpand
+
+Formato .zx en máquinas bigendian los enteros 16 bits se guardan big endian
+
+
+
+-Implementar flag Q? Ver docs/flagq.txt
+
+
+-Mas archivos auto config pues versión Windows no tiene ssl
+
+-en fbdev, con --no-use-ttyrawfbdev, enviar F6 y F7 en Z88 tal y como se hace en curses, por ejemplo (diamond, square).
+he intentado meterlo en :
+                                //Para Home
+                                                                                                                case 49:
+                                                                                                                        if (scrfbdev_kbhit() ) {
+                                                                                                                                unsigned char tecla4;
+                                                                                                                                tecla4=scrfbdev_getch();
+                                                                                                                                printf (" tecla4 %u \n",tecla4);
+
+                                                                                                                                switch (tecla4) {
+
+                                                                                                                                        case 126:
+                                                                                                                                                util_set_reset_key(UTIL_KEY_HOME,1);
+                                                                                                                                                break;
+
+                                                                                                                                        case 55:
+                        printf ("F6 ");
+                                                                                                                                                //F6 es Ctrl /diamond
+                                                                                                                                                util_set_reset_key(UTIL_KEY_CONTROL_L,1);
+                                                                                                                                                break
+
+pero parece que envia otra tecla diferente
+
+-Keyboard matrix error effect : Que al pulsar teclas QW y A, la S tambien queda pulsada
+Tener en cuenta que en Mac y la mayoria de teclados por ejemplo tiene problemas al pulsar mas de dos o tres teclas a la vez...
+
+-en raspberry, al salir de fbdev, dejar la resolucion tal y como estaba
+
+-Añadir a docs techs specs de zx81
+
+-features zx80, zx81, zx88 y spectrum por separado
+
+-teclado numerico para spectrum y otras maquinas. Para CPC si que esta.
+
+-acabar de probar putpixel cache con zoom 1, en raspberry, con o si putpixel cache. que es mas rapido?
+probar con over128
+
+-detectar para cualquier tipo de carga si va mas alla de la ramtop
+
+-footer para cacalib, aalib
+
+-al cambiar de cpc a z88 en aa, peta
+
+-cambiar en aa, caca de cpc464 a timex peta el emulador
+
+
+**para speech ,  rutinas deteccion de caracteres:
+
+crear tambien metodos de deteccion de tercer trap? Aunque esto quiza solo sirve para el hobbit...
+
+
+
+**
+
+
+
+-------------
+
+--- Mejoras especificas de ZX-Uno: ---
+
+-al escribir archivo default spi flash, al buscarlo por entre todas las rutas, si en una lo encuentra pero no se puede escribir,
+que no siga buscando y alerte del error de que esta pero no puede escribirlo, en vez de andar buscandolo por el resto de rutas
+
+-Quizá al hacer random RAM en zxuno habría que excluir los primeros 16 Kb de la ROM? Y/o poner a 0 esa ROM antes de cargar la boot rom?
+
+-Zxuno arranque recovery por cinta, que se pueda hacer trap de cinta?
+
+-Sincronizar registro JOYCONF con joystick emulado
+
+-Probar updates zxuno
+http://www.zxuno.com/forum/viewtopic.php?p=4296#p4296
+
+-Probar upgrade zxuno flash desde menu (aunque sea una version vieja!). Parece que falla porque usa comando 0x48 de mmc CMD8 preguntar a antonio villena
+
+-nmi-divmmc opción no soportada en zxuno??
+
+-registros para hacer scroll / desplazamiento de pantalla
+
+
+------
+
+
+--- Fallos especificos de ZX-Uno: ---
+Quizá demo raster zxuno falla porque la interrupción tarda demasiado...
+
+-Divide en zxuno no debería permitir. Porque sino intentaría tener el firmware que lleva zxuno de divmmc? Esto no es realmente un fallo
+
+
+-------------
+
+
+--- Fallos especificos de zx80/81: ---
+
+
+-nuevo core segun http://www.sinclairzxworld.com/viewtopic.php?f=7&t=1780&sid=4a25aa27ef1c6d926f2d9c78f92052c9
+nuevo_core_zx8081/core_zx8081.c
+Andy is right. Horizontal syncs in a ZX81 are generated at a constant 207-cycle interval (63.7 usec / scanline), and this only gets reset by an interrupt acknowledge (Z80 /IORQ and /M1 both active). Unlike vertical syncs which are software-generated (the same way as in a ZX80, in fact) and don't affect hsync generator in any way.
+The hsync counter is free running and reset all 207 cycles. It is additionally reset with a INT ACK. But if not INT ACK is present the hsync still appears every 207 clock cycles. This can not be turned off. This INT ACK reset is used for synchronization of display output only. The hsync pulse is delayed 16 clock cycles to the tv output and kept 16 clock cylces long as far as I know. It differs a bit to ZX80 logic.
+
+The NMI is touched with every hsync pulse (synchronous). You can switch off the NMI but not the hsync.
+
+The hsync counter is a hardware divider/counter. It works completely independently of the CPU. It is always on and always counting. As Pokemon and others have said, when it overflows, it automatically resets and restarts. It is also possible to reset and restart it as described above.
+
+-HighResolution.A.* no siempre van
+
+-ZXPaint solo carga como snapshot (no como cinta y load "")
+
+-real video off consume mas cpu que real video on. normal?
+
+-cargar .p snap grabado de zx81 como snap luego solo carga como snapshot pero no como cinta. tambien falla al cargar ese snapshot como cinta en eightone
+
+-LINECNTR adjust. con pruebas a forzar contador a 0 en out_port_zx80_no_time, se ven bien todos los juegos excepto:
+biplot, voyage: estos dos solo en el texto del menu
+HR-GALAX.P en instrucciones al pulsar una tecla
+HighRes.p despues de verse las caras en modo grafico y parar con break
+xtricator ok
+pacman bien tanto pantalla inicial como juego
+->Y falla modo FAST!
+
+-Para intentar eliminar modo LINECNTR, probar:
+-zx80
+-zx81 slow
+-zx81 fast
+-zx81 hires
+-manic miner por ejemplo pone modo fast pero el ajuste de linea es el mismo que modo slow
+-La clave estaria en distinguir modo fast de slow, a nivel de sync de pantalla
+-A nivel de registro I creo que no hay diferencia entre un juego que necesita dicho ajuste y otro que no
+-Tampoco parece haber diferencia entre nmi_generator_active a 1 o 0
+-Quiza el problema es cuando se ejecuta generar_zx8081_horiz_sync, y esto igual tiene que ver con problemas con t-estados de instrucciones
+
+
+
+--------------------
+
+
+
+--- Fallos especificos de Z88 ---
+
+-al copiar archivo ACKNOWLEDGEMENTS en eprom card luego no lo puede obtener desde el filer. Quiza el maximo de nombre hay que cortarlo?
+-con flash acabada de crear el filesystem, el browser del menu muestra el archivo inicial Deleted. Es normal, pero deberia mostrar ese archivo?
+-al meter modo turbo se desactiva si hay eprom insertada->porque acaba llamando a set_machine y ahi explusa cartuchos
+-agregar RAM de 1MB. soft reset genera "FS error" y no ve la tarjeta. hay que hacer hard reset para que la vea. con RAM menor de 1MB la reconoce a la primera. esto NO es un fallo del emulador sino el comportamiento normal de OZ ROM
+
+-en pipedream, si se mueve el cursor muy rapido a veces se queda que no contesta el ultimo cursor pulsado, y hay que pulsar otra tecla para liberarlo
+
+-jetset willy. hasta que no acaba la musica las teclas no responden, ni deja ir al index ni nada
+
+-bounder. cuando te matan, se bloquea, no deja ir al index ni nada
+
+-al notificar envio tecla (notificar_tecla_interrupcion_si_z88), solo deberia enviar interrupcion cuando se permite ((blink_int & BM_INTKEY) == BM_INTKEY).
+pero si se hace asi, lemmings no va, tampoco dstar, pipedream se bloquea...
+
+-al insertar eprom, por ejemplo, cuando abre flap, no parece que detenga el sistema... por ejemplo, si estoy con un juego con musica,
+e inserto una eprom, la musica no se corta en absoluto... creo que al abrir flap (y con la pausa que hay) se deberia detener todo un rato
+
+-forzado low battery y no aparece.
+
+-comprobar al cargar eproms o flash tamanyo maximo de archivo:
+flash entre 512 y 1024
+eprom 32,128,256
+hay por ahi alguna epr de 16 kb??
+
+
+-modo snooze: si habilito que se pueda activar, teclado responde de manera un tanto forzada y juegos se corta la musica hasta pulsar una tecla
+(por ejemplo, en manic miner)
+->desactivamos. ver variable int snooze_desactivado. cuando funcione quitar implementacion de esta variable
+
+-quitar slot eprom (y flush) cuando se cambia de maquina
+
+-pantalla de cpu panic ok en z88, no se ve bien, lo corta el footer por ejemplo
+
+
+
+
+--- Mejoras especificas de Z88 ---
+
+-tarjeta hibrida ram+flash:
+tarjeta que probaba Thierry:
+512K flash Eprom (AMIC 29040) and 512K SRAM. They are organized with ram on the bottom (bank 00-1F) and flash (bank 20-3F) on top.
+
+-en footer, que parpadeen (o texto inverso) cuando se escriba (y se lea?) de una tarjeta de memoria
+
+-revisar juegos de whatnow para agregar alguno mas...
+
+-gestion tamanyo rom interna. necesario? quiza no pues la propia rom ya identifica su propio tamanyo
+
+-implementar resto de puertos: rs-232, etc....
+
+- driver pantalla.
+*tecla diamond, square, F1, F2, F3 para stdout?
+
+-establecer reloj del Z88 con el del sistema. Llamando a rutina RST adecuada
+https://cambridgez88.jira.com/wiki/display/DN/Time+and+date+management
+o quiza enviando secuencia de teclas..-> indice->panel->tab hasta fecha, etc
+
+-envio de tecla /? desde menu en z88, entra en conflicto porque esa tecla es la -
+
+
+------
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
+
+
+
+
+Otros TODO menos prioritarios, de aqui hasta el final del archivo:
+
+
+*** Proceso compilacion ***
+-mostrar mensaje ok cuando acaba compilar
+
+*************
+
+
+
+*** Video ***
+
+-interlaced con frameskip impar no dibuja bien el menu (se ve entrelazado el menu)
+
+-sdl2 peta con easter-egg en linux
+
+- Vídeo que muestre text to speech con aventura conversacional
+
+-Al activar timing pentagon, no se ve bien audio waveform ni view sprites
+
+-Contador fps cuando speed es 200% debería mostrar 100 fps
+
+-Soportar azerty en Sdl, en Cocoa, fbdev
+
+-Clashbasher
+
+http://www.worldofspectrum.org/forums/discussion/44669/clashbasher-a-new-interface-to-reduce-colour-clash/p3
+
+-Mejorar frameskip con tiempo acumulativo
+
+
+-Drag -  Drop en X11. En SDL2 y Cocoa si que funciona
+
+-Splash en drivers caca?
+->ya lo muestra dado que el splash es texto!
+
+-Splash en drivers stdout? -> no tiene sentido
+
+-Pantalla completa con resolución menor de lo habitual en sdl peta con seg fault
+
+-kempston mouse o lightgun no se deberian leer cuando menu abierto:
+un poco mas dificil para mouse debido a que se basa en coordenadas. con menu abierto que retornamos? no puede retornarse 0xFF...
+para lightgun la mayoria de puertos son teclado o kempston, en que ya se controla menu abierto. en puerto DF seria la excepcion
+
+-Poder activar dos drivers de video a la vez, en especial un grafico (sdl, x11) y otro de texto (stdout o simpletext).
+
+-Posibilidad de tener dos drivers video a la vez, como xwindows y stdout, y que stdout muestre texto y lea de teclado
+
+-Para acelerar fbdev, al refrescar pantalla, no calcular cada vez el offset en pantalla multiplicando sino que ir incrementando
+
+-Poder guardar pantalla como formato pbm
+
+-Si modo interlaced activo, al redimensionar ventana con raton y hacerla zoom=1, se deberia desactivar opcion interlaced (y scanlines)
+
+-Quizá función putpixel z88 debería estar inicializada desde el principio con algo, por si acaso
+
+-cacalib, en X windows pero haciendo export DISPLAY=, colores normales tienen parpadeo
+
+-funcion screen_print_splash_text que se pueda mostrar texto con menu abierto. Ideal por ejemplo para open flap del z88
+
+-realvideo en spectrum para curses, stdout, simpletext
+
+-Posibilidad de desactivar puntero raton para el resto de drivers: curses, cocoa
+
+-Imagen estereoscopica. Tanto anaglifo (azul + rojo) como imagen separada en dos ventanas para dos ojos
+
+-tabla para acelerar colores rgb. tener 3 tablas separadas para todos los colores separados en componentes r,g y b
+
+-En video init debe establecer a 1 o 0 cualquier variable de parámetro de video, como tiene-colores
+
+-hilo interlaced http://foro.speccy.org/viewtopic.php?f=8&t=1508
+
+-ventana o zona aparte del texto de juegos conversacionales.
+ahora sale por consola del sistema operativo, quiza se podria tener una ventana aparte que guarde las X lineas ultimas
+
+
+-salida vofile que soporte zoom>1, para soportar scanlines
+
+-salida a html
+
+-salida a gif animado (con video out)
+
+-archivo de video de salida en formato alternativo a raw, alguno mas compatible: mpg, mov, ogg, mkv, etc
+
+-variables y estructuras comunes en xwindows y aalib, unificar. hay algunas hechas
+
+-Auto detección de real video en spectrum cuando se hacen muchos accesos a la pantalla y/o cambios de colores??
+->de momento cuando hay mucho cambio de border o lectura de puerto idle
+
+
+-fullscreen para otros drivers: caca, aa. Si pueden hacer full screen y sino aumentar la ventana al maximo. Tener en cuenta modos consola texto tambien
+
+-fullscreen en x11:
+* no centra la ventana
+
+- implementar para curses, stdout, simpletext, fbdev, simbolos especiales que necesitan extended mode:  { } [ ]  (funcion ascii_to_keyboard_port)
+
+-Cambiar resolución salida de video en raspbery al activar border, para simulación de carga
+
+-stdout como servidor web. quiza no hace falta, se puede hacer con pasarela telnet, netcat, etc...
+
+-Rutina común en screen.c de refresco, que usen el X11 y Fbdev. X11 solo tiene añadido el xflush al final
+
+-con zoom1 y fbdev quiza es mejor no usar putpixelcache??
+
+-drivers alternativos de video... por ejemplo uno xwindows pero con zoom reducido... que se vea la pantalla mas pequeña que en spectrum
+
+-Explicar cuando se usa escalado especial en fbdev
+
+-hacer zoom a traves de xwindows con extensiones de... xvideo? opengl? libxv-dev?. Esto serviria para todo excepto para modo scanlines
+
+-proponer formato .scr animado... un archivo con frames de 6912 bytes
+Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ para videos formato ulaplus radastan (rdm files)
+
+-cuando hay un error de debug_printf VERBOSE_ERR, que no solo aparezca el ultimo, sino tambien un historico de X mensajes
+
+-en drivers que muestran debug_printf en ventana, como aa, caca, curses, hacer que si hay mas de un mensaje, aparezcan con pausa entre ellos
+
+-Rst16 para stdout que permita número... Esto es para list de basic
+
+-una vez al pasar de stdout a sdl luego sdl no leia teclas
+
+*************
+
+
+
+*** Audio ***
+
+-con vo stdout y speech habilitado, parece que cambiar entre maquinas zx81 y spectrum, vuelve a decir texto de bienvenida. normal??
+
+-3 chips AY como el Next?
+
+-agregar otro detector silencio, en este caso para specdrum. tiene sentido? total no altera mucho la onda de salida cuando lo activo y no se envia sonido 
+
+-Futuro filtro conversor de real audio a Puerto fe, que sea capaz de saber cuando es 1 (onda arriba) y cuando 0 (onda abajo)
+
+-pulse audio sin pthreads se oye chasquido a cada envio. esto creo que es dificil de evitar
+
+-efecto reverberacion para sonido:
+*mezclar el sonido con el mismo sonido pero unas decimas de segundo anterior
+
+-aumentar frecuencia 15600 para mejor sonido
+
+-ay stereo
+
+-lectura de sonido desde line-in, para poder cargar directo desde casette
+
+
+*************
+
+
+
+*** Menu  ***
+
+-quiza juego que de nombre a la edicion del emulador incluir en opcion del menu
+
+-Poder buscar cadenas de texto en find byte. Al estilo de strings de linux, es decir, indicarle un minimo de caracteres juntos y saque todas las cadenas de texto
+opcion tambien para bajar bit 7 final
+
+-Agregar ensamblador
+-Agregar cambiar valor registros en menú debug 
+
+-Mostrar juego cargado en titulo ventana. Desaparece al hacer reset 
+
+-Mostrar ay piano pero para notas deducidas del beeper (wave form)
+
+
+-Visualmem. que muestre por separado escritura y lectura. Quizá no tiene sentido pues la ejecución de código genera lecturas por cada opcode leido
+
+-items recientemente abiertos en quickload . Y en otros menus de carga tambien?
+
+-poder definir shortcuts para teclas directas, por ejemplo, F8 para hacer reset, o F11 para hacer nmi, etc, poder redefinir las teclas que emulan el joystick, en especial la tecla de disparo (como por ejemplo ponerla a TAB)
+:
+Asignar teclas a eventos
+
+-Se intercepta en convert_numeros_letras_puerto_teclado y en util_set_reset_key
+-Se llama a función que altera valor tecla si conviene. También activa función si conviene, como salir del emulador por ejemplo. Definir funciones….
+
+Valor tecla puede ser:
+entre 0 y 255, letra ascii
+mas alla de 1000, tecla especial, como F1, ALT_L, etc. hay que redefinir valores de constantes UTIL_KEY_** para que empiecen a contar a partir de 1000
+
+las dos funciones deben tener como valor de entrada un int (ahora tienen z80_byte y enum)
+
+-poder asignar botones joystick a teclas como symbol o shift
+
+-poder hacer hotswap de una maquina a zx-uno
+
+-insistir en el tema de hotswap entre zx80-zx81
+
+-Menú gestionable por ratón. Botón izquierdo selecciona. Derecho ESC
+
+-joystick derecha para tab. solo en menu
+
+-En ver registros AY, mostrar teclado piano con dibujo mejorado, no letras
+
+-menu debug keys. que muestre en pantalla las teclas que se pulsan
+
+-watches necesita que show splash texts este activo. bug o feature?
+
+-menu_ventana_scanf deberia retornar un codigo de retorno en caso de pulsado ESC
+
+-en fileselector, aparte de abrir ultima ruta, ir al archivo ultimo seleccionado
+
+-Poder pasar a rwa desde opcion del menu en emulador
+
+-Buscar bytes (mas de uno)
+
+-visualmem podria tener en cuenta toda la ram de una maquina: 128kb en +2, Z88 etc.... aunque dificil para +2 y Z88.... y necesario?
+
+-lectura de nombre de archivo en fileselector para stdout no admite espacios
+
+-sin multitask, no va repeticion de teclas. esto es porque no se ejecuta timer_check_interrupt
+quiza estas funciones de contadores deberian venir con el thread del timer? aunque luego en version
+no-thread no funcionara tampoco
+
+-Mostrar consumo de cpu solo del proceso del emulador?
+
+-Desensamblador, que permita copiar código assembler a texto
+->desensamblador, pero de momento no puede copiar a texto
+
+- menus transparentes
+
+-acceso a cintas, snaps , etc de archive WOS. Hacer un browser sencillo html para poder navegar entre las cintas
+
+-Browser cintas que permita alterar la posición de la cinta
+
+-incluir pantallas de teclado spectrum, zx80,zx81, z88
+
+-quickload debe dejar bajar a subcarpetas pero no ir mas arriba de ruta inicial (--quickloadpath) ?
+
+-descomprimir rar,gz, etc con espacio en nombres a veces falla. el comando system le envia las "" pero el propio comando
+no gestiona bien nombres con espacios
+
+-comprobacion de si hay actualizacion
+
+-tecla ',' en zx80/81 no va en menu porque se interpreta como symbol+shift y es lo mismo que TAB para el menu
+
+-en menu debug, poder ver sprites del chip de sprites ZGX
+
+-debug exit and disable breakpoint
+
+-registros ' no se pueden usar como breakpoints o watches
+-Registro af como tal (no solo como a y f separados) usable en breakpoint y en watches
+-debug:
+Ejecutar hasta que se vuelve a la función que llama en debug....
+O bien poder saltar ejecución de call, metiendo breakpoint justo a después del call
+
+
+-en menu cambio z88 memory slots, que el apply changes salga justo en la ventana anterior, para poder cambiar varios slots a la vez y que se aplique solo una vez
+(como abrir tapa, insertar 2 slots, y cerrar tapa)
+
+
+*************
+
+
+
+*** Core CPU ***
+
+-funcion strcasestr da warning al compilar en linux
+
+-poder configurar lightgun por linea de comandos
+
+-Mostrar backtrace de stack. quiza solo en remote command protocol. Stack y su densemsamblaje de cada dirección. Hasta 5?
+
+-Pantalla de cpu panic, que colores aplique a toda pantalla y no solo 256x192. Util en otras maquinas, como ql, cpc, etc
+
+-Multiface 128 falla en algunos juegos, como abadia del crimen. En eightyone tambien falla en este caso
+
+-Borrar enterrom y exitrom como debug breakpoint, que ya no tienen sentido
+
+-Remote command protocol: poder hacer OCR de pantalla
+
+-Transaction log que también incluya byte anterior a operación de escritura 
+
+-Opción de transaction log adicional que permita ir hacia atrás en el tiempo:
+-apuntar en cada momento valores registros
+-si hay modificación de memoria, apuntarse valor anterior a la escritura 
+-que pasara con valores enviados a puertos. Esto es difícil de controlar
+-operaciones realizadas por el usuario, como un reset, quedan fuera del alcance
+
+-simulacion de carga spectrum hace un efecto raro en primera columna de pixeles. quiza se "contagia" el color del border?
+
+-Establecer turbo desde línea comandos  
+
+-Puerto debug ascii hace salto de línea con código 10 o 13
+
+-Puerto debug ascii agregarlo tambien para zx80 y zx81
+
+-Próxima canción AY en remote port protocol
+
+-remote command info: ultimo uso cpu, últimos fps, velocidad relativa cpu
+
+-Capturar senal sigbus. en que casos salta?
+
+-Enabling RAM refresh lo hace mediante cambio de funcion peek. Deberia hacerlo mediante funciones nested
+
+
+-top speed para Z88
+
+-top speed spectrum con threads es el doble mas rapido que sin threads
+
+-breakpoint en menu debug cpu/registers, que sea un breakpoint justo despues de la instruccion actual. Tiene sentido cuando estamos en un CALL
+
+-quiza tambien poder poner breakpoint y que vuelva a rutina que ha llamado (es decir, buscar en la pila la direccion de retorno y esperar a que vuelva ahi)
+
+
+-Nuevas variables para breakpoint:
+Modo de vídeo timex /Spectra/etc
+
+-watches que retorne valor de opcode. tiene sentido???
+
+-mejorar valor que se retorna cuando se lee bus idle port: ahora solo retorna 255 o color atributos, tambien deberia detectar valor pixeles
+
+-Al expulsar cinta real o insertar, meter speed a 100. Esto para cuando hay autoacelerar rutinas de carga
+
+-warnings con daa comparaciones >0?
+
+-instruccion o puerto para cargar stream de bytes externos
+
+-timer con SDL
+
+-temporizador con tarjeta de sonido?
+
+-optimizar velocidad de opcodes:
+*variables temporales tenerlas siempre definidas, no crearlas cada vez al entrar a una funcion
+
+probado - Variable traps que se activa por si hay load o save- hará que vaya más rápido
+
+-Lec-80 rom y Soporte 80 kb
+
+****************
+
+
+
+*** ULAPlus  ***
+
+-ULAplus mode 256x192 adicional (modo 11?), linear, igual que modo standard (256x192, flash, brillo, papel, tinta, 6144 longitud) pero lineal ?
+
+-ULAplus agregar modos adicionales parecidos a los del sam coupe
+
+-multicolor demo y otros modos ham (que usan interrupciones para cambiar paleta) no funcionan perfectos, seguramente a que:
+en multicolor demo cambia la paleta al finalizar un scanline. Cuando finaliza cada scanline, yo meto en rainbow buffer ese scanline, junto
+con el color de la paleta... pero esa paleta que yo leo es ya la siguiente paleta, de la siguiente linea, y no de la actual. Por eso
+hay un desfase de lineas de color en el border en la multicolor
+
+-Quizá mis modos lineales deberían usar vram en vez de direcciones lineales en prism?
+No:
+All modes except 9 uses RAM 5 or 7 depending on the bit 3 of port 7FFDh on Spectrum 128k models, or address 4000H on 48k/16k models.
+Mode 9 start always at address 4000H, even on 128k models
+
+Realmente lo que pasa es que estos modos usan más de 8kb y deberían saltar a la siguiente vram (0,1) cuando pasan del offset 8192. Esto para modos 3,5,7
+
+Lo que pasa es que cuando asigno memoria vram hago los 32 k de golpe, por eso cuando se pasa del offset 8192 de vram0 automáticamente se salta a vram1
+
+-ULAplus y timex 512x192. Solo va en modo real 512x192. No va color ulaplus en:
+*escalado a 256x192
+*maquina prism
+
+
+
+****************
+
+
+
+*** Tape ***
+
+
+-En real tape, iniciar carga a velocidad normal y poner carga acelerada en el momento que haya cargado la pantalla
+
+-TZX. Segun tags detectar:
+*si es juego 48 o 128
+
+-Con auto load off. Si estamos dentro de rutina de la ROM, esperando a un load, si metemos standard tape, hará fallback a real tape pues detecta que estamos dentro de una rutina de carga. Esto es normal
+
+-Que cuando haga fallback de standard a real tape, entre en real tape no toda la cinta sino desde donde se ha parado como standard (y ademas que no resetee la cpu ni escriba LOAD"") para asi poder continuar tal cual como real tape
+
+-standard tape sea capaz de leer cintas grabadas a mas baudios (2100 por ejemplo)
+
+-soporte de wav en entrada sin tener que usar sox
+
+-Carga interna de bloque en spectrum es capaz de interpretar rwa generado. Carga interna de zx81 no carga un rwa generado
+
+-Carga por line in
+
+-Smpatap y leezx81 que soporten también rwa 15600 hz. comparar valores constantes de esos smpatap.c y leezx81.c con los que lleva el emulador
+
+-tape_smp:
+*carga de smp en zx80 no va
+*carga de smp en zx81 no siempre va
+
+-realtape load:
+*carga de smp (convertidos desde rwa) no siempre cargan bien, ni carga binaria ni real tape
+
+-Paso de cinta audio a spectrum en memoria que avise por ventana de lo que ha convertido
+
+-Borrar archivo temporal al expulsar. Casos tmp smp y tmp wav
+
+-hacer traps de carga, save en instrucciones determinadas (quiza cuando hay un DI), no continuamente en el bucle principal
+
+-en simulacion de carga, con cintas tap, en pulseaudio, pausa entre cabecera y siguiente bloque es muy pequeño y casi no se oye los 17 bytes
+
+-hacer un SAVE desde zx81, pasarlo a wav, luego intentar cargarlo en emulador, como smp, y no es capaz de cargar mas alla de los bytes del nombre del programa
+->se debe poner t_states offset a 1 al grabar, seguramente porque despues de meter el nombre del programa en la grabacion, ejecuta algun opcode que no
+esta haciendo bien el timing
+->aun con la correccion de zesarux 1.4 y la eliminacion de t_states offset, esto sigue fallando, al cargar no lee mas alla del nombre del programa
+->para reproducir: en zesarux->audio out to wav. leer en audacity. cambiar frecuencia proyecto a 11111. exportar datos en crudo 11111hz, 8 bit, mono, unsigned
+
+-misma prueba de SAVE y load audio desde spectrum no funciona... parece que es porque el audio se graba la onda "en negativo" y la rutina de carga smp no reconoce ni un solo byte
+
+
+-cinta smp en zx80/81 que permita mas de un bloque dentro del archivo de sonido
+
+-Tzx de varias partes en zx81? De web de Kelly murta
+
+- Cabecera tzx que incluya versión emulador
+
+
+-tzx:
+*funciona way exploding fist, por ejemplo. lord of chaos tambien, este ademas tiene tags id 32
+*quiza en tap antes de leer longitud habria que llamar a una funcion de "inicio de carga",
+de tal manera que en tzx buscaria el siguiente id, y en tap no haria nada
+
+-rutinas de carga en general: quiza:
+* leer siempre cada bloque de bytes entero en un buffer
+* retornar a funcion que llama el numero de bytes leido, y teniendo en cuenta si es any flag loading
+* esto evitaria tener que ir haciendo seeks y similar y seria todo mas "limpio"
+
+
+***********
+
+
+
+*** Snapshots ***
+
+-RZX: mejorar. Falla carlos sainz. Pero por otra parte, abadia del crimen funciona en ZEsarUX y no en fuse
+Quiza los de speculator no van bien del todo?
+Los de SPIN parece que si que van. No siempre: abu simbel falla
+Quiza el fallo no es al leer el RZX sino en la emulacion del spectrum... quiza hay algun momento en que se genera una interrupcion de mas? o de menos?
+algo que descuadra la lectura de puertos (alguna de mas o de menos) y ya por eso deja de funcionar bien la secuencia de INs del archivo RZX
+
+->quiza hacer que al cargar un snapshot .zx salta texto indicativo del snapshot: fecha, etc
+-probado en second overlay, que ya no existe. no queda muy bien
+-quiza probarlo en footer? Pero y si se mete en footer, si hay algun .config o autodeteccion ssl, sobreescribira la info que hayamos metido antes de fecha? quien tiene preferencia?
+
+-soporte de carga szx? Y quizá grabación también? Problema con compresion de datos, hay que usar libreria externa
+
+-comentar que formato esta pensado para little endian. Valores de 16/24/32 bits como se guardan? Tal cual? O los fuerzo a grabar de 8 en 8 bits y por tanto siempre little endian?
+
+-Incorporar bittransfe como manera de generar snapshot en .tap. Agregar parámetro de estado interrupciones, registro i. Otros registros que falten? R?
+
+-Si en 48k modo del 128 acaba grabando snap .zx de 48... Quizá no hacerlo así
+
+ok-formato .sna
+-48k ok
+-128k . parece que snapshots grabados con fuse luego no van bien, ni desde el mismo fuse - probar abadia del crimen por ejemplo
+
+-automatic snapshot en memoria... o que de alguna manera se pueda recuperar el estado de la maquina en los X segundos anteriores.
+Que habilitando una opcion, cada 1 segundo por ejemplo se genere un snapshot, y guardar los X ultimos
+
+-snapshot de grabacion rapida. con una sola accion, graba un snapshot del juego xxxx.
+
+-incluir en snapshot nombre de ultimo juego cargado, para saber de que snapshot se trata?
+->rutinas ssl deben establecer nombre para juegos conocidos. quiza tambien una informacion del juego, teclas, descripcion del juego, etc?
+
+
+
+-agregar a formato .zx algunos parametros/flags extra, para version nueva del formato:
+*t_stados... viene del viejo formato SP?
+
+
+*asignacion de eventos a botones de realjoystick ->no, porque depende del tipo de joystick
+*asignacion de teclas a botones de realjoystick ->en teoria no, porque tambien depende del tipo de joystick,
+pero se podria intentar hacer que se guardase de alguna manera... como intentando asociar, por ejemplo,
+"boton arriba" -> tecla "w"
+...
+pero con esto solo podriamos tener facilmente las teclas de direcciones (son los ejes normales) (-0/+0 izq-der, -1/+1 arr-aba),
+pero no otras teclas alternativas: enter, espacio, etc
+
+
+*campo comentarios?
+*mas...?
+
+
+************
+
+
+
+*** Z88 ***
+
+-Z88. Dejar algún programa de ejemplo con formato .bas y binario. Quizá el whatnow esta así?
+
+-Z88 ventana principal tamaño normal de z88, eliminar zona gris. ventana aparte para menu (quiza esto para todos los modelos??... aunque
+me gusta tener el menu encima de misma ventana del emulador, quiza podria ser una opcion seleccionable)
+-Z88 teclado virtual para Z88 y/o resto de modelos
+
+-Z88. Probar a compilar programas con z88dk
+
+-Z88. Poder cambiar reloj del Z88 con el reloj real
+
+
+***********
+
+
+** Algunos fallos que se han visto una sola vez, o no consigo reproducir, o no recuerdo que son...
+
+-cuando hay error en custom config no lo muestra hasta que no se abre el menu: ??
+
+-Porque al mapear teclas de zx81 a joystick el menú sigue funcionando bien moviéndose con joystick? No debería pulsarse en el menú las letras correspondientes a cada menu?
+Seguramente porque al leer teclas de menu, hay prioridad de lectura de eventos cursor
+Si mapeamos un botón a una letra (botón que no este usado ya en eventos) en menu se puede escribir esa letra
+Si es botón está también mapeado a un evento, entonces esa letra no se ve
+
+
+
+***********
+
+
+
+*************************
+
+
+
+
+
+
+
+*** Otros ***
+
+-Meter roms alternativas para divide
+
+-hotswap de 48k a 48k spanish
+
+-update roms +3e. Falla también por usar cmd8. como generamos el error de illegal command???
+
+-Floppy +3. Quiza para poderlo hacer hay que tener un sistema de gestion de eventos, en que se puedan programar eventos futuros, como cuando el floppy llega a la pista que se le ha pedido con operacion de seek
+
+-Spectra: dos ventanas, una muestra pantalla principal (salida normal de spectrum) y la otra muestra la pantalla que genera la salida del spectra
+quizá modo dual de spectra se puede hacer en misma ventana pero haciéndola el doble de ancho para que se vean las dos pantallas
+
+* Nuevos componentes o hardware *
+
+-ZX Evo / ZX Evolution / Pentevo
+
+-Spectranet
+
+-datagear support. dma
+http://velesoft.speccy.cz/data-gear.htm
+ver carpeta docs
+
+-currah microspeech
+
+
+-Scorpion emulation
+
+-TRS-80 emulation
+
+-Simular fallo de memoria (golpe) en zx81 ("wobble")
+
+**
+
+
+
+
+
+* sslfunctions *
+
+-asignacion de botones a eventos en sslfunctions solo hacerlo para el tipo de joystick conocido.
+la asignacion de direcciones, como los ejes 0 y 1 funcionan siempre para cualquier joystick, SI que se pueden hacer siempre,
+pero evitar cualquier otro boton diferente de los ejes
+
+
+
+
+**
+
+
+
+
+* TK *
+
+-puertos en tk9xxx:
+-timing lineas. http://cantinhotk90x.blogspot.com.es/2012/05/temporizacao-de-video-do-tk90x-parte-5.html. hacer borde izquierdo y derecho igual
+(18 t-stados)
+-al arranque de maquina:  Out Port df unknown written with value 0, PC after=16
+-al ejecutar cualquier comando: In Port 38bf unknown asked, PC after=4ba-> quiza un puerto COM1 ruso
+Segun MESS:
+15. The TK90X and TK95 roms output 0 to port #df on start up. The purpose of this port is unknown
+	(probably display mode as TS2068) and thus is not emulated.
+
+-modelos tk. contended memory?
+
+-demo rotatrix tk90x se ve border desplazado. seguramente timings son diferentes
+
+-Puerto joystick tk en puerto no estándar?
+
+**
+
+-soporte joystick para mac os x
+
+-Emular chips de memoria con fallos
+
+
+-agregar mas registros a breakpoint condicional: R, ....
+http://www.worldofspectrum.org/forums/showthread.php?t=49966
+cursores para poder subir/bajar instruccion mostrada en vista inicial debug
+* Breakpoint on NMI/INT
+
+
+-Mejorar emulación teclado issue 2,3. Etc. Inves
+
+-Implementar rtc para divmmc
+
+-Probar dispositivo depuración puerto ffh mad mix game
+
+-Emular mejor issue 2 y 3 y bit tape cuando cinta cargando o no cargando
+
+-probar demos de http://zxdemo.org/
+
+-Método para crear hardware nuevo definible por el usuario
+
+-Pasar cintas David a mac
+
+-incluir foto cinta beep inves
+
+-Incluir foto de cinta orquesta zx81
+
+-input spool file: hacerlo mas fiable para entrada de teclado desde basic. hay el problema de la gestion de repeticion, pausa entre teclas, etc
+es facil en cambio enviar teclas a la funcion INKEY$ (0x2634) pero no a la introduccion de texto desde basic (0x028e - key-scan). A key-scan
+al final se reduce a enviar la tecla cada 20 ms por ejemplo, por tanto, es practicamente lo mismo que se hace ahora (mediante timer)
+
+-spool: Sustituir tokens en input spool como opción seleccionable
+-spool: Cambio variables sistema repetición al insertar y quitar cuando acabe
+-spool: Ver si se puede hacer turbo en Ace, z88, zx80 y zx81
+-spool: poder enviar sentencia especial, tipo \s para enviar shift, o \y para enviar symbol, etc
+
+- Rasp en carcasa de spectrum
+
+- Resto parámetros en Quickload también para spectrum: real video off, etc ???
+
+- lightgun. magnum light phaser no va bien
+-magnum, con sinclair pack 2 (el primero) hay que dejar pulsado boton para que funcione
+->en rookie, no va si seleccionamos realvideo
+duracion del pulso de deteccion del electron?
+
+
+-Línea de comandos, parámetros que son de activar/desactivar, soportar:
+--enable-parametro y
+--disable-parametro
+E indicar valor por defecto
+
+-Reset parámetros por defecto en quickload también para spectrum
+
+ok- realtime, pero parece que a veces cuelga el pc
+
+-Juegos fallan
+-powerup. al cargar. hay que reinsertar cinta, y hay que cargarlo en modo usr0 . no me preocupa mucho porque es una demo de pentagon...
+comparacion con zxspectr
+powerup: ok
+
+
+-en sped52, si se hace poke
+49912,0
+49913,0
+se desactivan los caracteres "bold" y se generan caracteres normales que curses puede interpretar
+
+
+-para probar envolventes:
+cancione.tap, bubble.tap, binarylove, envelopes.tap
+
+-memoedit codigo fuente formato GEN... convertir. hay que truncar muchas lineas largas  de DEFB
+
+-Numero versión build en las snapshots, que sea numero que se incremente a cada commit...
+
+-snow effect se deberia parecer a:
+https://www.youtube.com/watch?v=Ix9Wy2jhDwI
+
+Ahora mismo se parece a eso pero con el threshold por defecto, no se parece a como se deberia ver en robocop3 por ejemplo,
+hay que subirle el threshold
+Robocop3 en real:
+https://www.youtube.com/watch?v=ouWwhyutkiI
+
+-Continuar programa cac10
+
+
+------------
+
+
+Otras máquinas:
+
+https://en.wikipedia.org/wiki/Enterprise_(computer)
+
+http://gafz.enterpriseforever.com/Dokumentacio/Konyvek/EXOS_2.1_technikal_information/index.html
+
+Muchos modos de video diferentes. En un mismo frame se permiten varios modos
+
+
+Colecovision
+-chip de sprites
+-muchos juegos
+
+https://en.m.wikipedia.org/wiki/Exidy_Sorcerer
+
+
+https://en.m.wikipedia.org/wiki/Grundy_NewBrain
+
+https://en.m.wikipedia.org/wiki/ABC_80
+
+https://en.m.wikipedia.org/wiki/Memotech_MTX
+
+
+https://en.m.wikipedia.org/wiki/TRS-80
+Mucha información. Video sencillo
+
+
+Alguna calculadora de texas instruments
+
+
+https://en.m.wikipedia.org/wiki/Philips_P2000
+
+
+Master system
+
+Msx
+http://map.grauw.nl/resources/system/msxtech.pdf
+
+
+
+https://en.m.wikipedia.org/wiki/ATM_(computer)
+
+
+http://nedopc.com/zxevo/zxevo_eng.php
+http://svn.zxevo.ru/listing.php?repname=pentevo&

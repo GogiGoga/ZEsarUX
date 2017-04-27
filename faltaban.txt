@@ -1,0 +1,26 @@
+ delete mode 100644 PrismBootRom.asm
+ delete mode 100644 PrismChime.bin
+ delete mode 100644 benchmark_linux.txt
+ delete mode 100644 benchmark_mac.txt
+ delete mode 100644 benchmark_raspberry.txt
+ delete mode 100755 bin_sprite_to_c.sh
+ create mode 100644 compileoptions.h
+ delete mode 100644 current_checklist.txt
+ create mode 100644 docs/.DS_Store
+ create mode 100644 docs/chloe/.DS_Store
+ create mode 100644 macos/.DS_Store
+ delete mode 100644 nuevo_core_zx8081/core_zx8081.c
+ delete mode 100644 nuevo_core_zx8081/operaciones.c
+ delete mode 100644 nuevo_core_zx8081/zx8081.c
+ delete mode 100644 nuevo_core_zx8081/zx8081.h
+ delete mode 100644 patches/morphos_ZEsarUX-4.2/README
+ delete mode 100644 patches/morphos_ZEsarUX-4.2/patch.txt
+ delete mode 100644 prism_change_boot.txt
+ delete mode 100644 pruebas_screen_rgb32/leeme.txt
+ delete mode 100644 pruebas_screen_rgb32/screen.c
+ delete mode 100644 pruebas_screen_rgb32/screen.h
+ delete mode 100644 pruebas_sdl2/a.c
+ delete mode 100644 pruebas_z88_core_topspeed/core_z88.c
+ delete mode 100644 zesarux.mp3
+ delete mode 100644 zesarux.xcf
+

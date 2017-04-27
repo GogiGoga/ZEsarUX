@@ -1,0 +1,55 @@
+I want to thank the help and the collaboration of the following people:
+     
+-To my parents and brothers. I remember very fondly the advices of my father to my first programs. Rest in peace
+-Ivan Daunis Llobet, for the PCGPE and the INTERVUE
+-Ruben Parra Martinez, for the Spectrum +2A
+-To my friends at Mexico
+-To Auro and Gui, for their patience and suggestions
+-To Amstrad, for permitting to use the ROMS to someone who makes an emulator
+-Samir Ribic, for helping me with the uploading of my first emulator (ZXSpectr), and for all the information included in his Warajevo emulator.
+-Martijn van der Heide, for uploading my ZXSpectr on http://worldofspectrum.org/
+-Phillip Kendall, for telling me a bug with the BIT instruction. I also use some code from his Fuse emulator (opcode timings & disassemble function)
+-Pedro Gimeno, for the timings of some instructions.
+-Rodolfo Edison Guerra, for including ZXSpectr in his SpecBase and for all the information about TK90X and TK95
+-Paul Farrow, for the information and games for the ZX80 and ZX81 and Spectra Video modes. See http://www.fruitcake.plus.com/
+-Martin Korth, for the information about video signals on the ZX80 & ZX81. See http://nocash.emubase.de/zxdocs.htm
+-Kelly Murta, for granting permission to include programs of his website. See http://zx81.eu5.org/toddysofte.html
+-Joan Sales Roig, for granting permission to include ZX81 Orquesta
+-Alfonso Saavedra "Son Link", for testing and suggestions to my emulator
+-Dave Hughes, for granting permission to include El Stompo, Sun Bucket and others
+-Einar Saukas, for granting permission to include KnightsDemonsDX, NirvanaEngine, BifrostEngine and others
+-Miguel Angel Rodriguez Jodar, for lots of information about Inves Spectrum+
+-Marcos Cruz (programandala.net), for the Spool File idea, lots of suggestions and bug reporting
+-Stefano Bodrato, for granting permission to include Wall game for ZX81
+-Kit O'Saoraidhe, for granting permission to include some of his ZX80 programs found at http://zx80programs.yolasite.com/
+-Bob Smith, for granting permission to include his Rebound game for ZX81
+-Gunther Strube and Thierry Peycru for all the information on the Z88 Wiki https://cambridgez88.jira.com/wiki/display/welcome/Cambridge+Z88 and lots of suggestions and help
+-The Mojon Twins, for every new game they release and for permission to include game Sgt. Helmet Zero (features ULA Plus)
+-Jim Bagley, for granting permission to include jbracing
+-Aleksey Rusakov, for granting permission to include some Gigascreen art made by him
+-Sergey Sharov, for granting permission to include some Gigascreen art made by him
+-Alexander Filyanov, for granting permission to include some Gigascreen art made by him
+-Alexander Solodkov, for granting permission to include some Gigascreen art made by him
+-Andrew Owen, for granting permission to include some ULAPlus art (.bmc4 files) made by him, for information about his Chloe machine and much more
+-To Jordi Bayo Montiel, Antonio Villena, Quest, and Miguel Angel Rodriguez Jodar from the ZX-Uno team for all the information with their beautiful machine and testing Windows version.
+-Fernando Gregoire from CAAD forums, helping me improving accessibility support on the emulator
+-Sukil Etxenike, helping me improving accessibility support on the emulator, beta testing and fixing text mistakes
+-Charlie Robson, for helping me with ZXPand emulation
+-Andy Rea, for granting permission to include his STC player for zxpand
+-Henri, for the AZERTY support patch
+-Jeff Braine, for information about his Prism machine
+-Juan Carlos Gonzalez Amestoy, for help with Spectrum timings, OpenGL drawing on Mac and much more
+-Simon Owen, for the information about Atom Lite on Sam Coupe
+-Victor Trucco and Fabio Belavenuto for information about their TBBlue machine
+-Daniel Leon for information about his ZX Dandanator! Mini interface and bug reporting
+-Alejandro Valero for information about his Superupgrade interface and 8-bit simple ide interface
+-Miguel Angel Gomez (haplo) for lots of bug reporting
+-Karl Stenerud, for granting permission to include his Musashi Motorola 680x0 emulator https://github.com/kstenerud/Musashi. Protected by MIT license
+-Javier R. Santurde (tolkien), for the MorhOS patch
+-Rich Mellor, helping me with QL emulation
+
+-Everyone at Speccy, ZX80, ZX81, Z88 and Raspberry Pi forums with all the suggestions to my emulator
+-Everyone who test the beta and stable versions of the emulator and report bugs
+-Anyone who makes demos for the Spectrum; they are a good field of testing for my emulator.
+
+And mainly to this big genius, Clive Sinclair.

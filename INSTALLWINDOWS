@@ -1,0 +1,114 @@
+ZEsarUX supports both native Windows execution (using mingw) or Cygwin.
+Mingw is a minimal GNU environment system for Windows, and Cygwin is a more complete GNU system, including X-Windows.
+I recommend you to use mingw. I will describe both:
+
+
+
+-- Native Windows (with mingw)
+
+If you have downloaded the Windows binary version, you don't need to install ZEsarUX. It can be run with the executable file:
+
+zesarux.exe
+
+
+If you are using the source code and want to compile it:
+
+-First install mingw:
+
+On mingw installation program, go to Basic Setup and select:
+mingw-developer-toolkit
+mingw32-base
+mingw32-gcc-g++
+msys-base
+mingw-pthreads (all packages that apply)
+msys-bash
+
+-Download SDL 1.2 library, from https://www.libsdl.org/download-1.2.php,
+and get SDL-devel-1.2.15-mingw32.tar.gz (Mingw32). 
+Yoy may also try SDL2
+
+Unzip and copy all contents to c:\mingw\sdl\
+(or c:\mingw\sdl2\)
+
+So on c:\mingw\sdl\lib you have some libSDL.dll* files, and
+on c:\mingw\sdl\include\ you have subfolder SDL and inside some .h files
+
+Run Windows Command Prompt (cmd.exe):
+
+#set PATH to the gcc and make mingw binaries:
+set PATH=%PATH%;c:\mingw\bin;c:\mingw\msys\1.0\bin
+
+#go to the ZEsarUX downloaded source code
+cd <where it is located>
+
+
+run bash
+
+./configure --enable-memptr --enable-visualmem --enable-cpustats
+
+Or using sdl2:
+
+./configure --enable-memptr --enable-visualmem --enable-cpustats --enable-sdl2
+
+
+make
+
+
+
+#copy SDL.dll to the current directory
+copy c:\mingw\sdl\bin\SDL.dll .
+or for sdl2:
+copy c:\mingw\sdl2\bin\SDL2.dll .
+
+
+#And run ZEsarUX
+
+zesarux.exe
+
+
+It doesn't need to be installed anywhere, it can be run from here, or move the whole directory to wherever you want
+
+-----------------------------------------------
+
+-- Cygwin
+
+Cygwin version must be configured by yourself, as you have to install cygwin and use an xterminal:
+Install cygwin with developer tools
+Open All programs/Cygwin X/X Win Server. This will launch the X server with an xterminal
+cd /cygdrive/c/... where the ZEsarUX source code is located
+./configure 
+make
+
+You will have a compiled zesarux.exe
+
+Now you can run it inside this xterminal with:
+
+./zesarux.exe
+
+Note: it seems the xwindows driver does not work with cygwin. Instead you can use the sdl driver:
+
+./zesarux.exe --vo sdl
+
+
+Every time you want to launch the emulator you must launch the X server and run the emulator inside the xterminal
+
+If you run the emulator inside a "Cygwin Terminal", you must remember to have the X server running and export DISPLAY inside the terminal:
+
+export DISPLAY=:0.0
+
+
+
+About audio support... in my pc the sdl audio driver does not work, but the dsp driver does, so, run it with:
+
+./zesarux.exe --vo sdl --ao dsp
+
+
+* Running on a normal windows command line console (cmd.exe):
+
+Note: I do not know how to run the emulator with xwindows or sdl driver inside a normal windows command line console (cmd.exe).
+It needs a lot of cyg*.dll in the same path of the emulator (that you can copy from c:\cygwin\bin) but it does not find the Xserver.
+But you can run the emulator with another video driver, like stdout:
+
+zesarux.exe --vo stdout
+
+------------------------

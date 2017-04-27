@@ -1,0 +1,126 @@
+-Runs on any Unix system and Windows: tested on Linux x86, Linux x86_64, Linux Raspbian, Mac OS X, Windows native, Windows + Cygwin
+
+-Emulates:
+* Sinclair ZX80
+* Sinclair ZX81
+* Spectrum models: 16k, 48k (English and Spanish), Inves Spectrum +, Spectrum 128k (English and Spanish), Spectrum +2 (English, Spanish and French), Spectrum +2A (English and Spanish), Microdigital TK90X (Portuguese and Spanish), TK95 
+* Sinclair QL
+* Cambridge Z88
+* Timex TS 2068 
+* Sam Coupe
+* Pentagon 128
+* Chloe 140 SE, 280 SE
+* ZX-Uno
+* Prism
+* TBBlue/ZX Spectrum Next
+* Jupiter Ace
+* Amstrad CPC 464
+
+-Is the only emulator for machines: ZX-Uno, Chloe 140/280, Prism and TBBlue
+
+-Almost perfect emulation of timing of all machine models
+
+-Supports undocumented Z80 flags, features, and MEMPTR register
+
+-Supports idle bus port, contended memory, ULA early/late timings
+
+-Supports Pentagon timing
+
+-Supports ULAplus: Standard 64 colour palette, linear modes with 16 colours per pixel: Radastan Mode: 128x96, ZEsarUX modes: 256x96, 128x192, 256x192
+
+-Supports Chroma81 ZX81 Colour mode
+
+-Supports Spectra Video Modes
+
+-Supports Timex Video modes (Mode 0 standard, 1 dual screen, 2 hires colour 8x1, 6 512x192 monochrome)
+
+-Supports All Video modes from Prism machine
+
+-Supports ZGX Sprite Chip
+
+-Supports snow effect on Spectrum models
+
+-Supports interlaced, scanlines and Gigascreen effects
+
+-Supports hi-res modes on ZX Spectrum (rainbow effects and others) and ZX80/ZX81 (UDG, CHR$128, WRX, HRG and some other hi-res modes)
+
+-Emulates all the oddities of the Inves Spectrum +: 64 KB RAM, RAM initialization with FF00H pattern, OUT ula AND RAM, EAR and MIC XOR, no contended memory, snow in border, colour ula delay, interrupt starts at end of top border (not at the beginning of the border), corrupt memory on every interrupt, no idle bus
+
+-Uses Video drivers: X-Windows, SDL, Cocoa (Mac OS X), Framebuffer, ncurses, aalib, cacalib, stdout(console), simpletext(console)
+
+-Uses Audio Drivers: PulseAudio, Alsa, SDL, DSP(OSS), CoreAudio (Mac OS X). 
+
+-Supports dumping audio & video to file
+
+-Supports real tape loading of file formats: RWA, SMP, WAV, TZX, CDT, TAP, P, O. It handles loading of turbo load tapes or any type of tape loading for standard/non standard loading routines
+
+-Handles binary tape format files (TAP, TZX, O, P, CDT) on standard BASIC ROM routines for ZX Spectrum, ZX80, ZX81, Jupiter Ace
+
+-Handles real audio loading (RWA, SMP, WAV) on standard BASIC ROM routines for ZX Spectrum, ZX80, ZX81, Amstrad CPC, Jupiter Ace
+
+-Simulates real tape loading on standard BASIC ROM routines for ZX Spectrum, ZX80, ZX81
+
+-Handles snapshot format: ZX, Z80, SP, SNA (loading only), P, O, Z81 (loading only), ACE
+
+-Handles RZX playback 
+
+-Handles DCK Timex dock cartridges
+
+-Emulates Multiface One, 128 and Three
+
+-Emulates ZX Spectrum MMC Interfaces: ZXMMC, DivMMC
+
+-Emulates ZX Spectrum IDE Interface: DivIDE, 8-bit simple 
+
+-Emulates Sam Coupe IDE Interface: Atom Lite
+
+-Emulates ZXPand MMC Interface on ZX80 and ZX81
+
+-Emulates ZX Dandanator! Mini
+
+-Emulates Speccy Superupgrade
+
+-Handles RAM, EPROM, Intel Flash and Hybrid (RAM+EPROM) cards on Z88
+
+-Handles compressed formats zip, tar, rar, gz through external utilities
+
+-Supports AY Chip, Turbosound, Specdrum
+
+-Supports Quicksilva, ZON-X81, and VSYNC-based sound on ZX80/81
+
+-Supports Speaker and Soundbox sound on Jupiter Ace
+
+-Supports RAM packs on ZX80/81 up to 56 KB
+
+-Supports RAM packs on Jupiter Ace up to 35 KB
+
+-Joystick emulation with real joystick (on Linux) and keyboard cursors: Kempston, Sinclair 1&2, Cursor Joystick, Cursor & Shift, OPQA, Fuller, Zebra, Mikro-Gen, ZXPand. Autofire function also
+
+-On Screen keyboard useful when playing with joystick
+
+-Supports native turbo modes on ZX-Uno, Chloe, Prism and TBBlue and manual for other machines
+
+-ZX Printer emulation
+
+-Lightgun emulation: Almost perfect emulation of Gunstick from MHT Ingenieros S.L and experimental emulation of Magnum Light Phaser
+
+-Kempston mouse emulation
+
+-Supports Input spool text file to simulate keyboard press
+
+-Supports reading Pokes from .POK files
+
+-Supports playing .AY sound files
+
+-Supports remote command protocol. You can do enhanced debugging on ZEsarUX by using a telnet client.
+
+-Powerful debug features: Registers, Dissassemble, Conditional Breakpoints using text expressions, Watches, Step-to-step, Load source code, Hexadecimal Dump, View Sprites, Find byte (useful to find POKEs), CPU Transaction log, View BASIC
+
+-Accessibility support: Print char traps allows to capture generated text from almost any program or game, using standard ROM calls (RST 10H) or even non standard print character rutines. Can send generated text from a game to a text-to-speech program. It's ready for text to speech support for blind or visually impaired people. Menu emulator can be also read by a text-to-speech program.
+
+-Simulates upper RAM memory refresh on Spectrum 48Kb, losing its contents when changing R register very quickly
+
+-Supports command line settings, configuration file settings and per-game configuration settings
+
+-Other features: Visualmem menu, CPU Statistics
+

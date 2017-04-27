@@ -1,0 +1,656 @@
+/*
+    ZEsarUX  ZX Second-Emulator And Released for UniX
+    Copyright (C) 2013 Cesar Hernandez Bano
+
+    This file is part of ZEsarUX.
+
+    ZEsarUX is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
+#ifndef MINGW
+	#include <unistd.h>
+#endif
+
+
+
+#include "cpu.h"
+#include "audio.h"
+#include "debug.h"
+#include "menu.h"
+#include "tape.h"
+#include "screen.h"
+#include "compileoptions.h"
+#include "zx8081.h"
+#include "joystick.h"
+#include "utils.h"
+#include "printers.h"
+#include "z88.h"
+#include "zxuno.h"
+#include "textspeech.h"
+#include "mmc.h"
+#include "ide.h"
+#include "zxpand.h"
+#include "superupgrade.h"
+#include "snap.h"
+#include "snap_rzx.h"
+#include "ql.h"
+
+#include "autoselectoptions.h"
+
+
+#if defined(__APPLE__)
+	//En Mac OS X el timer en pthreads no funciona bien... lo desactivamos
+	#undef USE_PTHREADS
+#endif
+
+#ifdef USE_PTHREADS
+#include <pthread.h>
+
+pthread_t thread_timer;
+
+
+#endif
+
+
+int timer_pthread_generada=0;
+
+//tiempo en microsegundos que dura cada interrupcion de timer
+int timer_sleep_machine=20000;
+
+//valor original antes de aplicar cpu speed
+int original_timer_sleep_machine=20000;
+
+
+//Va desde 0 a 1000. Si llega a 1000 se pone a 0. Se incrementa en 20 cada 20 ms
+int contador_segundo=0;
+
+//Va desde 0 a 20000. Cuando llega a 20000 se pone a 0. Indica cuando se ha pasado 20 ms
+int contador_20ms=0;
+
+
+
+int conta_envio_audio=0;
+
+
+//Contador que se decrementa(si esta activo) cada 1/50 s, e indica cuando se debe liberar una tecla pulsada desde el menu de On Screen Keyboard
+int timer_on_screen_key=0;
+
+
+//lo que dura un frame en microsegundos  (20 ms = 200000 milisec)
+//#define FRAME_MICROSECONDS (1000000/50)
+
+void timer_sleep(int milisec)
+{
+        usleep(milisec*1000);
+}
+
+void timer_usleep(int usec)
+{
+	usleep (usec);
+}
+
+
+void *thread_timer_function(void *nada)
+{
+	while (1) {
+		timer_usleep(timer_sleep_machine);
+
+		//printf ("tick timer\n");
+		timer_pthread_generada=1;
+	}
+
+	//para que no se queje el compilador de variable no usada
+	nada=0;
+	nada++;
+
+
+	return NULL;
+}
+
+
+void start_timer_thread(void)
+{
+#ifdef USE_PTHREADS
+
+	debug_printf(VERBOSE_INFO,"Creating timer thread");
+
+
+	                if (pthread_create( &thread_timer, NULL, &thread_timer_function, NULL) ) {
+                        cpu_panic("Can not create timer pthread");
+                }
+
+#endif
+}
+
+//Pruebas top speed
+z80_bit top_speed_timer={0};
+int top_speed_real_frames=0;
+
+z80_bit interrupcion_fifty_generada={0};
+
+int timer_condicion_top_speed(void)
+{
+        if (menu_abierto==1) return 0;
+        if (top_speed_timer.v) return 1;
+        return 0;
+}
+
+
+void timer_pause_waiting_end_frame(void)
+{
+
+	//printf ("esperando final frame\n");
+
+	//lo ideal seria hacer un "halt" de la cpu, para esperar a la siguiente interrupcion, pero
+	//ahora mismo las interrupciones se generan mediante un "timer" del spectrum, por tanto,
+	//no hay interrupcion posible
+
+	//hacemos una pequenya pausa para liberar la cpu un poco
+
+	//manera normal de hacer siempre sleep
+	//pese a las pruebas realizadas en benchmark, de esperar un tiempo proporcional al que falta para final de ciclo,
+	//acaba dando el mismo uso de cpu que este: esperar 1 ms
+
+
+	if (MACHINE_IS_Z88) {
+		//Como un frame de Z88 dura 1/4 del spectrum (5 ms) esta pausa tambien es 1/4
+
+		//11% cpu. teclas responde casi instantaneo
+		timer_usleep(1000/4);
+
+	}
+
+
+	else {
+#ifdef EMULATE_RASPBERRY
+		//En raspberry el timer es mejor que sea menor (una xxx parte del normal)
+		timer_usleep(1000/16);
+
+#else
+		//Timer normal
+		timer_sleep(1);
+
+#endif
+	}
+
+
+}
+
+
+//necesario llamar aqui cuando no hay pthreads y hay paro de emulacion durante 1 segundo o mas...
+void timer_reset(void)
+{
+	gettimeofday(&z80_interrupts_timer_antes, NULL);
+}
+
+
+long z80_timer_acumulado=0;
+
+//Devuelve 1 si hay interrupcion
+int timer_check_interrupt_thread(void)
+{
+	if (timer_pthread_generada) {
+		top_speed_real_frames++;
+		timer_pthread_generada=0;
+
+		if (MACHINE_IS_Z88) {
+			conta_envio_audio++;
+			if (conta_envio_audio>=4) {
+				envio_audio();
+				//printf ("enviamos audio\n");
+				conta_envio_audio=0;
+
+			}
+		}
+
+		else envio_audio();
+
+		//printf ("int pthread\n");
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
+//Devuelve 1 si hay interrupcion
+int timer_check_interrupt_no_thread(void)
+{
+
+
+	int timer_warn_high_interrupt_time,timer_warn_low_interrupt_time,timer_interrupt_time;
+
+	/*
+	if (MACHINE_IS_Z88) {
+	timer_interrupt_time=20000/4;
+	timer_warn_high_interrupt_time=timer_interrupt_time+5000/4;
+	timer_warn_low_interrupt_time=timer_interrupt_time-5000/4;
+	}
+
+
+	else {
+	timer_interrupt_time=20000;
+	timer_warn_high_interrupt_time=timer_interrupt_time+5000;
+	timer_warn_low_interrupt_time=timer_interrupt_time-5000;
+	}
+	*/
+
+
+	timer_interrupt_time=timer_sleep_machine;
+	timer_warn_low_interrupt_time=timer_interrupt_time-timer_interrupt_time/2;
+
+
+	if (MACHINE_IS_Z88) {
+		timer_warn_high_interrupt_time=timer_interrupt_time+timer_interrupt_time*12;
+	}
+
+	else {
+		timer_warn_high_interrupt_time=timer_interrupt_time+timer_interrupt_time*3;
+	}
+
+
+	gettimeofday(&z80_interrupts_timer_ahora, NULL);
+
+
+		z80_timer_seconds  = z80_interrupts_timer_ahora.tv_sec  - z80_interrupts_timer_antes.tv_sec;
+		z80_timer_useconds = z80_interrupts_timer_ahora.tv_usec - z80_interrupts_timer_antes.tv_usec;
+
+		z80_timer_difftime = ((z80_timer_seconds) * 1000000 + z80_timer_useconds);
+
+
+		//compensar el tiempo que nos hemos pasado antes (positivo o negativo)
+		z80_timer_difftime +=z80_timer_acumulado;
+
+
+		if (z80_timer_difftime>=timer_interrupt_time)  {
+
+			top_speed_real_frames++;
+
+			z80_timer_acumulado=z80_timer_difftime-timer_interrupt_time;
+
+			timer_reset();
+
+
+                	if (MACHINE_IS_Z88) {
+                        	conta_envio_audio++;
+	                        if (conta_envio_audio>=4) {
+        	                        envio_audio();
+                	                conta_envio_audio=0;
+                        	}
+	                }
+
+        	        else envio_audio();
+
+
+			if (z80_timer_difftime>timer_warn_high_interrupt_time) {
+				debug_printf(VERBOSE_INFO,"z80 interrupt (%s) time more than %d micros : %d",(interrupt_finish_sound.v ? "sound" : "timer" ),timer_warn_high_interrupt_time,z80_timer_difftime);
+
+				//parar temporalmente el thread de sonido para que se vuelva a resincronizar todo
+                                audio_playing.v=0;
+
+				//ajustar contador de tiempo. Si por ejemplo se ha suspendido el proceso con ctrl+z y
+				//se vuelve aqui, este acumulado es muy grande y no baja nunca a 0, y por tanto deja de emular correctamente
+				z80_timer_acumulado=0;
+
+
+			}
+			else if (z80_timer_difftime<timer_warn_low_interrupt_time) {
+				debug_printf(VERBOSE_INFO,"z80 interrupt (sound) time less than %d micros : %d",timer_warn_low_interrupt_time,z80_timer_difftime);
+				//parar temporalmente el thread de sonido para que se vuelva a resincronizar todo
+                                audio_playing.v=0;
+			}
+
+			return 1;
+		}
+	return 0;
+}
+
+
+//Ver si hay que generar interrupcion 1/50
+//bucle principal de ejecucion de la cpu de spectrum
+void timer_check_interrupt(void)
+{
+
+	int si_saltado_interrupcion;
+
+#ifdef USE_PTHREADS
+	si_saltado_interrupcion=timer_check_interrupt_thread();
+#else
+
+	si_saltado_interrupcion=timer_check_interrupt_no_thread();
+#endif
+
+	if (timer_condicion_top_speed() ) {
+		interrupcion_timer_generada.v=1;
+	}
+
+		if (si_saltado_interrupcion ) {
+
+
+			//printf ("despues timer_check_interrupt_thread. framedrop_total %d\n",framedrop_total);
+
+
+			interrupt_finish_sound.v=0;
+			interrupcion_timer_generada.v=1;
+			interrupcion_fifty_generada.v=1;
+
+			contador_20ms +=timer_sleep_machine;
+
+			//printf ("contador_20ms: %d\n",contador_20ms);
+
+			if (contador_20ms<20000) return;
+
+			//Cosas que suceden cada 20 ms aproximadamente
+			/*digo aproximadamente porque:
+			En spectrum, con cpu 100%, se incrementa en intervalos de 20000, y por tanto, cada vez viene aqui
+			En Z88, con cpu 100%, se incrementa en intervalos de 5000, y aqui se entrara 1 de cada 4 veces
+			Con cpu no 100%, puede que no sea exacto, y este contador por ejemplo salte a 23000 y luego se resetee a 0,
+			"pierdiendose" esos 3000 us extra. Como lo que hay aqui debajo no tiene que ser completamente exacto,
+			no importa mucho
+			Esto afecta bastante cuando cpu speed < 100% . en ese caso, los sleeps son mayores de 20000, es cuando se
+			pierde ese extra. Entonces con cpu speed < 100%, esto se llama menos veces que cada 20 ms
+			*/
+
+
+			//printf ("20ms. contador_segundo: %d\n",contador_segundo);
+
+			contador_20ms=0;
+
+			//han pasado 20 ms
+			contador_segundo +=20;
+
+
+                        //emulacion refresco memoria. Decrementar contador, de alguna manera "diciendo" que registro R funciona bien
+                        if (machine_emulate_memory_refresh) {
+                                //Si maximo es 1000, esto se resetea en 20 segundos aprox
+                                machine_emulate_memory_refresh_counter -=MAX_EMULATE_MEMORY_REFRESH_COUNTER/20/50;
+                                if (machine_emulate_memory_refresh_counter<0) machine_emulate_memory_refresh_counter=0;
+
+                                //Hacer debug de esto de vez en cuando
+                                if (machine_emulate_memory_refresh_counter!=0) {
+                                        //cada segundo
+                                        if (contador_segundo>=1000) {
+                                                machine_emulate_memory_refresh_debug_counter();
+                                        }
+                                }
+                        }
+
+
+
+			//temp forzar framedrop
+			//esperando_tiempo_final_t_estados.v=0;
+
+
+			//if (framedrop_total>30) printf ("--------------framedrop total %d\n",framedrop_total);
+
+			//if (esperando_tiempo_final_t_estados.v==0 && framedrop_total<40) {
+			if (esperando_tiempo_final_t_estados.v==0 && framedrop_total<40) {
+
+				//normal
+				//framescreen_saltar=1;
+
+				//pruebas
+				framescreen_saltar++;
+
+				//printf ("Interrupcion con framedrop\n");
+			}
+			else {
+				framescreen_saltar=0;
+				//printf ("Interrupcion sin framedrop\n");
+			}
+
+			//On Screen keyboard
+			if (timer_on_screen_key) {
+				timer_on_screen_key--;
+				//Si llega a 0, liberar tecla
+				if (timer_on_screen_key==0) {
+					debug_printf (VERBOSE_DEBUG,"Releasing all keys so one was pressed from OSD keyboard");
+					reset_keyboard_ports();
+
+					//Si hay que volver a menu
+					if (menu_button_osdkeyboard_return.v) {
+						menu_button_osdkeyboard_return.v=0;
+						menu_button_osdkeyboard.v=1;
+						menu_abierto=1;
+					}
+				}
+
+			}
+
+
+			//joystick autofire
+			if (joystick_autofire_frequency!=0) {
+				joystick_autofire_counter++;
+				if (joystick_autofire_counter>=joystick_autofire_frequency) {
+					joystick_autofire_counter=0;
+
+					//si estamos en menu, no tocar disparador automatico
+					if (!menu_abierto) puerto_especial_joystick ^=16;
+				}
+			}
+
+			//Input file keyboard
+			if (input_file_keyboard_inserted.v==1) {
+				input_file_keyboard_delay_counter++;
+				if (input_file_keyboard_delay_counter>=input_file_keyboard_delay) {
+					input_file_keyboard_delay_counter=0;
+					input_file_keyboard_pending_next.v=1;
+
+					input_file_keyboard_is_pause.v ^=1;
+
+				}
+			}
+
+			if (ql_mantenido_pulsada_tecla) {
+				if (ql_mantenido_pulsada_tecla_timer<50) ql_mantenido_pulsada_tecla_timer++;
+			}
+
+			//Temporizador de cancion ay playing
+			ay_player_playing_timer();
+
+			//decrementar contador pausa cinta
+			if (tape_pause!=0) tape_pause--;
+
+
+			if (menu_contador_teclas_repeticion) {
+				menu_contador_teclas_repeticion--;
+			}
+
+			else {
+				//es 0. hay repeticion
+				if (menu_segundo_contador_teclas_repeticion) {
+	                                menu_segundo_contador_teclas_repeticion--;
+				}
+			}
+
+        //Si hay texto ahi acumulado pero no se ha recibido salto de linea, al cabo de un segundo, saltar
+        if (textspeech_filter_program!=NULL) {
+	        scrtextspeech_filter_counter++;
+		//printf ("scrtextspeech_filter_counter: %d\n",scrtextspeech_filter_counter);
+
+		//al cabo de X segundos
+
+		if (textspeech_timeout_no_enter>0) {
+
+	        	if (scrtextspeech_filter_counter>=50*textspeech_timeout_no_enter && index_buffer_speech!=0) {
+		                debug_printf (VERBOSE_DEBUG,"Forcing sending filter text although there is no carriage return");
+        		        textspeech_add_speech_fifo();
+		        }
+
+		}
+	}
+
+
+	if (textspeech_filter_program!=NULL) {
+
+	        //Si hay pendiente speech
+                //Si hay finalizado el proceso hijo
+                //printf ("esperar\n");
+                if (textspeech_finalizado_hijo_speech() ) {
+			//printf ("desde timer\n");
+                        scrtextspeech_filter_run_pending();
+                }
+        }
+
+			//Cosas que suceden cada 1 segundo
+                        if (contador_segundo>=1000) {
+
+				//printf ("segundo\n");
+
+                                contador_segundo=0;
+
+
+				//Estadisticas de vsync por second
+				last_vsync_per_second=vsync_per_second;
+				vsync_per_second=0;
+
+				//Temporizador para tooltip
+				if (tooltip_enabled.v) menu_tooltip_counter++;
+
+
+                                //resetear texto splash
+                                reset_splash_text();
+
+				//temporizador de second layer solo para un tiempo concreto
+				/*
+				if (menu_second_layer_counter) {
+					menu_second_layer_counter--;
+					if (menu_second_layer_counter==0) {
+						debug_printf (VERBOSE_INFO,"disable second layer");
+						//disable_second_layer();
+
+						if (menu_abierto==0) menu_overlay_activo=0;
+					}
+				}
+				*/
+
+				//temporizador de carga de cinta para escribir texto loading en pantalla
+				if (tape_loading_counter) {
+					tape_loading_counter--;
+					if (tape_loading_counter==0) {
+						delete_tape_text();
+					}
+				}
+
+				//temporizador de impresion para escribir texto printing en pantalla
+                                if (printing_counter) {
+                                        printing_counter--;
+                                        if (printing_counter==0) {
+                                                delete_print_text();
+                                        }
+                                }
+
+                                //temporizador de impresion para escribir texto flash zxuno en pantalla
+                                if (zxuno_flash_operating_counter) {
+                                        zxuno_flash_operating_counter--;
+                                        if (zxuno_flash_operating_counter==0) {
+                                                delete_zxuno_flash_text();
+                                        }
+                                }
+
+																//temporizador de impresion para escribir texto flash superupgrade en pantalla
+																if (superupgrade_flash_operating_counter) {
+																        superupgrade_flash_operating_counter--;
+																        if (superupgrade_flash_operating_counter==0) {
+																                delete_superupgrade_flash_text();
+																        }
+																}
+
+                                //temporizador de impresion para escribir texto MMC en pantalla
+                                if (mmc_operating_counter) {
+                                        mmc_operating_counter--;
+                                        if (mmc_operating_counter==0) {
+                                                delete_mmc_text();
+                                        }
+                                }
+
+				//temporizador de impresion para escribir texto IDE en pantalla
+                                if (ide_operating_counter) {
+                                        ide_operating_counter--;
+                                        if (ide_operating_counter==0) {
+                                                delete_ide_text();
+                                        }
+                                }
+
+                                //temporizador de impresion para escribir texto ZXPAND en pantalla
+                                if (zxpand_operating_counter) {
+                                        zxpand_operating_counter--;
+                                        if (zxpand_operating_counter==0) {
+                                                delete_zxpand_text();
+                                        }
+                                }
+
+
+				//temporizador de impresion para escribir texto filter en pantalla
+				if (textspeech_operating_counter) {
+					textspeech_operating_counter--;
+					if (textspeech_operating_counter==0) {
+						textspeech_clear_operating();
+					}
+				}
+
+
+
+				//temporizador de Tape/snap options set en pantalla, primer mensaje
+				if (tape_options_set_first_message_counter) {
+					tape_options_set_first_message_counter--;
+					if (tape_options_set_first_message_counter==0) {
+						delete_tape_options_set_first_message();
+					}
+				}
+
+                                //temporizador de Tape/snap options set en pantalla, segundo mensaje
+                                if (tape_options_set_second_message_counter) {
+                                        tape_options_set_second_message_counter--;
+                                        if (tape_options_set_second_message_counter==0) {
+                                                delete_tape_options_set_second_message();
+                                        }
+                                }
+
+				autosave_snapshot_at_fixed_interval();
+
+				//escritura de contenido de EPROM/FLASH de Z88 a disco
+				z88_flush_eprom_or_flash_to_disk();
+
+				//escritura de contenido de SPI Flash de zxuno a disco
+				zxuno_flush_flash_to_disk();
+
+
+				//escritura de contenido de MMC a disco
+				mmc_flush_flash_to_disk();
+				//escritura de contenido de IDE a disco
+				ide_flush_flash_to_disk();
+
+				rzx_print_footer();
+
+
+				//escritura de contenido de flash de superupgrade a disco
+				superupgrade_flush_flash_to_disk();
+
+
+
+                        }
+
+
+
+		}
+
+
+}

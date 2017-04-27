@@ -1,0 +1,2224 @@
+#!/bin/bash
+#
+#    ZEsarUX  ZX Second-Emulator And Released for UniX
+#    Copyright (C) 2013 Cesar Hernandez Bano
+#
+#    This file is part of ZEsarUX.
+#
+#    ZEsarUX is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+echo
+echo "Configuration script for ZEsarUX"
+echo
+
+
+#show dependencies
+#for i in *.c; do INCLUDES=`cat $i|grep include|grep -v "<"|sed 's/#include "//'|sed 's/"//'` ; echo -n $i|sed 's/\.c/.o: /' ; echo -n "$i "; echo $INCLUDES; done
+
+
+show_help()
+{
+
+        echo "Usage:"
+        echo "--disable-stdout             Disable stdout driver"
+	echo "--disable-simpletext         Disable simpletext driver"
+        echo "--disable-curses             Disable curses driver"
+        echo "--disable-aa                 Disable aalib driver"
+        echo "--disable-caca               Disable cacalib driver"
+        echo "--disable-xwindows           Disable xwindows driver"
+        echo "--disable-xext               Disable xwindows extensions"
+        echo "--disable-xvidmode           Disable xwindows vidmode extensions"
+	echo "--disable-sdl                Disable SDL video & audio driver"
+	echo "--disable-fbdev              Disable framebuffer driver"
+        echo "--disable-dsp                Disable audio dsp driver"
+        echo "--disable-alsa               Disable audio alsa driver"
+        echo "--disable-pulse              Disable pulseaudio driver"
+	echo "--disable-coreaudio          Disable Coreaudio Mac OS X audio"
+	echo "--disable-sndfile            Disable sndfile functions"
+        echo "--disable-pthreads           Disable using posix threads"
+	echo "--disable-realtime           Disable realtime priority"
+	echo "--disable-ssl                Disable ssl functions"
+	echo "--disable-cocoa              Disable Cocoa Mac OS X native GUI"
+	echo "--disable-linuxrealjoystick  Disable linux real joystick support"
+	echo "--enable-memptr              Enable MEMPTR emulation"
+	echo "--enable-visualmem           Enable visual memory option on menu"
+	echo "--enable-cpustats            Enable CPU statistics option on menu"
+	echo "--enable-raspberry           Enable Raspberry extensions"
+	echo "--enable-sdl2                Enable SDL2 libraries. Experimental"
+	echo "--enable-cocoa-opengl        Enable OpenGL rendering on Mac OS X cocoa driver"
+	echo "--disable-contend            Disable Contended Memory emulation"
+	echo "--disable-putpixel-cache     Disable putpixel cache. Test feature"
+	echo
+	echo "Installation directories:"
+	echo "--prefix PREFIX              Install program files in PREFIX [/usr/local]"
+
+	echo
+	echo "Environment variables:"
+	echo "CFLAGS                       C compiler flags"
+	echo "LDFLAGS                      linker flags"
+	echo
+        exit 1
+
+
+}
+
+set_installprefix()
+{
+        INSTALLPREFIX="$1"
+        INICIALINSTALLPREFIX=`echo -n $INSTALLPREFIX|cut -c1`
+        if [ "$INICIALINSTALLPREFIX" != "/" ]; then
+                echo "Error. Install prefix must start by /"
+                exit 1
+        fi
+
+}
+
+
+LOGFILE=config.log
+echo "Begin configure on date `date`">$LOGFILE
+echo "Configure sentence: $0 $@">>$LOGFILE
+
+
+
+
+
+#Valores por defecto
+
+OPTIONOBJCURSES="scrcurses.o"
+OPTIONOBJSTDOUT="scrstdout.o"
+OPTIONOBJSIMPLETEXT="scrsimpletext.o"
+OPTIONOBJFBDEV="scrfbdev.o"
+OPTIONOBJXWINDOWS="scrxwindows.o"
+OPTIONOBJSDL="scrsdl.o audiosdl.o common_sdl.o"
+OPTIONOBJAA="scraa.o"
+OPTIONOBJCACA="scrcaca.o"
+OPTIONOBJDSP="audiodsp.o"
+OPTIONOBJALSA="audioalsa.o"
+OPTIONOBJPULSE="audiopulse.o"
+OPTIONOBJCOREAUDIO="audiocoreaudio.o"
+OPTIONOBJSSL="enabled"
+OPTIONPTHREADS="enabled"
+OPTIONLINUXREALJOYSTICK="enabled"
+OPTIONSNDFILE="enabled"
+OPTIONREALTIME="enabled"
+OPTIONXEXT="enabled"
+OPTIONXVIDMODE="enabled"
+INSTALLPREFIX="/usr/local"
+OPTIONEMULATE_MEMPTR=""
+OPTIONEMULATE_VISUALMEM=""
+OPTIONEMULATE_CPU_STATS=""
+OPTIONEMULATE_RASPBERRY=""
+OPTIONEMULATE_CONTEND="yes"
+OPTIONPUTPIXELCACHE="yes"
+OPTION_WORDS_BIGENDIAN=""
+OPTIONCOCOA="enabled"
+OPTIONCOCOA_OPENGL=""
+LIBSDL="SDL"
+TEXTOLIBSDL="sdl"
+LIBPTHREADS_WIN=""
+
+#programa que tiene la funcion main. por defecto main_unix
+#si compila para mac os x gui (cocoa), se cambia por scrcocoa
+MAINSOURCE="main_unix"
+
+#Numero de build para versiones snapshot
+BUILDNUMBER=`date +%s`
+
+
+#Gestion parametros
+
+#Guardamos la variable para luego meterla en el compileoptions.h y mostrarla con --showcompileinfo
+CONFIGURE_OPTIONS="$@"
+#esta tambien se mete en compileoptions.h y se muestra en --showcompileinfo
+COMPILE_VARIABLES=""
+
+
+while [ $# -gt 0 ]; do
+
+#echo $1
+
+ case "$1" in
+
+	--help)
+	show_help
+
+	;;
+
+ 	--disable-stdout)
+	OPTIONOBJSTDOUT=""
+	;;
+
+        --disable-simpletext)
+        OPTIONOBJSIMPLETEXT=""
+        ;;
+
+
+        --disable-fbdev)
+        OPTIONOBJFBDEV=""
+        ;;
+
+
+ 	--disable-curses)
+	OPTIONOBJCURSES=""
+	;;
+
+	--disable-aa)
+	OPTIONOBJAA=""
+	;;
+
+	--disable-caca)
+	OPTIONOBJCACA=""
+	;;
+
+
+	--disable-xwindows)
+        OPTIONOBJXWINDOWS=""
+        OPTIONXEXT=""
+	OPTIONXVIDMODE=""
+	;;
+
+        --disable-sdl)
+        OPTIONOBJSDL=""
+        ;;
+
+	--enable-sdl2)
+	LIBSDL="SDL2"
+	TEXTOLIBSDL="sdl2"
+	OPTIONOBJSDL="scrsdl2.o audiosdl2.o common_sdl2.o"
+	;;
+
+	--enable-cocoa-opengl)
+	OPTIONCOCOA_OPENGL="enabled"
+	;;
+
+
+	--disable-dsp)
+	OPTIONOBJDSP=""
+	;;
+
+	--disable-alsa)
+        OPTIONOBJALSA=""
+	;;
+
+        --disable-pulse)
+        OPTIONOBJPULSE=""
+        ;;
+
+
+        --disable-coreaudio)
+        OPTIONOBJCOREAUDIO=""
+        ;;
+
+
+
+	--disable-pthreads)
+        OPTIONPTHREADS=""
+	;;
+
+        --disable-linuxrealjoystick)
+	OPTIONLINUXREALJOYSTICK=""
+	;;
+
+	--disable-sndfile)
+	OPTIONSNDFILE=""
+	;;
+
+        --disable-realtime)
+        OPTIONREALTIME=""
+        ;;
+
+
+	--disable-xext)
+        OPTIONXEXT=""
+	;;
+
+	--disable-xvidmode)
+	OPTIONXVIDMODE=""
+	;;
+
+	--disable-ssl)
+	OPTIONOBJSSL=""
+	;;
+
+	--disable-cocoa)
+	OPTIONCOCOA=""
+	;;
+
+	--enable-memptr)
+	OPTIONEMULATE_MEMPTR="yes"
+	;;
+
+	--enable-visualmem)
+	OPTIONEMULATE_VISUALMEM="yes"
+        ;;
+
+        --enable-cpustats)
+        OPTIONEMULATE_CPU_STATS="yes"
+        ;;
+
+        --enable-raspberry)
+        OPTIONEMULATE_RASPBERRY="yes"
+        ;;
+
+
+
+        --disable-contend)
+        OPTIONEMULATE_CONTEND=""
+        ;;
+
+	--disable-putpixel-cache)
+	OPTIONPUTPIXELCACHE=""
+	;;
+
+
+	--prefix)
+	shift
+	set_installprefix "$1"
+	;;
+
+       *)
+
+	#Ver si se pide --prefix=
+	echo -n "$1"|grep "prefix=" > /dev/null
+	if [ $? == 0 ]; then
+		INST=`echo -n "$1"|cut -d '=' -f2`
+		set_installprefix "$INST"
+	else
+		echo Unknown parameter
+		show_help
+	fi
+	;;
+
+esac
+
+      shift
+
+done
+
+
+INITIALCFLAGS=$CFLAGS
+INITIALLDFLAGS=$LDFLAGS
+
+echo Initial CFLAGS=$INITIALCFLAGS
+echo Initial LDFLAGS=$INITIALLDFLAGS
+
+echo Initial CFLAGS=$INITIALCFLAGS >>$LOGFILE
+echo Initial LDFLAGS=$INITIALLDFLAGS >>$LOGFILE
+
+
+#LDFLAGS="$LDFLAGS -lm"
+
+#en raspberry, char por defecto es unsigned, no signed
+
+CFLAGS="$CFLAGS -Wall -Wextra -fsigned-char"
+#CFLAGS="$CFLAGS -Wunused-but-set-parameter -Wunused-but-set-variable -Wundef -Wuninitialized -Wunknown-pragmas -Wno-pragmas -Wunreachable-code -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wunused-but-set-parameter -Wunused-but-set-variable"
+#CFLAGS="$CFLAGS -Wall -Wunused -Wunused-parameter "
+
+#Comprobaciones
+echo -n "Checking Operating system ... "
+SISTEMA=`uname -o 2>>$LOGFILE`
+#lo usamos para los menu About
+if [ $? != 0 ]; then
+	#para mac os x
+	SISTEMA=`uname -s 2>>$LOGFILE`
+fi
+
+echo $SISTEMA
+
+
+if [ "$SISTEMA" == "Msys" ]; then
+	CFLAGS="$CFLAGS -DMINGW"
+fi
+
+echo -n "Checking for gcc compiler ... "
+
+RESULT=`which gcc`
+if [ $? != 0 ]; then
+	echo "No gcc compiler found"
+	exit 1
+fi
+
+echo $RESULT
+
+
+
+
+
+echo -n "Checking size of char ... "
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <stdio.h>
+int main () {
+printf ("%lu\n",sizeof(char));
+return 0;
+}
+_EOF
+
+gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+CHARSIZE=`./$TEMPFILE.o`
+rm -f $TEMPFILE $TEMPFILE.o
+echo $CHARSIZE
+if [ "$CHARSIZE" != "1" ]; then
+	echo "Error"
+	exit 1
+fi
+
+
+echo -n "Checking size of short ... "
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <stdio.h>
+int main () {
+printf ("%lu\n",sizeof(short));
+return 0;
+}
+_EOF
+
+gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+SHORTSIZE=`./$TEMPFILE.o`
+rm -f $TEMPFILE $TEMPFILE.o
+echo $SHORTSIZE
+if [ "$SHORTSIZE" != "2" ]; then
+        echo "Error"
+        exit 1
+fi
+
+
+echo -n "Checking size of int ... "
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <stdio.h>
+int main () {
+printf ("%lu\n",sizeof(int));
+return 0;
+}
+_EOF
+
+gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+SHORTSIZE=`./$TEMPFILE.o`
+rm -f $TEMPFILE $TEMPFILE.o
+echo $SHORTSIZE
+if [ "$SHORTSIZE" != "4" ]; then
+        echo "Error"
+        exit 1
+fi
+
+
+
+echo -n "Checking Little Endian System ... "
+
+#RESULT=`echo -n I | hexdump -o | awk '{ print substr($2,6,1); exit}'`
+RESULT=`echo -n I | od -to2 | awk '{ print substr($2,6,1); exit}'`
+if [ "$RESULT" != "1" ]; then
+	echo
+	echo "WARNING! Big endian arquitecture. Not tested yet. Run at your own risk!"
+	sleep 5
+	OPTION_WORDS_BIGENDIAN="yes"
+else
+
+echo "ok"
+
+fi
+
+
+echo -n "Checking for stdout functions ... "
+if [ "$OPTIONOBJSTDOUT" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <sys/select.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJSTDOUT=""
+        else
+                echo "found"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for simpletext functions ... "
+if [ "$OPTIONOBJSIMPLETEXT" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <stdio.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJSIMPLETEXT=""
+        else
+                echo "found"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+else
+        echo "disabled"
+fi
+
+
+
+echo -n "Checking for fbdev functions ... "
+if [ "$OPTIONOBJFBDEV" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <linux/fb.h>
+#include <linux/vt.h>
+#include <linux/kd.h>
+
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJFBDEV=""
+        else
+                echo "found"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+else
+        echo "disabled"
+fi
+
+
+
+echo -n "Checking for curses libraries ... "
+if [ "$OPTIONOBJCURSES" != "" ]; then
+#en principio activo, probemos a compilar
+
+	TEMPFILE="configure.compile.c"
+
+	cat > $TEMPFILE << _EOF
+#include <curses.h>
+int main () {
+return 0;
+}
+_EOF
+
+	gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+	RESULTCODE=$?
+	if [ $RESULTCODE != 0 ]; then
+		echo "not found"
+		OPTIONOBJCURSES=""
+	else
+		echo "found"
+        	LDFLAGS="$LDFLAGS -lncurses"
+	fi
+	rm -f $TEMPFILE $TEMPFILE.o
+
+else
+	echo "disabled"
+fi
+
+echo -n "Checking for aa libraries ... "
+if [ "$OPTIONOBJAA" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <aalib.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJAA=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -laa"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+else
+        echo "disabled"
+fi
+
+echo -n "Checking for caca libraries ... "
+if [ "$OPTIONOBJCACA" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <caca.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJCACA=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lcaca"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for SSL libraries ... "
+if [ "$OPTIONOBJSSL" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <openssl/md5.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJSSL=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lssl -lcrypto"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for xwindows libraries ... "
+if [ "$OPTIONOBJXWINDOWS" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <X11/Xlib.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS -I/usr/X11R6/include -I/opt/X11/include $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJXWINDOWS=""
+		OPTIONXEXT=""
+		OPTIONXVIDMODE=""
+        else
+                echo "found"
+        	LDFLAGS="$LDFLAGS -lX11 -L/usr/X11R6/lib -L/opt/X11/lib"
+        fi
+	rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+	echo "disabled"
+fi
+
+
+
+echo -n "Checking for xwindows extensions ... "
+if [ "$OPTIONXEXT" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <X11/Xlib.h>
+#include <X11/extensions/XShm.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS -I/usr/X11R6/include -I/opt/X11/include $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONXEXT=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lXext"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+echo -n "Checking for xwindows vidmode extensions ... "
+if [ "$OPTIONXVIDMODE" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <X11/Xlib.h>
+#include <X11/extensions/xf86vmode.h>
+
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS -I/usr/X11R6/include -I/opt/X11/include $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found."
+		echo "Warning. Fullscreen mode not available on XWindow driver"
+		sleep 5
+                OPTIONXVIDMODE=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lXxf86vm"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for posix threads ... "
+if [ "$OPTIONPTHREADS" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <pthread.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONPTHREADS=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lpthread"
+
+#pthreads implica tambien habilitar protocolo remoto y con ello api de sockets
+		if [ "$SISTEMA" == "Msys" ]; then
+			LDFLAGS="$LDFLAGS -lwsock32"
+		fi
+
+
+		#para la sentencia make windows
+		LIBPTHREADS_WIN="pthreadGC2.dll libgcc_s_dw2-1.dll"
+
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+
+
+
+
+
+
+
+echo -n "Checking for realtime schedulling ... "
+if [ "$OPTIONREALTIME" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <sched.h>
+int main () {
+struct sched_param sparam;
+
+        sparam.sched_priority = sched_get_priority_max(SCHED_RR);
+        sched_setscheduler(0, SCHED_RR, &sparam);
+
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONREALTIME=""
+        else
+                echo "found"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+
+
+echo -n "Checking for audio dsp ... "
+if [ "$OPTIONOBJDSP" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <sys/soundcard.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJDSP=""
+        else
+                echo "found"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for audio alsa ... "
+if [ "$OPTIONOBJALSA" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <alsa/asoundlib.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJALSA=""
+        else
+                echo "found"
+		LDFLAGS="$LDFLAGS -lasound"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+echo -n "Checking for audio pulse ... "
+if [ "$OPTIONOBJPULSE" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <pulse/pulseaudio.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJPULSE=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lpulse -lpulse-simple"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+
+echo -n "Checking for coreaudio ... "
+if [ "$OPTIONOBJCOREAUDIO" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <CoreAudio/AudioHardware.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJCOREAUDIO=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -framework CoreAudio -framework AudioUnit -framework CoreServices"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for Cocoa Mac OS X GUI ... "
+if [ "$OPTIONCOCOA" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.m"
+
+        cat > $TEMPFILE << _EOF
+#import <Cocoa/Cocoa.h>
+int main () {
+return 0;
+}
+_EOF
+
+        clang $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONCOCOA=""
+        else
+                echo -n "found"
+
+		if [ "$OPTIONPTHREADS" == "" ]; then
+			echo ". But requires pthreads, and it is not enabled. Disabling Cocoa"
+			OPTIONCOCOA=""
+
+		else
+			echo
+
+			MAINSOURCE="scrcocoa"
+        	        LDFLAGS="$LDFLAGS -framework Foundation -framework AppKit"
+
+			if [ "$OPTIONCOCOA_OPENGL" == "enabled" ]; then
+				LDFLAGS="$LDFLAGS -framework OpenGL"
+			fi
+
+		fi
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+#Hay que comprobar SDL2 despues de cocoa
+echo -n "Checking for $TEXTOLIBSDL libraries ... "
+if [ "$OPTIONOBJSDL" != "" ]; then
+
+
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+
+#if defined(__APPLE__)
+
+	#include <SDL.h>
+
+#else
+
+	#include <$LIBSDL/SDL.h>
+
+#endif
+
+int main(int argc, char* argv[]) {
+return 0;
+}
+_EOF
+
+	if [ "$SISTEMA" == "Darwin" ]; then
+		gcc -c $CFLAGS -I/Library/Frameworks/$LIBSDL.framework/Headers -framework $LIBSDL -F/Library/Frameworks $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+	elif [ "$SISTEMA" == "Msys" ]; then
+		#echo "gcc -c $CFLAGS -Lc:\mingw\${LIBSDL}\lib -Ic:\mingw\${LIBSDL}\include -l$LIBSDL $TEMPFILE -o $TEMPFILE.o"
+		#echo LIBSDL=${LIBSDL}
+		#temp detectar libsdl1
+		#gcc -c $CFLAGS -Lc:\\mingw\\SDL2\\lib -Ic:\\mingw\\SDL2\\include -lSDL2 $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+		gcc -c $CFLAGS -L/c/mingw/$LIBSDL/lib -I/c/mingw/$LIBSDL/include -lSDL2 $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+	else
+        	gcc -c $CFLAGS -l$LIBSDL $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+	fi
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONOBJSDL=""
+        else
+                echo -n "found"
+
+
+                if [ "$SISTEMA" == "Darwin" ] && [ "$LIBSDL" == "SDL" ]; then
+                                echo ". But it's incompatible with Mac OSX. Disabling SDL. Try using SDL2"
+                                OPTIONOBJSDL=""
+
+                else
+
+			echo
+
+			if [ "$SISTEMA" == "Darwin" ]; then
+				CFLAGS="$CFLAGS -I/Library/Frameworks/$LIBSDL.framework/Headers"
+				LDFLAGS="$LDFLAGS -framework $LIBSDL -F/Library/Frameworks"
+			elif [ "$SISTEMA" == "Msys" ]; then
+                                CFLAGS="$CFLAGS -I/c/mingw/$LIBSDL/include"
+                                LDFLAGS="$LDFLAGS -L/c/mingw/$LIBSDL/lib -l$LIBSDL"
+			else
+		                LDFLAGS="$LDFLAGS -l$LIBSDL"
+			fi
+
+		fi
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+
+echo -n "Checking for libsndfile ... "
+if [ "$OPTIONSNDFILE" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sndfile.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc -I/usr/local $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONSNDFILE=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lsndfile"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+echo -n "Checking for linux real joystick ... "
+if [ "$OPTIONLINUXREALJOYSTICK" != "" ]; then
+#en principio activo, probemos a compilar
+
+        TEMPFILE="configure.compile.c"
+
+        cat > $TEMPFILE << _EOF
+#include <linux/joystick.h>
+int main () {
+return 0;
+}
+_EOF
+
+        gcc $CFLAGS $TEMPFILE -o $TEMPFILE.o >> $LOGFILE 2>&1
+        RESULTCODE=$?
+        if [ $RESULTCODE != 0 ]; then
+                echo "not found"
+                OPTIONLINUXREALJOYSTICK=""
+        else
+                echo "found"
+                LDFLAGS="$LDFLAGS -lpthread"
+        fi
+        rm -f $TEMPFILE $TEMPFILE.o
+
+
+else
+        echo "disabled"
+fi
+
+
+
+
+
+
+echo
+echo Final CFLAGS=$CFLAGS
+echo Final LDFLAGS=$LDFLAGS
+echo Final CFLAGS=$CFLAGS >>$LOGFILE
+echo Final LDFLAGS=$LDFLAGS >>$LOGFILE
+
+
+#final
+
+echo "Creating Makefile"
+cat > Makefile << _EOF
+EMULATOR_VERSION=5.1
+CFLAGS=$CFLAGS
+LDFLAGS=$LDFLAGS
+CC=gcc
+INSTALLPREFIX=$INSTALLPREFIX
+
+
+all: zesarux
+
+
+zesarux: charset.o $OPTIONOBJSTDOUT $OPTIONOBJSIMPLETEXT $OPTIONOBJCURSES $OPTIONOBJAA $OPTIONOBJCACA $OPTIONOBJXWINDOWS $OPTIONOBJSDL $OPTIONOBJFBDEV autoselectoptions.o chardetect.o textspeech.o scrnull.o $OPTIONOBJDSP $OPTIONOBJALSA $OPTIONOBJPULSE $OPTIONOBJCOREAUDIO audionull.o ay38912.o cpu.o codsinpr.o codprddfd.o codpred.o operaciones.o debug.o tape.o tape_tap.o tape_tzx.o tape_smp.o audio.o screen.o mem128.o chloe.o prism.o tbblue.o timex.o zx8081.o jupiterace.o z88.o cpc.o sam.o atomlite.o zxuno.o snap.o snap_z81.o snap_zx8081.o snap_rzx.o menu.o core_spectrum.o core_zx8081.o core_z88.o core_cpc.o core_ace.o core_sam.o core_ql.o timer.o contend.o disassemble.o utils.o playtzx.o joystick.o ula.o mmc.o ide.o pd765.o divmmc.o divide.o diviface.o zxpand.o superupgrade.o dandanator.o multiface.o spectra.o spritechip.o printers.o realjoystick.o ulaplus.o if1.o ql.o m68kcpu.o m68kdasm.o m68kops.o  m68kopac.o m68kopdm.o m68kopnz.o remote.o $MAINSOURCE.o
+	\$(CC) \$(CFLAGS) cpu.o $MAINSOURCE.o charset.o $OPTIONOBJSTDOUT $OPTIONOBJSIMPLETEXT $OPTIONOBJCURSES $OPTIONOBJAA $OPTIONOBJCACA $OPTIONOBJXWINDOWS $OPTIONOBJSDL $OPTIONOBJFBDEV autoselectoptions.o chardetect.o textspeech.o scrnull.o screen.o mem128.o chloe.o prism.o tbblue.o timex.o $OPTIONOBJDSP $OPTIONOBJALSA $OPTIONOBJPULSE $OPTIONOBJCOREAUDIO audionull.o ay38912.o codsinpr.o codprddfd.o codpred.o operaciones.o debug.o tape.o tape_tap.o tape_tzx.o tape_smp.o audio.o zx8081.o jupiterace.o z88.o cpc.o sam.o atomlite.o zxuno.o snap.o snap_z81.o snap_zx8081.o snap_rzx.o menu.o core_spectrum.o core_zx8081.o core_z88.o core_cpc.o core_ace.o core_sam.o core_ql.o timer.o contend.o disassemble.o utils.o playtzx.o joystick.o ula.o mmc.o ide.o pd765.o divmmc.o divide.o diviface.o zxpand.o superupgrade.o dandanator.o multiface.o spectra.o spritechip.o printers.o realjoystick.o ulaplus.o if1.o ql.o m68kcpu.o m68kdasm.o m68kops.o  m68kopac.o m68kopdm.o m68kopnz.o remote.o -o zesarux \$(LDFLAGS)
+
+charset.o: charset.c
+	\$(CC) \$(CFLAGS) -c charset.c
+
+scrnull.o: scrnull.c scrnull.h debug.h screen.h cpu.h
+	\$(CC) \$(CFLAGS) -c scrnull.c
+
+codprddfd.o: codprddfd.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h
+	\$(CC) \$(CFLAGS) -c codprddfd.c
+
+codpred.o: codpred.c cpu.h operaciones.h debug.h contend.h
+	\$(CC) \$(CFLAGS) -c codpred.c
+
+codsinpr.o: codsinpr.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h z88.h snap_rzx.h
+	\$(CC) \$(CFLAGS) -c codsinpr.c
+
+operaciones.o: operaciones.c cpu.h operaciones.h debug.h audio.h tape.h ay38912.h mem128.h chloe.h prism.h tbblue.h timex.h zx8081.h menu.h screen.h compileoptions.h contend.h joystick.h ula.h utils.h printers.h disassemble.h z88.h ulaplus.h zxuno.h chardetect.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h timer.h pd765.h superupgrade.h snap_rzx.h multiface.h
+	\$(CC) \$(CFLAGS) -c operaciones.c
+
+cpu.o: cpu.c cpu.h scrnull.h scrstdout.h scrsimpletext.h operaciones.h debug.h compileoptions.h tape.h tape_tap.h tape_tzx.h audio.h screen.h ay38912.h chloe.h prism.h tbblue.h mem128.h timex.h scrcurses.h scraa.h scrxwindows.h scrsdl.h scrnull.h scrfbdev.h audiodsp.h audiosdl.h audionull.h audioalsa.h audiopulse.h zx8081.h snap.h menu.h core_spectrum.h core_zx8081.h core_z88.h tape_smp.h contend.h utils.h ula.h printers.h joystick.h realjoystick.h z88.h ulaplus.h autoselectoptions.h zxuno.h chardetect.h textspeech.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h atomlite.h dandanator.h superupgrade.h ql.h remote.h snap_rzx.h multiface.h
+	\$(CC) \$(CFLAGS) -c cpu.c
+
+core_spectrum.o: core_spectrum.c core_spectrum.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h realjoystick.h divmmc.h divide.h diviface.h timex.h zxuno.h prism.h snap_rzx.h
+	\$(CC) \$(CFLAGS) -c core_spectrum.c
+
+core_zx8081.o: core_zx8081.c core_zx8081.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h zx8081.h timer.h menu.h chardetect.h compileoptions.h contend.h snap_zx8081.h utils.h realjoystick.h
+	\$(CC) \$(CFLAGS) -c core_zx8081.c
+
+core_ace.o: core_ace.c core_ace.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h jupiterace.h timer.h menu.h chardetect.h compileoptions.h contend.h snap_zx8081.h utils.h realjoystick.h
+	\$(CC) \$(CFLAGS) -c core_ace.c
+
+core_ql.o: core_ql.c core_ql.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h snap_zx8081.h utils.h realjoystick.h ula.h
+	\$(CC) \$(CFLAGS) -c core_ql.c
+
+core_z88.o: core_z88.c core_z88.h cpu.h debug.h tape.h audio.h screen.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h z88.h audio.h utils.h
+	\$(CC) \$(CFLAGS) -c core_z88.c
+
+core_cpc.o: core_cpc.c core_cpc.h cpu.h debug.h tape.h audio.h screen.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h audio.h utils.h tape.h cpc.h realjoystick.h
+	\$(CC) \$(CFLAGS) -c core_cpc.c
+
+
+core_sam.o: core_sam.c core_sam.h cpu.h debug.h tape.h audio.h screen.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h audio.h utils.h tape.h cpc.h realjoystick.h
+	\$(CC) \$(CFLAGS) -c core_sam.c
+
+
+timer.o: timer.c timer.h cpu.h audio.h debug.h menu.h tape.h screen.h compileoptions.h zx8081.h joystick.h utils.h printers.h z88.h autoselectoptions.h zxuno.h textspeech.h mmc.h ide.h zxpand.h superupgrade.h snap.h snap_rzx.h ql.h
+	\$(CC) \$(CFLAGS) -c timer.c
+
+
+debug.o: debug.c cpu.h debug.h mem128.h timex.h screen.h menu.h zx8081.h operaciones.h core_spectrum.h core_zx8081.h core_z88.h core_ace.h core_cpc.h disassemble.h utils.h prism.h core_sam.h core_ql.h spectra.h tbblue.h zxuno.h ulaplus.h timex.h ay38912.h ula.h ql.h m68k.h
+	\$(CC) \$(CFLAGS) -c debug.c
+
+tape.o: tape.c tape.h cpu.h operaciones.h debug.h tape_tap.h tape_tzx.h tape_smp.h chloe.h prism.h mem128.h timex.h snap.h compileoptions.h screen.h zx8081.h menu.h snap_z81.h utils.h audio.h screen.h autoselectoptions.h zxuno.h timer.h superupgrade.h multiface.h
+	\$(CC) \$(CFLAGS) -c tape.c
+
+tape_tap.o: tape_tap.c tape_tap.h tape.h cpu.h operaciones.h debug.h
+	\$(CC) \$(CFLAGS) -c tape_tap.c
+
+tape_smp.o: tape_smp.c tape_smp.h tape.h cpu.h operaciones.h debug.h zx8081.h snap.h menu.h snap_zx8081.h utils.h
+	\$(CC) \$(CFLAGS) -c tape_smp.c
+
+tape_tzx.o: tape_tzx.c tape_tzx.h tape.h cpu.h operaciones.h debug.h utils.h
+	\$(CC) \$(CFLAGS) -c tape_tzx.c
+
+audio.o: audio.c cpu.h audio.h debug.h screen.h utils.h zx8081.h audionull.h jupiterace.h autoselectoptions.h operaciones.h cpc.h
+	\$(CC) \$(CFLAGS) -c audio.c
+
+audionull.o: audionull.c audionull.h cpu.h debug.h audio.h
+	\$(CC) \$(CFLAGS) -c audionull.c
+
+ay38912.o: ay38912.c ay38912.h cpu.h audio.h joystick.h
+	\$(CC) \$(CFLAGS) -c ay38912.c
+
+screen.o: screen.c screen.h debug.h mem128.h chloe.h prism.h timex.h cpc.h prism.h operaciones.h zx8081.h charset.h menu.h audio.h contend.h ula.h tape_smp.h z88.h ulaplus.h zxuno.h spectra.h spritechip.h timer.h sam.h ql.h
+	\$(CC) \$(CFLAGS) -c screen.c
+
+mem128.o: mem128.c cpu.h mem128.h debug.h contend.h zxuno.h chloe.h prism.h timex.h sam.h ula.h tbblue.h superupgrade.h
+	\$(CC) \$(CFLAGS) -c mem128.c
+
+timex.o: timex.c timex.h cpu.h debug.h contend.h tape.h mem128.h menu.h
+	\$(CC) \$(CFLAGS) -c timex.c
+
+chloe.o: chloe.c chloe.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h prism.h
+	\$(CC) \$(CFLAGS) -c chloe.c
+
+prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h utils.h menu.h
+	\$(CC) \$(CFLAGS) -c prism.c
+
+remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h
+	\$(CC) \$(CFLAGS) -c remote.c
+
+tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h
+	\$(CC) \$(CFLAGS) -c tbblue.c
+
+zx8081.o: zx8081.c zx8081.h cpu.h screen.h debug.h audio.h core_zx8081.h operaciones.h menu.h ula.h
+	\$(CC) \$(CFLAGS) -c zx8081.c
+
+jupiterace.o: jupiterace.c jupiterace.h cpu.h screen.h debug.h audio.h core_ace.h operaciones.h menu.h
+	\$(CC) \$(CFLAGS) -c jupiterace.c
+
+z88.o: z88.c z88.h cpu.h screen.h debug.h core_z88.h contend.h joystick.h menu.h operaciones.h utils.h timer.h
+	\$(CC) \$(CFLAGS) -c z88.c
+
+cpc.o: cpc.c cpc.h cpu.h screen.h debug.h core_cpc.h contend.h joystick.h menu.h operaciones.h utils.h ay38912.h
+	\$(CC) \$(CFLAGS) -c cpc.c
+
+sam.o: sam.c sam.h cpu.h screen.h debug.h core_sam.h contend.h joystick.h menu.h operaciones.h utils.h
+	\$(CC) \$(CFLAGS) -c sam.c
+
+atomlite.o: atomlite.c atomlite.h cpu.h screen.h debug.h menu.h operaciones.h utils.h ide.h
+	\$(CC) \$(CFLAGS) -c atomlite.c
+
+zxuno.o: zxuno.c zxuno.h cpu.h debug.h contend.h mem128.h utils.h ula.h screen.h menu.h divmmc.h diviface.h ay38912.h ulaplus.h
+	\$(CC) \$(CFLAGS) -c zxuno.c
+
+#ql.o: 68000.c 68000_debug.c op68kadd.c op68karith.c op68ksub.c op68klogop.c op68kmisc.c op68kmove.c op68kshift.c 68000_additional.c ql.c
+#	\$(CC) \$(CFLAGS) -c 68000.c 68000_debug.c op68kadd.c op68karith.c op68ksub.c op68klogop.c op68kmisc.c op68kmove.c op68kshift.c 68000_additional.c ql.c
+
+ql.o: ql.c ql.h debug.h m68k.h utils.h
+	\$(CC) \$(CFLAGS) -c ql.c
+
+
+m68kcpu.o: m68kcpu.c
+	\$(CC) \$(CFLAGS) -c m68kcpu.c
+
+m68kdasm.o: m68kdasm.c
+	\$(CC) \$(CFLAGS) -c m68kdasm.c
+
+m68kops.o: m68kops.c
+	\$(CC) \$(CFLAGS) -c m68kops.c
+
+m68kopac.o: m68kopac.c
+	\$(CC) \$(CFLAGS) -c m68kopac.c
+
+m68kopdm.o: m68kopdm.c
+	\$(CC) \$(CFLAGS) -c m68kopdm.c
+
+m68kopnz.o: m68kopnz.c
+	\$(CC) \$(CFLAGS) -c m68kopnz.c
+
+
+
+snap.o: snap.c snap.h cpu.h debug.h operaciones.h zx8081.h mem128.h ay38912.h compileoptions.h autoselectoptions.h ay38912.h tape_smp.h audio.h screen.h menu.h tape.h snap_z81.h snap_zx8081.h snap_rzx.h utils.h ula.h joystick.h realjoystick.h z88.h chardetect.h jupiterace.h cpc.h timex.h zxuno.h ulaplus.h chloe.h prism.h diviface.h snap_rzx.h
+	\$(CC) \$(CFLAGS) -c snap.c
+
+snap_z81.o: snap_z81.c snap_z81.h cpu.h debug.h operaciones.h snap.h
+	\$(CC) \$(CFLAGS) -c snap_z81.c
+
+snap_zx8081.o: snap_zx8081.c snap_zx8081.h cpu.h debug.h operaciones.h zx8081.h audio.h screen.h tape.h tape_smp.h snap_z81.h menu.h snap.h utils.h
+	\$(CC) \$(CFLAGS) -c snap_zx8081.c
+
+snap_rzx.o: snap_rzx.c snap_rzx.h snap.h cpu.h debug.h operaciones.h utils.h menu.h screen.h
+	\$(CC) \$(CFLAGS) -c snap_rzx.c
+
+menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h tape.h audio.h timer.h snap.h operaciones.h disassemble.h utils.h contend.h joystick.h ula.h printers.h realjoystick.h scrstdout.h z88.h ulaplus.h autoselectoptions.h zxuno.h charset.h chardetect.h textspeech.h  mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h timex.h chloe.h cpc.h prism.h sam.h if1.h pd765.h atomlite.h tbblue.h dandanator.h multiface.h superupgrade.h m68k.h remote.h snap_rzx.h
+	\$(CC) \$(CFLAGS) -c menu.c
+
+disassemble.o: disassemble.c disassemble.h cpu.h operaciones.h debug.h ql.h utils.h
+	\$(CC) \$(CFLAGS) -c disassemble.c
+
+utils.o: utils.c utils.h cpu.h debug.h joystick.h compileoptions.h tape.h snap.h screen.h realjoystick.h menu.h z88.h playtzx.h tape_tzx.h operaciones.h zx8081.h autoselectoptions.h ulaplus.h ay38912.h textspeech.h spectra.h zxuno.h spritechip.h timex.h cpc.h sam.h divmmc.h divide.h superupgrade.h chardetect.h zx8081.h jupiterace.h mmc.h ide.h zxpand.h diviface.h divmmc.h divide.h dandanator.h ql.h m68k.h remote.h ula.h snap_rzx.h
+	\$(CC) \$(CFLAGS) -c utils.c
+
+playtzx.o: playtzx.c playtzx.h debug.h audio.h utils.h
+	\$(CC) \$(CFLAGS) -c playtzx.c
+
+contend.o: contend.c contend.h cpu.h debug.h screen.h compileoptions.h ulaplus.h zxuno.h ula.h tbblue.h
+	\$(CC) \$(CFLAGS) -c contend.c
+
+joystick.o: joystick.c joystick.h cpu.h debug.h screen.h
+	\$(CC) \$(CFLAGS) -c joystick.c
+
+ula.o: ula.c ula.h cpu.h debug.h screen.h contend.h menu.h multiface.h
+	\$(CC) \$(CFLAGS) -c ula.c
+
+mmc.o: mmc.c mmc.h cpu.h debug.h utils.h menu.h screen.h divmmc.h
+	\$(CC) \$(CFLAGS) -c mmc.c
+
+ide.o: ide.c ide.h cpu.h debug.h utils.h menu.h screen.h divide.h
+	\$(CC) \$(CFLAGS) -c ide.c
+
+pd765.o: pd765.c pd765.h cpu.h debug.h utils.h menu.h screen.h
+	\$(CC) \$(CFLAGS) -c pd765.c
+
+zxpand.o: zxpand.c zxpand.h mmc.h cpu.h debug.h utils.h menu.h screen.h zx8081.h joystick.h
+	\$(CC) \$(CFLAGS) -c zxpand.c
+
+dandanator.o: dandanator.c dandanator.h cpu.h debug.h utils.h operaciones.h ula.h
+	\$(CC) \$(CFLAGS) -c dandanator.c
+
+multiface.o: multiface.c multiface.h cpu.h debug.h utils.h operaciones.h
+	\$(CC) \$(CFLAGS) -c multiface.c
+
+superupgrade.o: superupgrade.c superupgrade.h cpu.h debug.h utils.h operaciones.h mem128.h menu.h screen.h
+	\$(CC) \$(CFLAGS) -c superupgrade.c
+
+spectra.o: spectra.c spectra.h cpu.h debug.h utils.h menu.h screen.h operaciones.h mem128.h ulaplus.h
+	\$(CC) \$(CFLAGS) -c spectra.c
+
+spritechip.o: spritechip.c spritechip.h cpu.h debug.h utils.h screen.h ula.h ulaplus.h mem128.h
+	\$(CC) \$(CFLAGS) -c spritechip.c
+
+divmmc.o: divmmc.c divmmc.h divide.h diviface.h cpu.h debug.h utils.h
+	\$(CC) \$(CFLAGS) -c divmmc.c
+
+divide.o: divide.c divide.h divmmc.h diviface.h cpu.h debug.h utils.h
+	\$(CC) \$(CFLAGS) -c divide.c
+
+diviface.o: diviface.c diviface.h cpu.h debug.h utils.h menu.h screen.h operaciones.h zxuno.h contend.h prism.h
+	\$(CC) \$(CFLAGS) -c diviface.c
+
+if1.o: if1.c if1.h cpu.h debug.h utils.h operaciones.h menu.h
+	\$(CC) \$(CFLAGS) -c if1.c
+
+printers.o: printers.c printers.h cpu.h debug.h utils.h screen.h menu.h
+	\$(CC) \$(CFLAGS) -c printers.c
+
+realjoystick.o: realjoystick.c realjoystick.h cpu.h debug.h joystick.h menu.h utils.h  screen.h compileoptions.h
+	\$(CC) \$(CFLAGS) -c realjoystick.c
+
+ulaplus.o: ulaplus.c ulaplus.h cpu.h debug.h screen.h spectra.h menu.h
+	\$(CC) \$(CFLAGS) -c ulaplus.c
+
+autoselectoptions.o: autoselectoptions.c autoselectoptions.h debug.h zx8081.h cpu.h screen.h joystick.h tape.h realjoystick.h ulaplus.h menu.h utils.h chardetect.h
+	\$(CC) \$(CFLAGS) -c autoselectoptions.c
+
+chardetect.o: chardetect.c chardetect.h cpu.h operaciones.h debug.h screen.h textspeech.h disassemble.h menu.h
+	\$(CC) \$(CFLAGS) -c chardetect.c
+
+textspeech.o: textspeech.c textspeech.h cpu.h operaciones.h debug.h screen.h chardetect.h menu.h utils.h sam.h
+	\$(CC) \$(CFLAGS) -c textspeech.c
+
+
+clean:
+	rm -f *.o zesarux zesarux.exe smpatap sp_z80 tapabin leezx81 file_to_eprom bmp_to_prism_4_planar bmp_to_sprite install.sh 
+	rm -fR bintargztemp/ sourcetargztemp/ ZEsarUX_win-\$(EMULATOR_VERSION)/
+	rm -fR macos/zesarux.app
+	rm -fR macos/zesarux.dmg
+	rm -fR macos/zesarux.dmg.gz
+	rm -fR macos/ZEsarUX_macos*gz
+	rm -f ZEsarUX_bin-*tar.gz
+	rm -f ZEsarUX_src-*tar.gz
+	rm -f ZEsarUX_win-*.zip
+
+COMMONFILES=ACKNOWLEDGEMENTS LICENSE LICENSE_MOTOROLA_CORE Changelog TODO README HISTORY FEATURES INSTALL INSTALLWINDOWS ALTERNATEROMS INCLUDEDTAPES FAQ zesarux.odt mantransfev3.bin *.rom zxuno.flash divmmcesx085.mmc zxuno.mmc tbblue.mmc divideesx085.ide atomlite.ide speech_filters media snap_tests docs zesarux.mp3 zesarux.xcf bin_sprite_to_c.sh
+
+ONLYSOURCEFILES=macos *.c *.m *.h *.tpl DEVELOPMENT CHECKLIST configure generate_install_sh.sh join_tzx.sh testsound.sh txt_to_basic_lines.sh zxuno_roms_bin_a_flash.sh *.asm benchmark_*.txt current_checklist.txt patches prism_change_boot.txt pruebas_screen_rgb32 nuevo_core_zx8081 pruebas_z88_core_topspeed/
+
+
+ONLYUNIXBINARIES=install.sh zesarux
+ONLYWINBINARIES=zesarux.exe $LIBSDL.dll $LIBPTHREADS_WIN
+
+sourcetargz:
+	rm -fR sourcetargztemp
+	mkdir -p sourcetargztemp/ZEsarUX-\$(EMULATOR_VERSION)
+	cp -a \$(COMMONFILES) \$(ONLYSOURCEFILES) sourcetargztemp/ZEsarUX-\$(EMULATOR_VERSION)/
+	tar -C sourcetargztemp -cvzf ZEsarUX_src-\$(EMULATOR_VERSION).tar.gz ZEsarUX-\$(EMULATOR_VERSION)
+	echo
+	echo "Generated file is : ZEsarUX_src-\$(EMULATOR_VERSION).tar.gz"
+
+bintargz: all
+	./generate_install_sh.sh
+	rm -fR bintargztemp
+	mkdir -p bintargztemp/ZEsarUX-\$(EMULATOR_VERSION)
+	cp -a \$(COMMONFILES) \$(ONLYUNIXBINARIES) bintargztemp/ZEsarUX-\$(EMULATOR_VERSION)/
+	tar -C bintargztemp -cvzf ZEsarUX_bin-\$(EMULATOR_VERSION).tar.gz ZEsarUX-\$(EMULATOR_VERSION)
+	echo
+	echo "Generated file is : ZEsarUX_bin-\$(EMULATOR_VERSION).tar.gz"
+
+windows:
+	mkdir -p ZEsarUX_win-\$(EMULATOR_VERSION)
+	cp -a \$(COMMONFILES) \$(ONLYWINBINARIES) ZEsarUX_win-\$(EMULATOR_VERSION)/
+	zip -r ZEsarUX_win-\$(EMULATOR_VERSION).zip ZEsarUX_win-\$(EMULATOR_VERSION)/
+	echo
+	echo "Generated file is: ZEsarUX_win-\$(EMULATOR_VERSION).zip"
+
+macapp: all
+	mkdir -p macos/zesarux.app
+	cp -r macos/apptemplate/* macos/zesarux.app/
+	cp zesarux macos/zesarux.app/Contents/MacOS/zesarux
+	cp -a \$(COMMONFILES) macos/zesarux.app/Contents/Resources/
+	rm -f macos/zesarux.dmg
+	rm -f macos/zesarux.dmg.gz
+	hdiutil create -megabytes 400 -fs HFS+ -volname ZEsarUX macos/zesarux.dmg
+	hdiutil attach -mountpoint macos/tempmount macos/zesarux.dmg
+	cp -R macos/zesarux.app macos/tempmount
+	ln -s /Applications/ macos/tempmount/Applications
+	sleep 5
+	hdiutil detach macos/tempmount
+	gzip macos/zesarux.dmg
+
+
+#CC32=gcc \$(CFLAGS) -m32
+#CC64=gcc \$(CFLAGS) -m64
+
+#UTILS32=smpatap_x32 sp_z80_x32 tapabin_x32 leezx81_x32
+#UTILS64=smpatap_x64 sp_z80_x64 tapabin_x64 leezx81_x64
+
+#utilities32: \$(UTILS32)
+
+#utilities64: \$(UTILS64)
+
+
+#smpatap_x32: smpatap_unix.c
+#	\$(CC32) \$(CFLAGS) smpatap_unix.c -o smpatap_x32
+
+#smpatap_x64: smpatap_unix.c
+#	\$(CC64) \$(CFLAGS) smpatap_unix.c -o smpatap_x64
+
+#leezx81_x32: leezx81_unix.c
+#	\$(CC32) \$(CFLAGS) leezx81_unix.c -o leezx81_x32
+
+#leezx81_x64: leezx81_unix.c
+#	\$(CC64) \$(CFLAGS) leezx81_unix.c -o leezx81_x64
+
+#sp_z80_x32: sp_z80_unix.c
+#	\$(CC32) \$(CFLAGS) sp_z80_unix.c -o sp_z80_x32
+
+#sp_z80_x64: sp_z80_unix.c
+#	\$(CC64) \$(CFLAGS) sp_z80_unix.c -o sp_z80_x64
+
+#tapabin_x32: tapabin_unix.c
+#	\$(CC32) \$(CFLAGS) tapabin_unix.c -o tapabin_x32
+
+#tapabin_x64: tapabin_unix.c
+#	\$(CC64) \$(CFLAGS) tapabin_unix.c -o tapabin_x64
+
+
+#UTILITIES=smpatap sp_z80 tapabin leezx81
+
+
+install: all
+	./generate_install_sh.sh
+	./install.sh
+
+#utilities: \$(UTILITIES)
+utilities: smpatap sp_z80 tapabin leezx81 file_to_eprom bmp_to_prism_4_planar bmp_to_sprite
+
+
+smpatap: smpatap_unix.c
+	\$(CC) \$(CFLAGS) smpatap_unix.c -o smpatap
+
+leezx81: leezx81_unix.c
+	\$(CC) \$(CFLAGS) leezx81_unix.c -o leezx81
+
+sp_z80: sp_z80_unix.c
+	\$(CC) \$(CFLAGS) sp_z80_unix.c -o sp_z80
+
+tapabin: tapabin_unix.c
+	\$(CC) \$(CFLAGS) tapabin_unix.c -o tapabin
+
+file_to_eprom: file_to_eprom.c
+	\$(CC) \$(CFLAGS) file_to_eprom.c -o file_to_eprom
+
+bmp_to_prism_4_planar: bmp_to_prism_4_planar.c
+	\$(CC) \$(CFLAGS) bmp_to_prism_4_planar.c -o bmp_to_prism_4_planar
+
+bmp_to_sprite: bmp_to_sprite.c
+	\$(CC) \$(CFLAGS) bmp_to_sprite.c -o bmp_to_sprite
+
+_EOF
+
+
+if [ "$MAINSOURCE" == "main_unix" ]; then
+
+cat >> Makefile << _EOF
+main_unix.o: main_unix.c cpu.h
+	\$(CC) \$(CFLAGS) -c main_unix.c
+
+_EOF
+
+fi
+
+
+if [ "$MAINSOURCE" == "scrcocoa" ]; then
+cat >> Makefile << _EOF
+scrcocoa.o: scrcocoa.m joystick.h compileoptions.h cpu.h screen.h charset.h debug.h utils.h timer.h menu.h cpc.h prism.h sam.h ql.h
+	clang scrcocoa.m -c -o scrcocoa.o
+
+_EOF
+
+fi
+
+
+
+if [ "$OPTIONOBJSTDOUT" != "" ]; then
+
+cat >> Makefile << _EOF
+scrstdout.o: scrstdout.c scrstdout.h debug.h screen.h mem128.h zx8081.h operaciones.h cpu.h utils.h menu.h joystick.h ula.h disassemble.h z88.h timer.h chardetect.h textspeech.h
+	\$(CC) \$(CFLAGS) -c scrstdout.c
+
+_EOF
+
+fi
+
+if [ "$OPTIONOBJSIMPLETEXT" != "" ]; then
+
+cat >> Makefile << _EOF
+scrsimpletext.o: scrsimpletext.c scrsimpletext.h debug.h screen.h mem128.h zx8081.h operaciones.h cpu.h utils.h menu.h joystick.h ula.h disassemble.h z88.h timer.h
+	\$(CC) \$(CFLAGS) -c scrsimpletext.c
+
+_EOF
+
+fi
+
+
+
+if [ "$OPTIONOBJCURSES" != "" ]; then
+
+cat >> Makefile << _EOF
+scrcurses.o: scrcurses.c cpu.h scrcurses.h operaciones.h mem128.h charset.c debug.h zx8081.h screen.h audio.h menu.h utils.h joystick.h ula.h z88.h sam.h charset.h
+	\$(CC) \$(CFLAGS) -c scrcurses.c
+
+_EOF
+
+fi
+
+
+
+if [ "$OPTIONOBJFBDEV" != "" ]; then
+
+cat >> Makefile << _EOF
+scrfbdev.o: scrfbdev.c cpu.h scrfbdev.h operaciones.h mem128.h charset.c debug.h zx8081.h screen.h audio.h menu.h utils.h joystick.h ula.h z88.h cpc.h prism.h sam.h ql.h
+	\$(CC) \$(CFLAGS) -c scrfbdev.c
+
+_EOF
+
+fi
+
+
+if [ "$OPTIONOBJAA" != "" ]; then
+
+cat >> Makefile << _EOF
+scraa.o: scraa.c cpu.h scraa.h operaciones.h mem128.h charset.c debug.h zx8081.h audio.h menu.h screen.h utils.h joystick.h ula.h z88.h textspeech.h
+	\$(CC) \$(CFLAGS) -c scraa.c
+
+_EOF
+
+fi
+
+if [ "$OPTIONOBJCACA" != "" ]; then
+
+cat >> Makefile << _EOF
+scrcaca.o: scrcaca.c cpu.h scrcaca.h operaciones.h mem128.h charset.c debug.h zx8081.h audio.h menu.h screen.h utils.h joystick.h z88.h
+	\$(CC) \$(CFLAGS) -c scrcaca.c
+
+_EOF
+
+fi
+
+
+
+
+if [ "$OPTIONOBJXWINDOWS" != "" ]; then
+
+cat >> Makefile << _EOF
+scrxwindows.o: scrxwindows.c cpu.h scrxwindows.h debug.h screen.h mem128.h compileoptions.h zx8081.h audio.h charset.h menu.h timer.h utils.h joystick.h cpc.h prism.h z88.h sam.h ql.h
+	\$(CC) \$(CFLAGS) -I/usr/X11R6/include -I/opt/X11/include -c scrxwindows.c
+
+_EOF
+
+fi
+
+
+if [ "$OPTIONOBJSDL" != "" ] && [ "$LIBSDL" == "SDL" ]; then
+
+cat >> Makefile << _EOF
+scrsdl.o: scrsdl.c cpu.h scrsdl.h debug.h screen.h mem128.h compileoptions.h zx8081.h audio.h charset.h menu.h timer.h utils.h joystick.h common_sdl.h cpc.h prism.h sam.h ql.h
+	\$(CC) \$(CFLAGS) -c scrsdl.c
+
+audiosdl.o: audiosdl.c audiosdl.h cpu.h audio.h compileoptions.h debug.h common_sdl.h
+	\$(CC) \$(CFLAGS) -c audiosdl.c
+
+common_sdl.o: common_sdl.c common_sdl.h cpu.h compileoptions.h debug.h
+	\$(CC) \$(CFLAGS) -c common_sdl.c
+
+_EOF
+
+fi
+
+if [ "$OPTIONOBJSDL" != "" ] && [ "$LIBSDL" == "SDL2" ]; then
+
+cat >> Makefile << _EOF
+scrsdl2.o: scrsdl2.c cpu.h scrsdl2.h debug.h screen.h mem128.h compileoptions.h zx8081.h audio.h charset.h menu.h timer.h utils.h joystick.h common_sdl2.h cpc.h prism.h sam.h ql.h
+	\$(CC) \$(CFLAGS) -c scrsdl2.c
+
+audiosdl2.o: audiosdl2.c audiosdl2.h cpu.h audio.h compileoptions.h debug.h common_sdl2.h utils.h
+	\$(CC) \$(CFLAGS) -c audiosdl2.c
+
+common_sdl2.o: common_sdl2.c common_sdl2.h cpu.h compileoptions.h debug.h
+	\$(CC) \$(CFLAGS) -c common_sdl2.c
+
+_EOF
+
+fi
+
+
+
+if [ "$OPTIONOBJDSP" != "" ]; then
+
+cat >> Makefile << _EOF
+audiodsp.o: audiodsp.c audiodsp.h cpu.h audio.h compileoptions.h debug.h
+	\$(CC) \$(CFLAGS) -c audiodsp.c
+
+_EOF
+
+fi
+
+if [ "$OPTIONOBJALSA" != "" ]; then
+
+cat >> Makefile << _EOF
+audioalsa.o: audioalsa.c audioalsa.h cpu.h audio.h compileoptions.h debug.h
+	\$(CC) \$(CFLAGS) -c audioalsa.c
+
+_EOF
+
+fi
+
+
+if [ "$OPTIONOBJPULSE" != "" ]; then
+
+cat >> Makefile << _EOF
+audiopulse.o: audiopulse.c audiopulse.h cpu.h audio.h compileoptions.h debug.h utils.h
+	\$(CC) \$(CFLAGS) -c audiopulse.c
+
+_EOF
+
+fi
+
+
+
+if [ "$OPTIONOBJCOREAUDIO" != "" ]; then
+
+cat >> Makefile << _EOF
+audiocoreaudio.o: audiocoreaudio.c audiocoreaudio.h cpu.h audio.h compileoptions.h debug.h
+	\$(CC) \$(CFLAGS) -c audiocoreaudio.c
+
+_EOF
+
+fi
+
+
+
+
+
+echo "Creating compileoptions.h"
+
+cat > compileoptions.h << _EOF
+
+#ifndef OPTIONS_H
+#define OPTIONS_H
+
+
+_EOF
+
+if [ "$OPTIONOBJSTDOUT" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_STDOUT
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_STDOUT"
+fi
+
+if [ "$OPTIONOBJSIMPLETEXT" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_SIMPLETEXT
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_SIMPLETEXT"
+fi
+
+
+
+if [ "$OPTIONOBJCURSES" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_CURSES
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_CURSES"
+fi
+
+if [ "$OPTIONOBJAA" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_AA
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_AA"
+fi
+
+if [ "$OPTIONOBJCACA" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_CACA
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_CACA"
+fi
+
+
+
+if [ "$OPTIONOBJXWINDOWS" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_XWINDOWS
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_XWINDOWS"
+fi
+
+if [ "$OPTIONOBJSDL" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_SDL
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_SDL"
+
+if [ "$LIBSDL" == "SDL2" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_SDL2
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_SDL2"
+fi
+fi
+
+
+
+if [ "$OPTIONOBJFBDEV" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_FBDEV
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_FBDEV"
+fi
+
+
+
+if [ "$OPTIONOBJSSL" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_SSL
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_SSL"
+fi
+
+
+if [ "$OPTIONXEXT" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_XEXT
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_XEXT"
+fi
+
+if [ "$OPTIONXVIDMODE" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_XVIDMODE
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_XVIDMODE"
+fi
+
+
+
+if [ "$OPTIONPTHREADS" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_PTHREADS
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_PTHREADS"
+fi
+
+
+if [ "$OPTIONCOCOA" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_COCOA
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_COCOA"
+fi
+
+if [ "$OPTIONCOCOA_OPENGL" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COCOA_OPENGL
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COCOA_OPENGL"
+fi
+
+
+
+if [ "$OPTIONSNDFILE" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_SNDFILE
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_SNDFILE"
+fi
+
+
+if [ "$OPTIONREALTIME" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_REALTIME
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_REALTIME"
+fi
+
+
+
+if [ "$OPTIONOBJDSP" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_DSP
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_DSP"
+fi
+
+if [ "$OPTIONOBJALSA" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_ALSA
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_ALSA"
+fi
+
+if [ "$OPTIONOBJPULSE" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_PULSE
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_PULSE"
+fi
+
+
+if [ "$OPTIONOBJCOREAUDIO" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define COMPILE_COREAUDIO
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES COMPILE_COREAUDIO"
+fi
+
+
+if [ "$OPTIONEMULATE_MEMPTR" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define EMULATE_MEMPTR
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES EMULATE_MEMPTR"
+fi
+
+if [ "$OPTIONEMULATE_VISUALMEM" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define EMULATE_VISUALMEM
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES EMULATE_VISUALMEM"
+fi
+
+if [ "$OPTIONEMULATE_CPU_STATS" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define EMULATE_CPU_STATS
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES EMULATE_CPU_STATS"
+fi
+
+if [ "$OPTIONEMULATE_RASPBERRY" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define EMULATE_RASPBERRY
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES EMULATE_RASPBERRY"
+fi
+
+
+if [ "$OPTIONEMULATE_CONTEND" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define EMULATE_CONTEND
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES EMULATE_CONTEND"
+fi
+
+if [ "$OPTIONPUTPIXELCACHE" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define PUTPIXELCACHE
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES PUTPIXELCACHE"
+fi
+
+if [ "$OPTION_WORDS_BIGENDIAN" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define WORDS_BIGENDIAN
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES WORDS_BIGENDIAN"
+fi
+
+
+if [ "$OPTIONLINUXREALJOYSTICK" != "" ]; then
+cat >> compileoptions.h << _EOF
+#define USE_LINUXREALJOYSTICK
+_EOF
+COMPILE_VARIABLES="$COMPILE_VARIABLES USE_LINUXREALJOYSTICK"
+fi
+
+
+#Para que la fecha y mensajes del wc salgan en ingles
+export LANG=C
+
+#Estadisticas
+LINES_SOURCE=`wc -l *.c *.m *.h|grep total|awk '{printf $1}'`
+
+cat >> compileoptions.h << _EOF
+
+#define COMPILATION_DATE "`date`"
+#define COMPILATION_SYSTEM "$SISTEMA"
+#define CONFIGURE_OPTIONS "$0 $CONFIGURE_OPTIONS"
+#define COMPILE_VARIABLES "$COMPILE_VARIABLES"
+#define COMPILE_INITIALCFLAGS "$INITIALCFLAGS"
+#define COMPILE_INITIALLDFLAGS "$INITIALLDFLAGS"
+#define COMPILE_FINALCFLAGS "$CFLAGS"
+#define COMPILE_FINALLDFLAGS "$LDFLAGS"
+#define INSTALL_PREFIX "$INSTALLPREFIX"
+
+#define LINES_SOURCE $LINES_SOURCE
+
+#define BUILDNUMBER "$BUILDNUMBER"
+
+
+#endif
+
+_EOF
+
+
+
+echo
+echo "Config files successfully generated by $0"
+
+echo
+
+echo -n " Enabled Video output drivers: "
+if [ "$OPTIONOBJSTDOUT" != "" ]; then
+        echo -n "stdout "
+fi
+
+if [ "$OPTIONOBJSIMPLETEXT" != "" ]; then
+        echo -n "simpletext "
+fi
+
+
+if [ "$OPTIONOBJCURSES" != "" ]; then
+        echo -n "curses "
+fi
+
+if [ "$OPTIONOBJAA" != "" ]; then
+        echo -n "aa "
+fi
+
+if [ "$OPTIONOBJCACA" != "" ]; then
+        echo -n "caca "
+fi
+
+
+if [ "$OPTIONCOCOA" != "" ]; then
+        echo -n "cocoa"
+
+	if [ "$OPTIONCOCOA_OPENGL" != "" ]; then
+		echo -n "(GL)"
+	fi
+
+	echo -n " "
+
+fi
+
+if [ "$OPTIONOBJXWINDOWS" != "" ]; then
+        echo -n "xwindows "
+fi
+
+if [ "$OPTIONOBJSDL" != "" ]; then
+        echo -n "$TEXTOLIBSDL "
+fi
+
+
+if [ "$OPTIONOBJFBDEV" != "" ]; then
+        echo -n "fbdev "
+fi
+
+echo "null"
+
+
+
+echo -n " Disabled Video output drivers: "
+if [ "$OPTIONOBJSTDOUT" == "" ]; then
+        echo -n "stdout "
+fi
+
+if [ "$OPTIONOBJSIMPLETEXT" == "" ]; then
+        echo -n "simpletext "
+fi
+
+
+if [ "$OPTIONOBJCURSES" == "" ]; then
+        echo -n "curses "
+fi
+
+if [ "$OPTIONOBJAA" == "" ]; then
+        echo -n "aa "
+fi
+
+if [ "$OPTIONOBJCACA" == "" ]; then
+        echo -n "caca "
+fi
+
+
+if [ "$OPTIONCOCOA" == "" ]; then
+        echo -n "cocoa "
+fi
+
+if [ "$OPTIONOBJXWINDOWS" == "" ]; then
+        echo -n "xwindows "
+fi
+
+if [ "$OPTIONOBJSDL" == "" ]; then
+        echo -n "$TEXTOLIBSDL "
+fi
+
+
+
+if [ "$OPTIONOBJFBDEV" == "" ]; then
+        echo -n "fbdev "
+fi
+
+
+
+
+
+
+echo
+
+echo -n " Enabled Audio output drivers: "
+if [ "$OPTIONOBJDSP" != "" ]; then
+        echo -n "dsp "
+fi
+
+if [ "$OPTIONOBJALSA" != "" ]; then
+        echo -n "alsa "
+fi
+
+if [ "$OPTIONOBJPULSE" != "" ]; then
+        echo -n "pulse "
+fi
+
+
+if [ "$OPTIONOBJCOREAUDIO" != "" ]; then
+        echo -n "coreaudio "
+fi
+
+if [ "$OPTIONOBJSDL" != "" ]; then
+        echo -n "$TEXTOLIBSDL "
+fi
+
+
+echo "null"
+
+
+
+echo -n " Disabled Audio output drivers: "
+if [ "$OPTIONOBJDSP" == "" ]; then
+        echo -n "dsp "
+fi
+
+if [ "$OPTIONOBJALSA" == "" ]; then
+        echo -n "alsa "
+fi
+
+if [ "$OPTIONOBJPULSE" == "" ]; then
+        echo -n "pulse "
+fi
+
+
+if [ "$OPTIONOBJCOREAUDIO" == "" ]; then
+        echo -n "coreaudio "
+fi
+
+if [ "$OPTIONOBJSDL" == "" ]; then
+        echo -n "$TEXTOLIBSDL "
+fi
+
+echo
+
+
+
+echo -n " Enabled Audio File output drivers: "
+
+echo -n "raw "
+
+if [ "$OPTIONSNDFILE" != "" ]; then
+	echo -n "wav "
+fi
+
+echo
+
+
+
+echo -n " Disabled Audio File output drivers: "
+
+if [ "$OPTIONSNDFILE" == "" ]; then
+        echo -n "wav "
+fi
+
+echo
+
+
+echo -n " Pthreads support: "
+
+if [ "$OPTIONPTHREADS" == "" ]; then
+	echo "no"
+else
+	echo "yes"
+fi
+
+
+echo -n " Remote command protocol support: "
+
+if [ "$OPTIONPTHREADS" == "" ]; then
+        echo "no. It needs Pthreads support"
+else
+        echo "yes"
+fi
+
+
+
+echo -n " Linux real joystick support: "
+
+if [ "$OPTIONLINUXREALJOYSTICK" == "" ]; then
+        echo "no"
+else
+        echo "yes"
+fi
+
+
+
+
+echo -n " MEMPTR emulation: "
+if [ "$OPTIONEMULATE_MEMPTR" == "" ]; then
+	echo "no"
+else
+	echo "yes"
+fi
+
+echo -n " Visual memory option: "
+if [ "$OPTIONEMULATE_VISUALMEM" == "" ]; then
+        echo "no"
+else
+        echo "yes"
+fi
+
+
+echo -n " CPU statistics option: "
+if [ "$OPTIONEMULATE_CPU_STATS" == "" ]; then
+        echo "no"
+else
+        echo "yes"
+fi
+
+echo -n " Raspberry extensions: "
+if [ "$OPTIONEMULATE_RASPBERRY" == "" ]; then
+        echo "no"
+else
+        echo "yes"
+fi
+
+
+
+
+echo -n " Contended memory emulation: "
+if [ "$OPTIONEMULATE_CONTEND" == "" ]; then
+        echo "no"
+else
+        echo "yes"
+fi
+
+echo -n " Putpixel cache: "
+if [ "$OPTIONPUTPIXELCACHE" == "" ]; then
+        echo "no"
+else
+        echo "yes"
+fi
+
+
+
+
+echo
+echo "Install prefix: $INSTALLPREFIX"
+
+echo
+#echo "'make' will now compile zesarux."
+#echo
+#echo "You can also compile the utilities with:"
+#echo "make utils"
