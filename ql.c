@@ -1023,6 +1023,8 @@ XL00352 EQU L00352
 void ql_out_port(unsigned int Address, unsigned char Data)
 {
 
+	int anterior_video_mode;
+
 	switch (Address) {
 
   	case    0x18003:
@@ -1051,7 +1053,23 @@ void ql_out_port(unsigned int Address, unsigned char Data)
 
 		case 0x18063:
 			//MC_STAT		Master chip status register
+			anterior_video_mode=(ql_mc_stat>>3)&1;
+
 			ql_mc_stat=Data;
+
+			int video_mode=(ql_mc_stat>>3)&1;
+
+			if (video_mode!=anterior_video_mode) {
+				//0=512x256
+				//1=256x256
+				/*
+					0 = 4 colour (mode 4) =512x256
+				  1 = 8 colour (mode 8) =256x256
+				*/
+				if (video_mode==0) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Setting mode 4 512x256");
+				else screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Setting mode 8 256x256");
+			}
+
 		break;
 	}
 

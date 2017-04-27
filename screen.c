@@ -8461,8 +8461,8 @@ void ql_putpixel_zoom(int x,int y,unsigned int color)
 }
 
 
-int temp_offset_ql_pan=131072;
-int temp_offset_cuando=0;
+//int temp_offset_ql_pan=131072;
+//int temp_offset_cuando=0;
 
 //Refresco de pantalla ql sin rainbow
 void scr_refresca_pantalla_ql(void)
