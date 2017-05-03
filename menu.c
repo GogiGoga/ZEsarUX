@@ -4461,14 +4461,14 @@ void menu_breakpoints_enable_disable(MENU_ITEM_PARAMETERS)
 {
         if (debug_breakpoints_enabled.v==0) {
                 debug_breakpoints_enabled.v=1;
-                //debug_cpu_core_loop.v=1;
+
 		breakpoints_enable();
         }
 
 
         else {
                 debug_breakpoints_enabled.v=0;
-                //debug_cpu_core_loop.v=0;
+                
 		breakpoints_disable();
         }
 

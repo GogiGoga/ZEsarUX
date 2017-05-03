@@ -545,6 +545,9 @@ void cpu_set_turbo_speed(void)
 
 	debug_printf (VERBOSE_INFO,"Setting turbo mode %dX",cpu_turbo_speed);
 
+	z80_bit antes_debug_breakpoints_enabled;
+	antes_debug_breakpoints_enabled.v=debug_breakpoints_enabled.v;
+
 	if (cpu_turbo_speed>MAX_CPU_TURBO_SPEED) {
 		debug_printf (VERBOSE_INFO,"Turbo mode higher than maximum. Setting to %d",MAX_CPU_TURBO_SPEED);
 		cpu_turbo_speed=MAX_CPU_TURBO_SPEED;
@@ -574,6 +577,13 @@ void cpu_set_turbo_speed(void)
         init_cache_putpixel();
 
 	if (diviface_enabled.v) diviface_set_peek_poke_functions();
+
+	//Si estaba modo debug cpu, reactivar
+	if (antes_debug_breakpoints_enabled.v) {
+		debug_printf(VERBOSE_INFO,"Re-enabling breakpoints because they were enabled before changing turbo mode");
+		debug_breakpoints_enabled.v=1;
+		breakpoints_enable();
+	}
 }
 
 
