@@ -1266,7 +1266,7 @@ zxuno.o: zxuno.c zxuno.h cpu.h debug.h contend.h mem128.h utils.h ula.h screen.h
 #ql.o: 68000.c 68000_debug.c op68kadd.c op68karith.c op68ksub.c op68klogop.c op68kmisc.c op68kmove.c op68kshift.c 68000_additional.c ql.c
 #	\$(CC) \$(CFLAGS) -c 68000.c 68000_debug.c op68kadd.c op68karith.c op68ksub.c op68klogop.c op68kmisc.c op68kmove.c op68kshift.c 68000_additional.c ql.c
 
-ql.o: ql.c ql.h debug.h m68k.h utils.h
+ql.o: ql.c ql.h debug.h m68k.h utils.h menu.h operaciones.h
 	\$(CC) \$(CFLAGS) -c ql.c
 
 

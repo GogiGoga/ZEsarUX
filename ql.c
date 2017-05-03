@@ -5,6 +5,7 @@
 #include "debug.h"
 #include "utils.h"
 #include "menu.h"
+#include "operaciones.h"
 
 
 extern unsigned char puerto_49150;
@@ -1097,7 +1098,14 @@ void ql_writebyte(unsigned int Address, unsigned char Data)
 
 		ql_out_port(Address,Data);
 
-                return; //Espacio i/o
+
+#ifdef EMULATE_VISUALMEM
+		//Escribimos en visualmem a partir de direccion 18000H
+		set_visualmembuffer(Address);
+
+#endif
+
+    return; //Espacio i/o
   }
 
 	if (Address<0x18000 || Address>QL_MEM_LIMIT) return;
@@ -1106,6 +1114,14 @@ void ql_writebyte(unsigned int Address, unsigned char Data)
   unsigned char valor=Data;
 	//memoria_ql[Address&0xfffff]=valor;
   memoria_ql[Address]=valor;
+
+#ifdef EMULATE_VISUALMEM
+	//printf ("addr: %d\n",Address);
+	//Escribimos en visualmem a partir de direccion 18000H
+	set_visualmembuffer(Address);
+
+#endif
+
 }
 
 unsigned char ql_readbyte(unsigned int Address)

@@ -62,6 +62,7 @@
 #include "superupgrade.h"
 #include "snap_rzx.h"
 #include "multiface.h"
+#include "ql.h"
 
 
 void (*poke_byte)(z80_int dir,z80_byte valor);
@@ -101,9 +102,11 @@ char *visualmem_buffer=NULL;
 
 void init_visualmembuffer(void)
 {
-	int visualmem_size=65536;
+	//int visualmem_size=65536;
 
-	debug_printf(VERBOSE_INFO,"Initializing visualmem buffer");
+	int visualmem_size=(QL_MEM_LIMIT)+1;
+
+	debug_printf(VERBOSE_INFO,"Allocating %d bytes for visualmem buffer",visualmem_size);
 
 	visualmem_buffer=malloc(visualmem_size);
 	if (visualmem_buffer==NULL) {
@@ -112,12 +115,13 @@ void init_visualmembuffer(void)
 
 }
 
-void set_visualmembuffer(z80_int dir)
+void set_visualmembuffer(int dir)
 {
 	visualmem_buffer[dir]=1;
+	//printf ("dir: %d\n",dir);
 }
 
-void clear_visualmembuffer(z80_int dir)
+void clear_visualmembuffer(int dir)
 {
         visualmem_buffer[dir]=0;
 }

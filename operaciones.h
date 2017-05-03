@@ -38,8 +38,8 @@
 extern char *visualmem_buffer;
 
 extern void init_visualmembuffer(void);
-extern void set_visualmembuffer(z80_int dir);
-extern void clear_visualmembuffer(z80_int dir);
+extern void set_visualmembuffer(int dir);
+extern void clear_visualmembuffer(int dir);
 
 
 #endif

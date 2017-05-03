@@ -4468,7 +4468,7 @@ void menu_breakpoints_enable_disable(MENU_ITEM_PARAMETERS)
 
         else {
                 debug_breakpoints_enabled.v=0;
-                
+
 		breakpoints_disable();
         }
 
@@ -14515,6 +14515,13 @@ void menu_debug_draw_visualmem(void)
 		}
 	}
 
+	if (MACHINE_IS_QL) {
+		//inicio_puntero_membuffer=0x18000;
+		//la ram propiamente empieza en 20000H
+		inicio_puntero_membuffer=0x20000;
+		final_puntero_membuffer=QL_MEM_LIMIT+1;
+	}
+
         char si_modificado;
 
 
@@ -14523,6 +14530,7 @@ void menu_debug_draw_visualmem(void)
 
 	//printf ("max_valores: %d\n",max_valores);
 	//le damos uno mas para poder llenar la ventana
+	//printf ("inicio: %06XH final: %06XH\n",inicio_puntero_membuffer,final_puntero_membuffer);
 	max_valores++;
 
 	for (y=yorigen;y<yorigen+alto;y++) {
@@ -14571,7 +14579,7 @@ void menu_debug_draw_visualmem(void)
 				scr_putpixel_zoom(x,y,ESTILO_GUI_PAPEL_NORMAL);
 			}
 			else {
-				putchar_menu_overlay(x,y,' ',ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL); //pppppppp
+				putchar_menu_overlay(x,y,' ',ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL);
 			}
 		}
 
@@ -15733,12 +15741,12 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 #endif
 
 #ifdef EMULATE_VISUALMEM
-			if (!CPU_IS_MOTOROLA) {
+			//if (!CPU_IS_MOTOROLA) {
 			menu_add_item_menu(array_menu_debug_settings,"~~Visual memory",MENU_OPCION_NORMAL,menu_debug_visualmem,NULL);
 			menu_add_item_menu_shortcut(array_menu_debug_settings,'v');
 	                menu_add_item_menu_tooltip(array_menu_debug_settings,"Show which memory zones are changed");
 	                menu_add_item_menu_ayuda(array_menu_debug_settings,"Show which memory zones are changed");
-			}
+			//}
 #endif
 		if (!CPU_IS_MOTOROLA) {
                 menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_find,NULL,"~~Find byte");
