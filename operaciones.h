@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -35,8 +35,9 @@
 
 #ifdef EMULATE_VISUALMEM
 
-extern char visualmem_buffer[];
+extern char *visualmem_buffer;
 
+extern void init_visualmembuffer(void);
 extern void set_visualmembuffer(z80_int dir);
 extern void clear_visualmembuffer(z80_int dir);
 

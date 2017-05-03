@@ -5243,6 +5243,7 @@ tooltip_enabled.v=1;
 	init_breakpoints_table();
 
 
+
 	//estos dos se inicializan para que al hacer set_emulator_speed, que se ejecuta antes de init audio,
 	//si no hay driver inicializado, no llamarlos
 	audio_end=NULL;
@@ -5358,6 +5359,10 @@ tooltip_enabled.v=1;
 	init_screen_addr_table();
 
 	init_cpc_line_display_table();
+
+#ifdef EMULATE_VISUALMEM
+	init_visualmembuffer();
+#endif
 
 
 	debug_printf (VERBOSE_INFO,"Starting emulator");

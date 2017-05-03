@@ -96,9 +96,21 @@ z80_byte sz53p_table[256];
 
 //A 1 indica memoria modificada
 //A 0 se establece desde opcion de menu
-char visualmem_buffer[65536];
+//char visualmem_buffer[65536];
+char *visualmem_buffer=NULL;
 
+void init_visualmembuffer(void)
+{
+	int visualmem_size=65536;
 
+	debug_printf(VERBOSE_INFO,"Initializing visualmem buffer");
+
+	visualmem_buffer=malloc(visualmem_size);
+	if (visualmem_buffer==NULL) {
+		cpu_panic("Can not allocate visualmem buffer");
+	}
+
+}
 
 void set_visualmembuffer(z80_int dir)
 {
