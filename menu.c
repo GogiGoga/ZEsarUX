@@ -6501,7 +6501,7 @@ void menu_debug_poke_128k(MENU_ITEM_PARAMETERS)
 
 }
 
-//Ultima direccion pokeada 
+//Ultima direccion pokeada
 int last_debug_poke_dir=16384;
 
 void menu_debug_poke(MENU_ITEM_PARAMETERS)
@@ -15156,6 +15156,12 @@ void menu_debug_cpu_stats(MENU_ITEM_PARAMETERS)
 #endif
 
 
+int get_efectivo_tamanyo_find_buffer(void)
+{
+	if (MACHINE_IS_QL) return QL_MEM_LIMIT+1;
+	return 65536;
+}
+
 //int menu_find_total_items=0;
 
 
@@ -15176,7 +15182,7 @@ void menu_find_clear_results(MENU_ITEM_PARAMETERS)
         //inicializamos array
         int i;
 
-        for (i=0;i<65536;i++) menu_find_mem_pointer[i]=0;
+        for (i=0;i<get_efectivo_tamanyo_find_buffer();i++) menu_find_mem_pointer[i]=0;
 
         menu_find_empty=1;
 
@@ -15192,7 +15198,7 @@ void menu_find_view_results(MENU_ITEM_PARAMETERS)
 
         //margen suficiente para que quepa una linea
         //direccion+salto linea+codigo 0
-        char buf_linea[7];
+        char buf_linea[9];
 
         index_buffer=0;
 
@@ -15200,7 +15206,7 @@ void menu_find_view_results(MENU_ITEM_PARAMETERS)
 
         int salir=0;
 
-        for (index_find=0;index_find<65536 && salir==0;index_find++) {
+        for (index_find=0;index_find<get_efectivo_tamanyo_find_buffer() && salir==0;index_find++) {
                 if (menu_find_mem_pointer[index_find]) {
                         sprintf (buf_linea,"%d\n",index_find);
                         sprintf (&results_buffer[index_buffer],"%s\n",buf_linea);
@@ -15209,8 +15215,8 @@ void menu_find_view_results(MENU_ITEM_PARAMETERS)
                 }
 
                 //controlar maximo
-                //10 bytes de margen
-                if (index_buffer>MAX_TEXTO_GENERIC_MESSAGE-10) {
+                //20 bytes de margen
+                if (index_buffer>MAX_TEXTO_GENERIC_MESSAGE-20) {
                         debug_printf (VERBOSE_ERR,"Too many results to show. Showing only the first %d",encontrados);
                         //forzar salir
                         salir=1;
@@ -15249,6 +15255,7 @@ void menu_find_find(MENU_ITEM_PARAMETERS)
 
         int dir;
         int total_items_found=0;
+				int final_find=get_efectivo_tamanyo_find_buffer();
 
         //Busqueda con array no inicializado
         if (menu_find_empty) {
@@ -15259,8 +15266,8 @@ void menu_find_find(MENU_ITEM_PARAMETERS)
                 //asumimos que no va a encontrar nada
                 menu_find_empty=1;
 
-                for (dir=0;dir<65536;dir++) {
-                        if (peek_byte_no_time(dir)==byte_to_find) {
+                for (dir=0;dir<final_find;dir++) {
+                        if (peek_byte_z80_moto(dir)==byte_to_find) {
                                 menu_find_mem_pointer[dir]=1;
 
                                 //al menos hay un resultado
@@ -15283,10 +15290,10 @@ void menu_find_find(MENU_ITEM_PARAMETERS)
                 menu_find_empty=1;
 
                 int i;
-                for (i=0;i<65536;i++) {
+                for (i=0;i<final_find;i++) {
                         if (menu_find_mem_pointer[i]) {
                                 //Ver el contenido de esa direccion
-                                if (peek_byte_no_time(i)==byte_to_find) {
+                                if (peek_byte_z80_moto(i)==byte_to_find) {
                                         //al menos hay un resultado
                                         menu_find_empty=0;
                                         //incrementamos contador de resultados para mostrar al final
@@ -15308,6 +15315,8 @@ void menu_find_find(MENU_ITEM_PARAMETERS)
 
 
 
+//int total_tamanyo_find_buffer=0;
+
 
 
 void menu_find(MENU_ITEM_PARAMETERS)
@@ -15316,16 +15325,18 @@ void menu_find(MENU_ITEM_PARAMETERS)
         menu_item item_seleccionado;
         int retorno_menu;
 
-        //Si puntero memoria no esta asignado, asignarlo
+        //Si puntero memoria no esta asignado, asignarlo, o si hemos cambiado de tipo de maquina
         if (menu_find_mem_pointer==NULL) {
 
                 //65536 elementos del array, cada uno de tamanyo unsigned char
-                menu_find_mem_pointer=malloc(65536);
+								//total_tamanyo_find_buffer=get_total_tamanyo_find_buffer();
+
+                menu_find_mem_pointer=malloc(QL_MEM_LIMIT+1); //Asignamos el maximo (maquina QL)
                 if (menu_find_mem_pointer==NULL) cpu_panic("Error allocating find array");
 
                 //inicializamos array
                 int i;
-                for (i=0;i<65536;i++) menu_find_mem_pointer[i]=0;
+                for (i=0;i<get_efectivo_tamanyo_find_buffer();i++) menu_find_mem_pointer[i]=0;
         }
 
 
@@ -15750,12 +15761,12 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 	                menu_add_item_menu_ayuda(array_menu_debug_settings,"Show which memory zones are changed");
 			//}
 #endif
-		if (!CPU_IS_MOTOROLA) {
-                menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_find,NULL,"~~Find byte");
+
+    menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_find,NULL,"~~Find byte");
 		menu_add_item_menu_shortcut(array_menu_debug_settings,'f');
-                menu_add_item_menu_tooltip(array_menu_debug_settings,"Find one byte on memory");
-                menu_add_item_menu_ayuda(array_menu_debug_settings,"Find one byte on the 64 KB of mapped memory. It can be used to find POKEs");
-		}
+    menu_add_item_menu_tooltip(array_menu_debug_settings,"Find one byte on memory");
+    menu_add_item_menu_ayuda(array_menu_debug_settings,"Find one byte on the 64 KB of mapped memory. It can be used to find POKEs");
+
 
 		menu_add_item_menu(array_menu_debug_settings,"~~Poke",MENU_OPCION_NORMAL,menu_poke,NULL);
 		menu_add_item_menu_shortcut(array_menu_debug_settings,'p');
