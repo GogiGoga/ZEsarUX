@@ -2749,7 +2749,19 @@ void menu_calculate_mouse_xy(void)
 {
 	int x,y;
 	if (si_complete_video_driver() ) {
-		if (mouse_x!=last_mouse_x || mouse_y !=last_mouse_y) mouse_movido=1;
+
+		int mouse_en_emulador=0;
+		//printf ("x: %d y: %d\n",mouse_x,mouse_y);
+		if (mouse_x>=0 && mouse_y>=0
+			&& mouse_x<=screen_get_window_size_width_zoom_border_en() && mouse_y<=screen_get_window_size_height_zoom_border_en() ) {
+				//Si mouse esta dentro de la ventana del emulador
+				mouse_en_emulador=1;
+		}
+
+		if (  (mouse_x!=last_mouse_x || mouse_y !=last_mouse_y) && mouse_en_emulador) {
+
+			mouse_movido=1;
+		}
 		else mouse_movido=0;
 
 		last_mouse_x=mouse_x;
