@@ -9,7 +9,6 @@
 -Full screen cocoa gl
 -Grabar en archivo configuracion joystick: eventos, teclas, etc
 -GUI style QL
--Proteccion escritura rom ql. revisar!
 
 -QL:
 *cpu stats: quiza no porque hay mas instrucciones que z80....
