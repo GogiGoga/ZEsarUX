@@ -6501,7 +6501,8 @@ void menu_debug_poke_128k(MENU_ITEM_PARAMETERS)
 
 }
 
-
+//Ultima direccion pokeada 
+int last_debug_poke_dir=16384;
 
 void menu_debug_poke(MENU_ITEM_PARAMETERS)
 {
@@ -6509,21 +6510,21 @@ void menu_debug_poke(MENU_ITEM_PARAMETERS)
         int valor_poke,dir,veces;
 
         char string_poke[4];
-        char string_dir[6];
+        char string_dir[8];
 	char string_veces[6];
 
-        sprintf (string_dir,"16384");
+        sprintf (string_dir,"%d",last_debug_poke_dir);
 
-        menu_ventana_scanf("Address",string_dir,6);
+        menu_ventana_scanf("Address",string_dir,8);
 
         dir=parse_string_to_number(string_dir);
 
-        if (dir<0 || dir>65535) {
+        if ( (dir<0 || dir>65535) && MACHINE_IS_SPECTRUM) {
                 debug_printf (VERBOSE_ERR,"Invalid address %d",dir);
                 return;
         }
 
-
+				last_debug_poke_dir=dir;
 
         sprintf (string_poke,"0");
 
@@ -6551,7 +6552,8 @@ void menu_debug_poke(MENU_ITEM_PARAMETERS)
 
 	for (;veces;veces--,dir++) {
 
-	        poke_byte_no_time(dir,valor_poke);
+	        //poke_byte_no_time(dir,valor_poke);
+					poke_byte_z80_moto(dir,valor_poke);
 
 	}
 
@@ -15753,13 +15755,13 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_shortcut(array_menu_debug_settings,'f');
                 menu_add_item_menu_tooltip(array_menu_debug_settings,"Find one byte on memory");
                 menu_add_item_menu_ayuda(array_menu_debug_settings,"Find one byte on the 64 KB of mapped memory. It can be used to find POKEs");
-
+		}
 
 		menu_add_item_menu(array_menu_debug_settings,"~~Poke",MENU_OPCION_NORMAL,menu_poke,NULL);
 		menu_add_item_menu_shortcut(array_menu_debug_settings,'p');
 		menu_add_item_menu_tooltip(array_menu_debug_settings,"Poke address manually or from .POK file");
 		menu_add_item_menu_ayuda(array_menu_debug_settings,"Poke address for infinite lives, etc...");
-		}
+
 
 
 		if (menu_cond_zx8081() ) {
