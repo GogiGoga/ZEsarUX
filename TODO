@@ -13,10 +13,18 @@
 
 -QL:
 *cpu stats
-*visualmem
 *menu poke
 *menu find
 *save binary block
+
+-Separar carpeta media y docs y quizá otras carpetas del estable final. Quizá todo o parte del contenido 
+Revisar script install y make install 
+
+-Opcion que valide configuracion y salga
+
+-Opcion --version
+
+-Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros
 
 
 
