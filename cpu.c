@@ -994,6 +994,8 @@ void cpu_help(void)
 	printf ("--aofile file      Also output sound to raw file\n");
 #endif
 
+	printf ("--version          Get emulator version and exit. Must be the first command line setting\n");
+
 	printf ("\n");
 
 	printf ("--machine          Machine type: \n"
@@ -3830,7 +3832,7 @@ void parse_cmdline_options(void) {
 			else if (!strcmp(argv[puntero_parametro],"--disable-autoframeskip")) {
 					autoframeskip.v=0;
 				}
-				
+
 			else if (!strcmp(argv[puntero_parametro],"--testconfig")) {
 				test_config_and_exit.v=1;
 			}
@@ -5079,14 +5081,13 @@ void *thread_main_loop_function(void *nada)
 
 //Proceso inicial
 int zesarux_main (int main_argc,char *main_argv[]) {
-//int main (int main_argc,char *main_argv[]) {
 
-
-
-//argc=main_argc;
-//argv=main_argv;
-
-
+	if (main_argc>1) {
+		if (!strcmp(main_argv[1],"--version")) {
+			printf ("ZEsarUX Version: " EMULATOR_VERSION " Date: " EMULATOR_DATE " - " EMULATOR_EDITION_NAME "\n");
+			exit(0);
+		}
+	}
 
 	//de momento ponemos esto a null y los mensajes siempre saldran por un printf normal
 	scr_messages_debug=NULL;
