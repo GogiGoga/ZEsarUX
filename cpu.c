@@ -280,6 +280,8 @@ int t_scanline_draw_timeout=0;
 //Si soporte de snow effect esta activo o no
 z80_bit snow_effect_enabled;
 
+z80_bit test_config_and_exit={0};
+
 
 void add_scr_init_array(char *name,int (*funcion_init) () , int (*funcion_set) () )
 {
@@ -1056,6 +1058,7 @@ void cpu_help_expert(void)
 		"--debugregisters           Debug CPU Registers on text console\n"
 	        "--showcompileinfo          Show compilation information\n"
 		"--debugconfigfile          Debug parsing of configuration file (and .config files). This parameter must be the first and it's ignored if written on config file\n"
+		"--testconfig               Test configuration and exit without starting emulator\n"
 
 
 
@@ -3827,7 +3830,10 @@ void parse_cmdline_options(void) {
 			else if (!strcmp(argv[puntero_parametro],"--disable-autoframeskip")) {
 					autoframeskip.v=0;
 				}
-
+				
+			else if (!strcmp(argv[puntero_parametro],"--testconfig")) {
+				test_config_and_exit.v=1;
+			}
 
 			else if (!strcmp(argv[puntero_parametro],"--nochangeslowparameters")) {
 				no_cambio_parametros_maquinas_lentas.v=1;
@@ -5307,6 +5313,8 @@ tooltip_enabled.v=1;
   puntero_parametro=0;
 
   parse_cmdline_options();
+
+	if (test_config_and_exit.v) exit(0);
 
 //Mensaje para la ZXSpectr edition (ZEsarUX 4.1)
 //no se si para versiones superiores lo seguire manteniendo...
