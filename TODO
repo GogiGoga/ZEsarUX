@@ -3,6 +3,10 @@
 
 -control menu raton no va bien en xwindows?
 
+-En el FAQ, decir porque bajan fps y sube consumo de cpu al arrancar zxuno
+
+-drivers video texto mouse estará dividido entre 8??
+
 -Soporte microdrive / floppy QL
 -Joystick en Mac,Win
 -Latencia sonido drivers audio sdl, coreaudio. quiza también es problema de cargar cinta 
@@ -28,9 +32,11 @@ pruebas_z88_core_topspeed 	-> solo en fuente
 speech_filters 			-> incluido en binario
 
 
+-poder hacer dump de zonas de memoria internas a disco, desde remote command. primero con superupgrade 
 
 
 -Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros
+-buscador de vidas automatico
 
 
 

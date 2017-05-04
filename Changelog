@@ -3,8 +3,10 @@ Version 5.1. 24 April 2017 - xxx edition
 Added menu movement with mouse
 Added Visualmem, Poke, Find menus also for Sinclair QL
 Added setting to test configuration
-Fixed turbo mode and breakpoints. Breakpoints were always disabled when changing turbo mode
+Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Some other minor bugfixes and improvements
+
+
 
 Version 5.0. 21 April 2017 - Chase H.Q. edition
 
