@@ -57,6 +57,7 @@
 #include "ula.h"
 #include "ql.h"
 #include "m68k.h"
+#include "superupgrade.h"
 
 
 struct timeval debug_timer_antes, debug_timer_ahora;
@@ -2997,15 +2998,20 @@ void debug_get_ioports(char *stats_buffer)
                   sprintf (&stats_buffer[index_buffer],"%s",buf_linea); index_buffer +=strlen(buf_linea);
           }
 
-  	if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_PRISM || MACHINE_IS_CHLOE) {
+  	if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_PRISM || MACHINE_IS_CHLOE || superupgrade_enabled.v) {
                   sprintf (buf_linea,"Spectrum 7FFD port: %02X\n",puerto_32765);
   		sprintf (&stats_buffer[index_buffer],"%s",buf_linea); index_buffer +=strlen(buf_linea);
           }
 
-  	if (MACHINE_IS_SPECTRUM_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_PRISM) {
+  	if (MACHINE_IS_SPECTRUM_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_PRISM || superupgrade_enabled.v) {
   		sprintf (buf_linea,"Spectrum 1FFD port: %02X\n",puerto_8189);
   		sprintf (&stats_buffer[index_buffer],"%s",buf_linea); index_buffer +=strlen(buf_linea);
   	}
+
+    if (superupgrade_enabled.v) {
+      sprintf (buf_linea,"Superupgrade 43B port: %02X\n",superupgrade_puerto_43b);
+      sprintf (&stats_buffer[index_buffer],"%s",buf_linea); index_buffer +=strlen(buf_linea);
+    }
 
   	if (MACHINE_IS_TBBLUE) {
 
