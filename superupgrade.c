@@ -421,6 +421,12 @@ z80_byte superupgrade_poke_byte(z80_int dir,z80_byte valor)
 
 z80_byte superupgrade_peek_byte_no_time(z80_int dir_orig,z80_byte value GCC_UNUSED)
 {
+
+      //Si se muestra ROM interna en vez de pagina de superupgrade
+      if (dir_orig<16384 && superupgrade_puerto_43b&0x20) {
+        return debug_nested_peek_byte_no_time_call_previous(superupgrade_nested_id_peek_byte_no_time,dir_orig);
+      }
+
         int segmento;
         z80_byte *puntero;
 	z80_int dir=dir_orig;
@@ -439,6 +445,12 @@ z80_byte superupgrade_peek_byte_no_time(z80_int dir_orig,z80_byte value GCC_UNUS
 
 z80_byte superupgrade_peek_byte(z80_int dir_orig,z80_byte value GCC_UNUSED)
 {
+
+        //Si se muestra ROM interna en vez de pagina de superupgrade
+        if (dir_orig<16384 && superupgrade_puerto_43b&0x20) {
+          return debug_nested_peek_byte_call_previous(superupgrade_nested_id_peek_byte,dir_orig);
+        }
+
         int segmento;
         z80_byte *puntero;
 	z80_int dir=dir_orig;

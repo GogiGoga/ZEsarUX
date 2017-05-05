@@ -48,6 +48,7 @@
 #include "zxuno.h"
 #include "prism.h"
 #include "snap_rzx.h"
+#include "superupgrade.h"
 
 #include "scrstdout.h"
 
@@ -598,6 +599,12 @@ void cpu_core_loop_spectrum(void)
                                                 //temp
 
                                                 t_estados -=15;
+
+																								if (superupgrade_enabled.v) {
+																									//Saltar a NMI de ROM0. TODO: que pasa con puertos 32765 y 8189?
+																									superupgrade_puerto_43b = 0;
+																									superupgrade_set_memory_pages();
+																								}
 
 						//Prueba
 						//Al recibir nmi tiene que poner paginacion normal. Luego ya saltara por autotrap de diviface

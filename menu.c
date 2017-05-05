@@ -11205,7 +11205,10 @@ void menu_storage_superupgrade_emulation(MENU_ITEM_PARAMETERS)
         else superupgrade_enable(1);
 }
 
-
+void menu_storage_superupgrade_internal_rom(MENU_ITEM_PARAMETERS)
+{
+		superupgrade_puerto_43b ^=0x20;
+}
 
 
 
@@ -11226,12 +11229,16 @@ void menu_superupgrade(MENU_ITEM_PARAMETERS)
                         menu_add_item_menu_ayuda(array_menu_superupgrade,"Flash Emulation file");
 
 
-                                                menu_add_item_menu_format(array_menu_superupgrade,MENU_OPCION_NORMAL,menu_storage_superupgrade_emulation,menu_storage_superupgrade_emulation_cond,"~~Superupgrade Enabled: %s", (superupgrade_enabled.v ? "Yes" : "No"));
+                        menu_add_item_menu_format(array_menu_superupgrade,MENU_OPCION_NORMAL,menu_storage_superupgrade_emulation,menu_storage_superupgrade_emulation_cond,"~~Superupgrade Enabled: %s", (superupgrade_enabled.v ? "Yes" : "No"));
                         menu_add_item_menu_shortcut(array_menu_superupgrade,'s');
                         menu_add_item_menu_tooltip(array_menu_superupgrade,"Enable superupgrade");
                         menu_add_item_menu_ayuda(array_menu_superupgrade,"Enable superupgrade");
 
 
+												menu_add_item_menu_format(array_menu_superupgrade,MENU_OPCION_NORMAL,menu_storage_superupgrade_internal_rom,menu_storage_superupgrade_emulation_cond,"Show ~~internal ROM: %s", (superupgrade_puerto_43b&0x20 ? "Yes" : "No"));
+												menu_add_item_menu_shortcut(array_menu_superupgrade,'i');
+												menu_add_item_menu_tooltip(array_menu_superupgrade,"Show internal ROM instead of Superupgrade flash");
+												menu_add_item_menu_ayuda(array_menu_superupgrade,"Show internal ROM instead of Superupgrade flash");
 
 
 
