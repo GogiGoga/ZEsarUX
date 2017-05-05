@@ -103,10 +103,10 @@ int fifo_alsa_return_size(void)
         }
 }
 
-void audioalsa_get_buffer_info (int *buffer_size,int *current_buffer_position)
+void audioalsa_get_buffer_info (int *buffer_size,int *current_size)
 {
   *buffer_size=fifo_alsa_buffer_size;
-  *current_buffer_position=fifo_alsa_return_size();
+  *current_size=fifo_alsa_return_size();
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta

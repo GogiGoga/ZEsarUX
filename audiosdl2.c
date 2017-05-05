@@ -183,10 +183,10 @@ int audiosdl_fifo_sdl_return_size(void)
 	}
 }
 
-void audiosdl_get_buffer_info (int *buffer_size,int *current_buffer_position)
+void audiosdl_get_buffer_info (int *buffer_size,int *current_size)
 {
   *buffer_size=FIFO_SDL_BUFFER_SIZE;
-  *current_buffer_position=audiosdl_fifo_sdl_return_size();
+  *current_size=audiosdl_fifo_sdl_return_size();
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta

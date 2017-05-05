@@ -238,10 +238,10 @@ int fifo_pulse_return_size(void)
         }
 }
 
-void audiopulse_get_buffer_info (int *buffer_size,int *current_buffer_position)
+void audiopulse_get_buffer_info (int *buffer_size,int *current_size)
 {
   *buffer_size=fifo_pulse_buffer_size;
-  *current_buffer_position=fifo_pulse_return_size();
+  *current_size=fifo_pulse_return_size();
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta

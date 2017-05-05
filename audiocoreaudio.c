@@ -355,10 +355,10 @@ int audiocoreaudio_fifo_return_size(void)
 	}
 }
 
-void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_buffer_position)
+void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_size)
 {
   *buffer_size=FIFO_BUFFER_SIZE;
-  *current_buffer_position=audiocoreaudio_fifo_return_size();
+  *current_size=audiocoreaudio_fifo_return_size();
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta
