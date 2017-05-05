@@ -116,6 +116,7 @@ D5: deshabilitar funcionalidad puerto 7ffd
 D6: deshabilitar funcionalidad puerto 1ffd
 D7: desactivacion del divide
 
+SI D5=1 y D6=0, significa "mostrar rom interna" y con esa combinación, puerto 7ffd está habilitado
 
 Nota:
 Para calcular en qué posición de mi array de memoria ROM tengo la dirección 0 del espacio de direcciones únicamente tengo que consultar los 5 bits más bajos dela variable del puerto 4ffd, sumarle la página de rom  determinada por los puertos 1ffd/7ffd y multiplicar su valor por 16384.
@@ -124,6 +125,12 @@ Nota2: Cuando se realiza una llamada al puerto 43B, se pone a 0 los bits corresp
 
 
 */
+
+int si_superupgrade_muestra_rom_interna(void)
+{
+  if ( (superupgrade_puerto_43b & (32+64))==32) return 1;
+  else return 0;
+}
 
 void superupgrade_footer_print_flash_operating(void)
 {
@@ -423,7 +430,7 @@ z80_byte superupgrade_peek_byte_no_time(z80_int dir_orig,z80_byte value GCC_UNUS
 {
 
       //Si se muestra ROM interna en vez de pagina de superupgrade
-      if (dir_orig<16384 && superupgrade_puerto_43b&0x20) {
+      if (dir_orig<16384 && si_superupgrade_muestra_rom_interna() ) {
         return debug_nested_peek_byte_no_time_call_previous(superupgrade_nested_id_peek_byte_no_time,dir_orig);
       }
 
@@ -447,7 +454,7 @@ z80_byte superupgrade_peek_byte(z80_int dir_orig,z80_byte value GCC_UNUSED)
 {
 
         //Si se muestra ROM interna en vez de pagina de superupgrade
-        if (dir_orig<16384 && superupgrade_puerto_43b&0x20) {
+        if (dir_orig<16384 && si_superupgrade_muestra_rom_interna() ) {
           return debug_nested_peek_byte_call_previous(superupgrade_nested_id_peek_byte,dir_orig);
         }
 
@@ -685,7 +692,9 @@ void superupgrade_write_7ffd(z80_byte value)
 {
 	//si desactivado, volver
 	if (puerto_32765&32) return;
-	if (superupgrade_puerto_43b&32) return;
+
+  //Bit indica desactivado pero el otro bit (el de 1ffd) no esta a 0, cosa que indicaria que se muestra la rom interna de superupgrade
+	if (superupgrade_puerto_43b&32 && !si_superupgrade_muestra_rom_interna() ) return;
 	puerto_32765=value;
 	superupgrade_set_memory_pages();
 }

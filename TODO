@@ -9,7 +9,6 @@
 
 -Soporte microdrive / floppy QL
 -Joystick en Mac,Win
--Latencia sonido drivers audio sdl, coreaudio. quiza también es problema de cargar cinta 
 -Full screen cocoa gl
 -Grabar en archivo configuracion joystick: eventos, teclas, etc
 -GUI style QL

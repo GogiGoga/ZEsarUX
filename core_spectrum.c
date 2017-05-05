@@ -603,6 +603,8 @@ void cpu_core_loop_spectrum(void)
 																								if (superupgrade_enabled.v) {
 																									//Saltar a NMI de ROM0. TODO: que pasa con puertos 32765 y 8189?
 																									superupgrade_puerto_43b = 0;
+																									puerto_32765=0;
+																									puerto_8189=0;
 																									superupgrade_set_memory_pages();
 																								}
 

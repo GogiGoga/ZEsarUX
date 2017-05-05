@@ -57,5 +57,7 @@ extern void superupgrade_flush_flash_to_disk(void);
 
 extern z80_byte superupgrade_puerto_43b;
 
+extern int si_superupgrade_muestra_rom_interna(void);
+
 
 #endif
