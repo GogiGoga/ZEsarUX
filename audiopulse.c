@@ -142,6 +142,11 @@ void audiopulse_end(void)
 }
 
 
+void audiopulse_get_buffer_info (int *buffer_size,int *current_size)
+{
+  *buffer_size=AUDIO_BUFFER_SIZE;
+  *current_size=0;
+}
 
 
 
