@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -55,16 +55,22 @@ void audioalsa_send_frame(char *buffer);
 
 
 //buffer temporal de envio. suficiente para que quepa
-char buf_enviar[AUDIO_BUFFER_SIZE*10];	
+char buf_enviar[AUDIO_BUFFER_SIZE*10];
 
 
 void audioalsa_callback(snd_async_handler_t *pcm_callback);
 
-/* Handle for the PCM device */ 
-snd_pcm_t *pcm_handle;    
+/* Handle for the PCM device */
+snd_pcm_t *pcm_handle;
 
 int fifo_alsa_write_position=0;
 int fifo_alsa_read_position=0;
+
+void audioalsa_empty_buffer(void)
+{
+  debug_printf(VERBOSE_DEBUG,"Emptying audio buffer");
+  fifo_alsa_write_position=0;
+}
 
 //nuestra FIFO_ALSA
 #define MAX_FIFO_ALSA_BUFFER_SIZE (AUDIO_BUFFER_SIZE*30)
@@ -111,8 +117,10 @@ void fifo_alsa_write(char *origen,int longitud)
 
                 //ver si la escritura alcanza la lectura. en ese caso, error
                 if (fifo_alsa_next_index(fifo_alsa_write_position)==fifo_alsa_read_position) {
-                        debug_printf (VERBOSE_DEBUG,"FIFO_ALSA llena");
+                        debug_printf (VERBOSE_DEBUG,"FIFO_ALSA full");
 
+                        //Si se llena fifo, resetearla a 0 para corregir latencia
+                        audioalsa_empty_buffer();
 
                         return;
                 }
@@ -153,8 +161,8 @@ void fifo_alsa_read(char *destino,int longitud)
     snd_pcm_stream_t stream;
 
     /* This structure contains information about    */
-    /* the hardware and can be used to specify the  */      
-    /* configuration to be used for the PCM stream. */ 
+    /* the hardware and can be used to specify the  */
+    /* configuration to be used for the PCM stream. */
     snd_pcm_hw_params_t *hwparams;
 
     /* Name of the PCM device, like plughw:0,0          */
@@ -183,15 +191,15 @@ int audioalsa_init(void)
 	    /* Init pcm_name. Of course, later you */
     /* will make this configurable ;-)     */
     pcm_name = strdup("plughw:0,0");
-  
+
 
     /* Allocate the snd_pcm_hw_params_t structure on the stack. */
     snd_pcm_hw_params_alloca(&hwparams);
-  
+
 
     /* Open PCM. The last parameter of this function is the mode. */
     /* If this is set to 0, the standard mode is used. Possible   */
-    /* other values are SND_PCM_NONBLOCK and SND_PCM_ASYNC.       */ 
+    /* other values are SND_PCM_NONBLOCK and SND_PCM_ASYNC.       */
     /* If SND_PCM_NONBLOCK is used, read / write access to the    */
     /* PCM device will return immediately. If SND_PCM_ASYNC is    */
     /* specified, SIGIO will be emitted whenever a period has     */
@@ -213,7 +221,7 @@ int audioalsa_init(void)
     unsigned int rate = FRECUENCIA_SONIDO; /* Sample rate */
     //int rate = 44100; /* Sample rate */
     unsigned int exact_rate;   /* Sample rate returned by */
-                      /* snd_pcm_hw_params_set_rate_near */ 
+                      /* snd_pcm_hw_params_set_rate_near */
     int dir;          /* exact_rate == rate --> dir = 0 */
                       /* exact_rate < rate  --> dir = -1 */
                       /* exact_rate > rate  --> dir = 1 */
@@ -228,8 +236,8 @@ int audioalsa_init(void)
 
 	//pruebas con rutinas new_
 
-//estos valores los he deducido probando, para que no se corte sonido en ninguna de las dos posibilidades	
-#ifdef USE_PTHREADS	
+//estos valores los he deducido probando, para que no se corte sonido en ninguna de las dos posibilidades
+#ifdef USE_PTHREADS
 	periodsize = alsa_periodsize;
 #else
 	periodsize = AUDIO_BUFFER_SIZE*2;
@@ -248,7 +256,7 @@ int audioalsa_init(void)
       snd_pcm_close( pcm_handle );
       return 1;
     }
-  
+
     /* Set sample format */
     if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S8) < 0) {
     //if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
@@ -258,7 +266,7 @@ int audioalsa_init(void)
     }
 
     /* Set sample rate. If the exact rate is not supported */
-    /* by the hardware, use nearest possible rate.         */ 
+    /* by the hardware, use nearest possible rate.         */
     exact_rate = rate;
     if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &exact_rate, 0) < 0) {
       debug_printf(VERBOSE_ERR, "Error setting rate.");
@@ -276,7 +284,7 @@ int audioalsa_init(void)
       return 1;
     }
 
-    /* Set number of periods. Periods used to be called fragments. */ 
+    /* Set number of periods. Periods used to be called fragments. */
     if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
       debug_printf(VERBOSE_ERR, "Error setting periods.");
       snd_pcm_close( pcm_handle );
@@ -346,7 +354,7 @@ snd_pcm_uframes_t buffer_size_max;
 
 		bufsize=buffer_size_min*2;
 
-		//con esto en raspberry necesita un buffer de audio de 256 kb	
+		//con esto en raspberry necesita un buffer de audio de 256 kb
         	//bufsize=buffer_size_max;
 
 		//recalcular periodsize. teniamos que:
@@ -443,7 +451,7 @@ void audioalsa_end(void)
 
 void new_audioalsa_enviar_audio_envio(void)
 {
-	
+
 	int ret;
 
         int frames = periodsize >> 2;
@@ -452,8 +460,8 @@ void new_audioalsa_enviar_audio_envio(void)
 	int len;
 
 		len=frames;
-		
-		
+
+
 		if (fifo_alsa_return_size()>=len) {
 
 			//Si hay detectado silencio, la fifo estara vacia y por tanto ya no entrara aqui y no enviara sonido
@@ -525,9 +533,9 @@ void *new_audioalsa_enviar_audio(void *nada)
 			//printf ("enviar. antes. tamanyo fifo: %d read %d write %d\n",fifo_alsa_return_size(),fifo_alsa_read_position,fifo_alsa_write_position);
 		//if (fifo_alsa_return_size()>=AUDIO_BUFFER_SIZE) {
 			new_audioalsa_enviar_audio_envio();
-			
 
-		//No enviar sonido si audio no activo 
+
+		//No enviar sonido si audio no activo
                 /*while (audio_playing.v==0) {
                         //1 ms
                         usleep(1000);
@@ -543,7 +551,7 @@ void *new_audioalsa_enviar_audio(void *nada)
 
 
 }
-		
+
 
 
 pthread_t thread1_alsa=0;
@@ -567,15 +575,15 @@ void new_audioalsa_send_frame(char *buffer)
         }
 
                         //tamanyo antes
-                        //printf ("write. antes. tamanyo fifo: %d read %d write %d\n",fifo_alsa_return_size(),fifo_alsa_read_position,fifo_alsa_write_position);               
+                        //printf ("write. antes. tamanyo fifo: %d read %d write %d\n",fifo_alsa_return_size(),fifo_alsa_read_position,fifo_alsa_write_position);
 
 	fifo_alsa_write(buffer,AUDIO_BUFFER_SIZE);
                         //tamanyo despues
-                        //printf ("write. despues. tamanyo fifo: %d read %d write %d\n",fifo_alsa_return_size(),fifo_alsa_read_position,fifo_alsa_write_position);               
+                        //printf ("write. despues. tamanyo fifo: %d read %d write %d\n",fifo_alsa_return_size(),fifo_alsa_read_position,fifo_alsa_write_position);
 }
 
 
-#else 
+#else
 
 
 //sin pthreads. Esta funcion es igual que la vieja. No usa fifo
@@ -644,5 +652,3 @@ void audioalsa_send_frame(char *buffer)
 {
         return new_audioalsa_send_frame(buffer);
 }
-
-

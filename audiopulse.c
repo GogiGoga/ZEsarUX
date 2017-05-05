@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -189,17 +189,24 @@ int audiopulse_init(void)
 	audio_driver_name="pulse";
 
         return 0;
-}       
+}
 
 
 
 
 //buffer temporal de envio. suficiente para que quepa
-char buf_enviar_pulse[AUDIO_BUFFER_SIZE*10];	
+char buf_enviar_pulse[AUDIO_BUFFER_SIZE*10];
 
 
 int fifo_pulse_write_position=0;
 int fifo_pulse_read_position=0;
+
+
+void audiopulse_empty_buffer(void)
+{
+  debug_printf(VERBOSE_DEBUG,"Emptying audio buffer");
+  fifo_pulse_write_position=0;
+}
 
 //nuestra FIFO_PULSE
 #define MAX_FIFO_PULSE_BUFFER_SIZE (AUDIO_BUFFER_SIZE*10)
@@ -245,7 +252,10 @@ void fifo_pulse_write(unsigned char *origen,int longitud)
 
                 //ver si la escritura alcanza la lectura. en ese caso, error
                 if (fifo_pulse_next_index(fifo_pulse_write_position)==fifo_pulse_read_position) {
-                        debug_printf (VERBOSE_DEBUG,"FIFO_PULSE llena");
+                        debug_printf (VERBOSE_DEBUG,"FIFO_PULSE full");
+
+                        //Si se llena fifo, resetearla a 0 para corregir latencia
+                        audiopulse_empty_buffer();
 
 			//temp resetear fifo
 			//fifo_pulse_write_position=0;
@@ -320,11 +330,11 @@ void audiopulse_end(void)
 
 void audiopulse_enviar_audio_envio(void)
 {
-	
+
 	int error;
 
-		
-		
+
+
 		if (fifo_pulse_return_size()>=pulse_periodsize) {
 
 
@@ -347,7 +357,7 @@ void audiopulse_enviar_audio_envio(void)
 			//Cuando se vuelve de multitarea, parece que el primer pa_simple_write bloquea y se queda esperando
 			//y no se llega a este "sonido despues"
 			//para ello, lo que hacemos, es llamar a init en send_frame
-	
+
 
 			interrupt_finish_sound.v=1;
 
@@ -374,7 +384,7 @@ void *audiopulse_enviar_audio(void *nada)
 			//tamanyo antes
 			//printf ("enviar. antes. tamanyo fifo: %d read %d write %d\n",fifo_pulse_return_size(),fifo_pulse_read_position,fifo_pulse_write_position);
 			audiopulse_enviar_audio_envio();
-			
+
 
 		/*
                 while (audio_playing.v==0) {
@@ -406,7 +416,7 @@ void *audiopulse_enviar_audio(void *nada)
 
 
 }
-		
+
 
 
 pthread_t thread1_pulse=0;
@@ -438,7 +448,7 @@ void audiopulse_send_frame(char *buffer)
         }
 
                         //tamanyo antes
-                        //printf ("write. antes. tamanyo fifo: %d read %d write %d\n",fifo_pulse_return_size(),fifo_pulse_read_position,fifo_pulse_write_position);               
+                        //printf ("write. antes. tamanyo fifo: %d read %d write %d\n",fifo_pulse_return_size(),fifo_pulse_read_position,fifo_pulse_write_position);
 
 
 
@@ -448,11 +458,10 @@ void audiopulse_send_frame(char *buffer)
 	fifo_pulse_write(unsigned_audio_buffer,AUDIO_BUFFER_SIZE);
 
                         //tamanyo despues
-                        //printf ("write. despues. tamanyo fifo: %d read %d write %d\n",fifo_pulse_return_size(),fifo_pulse_read_position,fifo_pulse_write_position);               
+                        //printf ("write. despues. tamanyo fifo: %d read %d write %d\n",fifo_pulse_return_size(),fifo_pulse_read_position,fifo_pulse_write_position);
 }
 
 
 
 
 #endif
-
