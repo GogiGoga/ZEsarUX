@@ -4,6 +4,7 @@ Added menu movement with mouse
 Added Visualmem, Poke, Find menus also for Sinclair QL
 Added setting to test configuration
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
+Fixed latency problems on all audio drivers
 Some other minor bugfixes and improvements
 
 
