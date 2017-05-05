@@ -85,6 +85,14 @@ int alsa_periodsize=AUDIO_BUFFER_SIZE*2;
 
 char fifo_alsa_buffer[MAX_FIFO_ALSA_BUFFER_SIZE];
 
+
+void audioalsa_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=fifo_alsa_buffer_size;
+  *current_buffer_position=fifo_alsa_write_position;
+}
+
+
 //retorna numero de elementos en la fifo_alsa
 int fifo_alsa_return_size(void)
 {

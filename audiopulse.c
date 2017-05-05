@@ -220,6 +220,15 @@ int pulse_periodsize=AUDIO_BUFFER_SIZE*1;
 
 char fifo_pulse_buffer[MAX_FIFO_PULSE_BUFFER_SIZE];
 
+
+void audiopulse_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=fifo_pulse_buffer_size;
+  *current_buffer_position=fifo_pulse_write_position;
+}
+
+
+
 //retorna numero de elementos en la fifo_pulse
 int fifo_pulse_return_size(void)
 {

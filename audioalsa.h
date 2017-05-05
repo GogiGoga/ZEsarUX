@@ -30,7 +30,7 @@ extern int audioalsa_thread_finish(void);
 extern void audioalsa_send_frame(char *buffer);
 extern int fifo_alsa_buffer_size;
 extern int alsa_periodsize;
-
+extern void audioalsa_get_buffer_info (int *buffer_size,int *current_buffer_position);
 
 
 

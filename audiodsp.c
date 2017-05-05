@@ -315,3 +315,10 @@ void audiodsp_send_frame(char *buffer)
 
 
 
+
+void audiodsp_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=AUDIO_BUFFER_SIZE;
+  *current_buffer_position=0;
+}
+
