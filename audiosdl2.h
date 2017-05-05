@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -32,5 +32,6 @@ extern void audiosdl_end(void);
 #define DEFAULT_AUDIOSDL_SAMPLES 512
 extern int audiosdl_samples;
 
+extern void audiosdl_get_buffer_info (int *buffer_size,int *current_buffer_position);
 
 #endif

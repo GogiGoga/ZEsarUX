@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -29,5 +29,6 @@ extern int audiocoreaudio_thread_finish(void);
 extern void audiocoreaudio_send_frame(char *buffer);
 extern void audiocoreaudio_end(void);
 
+extern void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_buffer_position);
 
 #endif

@@ -51,6 +51,7 @@ int (*audio_init) (void);
 int (*audio_thread_finish) (void);
 void (*audio_end) (void);
 void (*audio_send_frame) (char *buffer);
+void (*audio_get_buffer_info) (int *buffer_size,int *current_buffer_position);
 
 //en porcentaje
 int audiovolume=100;
@@ -851,6 +852,7 @@ int set_audiodriver_null(void) {
                         audio_send_frame=audionull_send_frame;
                         audio_thread_finish=audionull_thread_finish;
                         audio_end=audionull_end;
+			audio_get_buffer_info=audionull_get_buffer_info;
                         return 0;
 
                 }

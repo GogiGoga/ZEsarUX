@@ -1625,6 +1625,7 @@ int set_audiodriver_dsp(void) {
                         audio_send_frame=audiodsp_send_frame;
 			audio_thread_finish=audiodsp_thread_finish;
 			audio_end=audiodsp_end;
+			audio_get_buffer_info=audiodsp_get_buffer_info;
 			return 0;
 
                 }
@@ -1636,6 +1637,7 @@ int set_audiodriver_sdl(void) {
                         audio_send_frame=audiosdl_send_frame;
                         audio_thread_finish=audiosdl_thread_finish;
                         audio_end=audiosdl_end;
+												audio_get_buffer_info=audiosdl_get_buffer_info;
                         return 0;
 
                 }
@@ -1648,6 +1650,7 @@ int set_audiodriver_alsa(void) {
                         audio_send_frame=audioalsa_send_frame;
 			audio_thread_finish=audioalsa_thread_finish;
 			audio_end=audioalsa_end;
+			audio_get_buffer_info=audioalsa_get_buffer_info;
 			return 0;
 
                 }
@@ -1659,6 +1662,7 @@ int set_audiodriver_pulse(void) {
                         audio_send_frame=audiopulse_send_frame;
                         audio_thread_finish=audiopulse_thread_finish;
 			audio_end=audiopulse_end;
+			audio_get_buffer_info=audiopulse_get_buffer_info;
                         return 0;
 
                 }
@@ -1671,6 +1675,7 @@ int set_audiodriver_coreaudio(void) {
                         audio_send_frame=audiocoreaudio_send_frame;
                         audio_thread_finish=audiocoreaudio_thread_finish;
 			audio_end=audiocoreaudio_end;
+			audio_get_buffer_info=audiocoreaudio_get_buffer_info;
                         return 0;
 
                 }

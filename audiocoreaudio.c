@@ -341,6 +341,13 @@ void audiocoreaudio_empty_buffer(void)
 
 char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
 
+void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=FIFO_BUFFER_SIZE;
+  *current_buffer_position=audiocoreaudio_fifo_write_position;
+}
+
+
 //retorna numero de elementos en la fifo
 int audiocoreaudio_fifo_return_size(void)
 {

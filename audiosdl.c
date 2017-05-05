@@ -136,6 +136,13 @@ void audiosdl_empty_buffer(void)
 #define FIFO_SDL_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
 char audiosdl_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
 
+
+void audiosdl_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=FIFO_SDL_BUFFER_SIZE;
+  *current_buffer_position=audiosdl_fifo_sdl_write_position;
+}
+
 //retorna numero de elementos en la fifo
 int audiosdl_fifo_sdl_return_size(void)
 {

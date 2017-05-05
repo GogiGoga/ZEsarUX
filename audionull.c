@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -62,3 +62,9 @@ void audionull_end(void)
 
 }
 
+
+void audionull_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=0;
+  *current_buffer_position=0;
+}

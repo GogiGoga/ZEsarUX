@@ -69,7 +69,6 @@ int fifo_alsa_read_position=0;
 void audioalsa_empty_buffer(void)
 {
   debug_printf(VERBOSE_DEBUG,"Emptying audio buffer");
-  sleep(1);
   fifo_alsa_write_position=0;
 }
 
