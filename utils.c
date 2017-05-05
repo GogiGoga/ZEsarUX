@@ -5383,8 +5383,8 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 
 	                                //Vaciamos cola speech
         	                        textspeech_empty_speech_fifo();
-//printf ("Tamanyo elementos coreaudio fifo audio: %d total: %d\n",audiocoreaudio_fifo_return_size(),AUDIO_BUFFER_SIZE*4 );
-//printf ("Tamanyo elementos sdl fifo audio: %d total: %d\n",audiosdl_fifo_sdl_return_size(),AUDIO_BUFFER_SIZE*10 );
+printf ("Tamanyo elementos coreaudio fifo audio: %d total: %d\n",audiocoreaudio_fifo_return_size(),AUDIO_BUFFER_SIZE*4 );
+printf ("Tamanyo elementos sdl fifo audio: %d total: %d\n",audiosdl_fifo_sdl_return_size(),AUDIO_BUFFER_SIZE*4 );
 
 				}
 				else {
