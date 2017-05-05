@@ -2751,7 +2751,7 @@ char buffer_retorno[2048];
 	else if (!strcmp(comando_sin_parametros,"get-audio-buffer-info")) {
 		int tamanyo,posicion;
 		audio_get_buffer_info(&tamanyo,&posicion);
-		escribir_socket_format(misocket,"Size: %d Current position: %d\n",tamanyo,posicion);
+		escribir_socket_format(misocket,"Total size: %d Current size: %d\n",tamanyo,posicion);
 	}
 
 //get-breakpoints, estado global y lista cada uno, si hay y si esta enabled

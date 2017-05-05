@@ -65,7 +65,7 @@ extern int (*audio_init) (void);
 extern int (*audio_thread_finish) (void);
 extern void (*audio_end) (void);
 extern void (*audio_send_frame) (char *buffer);
-extern void (*audio_get_buffer_info) (int *buffer_size,int *current_buffer_position);
+extern void (*audio_get_buffer_info) (int *buffer_size,int *current_size);
 extern char *audio_buffer;
 extern char *audio_buffer_playback;
 

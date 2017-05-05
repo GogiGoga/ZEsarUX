@@ -51,7 +51,7 @@ int (*audio_init) (void);
 int (*audio_thread_finish) (void);
 void (*audio_end) (void);
 void (*audio_send_frame) (char *buffer);
-void (*audio_get_buffer_info) (int *buffer_size,int *current_buffer_position);
+void (*audio_get_buffer_info) (int *buffer_size,int *current_size);
 
 //en porcentaje
 int audiovolume=100;
