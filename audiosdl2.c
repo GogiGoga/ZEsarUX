@@ -41,7 +41,7 @@
 //char *buffer_actual;
 
 
-void fifo_sdl_write(char *origen,int longitud);
+void audiosdl_fifo_sdl_write(char *origen,int longitud);
 
 void audiosdl_callback(void *udata, Uint8 *stream, int len);
 
@@ -130,7 +130,7 @@ void audiosdl_send_frame(char *buffer)
 
 	//buffer_actual=buffer;
 
-	fifo_sdl_write(buffer,AUDIO_BUFFER_SIZE);
+	audiosdl_fifo_sdl_write(buffer,AUDIO_BUFFER_SIZE);
 	SDL_PauseAudioDevice(dispositivo_sdl,0);
 
 
@@ -157,27 +157,34 @@ void audiosdl_end(void)
 
 
 
-int fifo_sdl_write_position=0;
-int fifo_sdl_read_position=0;
+int audiosdl_fifo_sdl_write_position=0;
+int audiosdl_fifo_sdl_read_position=0;
+
+
+void audiosdl_empty_buffer(void)
+{
+  debug_printf(VERBOSE_DEBUG,"Emptying audio buffer");
+  audiosdl_fifo_sdl_write_position=0;
+}
 
 //nuestra FIFO
 #define FIFO_SDL_BUFFER_SIZE (AUDIO_BUFFER_SIZE*10)
-char fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
+char audiosdl_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
 
 //retorna numero de elementos en la fifo
-int fifo_sdl_return_size(void)
+int audiosdl_fifo_sdl_return_size(void)
 {
 	//si write es mayor o igual (caso normal)
-	if (fifo_sdl_write_position>=fifo_sdl_read_position) return fifo_sdl_write_position-fifo_sdl_read_position;
+	if (audiosdl_fifo_sdl_write_position>=audiosdl_fifo_sdl_read_position) return audiosdl_fifo_sdl_write_position-audiosdl_fifo_sdl_read_position;
 
 	else {
 		//write es menor, cosa que quiere decir que hemos dado la vuelta
-		return (FIFO_SDL_BUFFER_SIZE-fifo_sdl_read_position)+fifo_sdl_write_position;
+		return (FIFO_SDL_BUFFER_SIZE-audiosdl_fifo_sdl_read_position)+audiosdl_fifo_sdl_write_position;
 	}
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta
-int fifo_sdl_next_index(int v)
+int audiosdl_fifo_sdl_next_index(int v)
 {
 	v=v+1;
 	if (v==FIFO_SDL_BUFFER_SIZE) v=0;
@@ -186,30 +193,32 @@ int fifo_sdl_next_index(int v)
 }
 
 //escribir datos en la fifo
-void fifo_sdl_write(char *origen,int longitud)
+void audiosdl_fifo_sdl_write(char *origen,int longitud)
 {
 	for (;longitud>0;longitud--) {
 
 		//ver si la escritura alcanza la lectura. en ese caso, error
-		if (fifo_sdl_next_index(fifo_sdl_write_position)==fifo_sdl_read_position) {
-			//debug_printf (VERBOSE_DEBUG,"audiosdl FIFO full");
+		if (audiosdl_fifo_sdl_next_index(audiosdl_fifo_sdl_write_position)==audiosdl_fifo_sdl_read_position) {
+			debug_printf (VERBOSE_DEBUG,"audiosdl FIFO full");
+			//Si se llena fifo, resetearla a 0 para corregir latencia
+			audiosdl_empty_buffer();
 			return;
 		}
 
-		fifo_sdl_buffer[fifo_sdl_write_position]=*origen++;
-		fifo_sdl_write_position=fifo_sdl_next_index(fifo_sdl_write_position);
+		audiosdl_fifo_sdl_buffer[audiosdl_fifo_sdl_write_position]=*origen++;
+		audiosdl_fifo_sdl_write_position=audiosdl_fifo_sdl_next_index(audiosdl_fifo_sdl_write_position);
 	}
 }
 
 
 //leer datos de la fifo
-void fifo_sdl_read(char *destino,int longitud)
+void audiosdl_fifo_sdl_read(char *destino,int longitud)
 {
 	for (;longitud>0;longitud--) {
 
 
 
-                if (fifo_sdl_return_size()==0) {
+                if (audiosdl_fifo_sdl_return_size()==0) {
                         debug_printf (VERBOSE_INFO,"audiosdl FIFO empty");
                         return;
                 }
@@ -218,15 +227,15 @@ void fifo_sdl_read(char *destino,int longitud)
 
 
                 //ver si la lectura alcanza la escritura. en ese caso, error
-                //if (fifo_sdl_next_index(fifo_sdl_read_position)==fifo_sdl_write_position) {
+                //if (audiosdl_fifo_sdl_next_index(audiosdl_fifo_sdl_read_position)==audiosdl_fifo_sdl_write_position) {
                 //        debug_printf (VERBOSE_DEBUG,"FIFO vacia");
                 //        return;
                 //}
 
 
 
-                *destino++=fifo_sdl_buffer[fifo_sdl_read_position];
-                fifo_sdl_read_position=fifo_sdl_next_index(fifo_sdl_read_position);
+                *destino++=audiosdl_fifo_sdl_buffer[audiosdl_fifo_sdl_read_position];
+                audiosdl_fifo_sdl_read_position=audiosdl_fifo_sdl_next_index(audiosdl_fifo_sdl_read_position);
         }
 }
 
@@ -237,7 +246,7 @@ void fifo_sdl_read(char *destino,int longitud)
 
 int contador_buffer_sonido=0;
 
-char temporary_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
+char temporary_audiosdl_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
 
 //ver http://www.libsdl.org/release/SDL-1.2.15/docs/html/guideaudioexamples.html
 
@@ -252,7 +261,7 @@ void audiosdl_callback(void *udata, Uint8 *stream, int len)
 	//si esta el sonido desactivado, enviamos silencio
 	if (audio_playing.v==0) {
 		unsigned char *puntero_salida;
-		puntero_salida = (unsigned char *) temporary_fifo_sdl_buffer;
+		puntero_salida = (unsigned char *) temporary_audiosdl_fifo_sdl_buffer;
 		int longitud=len;
 		while (longitud>0) {
 			*puntero_salida=128;
@@ -265,12 +274,12 @@ void audiosdl_callback(void *udata, Uint8 *stream, int len)
 	else {
 
 		//printf ("audiosdl_callback. longitud pedida: %d AUDIO_BUFFER_SIZE: %d\n",len,AUDIO_BUFFER_SIZE);
-		if (len>fifo_sdl_return_size()) {
-			//debug_printf (VERBOSE_DEBUG,"FIFO is not big enough. Length asked: %d fifo_sdl_return_size: %d",len,fifo_sdl_return_size() );
+		if (len>audiosdl_fifo_sdl_return_size()) {
+			//debug_printf (VERBOSE_DEBUG,"FIFO is not big enough. Length asked: %d audiosdl_fifo_sdl_return_size: %d",len,audiosdl_fifo_sdl_return_size() );
 			//esto puede pasar con el detector de silencio
 
 			//retornar solo lo que tenemos
-			//fifo_sdl_read(out,fifo_sdl_return_size() );
+			//audiosdl_fifo_sdl_read(out,audiosdl_fifo_sdl_return_size() );
 
 			return ;
 		}
@@ -278,14 +287,14 @@ void audiosdl_callback(void *udata, Uint8 *stream, int len)
 
 		else {
 			//printf ("audiosdl_callback. enviando sonido\n");
-			fifo_sdl_read(temporary_fifo_sdl_buffer,len);
+			audiosdl_fifo_sdl_read(temporary_audiosdl_fifo_sdl_buffer,len);
 		}
 
 	}
 
 
 	SDL_memset(stream, 0, len); //necesario??? parece que en mac os x si que hace falta
-	SDL_MixAudioFormat(stream, (Uint8 *)temporary_fifo_sdl_buffer, AUDIOSDL_AUDIO_FORMAT, len, SDL_MIX_MAXVOLUME);
+	SDL_MixAudioFormat(stream, (Uint8 *)temporary_audiosdl_fifo_sdl_buffer, AUDIOSDL_AUDIO_FORMAT, len, SDL_MIX_MAXVOLUME);
 
 
 

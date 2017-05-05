@@ -322,10 +322,16 @@ void audiocoreaudio_end(void)
 
 }
 
-
-
 int audiocoreaudio_fifo_write_position=0;
 int audiocoreaudio_fifo_read_position=0;
+
+void audiocoreaudio_empty_buffer(void)
+{
+  debug_printf(VERBOSE_DEBUG,"Emptying audio buffer");
+  audiocoreaudio_fifo_write_position=0;
+}
+
+
 
 //nuestra FIFO
 
@@ -364,6 +370,8 @@ void audiocoreaudio_fifo_write(char *origen,int longitud)
 		//ver si la escritura alcanza la lectura. en ese caso, error
 		if (audiocoreaudio_fifo_next_index(audiocoreaudio_fifo_write_position)==audiocoreaudio_fifo_read_position) {
 			debug_printf (VERBOSE_DEBUG,"audiocoreaudio FIFO full");
+      //Si se llena fifo, resetearla a 0 para corregir latencia
+      audiocoreaudio_empty_buffer();
 			return;
 		}
 
