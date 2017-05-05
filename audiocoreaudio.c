@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -33,7 +33,7 @@
 #include "debug.h"
 
 
-//sfifo_t sound_fifo;
+//saudiocoreaudio_fifo_t sound_fifo;
 
 char *buffer_actual;
 
@@ -50,7 +50,7 @@ static AudioUnit gOutputUnit;
 /* Records sound writer status information */
 static int audio_output_started;
 
-void fifo_write(char *origen,int longitud);
+void audiocoreaudio_fifo_write(char *origen,int longitud);
 
 
 static
@@ -58,7 +58,7 @@ OSStatus coreaudiowrite( void *inRefCon,
                          AudioUnitRenderActionFlags *ioActionFlags,
                          const AudioTimeStamp *inTimeStamp,
                          UInt32 inBusNumber,
-                         UInt32 inNumberFrames,                       
+                         UInt32 inNumberFrames,
                          AudioBufferList *ioData );
 
 
@@ -68,16 +68,16 @@ int get_default_output_device(AudioDeviceID* device)
   OSStatus err = kAudioHardwareNoError;
   UInt32 count;
 
-  AudioObjectPropertyAddress property_address = { 
-    kAudioHardwarePropertyDefaultOutputDevice, 
+  AudioObjectPropertyAddress property_address = {
+    kAudioHardwarePropertyDefaultOutputDevice,
     kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMaster
-  }; 
+  };
 
   /* get the default output device for the HAL */
   count = sizeof( *device );
   err = AudioObjectGetPropertyData( kAudioObjectSystemObject, &property_address,
-                                    0, NULL, &count, device); 
+                                    0, NULL, &count, device);
   if ( err != kAudioHardwareNoError && device != kAudioObjectUnknown ) {
     debug_printf( VERBOSE_ERR,
               "get kAudioHardwarePropertyDefaultOutputDevice error %ld",
@@ -96,11 +96,11 @@ get_default_sample_rate( AudioDeviceID device, Float64 *rate )
   OSStatus err = kAudioHardwareNoError;
   UInt32 count;
 
-  AudioObjectPropertyAddress property_address = { 
+  AudioObjectPropertyAddress property_address = {
     kAudioDevicePropertyNominalSampleRate,
     kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMaster
-  }; 
+  };
 
   /* get the default output device for the HAL */
   count = sizeof( *rate );
@@ -138,7 +138,7 @@ freqptr=&freqqqq;
   if( get_default_output_device(&device) ) return 1;
   if( get_default_sample_rate( device, &deviceFormat.mSampleRate ) ) return 1;
 
-  *freqptr = deviceFormat.mSampleRate; 
+  *freqptr = deviceFormat.mSampleRate;
 
   deviceFormat.mFormatID =  kAudioFormatLinearPCM;
   deviceFormat.mFormatFlags =  kLinearPCMFormatFlagIsSignedInteger
@@ -196,7 +196,7 @@ deviceFormat.mBytesPerPacket=1;
   input.inputProc = coreaudiowrite;
   input.inputProcRefCon = NULL;
 
-  err = AudioUnitSetProperty( gOutputUnit,                       
+  err = AudioUnitSetProperty( gOutputUnit,
                               kAudioUnitProperty_SetRenderCallback,
                               kAudioUnitScope_Input,
                               0,
@@ -282,7 +282,7 @@ buffer_actual=buffer;
     audio_output_started = 1;
   }
 
-fifo_write(buffer,AUDIO_BUFFER_SIZE);
+audiocoreaudio_fifo_write(buffer,AUDIO_BUFFER_SIZE);
 
 
 }
@@ -324,8 +324,8 @@ void audiocoreaudio_end(void)
 
 
 
-int fifo_write_position=0;
-int fifo_read_position=0;
+int audiocoreaudio_fifo_write_position=0;
+int audiocoreaudio_fifo_read_position=0;
 
 //nuestra FIFO
 
@@ -333,22 +333,22 @@ int fifo_read_position=0;
 #define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
 
 
-char fifo_buffer[FIFO_BUFFER_SIZE];
+char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
 
 //retorna numero de elementos en la fifo
-int fifo_return_size(void)
+int audiocoreaudio_fifo_return_size(void)
 {
 	//si write es mayor o igual (caso normal)
-	if (fifo_write_position>=fifo_read_position) return fifo_write_position-fifo_read_position;
+	if (audiocoreaudio_fifo_write_position>=audiocoreaudio_fifo_read_position) return audiocoreaudio_fifo_write_position-audiocoreaudio_fifo_read_position;
 
 	else {
 		//write es menor, cosa que quiere decir que hemos dado la vuelta
-		return (FIFO_BUFFER_SIZE-fifo_read_position)+fifo_write_position;
+		return (FIFO_BUFFER_SIZE-audiocoreaudio_fifo_read_position)+audiocoreaudio_fifo_write_position;
 	}
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta
-int fifo_next_index(int v)
+int audiocoreaudio_fifo_next_index(int v)
 {
 	v=v+1;
 	if (v==FIFO_BUFFER_SIZE) v=0;
@@ -357,48 +357,48 @@ int fifo_next_index(int v)
 }
 
 //escribir datos en la fifo
-void fifo_write(char *origen,int longitud)
+void audiocoreaudio_fifo_write(char *origen,int longitud)
 {
 	for (;longitud>0;longitud--) {
 
 		//ver si la escritura alcanza la lectura. en ese caso, error
-		if (fifo_next_index(fifo_write_position)==fifo_read_position) {
+		if (audiocoreaudio_fifo_next_index(audiocoreaudio_fifo_write_position)==audiocoreaudio_fifo_read_position) {
 			debug_printf (VERBOSE_DEBUG,"audiocoreaudio FIFO full");
 			return;
 		}
 
-		fifo_buffer[fifo_write_position]=*origen++;
-		fifo_write_position=fifo_next_index(fifo_write_position);
+		audiocoreaudio_fifo_buffer[audiocoreaudio_fifo_write_position]=*origen++;
+		audiocoreaudio_fifo_write_position=audiocoreaudio_fifo_next_index(audiocoreaudio_fifo_write_position);
 	}
 }
 
 
 //leer datos de la fifo
-//void fifo_read(char *destino,int longitud)
-void fifo_read(uint8_t *destino,int longitud)
+//void audiocoreaudio_fifo_read(char *destino,int longitud)
+void audiocoreaudio_fifo_read(uint8_t *destino,int longitud)
 {
 	for (;longitud>0;longitud--) {
 
 
-		
-                if (fifo_return_size()==0) {
+
+                if (audiocoreaudio_fifo_return_size()==0) {
                         debug_printf (VERBOSE_INFO,"audiocoreaudio FIFO empty");
                         return;
                 }
 
 
-			
+
 
                 //ver si la lectura alcanza la escritura. en ese caso, error
-                //if (fifo_next_index(fifo_read_position)==fifo_write_position) {
+                //if (audiocoreaudio_fifo_next_index(audiocoreaudio_fifo_read_position)==audiocoreaudio_fifo_write_position) {
                 //        debug_printf (VERBOSE_DEBUG,"FIFO vacia");
                 //        return;
                 //}
 
 
 
-                *destino++=fifo_buffer[fifo_read_position];
-                fifo_read_position=fifo_next_index(fifo_read_position);
+                *destino++=audiocoreaudio_fifo_buffer[audiocoreaudio_fifo_read_position];
+                audiocoreaudio_fifo_read_position=audiocoreaudio_fifo_next_index(audiocoreaudio_fifo_read_position);
         }
 }
 
@@ -412,7 +412,7 @@ OSStatus coreaudiowrite( void *inRefCon GCC_UNUSED,
                          AudioUnitRenderActionFlags *ioActionFlags GCC_UNUSED,
                          const AudioTimeStamp *inTimeStamp GCC_UNUSED,
                          UInt32 inBusNumber GCC_UNUSED,
-                         UInt32 inNumberFrames,                       
+                         UInt32 inNumberFrames,
                          AudioBufferList *ioData )
 {
   int len = deviceFormat.mBytesPerFrame * inNumberFrames;
@@ -433,21 +433,21 @@ OSStatus coreaudiowrite( void *inRefCon GCC_UNUSED,
 	}
 
 	else {
-		
+
 		//printf ("coreaudiowrite. longitud pedida: %d AUDIO_BUFFER_SIZE: %d\n",len,AUDIO_BUFFER_SIZE);
-		if (len>fifo_return_size()) {
-			//debug_printf (VERBOSE_DEBUG,"FIFO is not big enough. Length asked: %d fifo_return_size: %d",len,fifo_return_size() );
+		if (len>audiocoreaudio_fifo_return_size()) {
+			//debug_printf (VERBOSE_DEBUG,"FIFO is not big enough. Length asked: %d audiocoreaudio_fifo_return_size: %d",len,audiocoreaudio_fifo_return_size() );
 			//esto puede pasar con el detector de silencio
 
 			//retornar solo lo que tenemos
-			//fifo_read(out,fifo_return_size() );
+			//audiocoreaudio_fifo_read(out,audiocoreaudio_fifo_return_size() );
 
 			return noErr;
 		}
 
 
 		else {
-			fifo_read(out,len);
+			audiocoreaudio_fifo_read(out,len);
 		}
 
 	}
