@@ -5,6 +5,8 @@
 
 -En el FAQ, decir porque bajan fps y sube consumo de cpu al arrancar zxuno
 
+-opcion para desactivar real joystick-> en linux virtual detecta mouse como joystick algunos eventos y se queda colgado (teclas pulsadas)
+
 -drivers video texto mouse estará dividido entre 8??
 
 -Soporte microdrive / floppy QL
