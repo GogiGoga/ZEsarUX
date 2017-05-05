@@ -703,6 +703,7 @@ struct s_items_ayuda items_ayuda[]={
   {"exit-emulator",NULL,NULL,"Ends emulator"},
 {"find-label",NULL,"label","Finds label on source code"},
   {"generate-nmi",NULL,NULL,"Generates a NMI"},
+	{"get-audio-buffer-info",NULL,NULL,"Get audio buffer information"},
   {"get-breakpoints","|gb",NULL,"Get breakpoints list"},
 	{"get-cpu-core-name",NULL,NULL,"Get emulation cpu core name"},
   {"get-current-machine","|gcm",NULL,"Returns current machine name"},
@@ -2745,6 +2746,13 @@ char buffer_retorno[2048];
   else if (!strcmp(comando_sin_parametros,"generate-nmi")) {
 	generate_nmi();
   }
+
+
+	else if (!strcmp(comando_sin_parametros,"get-audio-buffer-info")) {
+		int tamanyo,posicion;
+		audio_get_buffer_info(&tamanyo,&posicion);
+		escribir_socket_format(misocket,"Size: %d Current position: %d\n",tamanyo,posicion);
+	}
 
 //get-breakpoints, estado global y lista cada uno, si hay y si esta enabled
   else if (!strcmp(comando_sin_parametros,"get-breakpoints") || !strcmp(comando_sin_parametros,"gb")) {

@@ -341,11 +341,6 @@ void audiocoreaudio_empty_buffer(void)
 
 char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
 
-void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_buffer_position)
-{
-  *buffer_size=FIFO_BUFFER_SIZE;
-  *current_buffer_position=audiocoreaudio_fifo_write_position;
-}
 
 
 //retorna numero de elementos en la fifo
@@ -358,6 +353,12 @@ int audiocoreaudio_fifo_return_size(void)
 		//write es menor, cosa que quiere decir que hemos dado la vuelta
 		return (FIFO_BUFFER_SIZE-audiocoreaudio_fifo_read_position)+audiocoreaudio_fifo_write_position;
 	}
+}
+
+void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=FIFO_BUFFER_SIZE;
+  *current_buffer_position=audiocoreaudio_fifo_return_size();
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta

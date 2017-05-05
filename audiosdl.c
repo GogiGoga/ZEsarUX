@@ -137,12 +137,6 @@ void audiosdl_empty_buffer(void)
 char audiosdl_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
 
 
-void audiosdl_get_buffer_info (int *buffer_size,int *current_buffer_position)
-{
-  *buffer_size=FIFO_SDL_BUFFER_SIZE;
-  *current_buffer_position=audiosdl_fifo_sdl_write_position;
-}
-
 //retorna numero de elementos en la fifo
 int audiosdl_fifo_sdl_return_size(void)
 {
@@ -153,6 +147,12 @@ int audiosdl_fifo_sdl_return_size(void)
 		//write es menor, cosa que quiere decir que hemos dado la vuelta
 		return (FIFO_SDL_BUFFER_SIZE-audiosdl_fifo_sdl_read_position)+audiosdl_fifo_sdl_write_position;
 	}
+}
+
+void audiosdl_get_buffer_info (int *buffer_size,int *current_buffer_position)
+{
+  *buffer_size=FIFO_SDL_BUFFER_SIZE;
+  *current_buffer_position=audiosdl_fifo_sdl_return_size();
 }
 
 //retornar siguiente valor para indice. normalmente +1 a no ser que se de la vuelta
