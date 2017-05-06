@@ -482,6 +482,7 @@ int z88_eprom_size_opcion_seleccionada=0;
 int z88_flash_intel_size_opcion_seleccionada=0;
 int find_opcion_seleccionada=0;
 int find_bytes_opcion_seleccionada=0;
+int find_lives_opcion_seleccionada=0;
 int cpu_transaction_log_opcion_seleccionada=0;
 int storage_settings_opcion_seleccionada=0;
 int external_tools_config_opcion_seleccionada=0;
@@ -15738,6 +15739,9 @@ int menu_find_lives_state=0;
 //Puntero a memoria de spectrum que dice donde esta el contador de vidas
 z80_int menu_find_lives_pointer=0;
 
+//Ultimo valor buscado
+int lives_to_find=3;
+
 
 void menu_find_lives_restart(MENU_ITEM_PARAMETERS)
 {
@@ -15750,14 +15754,16 @@ void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
 	menu_find_bytes_alloc_if_needed();
 	if (menu_find_lives_state==0) menu_find_bytes_clear_results_process();
 
+	//Suponemos que la segunda vez habra perdido al menos 1 vida
+	if (menu_find_lives_state==1 && lives_to_find>1) lives_to_find--;
+
 	//Pedir vidas actuales
 	//Buscar en la memoria direccionable (0...65535) si se encuentra el byte
-	z80_byte lives_to_find;
 
 
 	char string_find[4];
 
-	sprintf (string_find,"0");
+	sprintf (string_find,"%d",lives_to_find);
 
 	menu_ventana_scanf("Current lives",string_find,4);
 
@@ -15875,7 +15881,7 @@ void menu_find_lives(MENU_ITEM_PARAMETERS)
 
                 menu_add_ESC_item(array_menu_find_lives);
 
-                retorno_menu=menu_dibuja_menu(&find_opcion_seleccionada,&item_seleccionado,array_menu_find_lives,"Find lives" );
+                retorno_menu=menu_dibuja_menu(&find_lives_opcion_seleccionada,&item_seleccionado,array_menu_find_lives,"Find lives" );
 
                 cls_menu_overlay();
 
