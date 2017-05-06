@@ -1236,7 +1236,7 @@ chloe.o: chloe.c chloe.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.
 prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h utils.h menu.h
 	\$(CC) \$(CFLAGS) -c prism.c
 
-remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h
+remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h superupgrade.h
 	\$(CC) \$(CFLAGS) -c remote.c
 
 tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h

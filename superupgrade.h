@@ -59,5 +59,8 @@ extern z80_byte superupgrade_puerto_43b;
 
 extern int si_superupgrade_muestra_rom_interna(void);
 
+extern z80_byte *superupgrade_rom_memory_pointer;
+extern z80_byte *superupgrade_ram_memory_pointer;
+
 
 #endif

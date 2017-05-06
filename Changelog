@@ -3,6 +3,7 @@ Version 5.1. 24 April 2017 - xxx edition
 Added menu movement with mouse
 Added Visualmem, Poke, Find menus also for Sinclair QL
 Added setting to test configuration
+Added remote commands: get-audio-buffer-info, save-binary-internal
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Some other minor bugfixes and improvements

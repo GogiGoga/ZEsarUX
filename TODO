@@ -8,6 +8,9 @@
 
 -drivers video texto mouse estará dividido entre 8??
 
+-manera de bajar latenciar: bajar mas aun el buffer (de *4 a *3 por ejemplo)
+-Quizá resetear puntero escritura latencia siempre que carga, graba, etc
+
 -Soporte microdrive / floppy QL
 -Joystick en Mac,Win
 -Full screen cocoa gl
@@ -1167,6 +1170,8 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 
 *** Menu  ***
+
+-Otra mejora: poder mover ventanas menu con ratón 
 
 -quiza juego que de nombre a la edicion del emulador incluir en opcion del menu
 

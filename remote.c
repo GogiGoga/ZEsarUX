@@ -39,6 +39,7 @@
 #include "charset.h"
 #include "diviface.h"
 #include "ula.h"
+#include "superupgrade.h"
 
 
 int remote_protocol_port=DEFAULT_REMOTE_PROTOCOL_PORT;
@@ -723,6 +724,8 @@ struct s_items_ayuda items_ayuda[]={
 							"diviface_memory: where divide/divmmc firmware and ram is located\n"
 							"emulator_memory: usually includes RAM+ROM emulated machine\n"
 							"rainbow_buffer: where the real video memory buffer is located\n"
+							"superupgrade_flash: where the superupgrade Flash is located\n"
+							"superupgrade_ram: where the superupgrade RAM is located\n"
 							"\n"
 							"Use with care, pointer address is a memory address on the emulator program (not the emulated memory)"},
 	{"load-source-code","|lsc","file","Load source file to be used on disassemble opcode functions"},
@@ -735,6 +738,8 @@ struct s_items_ayuda items_ayuda[]={
 	},
   {"reset-cpu",NULL,NULL,"Resets CPU"},
   {"run","|r","[verbose]","Run cpu when on cpu step mode. Returns when a breakpoint is fired or any other event which opens the menu. Set verbose parameter to get verbose output"},
+	{"save-binary-internal",NULL,"pointer lenght file [offset]","Dumps internal memory to file for a given memory pointer. "
+				"Pointer can be any of the hexdump-internal command"},
 	{"set-breakpoint","|sb","index [condition]","Sets a breakpoint at desired index entry with condition. If no condition set, breakpoint will be handled as disabled"},
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
@@ -2547,6 +2552,27 @@ void remote_hexdump(int misocket,int inicio,int longitud)
 	}
 }
 
+//Retorna 0 si no reconocido puntero. Retorna puntero en variable "puntero"
+int return_internal_pointer(char *s,z80_byte **puntero)
+{
+
+	z80_byte *inicio;
+	inicio=NULL;
+	int retorno=1;
+
+	if (!strcasecmp(s,"emulator_memory")) 				inicio=memoria_spectrum;
+	else if (!strcasecmp(s,"diviface_memory")) 		inicio=diviface_memory_pointer;
+	else if (!strcasecmp(s,"rainbow_buffer")) 		inicio=(z80_byte *)rainbow_buffer;
+	else if (!strcasecmp(s,"superupgrade_ram")) 	inicio=superupgrade_ram_memory_pointer;
+	else if (!strcasecmp(s,"superupgrade_flash")) inicio=superupgrade_rom_memory_pointer;
+
+	else retorno=0;
+
+	*puntero=inicio;
+
+	return retorno;
+}
+
 void interpreta_comando(char *comando,int misocket)
 {
 
@@ -2842,11 +2868,13 @@ char buffer_retorno[2048];
 		z80_byte *inicio;
 
 
-		if (!strcasecmp(remote_command_argv[0],"emulator_memory")) inicio=memoria_spectrum;
-		else if (!strcasecmp(remote_command_argv[0],"diviface_memory")) inicio=diviface_memory_pointer;
-		else if (!strcasecmp(remote_command_argv[0],"rainbow_buffer")) inicio=(z80_byte *)rainbow_buffer;
-		else {
+		if (return_internal_pointer(remote_command_argv[0],&inicio)==0) {
 			escribir_socket(misocket,"ERROR. Unknown pointer");
+			return;
+		}
+
+		if (inicio==NULL) {
+			escribir_socket(misocket,"ERROR. Pointer is null");
 			return;
 		}
 
@@ -2898,6 +2926,59 @@ char buffer_retorno[2048];
 		escribir_socket(misocket,"Running until a breakpoint, menu opening or other event\n");
     remote_cpu_run(misocket,verbose);
   }
+
+
+	else if (!strcmp(comando_sin_parametros,"save-binary-internal")) {
+		remote_parse_commands_argvc(parametros);
+
+		if (remote_command_argc<3) {
+			escribir_socket(misocket,"ERROR. Needs three parameters minimum");
+			return;
+		}
+
+
+		z80_byte *inicio;
+
+		if (return_internal_pointer(remote_command_argv[0],&inicio)==0) {
+			escribir_socket(misocket,"ERROR. Unknown pointer");
+			return;
+		}
+
+		if (inicio==NULL) {
+			escribir_socket(misocket,"ERROR. Pointer is null");
+			return;
+		}
+
+		int longitud=parse_string_to_number(remote_command_argv[1]);
+
+		char *binaryfile;
+
+		binaryfile=remote_command_argv[2];
+
+		int offset=0;
+		if (remote_command_argc>3) offset=parse_string_to_number(remote_command_argv[3]);
+
+		inicio +=offset;
+
+		FILE *ptr_binaryfile;
+				ptr_binaryfile=fopen(binaryfile,"wb");
+				if (!ptr_binaryfile)
+			{
+						debug_printf (VERBOSE_ERR,"Unable to open file");
+				}
+			else {
+
+							int i;
+							for (i=0;i<longitud;i++) {
+											fwrite(inicio,1,1,ptr_binaryfile);
+											inicio++;
+							}
+
+						 fclose(ptr_binaryfile);
+			}
+
+
+	}
 
 //set-breakpoint - si breakpoint activo. id numero y texto
 else if (!strcmp(comando_sin_parametros,"set-breakpoint") || !strcmp(comando_sin_parametros,"sb")) {
