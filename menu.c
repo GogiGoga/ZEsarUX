@@ -15869,6 +15869,7 @@ void menu_find_lives(MENU_ITEM_PARAMETERS)
 
 								if (menu_find_lives_state==2) {
 									menu_add_item_menu_inicial_format(&array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_initial,NULL,"Lives pointer: %d",menu_find_lives_pointer);
+									menu_add_item_menu_format(array_menu_find_lives,MENU_OPCION_NORMAL,NULL,NULL,"Lives: %d",peek_byte_z80_moto(menu_find_lives_pointer) );
 									menu_add_item_menu_format(array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_set,NULL,"Set lives");
 								}
 
