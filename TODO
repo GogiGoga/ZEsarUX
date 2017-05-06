@@ -21,11 +21,9 @@ probado lo siguiente:
 -Joystick en Mac,Win
 -Full screen cocoa gl
 -Grabar en archivo configuracion joystick: eventos, teclas, etc
--GUI style QL
 
 -QL:
 *cpu stats: quiza no porque hay mas instrucciones que z80....
-*save binary block
 
 -Separar carpeta media y docs y quizá otras carpetas del estable final. Quizá todo o parte del contenido 
 Revisar script install y make install 
