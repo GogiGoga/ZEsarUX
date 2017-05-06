@@ -481,6 +481,7 @@ int z88_slot_insert_opcion_seleccionada=0;
 int z88_eprom_size_opcion_seleccionada=0;
 int z88_flash_intel_size_opcion_seleccionada=0;
 int find_opcion_seleccionada=0;
+int find_bytes_opcion_seleccionada=0;
 int cpu_transaction_log_opcion_seleccionada=0;
 int storage_settings_opcion_seleccionada=0;
 int external_tools_config_opcion_seleccionada=0;
@@ -15198,13 +15199,13 @@ int get_efectivo_tamanyo_find_buffer(void)
 	return 65536;
 }
 
-//int menu_find_total_items=0;
+//int menu_find_bytes_total_items=0;
 
 
 //Indica si esta vacio o no; esto se usa para saber si la busqueda se hace sobre la busqueda anterior o no
-int menu_find_empty=1;
+int menu_find_bytes_empty=1;
 
-unsigned char *menu_find_mem_pointer=NULL;
+unsigned char *menu_find_bytes_mem_pointer=NULL;
 /* Estructura del array de busqueda:
 65536 items del array. Cada item es un unsigned char
 El valor indica:
@@ -15213,19 +15214,26 @@ El valor indica:
 otros valores de momento no tienen significado
 */
 
-void menu_find_clear_results(MENU_ITEM_PARAMETERS)
+
+void menu_find_bytes_clear_results_process(void)
 {
         //inicializamos array
         int i;
 
-        for (i=0;i<get_efectivo_tamanyo_find_buffer();i++) menu_find_mem_pointer[i]=0;
+        for (i=0;i<get_efectivo_tamanyo_find_buffer();i++) menu_find_bytes_mem_pointer[i]=0;
 
-        menu_find_empty=1;
+        menu_find_bytes_empty=1;
+
+}
+
+void menu_find_bytes_clear_results(MENU_ITEM_PARAMETERS)
+{
+        menu_find_bytes_clear_results_process();
 
         menu_generic_message("Clear Results","OK. Results cleared");
 }
 
-void menu_find_view_results(MENU_ITEM_PARAMETERS)
+void menu_find_bytes_view_results(MENU_ITEM_PARAMETERS)
 {
 
         int index_find,index_buffer;
@@ -15243,7 +15251,7 @@ void menu_find_view_results(MENU_ITEM_PARAMETERS)
         int salir=0;
 
         for (index_find=0;index_find<get_efectivo_tamanyo_find_buffer() && salir==0;index_find++) {
-                if (menu_find_mem_pointer[index_find]) {
+                if (menu_find_bytes_mem_pointer[index_find]) {
                         sprintf (buf_linea,"%d\n",index_find);
                         sprintf (&results_buffer[index_buffer],"%s\n",buf_linea);
                         index_buffer +=strlen(buf_linea);
@@ -15265,7 +15273,68 @@ void menu_find_view_results(MENU_ITEM_PARAMETERS)
         menu_generic_message("View Results",results_buffer);
 }
 
-void menu_find_find(MENU_ITEM_PARAMETERS)
+
+int menu_find_bytes_process(z80_byte byte_to_find)
+{
+	int dir;
+	int total_items_found=0;
+	int final_find=get_efectivo_tamanyo_find_buffer();
+
+	//Busqueda con array no inicializado
+	if (menu_find_bytes_empty) {
+
+					debug_printf (VERBOSE_INFO,"Starting Search with no previous results");
+
+
+					//asumimos que no va a encontrar nada
+					menu_find_bytes_empty=1;
+
+					for (dir=0;dir<final_find;dir++) {
+									if (peek_byte_z80_moto(dir)==byte_to_find) {
+													menu_find_bytes_mem_pointer[dir]=1;
+
+													//al menos hay un resultado
+													menu_find_bytes_empty=0;
+
+													//incrementamos contador de resultados para mostrar al final
+													total_items_found++;
+									}
+					}
+
+	}
+
+	else {
+					//Busqueda con array ya con contenido
+					//examinar solo las direcciones que indique el array
+
+					debug_printf (VERBOSE_INFO,"Starting Search using previous results");
+
+					//asumimos que no va a encontrar nada
+					menu_find_bytes_empty=1;
+
+					int i;
+					for (i=0;i<final_find;i++) {
+									if (menu_find_bytes_mem_pointer[i]) {
+													//Ver el contenido de esa direccion
+													if (peek_byte_z80_moto(i)==byte_to_find) {
+																	//al menos hay un resultado
+																	menu_find_bytes_empty=0;
+																	//incrementamos contador de resultados para mostrar al final
+																	total_items_found++;
+													}
+													else {
+																	//el byte ya no esta en esa direccion
+																	menu_find_bytes_mem_pointer[i]=0;
+													}
+									}
+					}
+	}
+
+	return total_items_found;
+
+}
+
+void menu_find_bytes_find(MENU_ITEM_PARAMETERS)
 {
 
         //Buscar en la memoria direccionable (0...65535) si se encuentra el byte
@@ -15289,60 +15358,9 @@ void menu_find_find(MENU_ITEM_PARAMETERS)
         byte_to_find=valor_find;
 
 
-        int dir;
-        int total_items_found=0;
-				int final_find=get_efectivo_tamanyo_find_buffer();
+        int total_items_found;
 
-        //Busqueda con array no inicializado
-        if (menu_find_empty) {
-
-                debug_printf (VERBOSE_INFO,"Starting Search with no previous results");
-
-
-                //asumimos que no va a encontrar nada
-                menu_find_empty=1;
-
-                for (dir=0;dir<final_find;dir++) {
-                        if (peek_byte_z80_moto(dir)==byte_to_find) {
-                                menu_find_mem_pointer[dir]=1;
-
-                                //al menos hay un resultado
-                                menu_find_empty=0;
-
-                                //incrementamos contador de resultados para mostrar al final
-                                total_items_found++;
-                        }
-                }
-
-        }
-
-        else {
-                //Busqueda con array ya con contenido
-                //examinar solo las direcciones que indique el array
-
-                debug_printf (VERBOSE_INFO,"Starting Search using previous results");
-
-                //asumimos que no va a encontrar nada
-                menu_find_empty=1;
-
-                int i;
-                for (i=0;i<final_find;i++) {
-                        if (menu_find_mem_pointer[i]) {
-                                //Ver el contenido de esa direccion
-                                if (peek_byte_z80_moto(i)==byte_to_find) {
-                                        //al menos hay un resultado
-                                        menu_find_empty=0;
-                                        //incrementamos contador de resultados para mostrar al final
-                                        total_items_found++;
-                                }
-                                else {
-                                        //el byte ya no esta en esa direccion
-                                        menu_find_mem_pointer[i]=0;
-                                }
-                        }
-                }
-        }
-
+				total_items_found=menu_find_bytes_process(byte_to_find);
 
         menu_generic_message_format("Find","Total addresses found: %d",total_items_found);
 
@@ -15353,34 +15371,38 @@ void menu_find_find(MENU_ITEM_PARAMETERS)
 
 //int total_tamanyo_find_buffer=0;
 
-
-
-void menu_find(MENU_ITEM_PARAMETERS)
+void menu_find_bytes_alloc_if_needed(void)
 {
-        menu_item *array_menu_find;
+	//Si puntero memoria no esta asignado, asignarlo, o si hemos cambiado de tipo de maquina
+	if (menu_find_bytes_mem_pointer==NULL) {
+
+					//65536 elementos del array, cada uno de tamanyo unsigned char
+					//total_tamanyo_find_buffer=get_total_tamanyo_find_buffer();
+
+					menu_find_bytes_mem_pointer=malloc(QL_MEM_LIMIT+1); //Asignamos el maximo (maquina QL)
+					if (menu_find_bytes_mem_pointer==NULL) cpu_panic("Error allocating find array");
+
+					//inicializamos array
+					int i;
+					for (i=0;i<get_efectivo_tamanyo_find_buffer();i++) menu_find_bytes_mem_pointer[i]=0;
+	}
+}
+
+void menu_find_bytes(MENU_ITEM_PARAMETERS)
+{
+        menu_item *array_menu_find_bytes;
         menu_item item_seleccionado;
         int retorno_menu;
 
         //Si puntero memoria no esta asignado, asignarlo, o si hemos cambiado de tipo de maquina
-        if (menu_find_mem_pointer==NULL) {
-
-                //65536 elementos del array, cada uno de tamanyo unsigned char
-								//total_tamanyo_find_buffer=get_total_tamanyo_find_buffer();
-
-                menu_find_mem_pointer=malloc(QL_MEM_LIMIT+1); //Asignamos el maximo (maquina QL)
-                if (menu_find_mem_pointer==NULL) cpu_panic("Error allocating find array");
-
-                //inicializamos array
-                int i;
-                for (i=0;i<get_efectivo_tamanyo_find_buffer();i++) menu_find_mem_pointer[i]=0;
-        }
+        menu_find_bytes_alloc_if_needed();
 
 
         do {
 
-                menu_add_item_menu_inicial_format(&array_menu_find,MENU_OPCION_NORMAL,menu_find_find,NULL,"Find byte");
-                menu_add_item_menu_tooltip(array_menu_find,"Find one byte on memory");
-                menu_add_item_menu_ayuda(array_menu_find,"Find one byte on the 64 KB of mapped memory, considering the last address found (if any).\n"
+                menu_add_item_menu_inicial_format(&array_menu_find_bytes,MENU_OPCION_NORMAL,menu_find_bytes_find,NULL,"Find byte");
+                menu_add_item_menu_tooltip(array_menu_find_bytes,"Find one byte on memory");
+                menu_add_item_menu_ayuda(array_menu_find_bytes,"Find one byte on the 64 KB of mapped memory, considering the last address found (if any).\n"
                         "It can be used to find POKEs, it's very easy: \n"
                         "I first recommend to disable Multitasking menu, to avoid losing lives where in the menu.\n"
                         "As an example, you are in a game with 4 lives. Enter find byte "
@@ -15393,23 +15415,23 @@ void menu_find(MENU_ITEM_PARAMETERS)
 			"(NN)=value, setting NN to the address where lives are stored, and value to the desired number of lives, for example: (51308)=2.\n"
                         "When the breakpoint is caught, you will probably have the section of code where the lives are decremented ;) ");
 
-                menu_add_item_menu_format(array_menu_find,MENU_OPCION_NORMAL,menu_find_view_results,NULL,"View results");
-                menu_add_item_menu_tooltip(array_menu_find,"View results");
-                menu_add_item_menu_ayuda(array_menu_find,"View results");
+                menu_add_item_menu_format(array_menu_find_bytes,MENU_OPCION_NORMAL,menu_find_bytes_view_results,NULL,"View results");
+                menu_add_item_menu_tooltip(array_menu_find_bytes,"View results");
+                menu_add_item_menu_ayuda(array_menu_find_bytes,"View results");
 
-                menu_add_item_menu_format(array_menu_find,MENU_OPCION_NORMAL,menu_find_clear_results,NULL,"Clear results");
-                menu_add_item_menu_tooltip(array_menu_find,"Clear results");
-                menu_add_item_menu_ayuda(array_menu_find,"Clear results");
-
-
+                menu_add_item_menu_format(array_menu_find_bytes,MENU_OPCION_NORMAL,menu_find_bytes_clear_results,NULL,"Clear results");
+                menu_add_item_menu_tooltip(array_menu_find_bytes,"Clear results");
+                menu_add_item_menu_ayuda(array_menu_find_bytes,"Clear results");
 
 
-                menu_add_item_menu(array_menu_find,"",MENU_OPCION_SEPARADOR,NULL,NULL);
 
 
-                menu_add_ESC_item(array_menu_find);
+                menu_add_item_menu(array_menu_find_bytes,"",MENU_OPCION_SEPARADOR,NULL,NULL);
 
-                retorno_menu=menu_dibuja_menu(&find_opcion_seleccionada,&item_seleccionado,array_menu_find,"Find" );
+
+                menu_add_ESC_item(array_menu_find_bytes);
+
+                retorno_menu=menu_dibuja_menu(&find_bytes_opcion_seleccionada,&item_seleccionado,array_menu_find_bytes,"Find bytes" );
 
                 cls_menu_overlay();
 
@@ -15701,6 +15723,192 @@ void menu_debug_file_viewer(MENU_ITEM_PARAMETERS)
 }
 
 
+/*
+Busqueda de contador de vidas.
+Estados: 0. Inicial. Se indica vidas actuales. Se realiza busqueda en toda memoria con ese valor
+Estados: 1. Ya se ha indicado vidas iniciales. Se puede indicar vidas actuales. Se realiza busqueda en toda memoria. Si se encuentra 1 solo valor, se pasa a estado 2.
+Se puede pasar a estado 0 con "Restart"
+
+Estados: 2. Ya se ha encontrado contador vidas. Se muestra direccion. Se puede pasar a estado 0 con "Restart"
+
+*/
+
+int menu_find_lives_state=0;
+
+//Puntero a memoria de spectrum que dice donde esta el contador de vidas
+z80_int menu_find_lives_pointer=0;
+
+
+void menu_find_lives_restart(MENU_ITEM_PARAMETERS)
+{
+	menu_find_lives_state=0;
+}
+
+void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
+{
+	//Limpiar resultados
+	menu_find_bytes_alloc_if_needed();
+	if (menu_find_lives_state==0) menu_find_bytes_clear_results_process();
+
+	//Pedir vidas actuales
+	//Buscar en la memoria direccionable (0...65535) si se encuentra el byte
+	z80_byte lives_to_find;
+
+
+	char string_find[4];
+
+	sprintf (string_find,"0");
+
+	menu_ventana_scanf("Current lives",string_find,4);
+
+	int valor_find=parse_string_to_number(string_find);
+
+	if (valor_find<0 || valor_find>255) {
+					debug_printf (VERBOSE_ERR,"Invalid value %d",valor_find);
+					return;
+	}
+
+
+	lives_to_find=valor_find;
+
+
+	int total_items_found;
+
+	total_items_found=menu_find_bytes_process(lives_to_find);
+
+	//menu_generic_message_format("Find","Total addresses found: %d",total_items_found);
+
+	//Si estamos en estado 0
+	if (menu_find_lives_state==0) {
+		if (total_items_found==0) {
+			 menu_generic_message("Find lives","Sorry, no lives counter found");
+		}
+		else {
+			menu_generic_message("Find lives","Great. Continue playing game and come back when you lose a life");
+			menu_find_lives_state=1;
+		}
+	}
+
+	//Si estamos en estado 1
+	else if (menu_find_lives_state==1) {
+		if (total_items_found!=1) {
+			 menu_generic_message("Find lives","Sorry, no unique address found. You may want to manually find it on the Find bytes menu");
+		}
+		else {
+
+			//Buscar la direccion
+			int index_find;
+
+			int salir=0;
+
+			for (index_find=0;index_find<get_efectivo_tamanyo_find_buffer() && salir==0;index_find++) {
+							if (menu_find_bytes_mem_pointer[index_find]) {
+											menu_find_lives_pointer=index_find;
+											salir=0;
+							}
+			}
+
+
+			menu_find_lives_state=2;
+		}
+	}
+
+
+
+	//Buscar bytes
+
+}
+
+void menu_find_lives(MENU_ITEM_PARAMETERS)
+{
+        menu_item *array_menu_find_lives;
+        menu_item item_seleccionado;
+        int retorno_menu;
+
+
+
+
+        do {
+
+								if (menu_find_lives_state==0) {
+                	menu_add_item_menu_inicial_format(&array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_initial,NULL,"Tell current lives (initial)");
+								}
+
+								if (menu_find_lives_state==1) {
+									menu_add_item_menu_inicial_format(&array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_initial,NULL,"Tell current lives (decr.)");
+								}
+
+								if (menu_find_lives_state==2) {
+									menu_add_item_menu_inicial_format(&array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_initial,NULL,"Lives pointer: %d",menu_find_lives_pointer);
+								}
+
+								if (menu_find_lives_state==1 || menu_find_lives_state==2) {
+									menu_add_item_menu_format(array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_restart,NULL,"Restart process");
+								}
+
+                menu_add_item_menu(array_menu_find_lives,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+
+
+                menu_add_ESC_item(array_menu_find_lives);
+
+                retorno_menu=menu_dibuja_menu(&find_opcion_seleccionada,&item_seleccionado,array_menu_find_lives,"Find lives" );
+
+                cls_menu_overlay();
+
+                if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+                        //llamamos por valor de funcion
+                        if (item_seleccionado.menu_funcion!=NULL) {
+                                //printf ("actuamos por funcion\n");
+                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
+                                cls_menu_overlay();
+                        }
+                }
+
+        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC);
+}
+
+
+void menu_find(MENU_ITEM_PARAMETERS)
+{
+        menu_item *array_menu_find;
+        menu_item item_seleccionado;
+        int retorno_menu;
+
+
+
+
+        do {
+
+                menu_add_item_menu_inicial_format(&array_menu_find,MENU_OPCION_NORMAL,menu_find_bytes,NULL,"Find byte");
+                menu_add_item_menu_tooltip(array_menu_find,"Find one byte on memory");
+                menu_add_item_menu_ayuda(array_menu_find,"Find one byte on the 64 KB of mapped memory, considering the last address found (if any)");
+
+								menu_add_item_menu_format(array_menu_find,MENU_OPCION_NORMAL,menu_find_lives,NULL,"Find lives address");
+                menu_add_item_menu_tooltip(array_menu_find,"Find memory pointer where lives are located");
+                menu_add_item_menu_ayuda(array_menu_find,"Find memory pointer where lives are located)");
+
+
+                menu_add_item_menu(array_menu_find,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+
+
+                menu_add_ESC_item(array_menu_find);
+
+                retorno_menu=menu_dibuja_menu(&find_opcion_seleccionada,&item_seleccionado,array_menu_find,"Find" );
+
+                cls_menu_overlay();
+
+                if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+                        //llamamos por valor de funcion
+                        if (item_seleccionado.menu_funcion!=NULL) {
+                                //printf ("actuamos por funcion\n");
+                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
+                                cls_menu_overlay();
+                        }
+                }
+
+        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC);
+}
+
 int menu_debug_view_basic_cond(void)
 {
 	if (MACHINE_IS_Z88) return 0;
@@ -15798,10 +16006,10 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 			//}
 #endif
 
-    menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_find,NULL,"~~Find byte");
+    menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_find,NULL,"~~Find");
 		menu_add_item_menu_shortcut(array_menu_debug_settings,'f');
-    menu_add_item_menu_tooltip(array_menu_debug_settings,"Find one byte on memory");
-    menu_add_item_menu_ayuda(array_menu_debug_settings,"Find one byte on the 64 KB of mapped memory. It can be used to find POKEs");
+    menu_add_item_menu_tooltip(array_menu_debug_settings,"Find bytes on memory");
+    menu_add_item_menu_ayuda(array_menu_debug_settings,"Find bytes on the 64 KB of mapped memory");
 
 
 		menu_add_item_menu(array_menu_debug_settings,"~~Poke",MENU_OPCION_NORMAL,menu_poke,NULL);

@@ -5,6 +5,7 @@ Added Visualmem, Poke, Find, Save binary menus also for Sinclair QL
 Added setting to test configuration
 Added remote commands: get-audio-buffer-info, save-binary-internal
 Added QL GUI Style
+Added menu to find Infinite Lives in games
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Some other minor bugfixes and improvements
