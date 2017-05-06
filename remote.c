@@ -695,7 +695,7 @@ struct s_items_ayuda items_ayuda[]={
   {"disable-breakpoints",NULL,NULL,"Disable all breakpoints"},
   {"disassemble","|d","[address] [lines]","Disassemble at address. If no address specified, "
                                         "disassemble from PC register. If no lines specified, disassembles one line"},
-	{"dump-nested-core",NULL,NULL,"Shows internal nested core functions"},
+	{"dump-nested-functions",NULL,NULL,"Shows internal nested core functions"},
   {"enable-breakpoint","|eb","index","Enable specific breakpoint"},
   {"enable-breakpoints",NULL,NULL,"Enable breakpoints"},
   {"enter-cpu-step",NULL,NULL,"Enter cpu step to step mode"},
@@ -739,7 +739,8 @@ struct s_items_ayuda items_ayuda[]={
   {"reset-cpu",NULL,NULL,"Resets CPU"},
   {"run","|r","[verbose]","Run cpu when on cpu step mode. Returns when a breakpoint is fired or any other event which opens the menu. Set verbose parameter to get verbose output"},
 	{"save-binary-internal",NULL,"pointer lenght file [offset]","Dumps internal memory to file for a given memory pointer. "
-				"Pointer can be any of the hexdump-internal command"},
+				"Pointer can be any of the hexdump-internal command\n"
+				"Use with care, pointer address is a memory address on the emulator program (not the emulated memory)"},
 	{"set-breakpoint","|sb","index [condition]","Sets a breakpoint at desired index entry with condition. If no condition set, breakpoint will be handled as disabled"},
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
@@ -2028,7 +2029,7 @@ void remote_parse_commands_argvc(char *texto)
 	}
 }
 
-void remote_dump_nested_core(int misocket)
+void remote_dump_nested_core_functions(int misocket)
 {
 
 	char buffer[10000];
@@ -2693,8 +2694,8 @@ char buffer_retorno[2048];
 
   }
 
-	else if (!strcmp(comando_sin_parametros,"dump-nested-core")) {
-		remote_dump_nested_core(misocket);
+	else if (!strcmp(comando_sin_parametros,"dump-nested-functions")) {
+		remote_dump_nested_core_functions(misocket);
 	}
 
   else if (!strcmp(comando_sin_parametros,"easter-egg")) {
