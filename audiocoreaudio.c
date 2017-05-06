@@ -55,8 +55,8 @@ void audiocoreaudio_fifo_write(char *origen,int longitud);
 
 //nuestra FIFO
 
-//#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*10)
-#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
+//#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
+#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*2)
 
 
 char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
