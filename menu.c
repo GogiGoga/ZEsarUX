@@ -15784,7 +15784,7 @@ void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
 			 menu_generic_message("Find lives","Sorry, no lives counter found");
 		}
 		else {
-			menu_generic_message("Find lives","Great. Continue playing game and come back when you lose a life");
+			menu_generic_message("Find lives","Ok. Continue playing game and come back when you lose a life");
 			menu_find_lives_state=1;
 		}
 	}
@@ -15792,7 +15792,7 @@ void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
 	//Si estamos en estado 1
 	else if (menu_find_lives_state==1) {
 		if (total_items_found!=1) {
-			 menu_generic_message("Find lives","Sorry, no unique address found. You may want to manually find it on the Find bytes menu");
+			 menu_generic_message("Find lives","Sorry, no unique address found. You may want to try again losing another live or maybe manually find it on the Find bytes menu");
 		}
 		else {
 
@@ -15810,12 +15810,35 @@ void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
 
 
 			menu_find_lives_state=2;
+
+			menu_generic_message("Find lives","Great. Memory pointer found");
 		}
 	}
 
 
 
 	//Buscar bytes
+
+}
+
+void menu_find_lives_set(MENU_ITEM_PARAMETERS)
+{
+
+
+	char string_lives[4];
+
+	sprintf (string_lives,"0");
+
+	menu_ventana_scanf("Lives?",string_lives,4);
+
+	int valor_lives=parse_string_to_number(string_lives);
+
+	if (valor_lives<0 || valor_lives>255) {
+					debug_printf (VERBOSE_ERR,"Invalid value %d",valor_lives);
+					return;
+	}
+
+	poke_byte_z80_moto(menu_find_lives_pointer,valor_lives);
 
 }
 
@@ -15840,6 +15863,7 @@ void menu_find_lives(MENU_ITEM_PARAMETERS)
 
 								if (menu_find_lives_state==2) {
 									menu_add_item_menu_inicial_format(&array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_initial,NULL,"Lives pointer: %d",menu_find_lives_pointer);
+									menu_add_item_menu_format(array_menu_find_lives,MENU_OPCION_NORMAL,menu_find_lives_set,NULL,"Set lives");
 								}
 
 								if (menu_find_lives_state==1 || menu_find_lives_state==2) {
