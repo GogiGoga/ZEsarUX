@@ -128,7 +128,7 @@ void fifo_alsa_write(char *origen,int longitud)
                         debug_printf (VERBOSE_DEBUG,"FIFO_ALSA full");
 
                         //Si se llena fifo, resetearla a 0 para corregir latencia
-                        audioalsa_empty_buffer();
+                        if (audio_noreset_audiobuffer_full.v==0) audioalsa_empty_buffer();
 
                         return;
                 }

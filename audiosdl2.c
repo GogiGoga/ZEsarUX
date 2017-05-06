@@ -208,7 +208,7 @@ void audiosdl_fifo_sdl_write(char *origen,int longitud)
 		if (audiosdl_fifo_sdl_next_index(audiosdl_fifo_sdl_write_position)==audiosdl_fifo_sdl_read_position) {
 			debug_printf (VERBOSE_DEBUG,"audiosdl FIFO full");
 			//Si se llena fifo, resetearla a 0 para corregir latencia
-			audiosdl_empty_buffer();
+			if (audio_noreset_audiobuffer_full.v==0) audiosdl_empty_buffer();
 			return;
 		}
 

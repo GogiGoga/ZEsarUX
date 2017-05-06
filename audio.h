@@ -69,6 +69,7 @@ extern void (*audio_get_buffer_info) (int *buffer_size,int *current_size);
 extern char *audio_buffer;
 extern char *audio_buffer_playback;
 
+extern z80_bit audio_noreset_audiobuffer_full;
 
 extern char *audio_driver_name;
 

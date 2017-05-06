@@ -56,6 +56,9 @@ void (*audio_get_buffer_info) (int *buffer_size,int *current_size);
 //en porcentaje
 int audiovolume=100;
 
+//Indica si esta activo que cuando se llena una fifo de driver de sonido, no se debe reiniciar
+z80_bit audio_noreset_audiobuffer_full={0};
+
 //Frecuencia teniendo en cuenta la velocidad de la cpu. inicializado a frecuencia normal
 int frecuencia_sonido_variable=FRECUENCIA_CONSTANTE_NORMAL_SONIDO;
 

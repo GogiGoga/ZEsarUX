@@ -1143,6 +1143,8 @@ printf (
 		"---------------------\n"
 		"\n"
 
+		"--noreset-audiobuffer-full Do not reset audio buffer when it's full. By default it does reset the buffer when full, it helps reducing latency\n"
+
 
 #ifdef COMPILE_ALSA
 		"--alsaperiodsize n         Alsa audio periodsize multiplier (2 or 4). Default 2. Lower values reduce latency but can increase cpu usage\n"
@@ -4759,6 +4761,10 @@ void parse_cmdline_options(void) {
 
 			else if (!strcmp(argv[puntero_parametro],"--ayplayer-cpc")) {
 				ay_player_cpc_mode.v=1;
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--noreset-audiobuffer-full")) {
+				audio_noreset_audiobuffer_full.v=1;
 			}
 
 

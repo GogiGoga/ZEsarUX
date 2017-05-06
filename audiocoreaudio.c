@@ -381,7 +381,7 @@ void audiocoreaudio_fifo_write(char *origen,int longitud)
 		if (audiocoreaudio_fifo_next_index(audiocoreaudio_fifo_write_position)==audiocoreaudio_fifo_read_position) {
 			debug_printf (VERBOSE_DEBUG,"audiocoreaudio FIFO full");
       //Si se llena fifo, resetearla a 0 para corregir latencia
-      audiocoreaudio_empty_buffer();
+      if (audio_noreset_audiobuffer_full.v==0) audiocoreaudio_empty_buffer();
 			return;
 		}
 

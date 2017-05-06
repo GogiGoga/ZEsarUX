@@ -268,7 +268,7 @@ void fifo_pulse_write(unsigned char *origen,int longitud)
                         debug_printf (VERBOSE_DEBUG,"FIFO_PULSE full");
 
                         //Si se llena fifo, resetearla a 0 para corregir latencia
-                        audiopulse_empty_buffer();
+                        if (audio_noreset_audiobuffer_full.v==0) audiopulse_empty_buffer();
 
 			//temp resetear fifo
 			//fifo_pulse_write_position=0;

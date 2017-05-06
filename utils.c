@@ -2879,6 +2879,7 @@ int util_write_configfile(void)
   if (noautoload.v)                           ADD_STRING_CONFIG,"--noautoload");
   if (ay_speech_enabled.v==0)                 ADD_STRING_CONFIG,"--disableayspeech");
   if (ay_envelopes_enabled.v==0)              ADD_STRING_CONFIG,"--disableenvelopes");
+  if (audio_noreset_audiobuffer_full.v)       ADD_STRING_CONFIG,"--noreset-audiobuffer-full");
   if (border_enabled.v==0)                    ADD_STRING_CONFIG,"--disableborder");
   if (mouse_pointer_shown.v==0)               ADD_STRING_CONFIG,"--hidemousepointer");
   if (menu_footer==0)                         ADD_STRING_CONFIG,"--disablefooter");
