@@ -15,7 +15,6 @@ probado lo siguiente:
 * resetear a 0 cada driver al iniciar: ningun cambio
 * poner a 0 tambien fifo_read_position al hacer empty buffer: ningun cambio
 
--manera de bajar latenciar: bajar mas aun el buffer (de *4 a *3 por ejemplo)
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc
 
 -Soporte microdrive / floppy QL
@@ -42,12 +41,8 @@ pruebas_z88_core_topspeed 	-> solo en fuente
 speech_filters 			-> incluido en binario
 
 
--poder hacer dump de zonas de memoria internas a disco, desde remote command. primero con superupgrade 
-
-
 -Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros
 -buscador de vidas automatico
-
 
 
 ---Fin cosas para version 5.1

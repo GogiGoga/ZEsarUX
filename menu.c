@@ -241,7 +241,7 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
 		0,1,1,0, 		//No mostrar cursor,mostrar recuadro,mostrar rainbow
 		5+8,0, 		//Colores para opcion seleccionada
 		7+8,2,7,2, 	//Colores para opcion no disponible
-		0,7+8,        	//Colores para el titulo
+		0,7+8,        	//Colores para el titulo y linea recuadro ventana
 		1,		//Color waveform
 		7		//Color para zona no usada en visualmem
 		},
@@ -249,7 +249,7 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
 		1,0,0,0,		//Mostrar cursor >, no mostrar recuadro, no mostrar rainbow
 		1,6,		//Colores para opcion seleccionada
 		1,6,1,6,	//Colores para opcion no disponible, iguales que para opcion disponible
-		1,6,		//Colores para el titulo
+		1,6,		//Colores para el titulo y linea recuadro ventana
 		6,		//Color waveform
 		0               //Color para zona no usada en visualmem
 		},
@@ -258,7 +258,7 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
                 1,0,0,1,          //Mostrar cursor >, no mostrar recuadro, no mostrar rainbow
                 0,7+8,          //Colores para opcion seleccionada
                 7+8,0,0,7+8,      //Colores para opcion no disponible
-                7+8,0,          //Colores para el titulo
+                7+8,0,          //Colores para el titulo y linea recuadro ventana
                 0,              //Color waveform
                 7               //Color para zona no usada en visualmem
                 },
@@ -270,7 +270,7 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
                 0,1,0,0,                //No mostrar cursor,mostrar recuadro,no mostrar rainbow
                 4,0,          //Colores para opcion seleccionada
                 7,2,4,2,      //Colores para opcion no disponible
-                0,7,          //Colores para el titulo
+                0,7,          //Colores para el titulo y linea recuadro ventana
                 4,              //Color waveform
                 4               //Color para zona no usada en visualmem
                 },
@@ -280,7 +280,7 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
                 0,1,1,0,          //No mostrar cursor,mostrar recuadro,mostrar rainbow
                 6+8,1,            //Colores para opcion seleccionada
                 1,2,6+8,2,        //Colores para opcion no disponible
-                6+8,1,            //Colores para el titulo
+                6+8,1,            //Colores para el titulo y linea recuadro ventana
                 6+8,              //Color waveform
                 0               //Color para zona no usada en visualmem
                 },
@@ -289,7 +289,7 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
                 0,1,1,0,                //No mostrar cursor,mostrar recuadro,mostrar rainbow
                 5+8,0,          //Colores para opcion seleccionada
                 7+8,2,7,2,      //Colores para opcion no disponible
-                0,7+8,          //Colores para el titulo
+                0,7+8,          //Colores para el titulo y linea recuadro ventana
                 1,              //Color waveform
                 7               //Color para zona no usada en visualmem
                 },
@@ -298,10 +298,20 @@ estilos_gui definiciones_estilos_gui[ESTILOS_GUI]={
 							0,1,1,0, 		//No mostrar cursor,mostrar recuadro,mostrar rainbow
 							5+8,0, 		//Colores para opcion seleccionada
 							7+8,2,7,2, 	//Colores para opcion no disponible
-							0,7+8,        	//Colores para el titulo
+							0,7+8,        	//Colores para el titulo y linea recuadro ventana
 							1,		//Color waveform
 							7		//Color para zona no usada en visualmem
 							},
+
+
+			{"QL",7+8,0,
+					0,1,0,0, 		//No mostrar cursor,mostrar recuadro,mostrar rainbow
+					4+8,0, 		//Colores para opcion seleccionada
+					7+8,2,7,2, 	//Colores para opcion no disponible
+					2,7+8,        	//Colores para el titulo y linea recuadro ventana
+					4,		//Color waveform
+					7		//Color para zona no usada en visualmem
+								},
 
 
 
@@ -1591,7 +1601,7 @@ void disable_footer(void)
 }
 
 
-void pruebas_texto_menu(void)
+/*void pruebas_texto_menu(void)
 {
 
         scr_putchar_menu(0,0,'Z',6+8,1);
@@ -1604,7 +1614,7 @@ void pruebas_texto_menu(void)
         scr_putchar_menu(7,0,' ',6,1);
         scr_putchar_menu(8,0,' ',6,1+8);
 
-}
+}*/
 
 
 //retornar puntero a campo desde texto, separado por espacios. se permiten multiples espacios entre campos
@@ -22704,5 +22714,6 @@ void set_charset(void)
 	else if (estilo_gui_activo==ESTILO_GUI_Z88) char_set=char_set_z88;
 	else if (estilo_gui_activo==ESTILO_GUI_SAM) char_set=char_set_sam;
 	else if (estilo_gui_activo==ESTILO_GUI_MANSOFTWARE) char_set=char_set_mansoftware;
+	else if (estilo_gui_activo==ESTILO_GUI_QL) char_set=char_set_ql;
 	else char_set=char_set_spectrum;
 }
