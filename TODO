@@ -8,8 +8,10 @@
 
 -drivers video texto mouse estará dividido entre 8??
 
--problema de reseteo de buffer audio al iniciar el emulador. Quiza o bien resetear buffer a 0 en cada driver al iniciar,
-o ver que cuando vaya a vaciarlo, se haya llenado antes.... quiza mejor primera opcion
+-problema de reseteo de buffer audio al iniciar el emulador, hace un sonido estridente a veces al arrancar. Detectado con coreaudio
+probado lo siguiente:
+* resetear a 0 cada driver al iniciar: ningun cambio
+* poner a 0 tambien fifo_read_position al hacer empty buffer: ningun cambio
 
 -manera de bajar latenciar: bajar mas aun el buffer (de *4 a *3 por ejemplo)
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc

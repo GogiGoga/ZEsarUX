@@ -53,6 +53,14 @@ static int audio_output_started;
 void audiocoreaudio_fifo_write(char *origen,int longitud);
 
 
+//nuestra FIFO
+
+//#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*10)
+#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
+
+
+char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
+
 static
 OSStatus coreaudiowrite( void *inRefCon,
                          AudioUnitRenderActionFlags *ioActionFlags,
@@ -333,13 +341,7 @@ void audiocoreaudio_empty_buffer(void)
 
 
 
-//nuestra FIFO
 
-//#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*10)
-#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
-
-
-char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
 
 
 
