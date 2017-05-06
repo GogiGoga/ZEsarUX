@@ -1,7 +1,6 @@
 -cosas para la version 5.1
 
 -control menu raton no va bien en xwindows?
--opcion para desactivar control por raton en menu
 
 -probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
 

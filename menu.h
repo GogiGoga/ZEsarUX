@@ -142,6 +142,8 @@ extern int menu_tooltip_counter;
 
 extern z80_bit tooltip_enabled;
 
+extern z80_bit mouse_menu_disabled;
+
 extern char *quickfile;
 extern char quickload_file[];
 

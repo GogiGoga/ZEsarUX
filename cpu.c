@@ -1258,6 +1258,7 @@ printf (
 		"--fullscreen               Enable full screen\n"
 		"--disableborder            Disable Border\n"
 		"--hidemousepointer         Hide Mouse Pointer. Not all video drivers support this\n"
+		"--disablemenumouse         Disable mouse on emulator menu\n"
 
 		//"--overlayinfo              Overlay on screen some machine info, like when loading tape\n"
 
@@ -4145,6 +4146,10 @@ void parse_cmdline_options(void) {
 
 			else if (!strcmp(argv[puntero_parametro],"--hidemousepointer")) {
 				mouse_pointer_shown.v=0;
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--disablemenumouse")) {
+				mouse_menu_disabled.v=1;
 			}
 
 			/*else if (!strcmp(argv[puntero_parametro],"--overlayinfo")) {

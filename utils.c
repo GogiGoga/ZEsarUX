@@ -2882,6 +2882,8 @@ int util_write_configfile(void)
   if (audio_noreset_audiobuffer_full.v)       ADD_STRING_CONFIG,"--noreset-audiobuffer-full");
   if (border_enabled.v==0)                    ADD_STRING_CONFIG,"--disableborder");
   if (mouse_pointer_shown.v==0)               ADD_STRING_CONFIG,"--hidemousepointer");
+  if (mouse_menu_disabled.v)                  ADD_STRING_CONFIG,"--disablemenumouse");
+  
   if (menu_footer==0)                         ADD_STRING_CONFIG,"--disablefooter");
   if (menu_multitarea==0)                     ADD_STRING_CONFIG,"--disablemultitaskmenu");
 
@@ -4535,6 +4537,7 @@ int si_menu_mouse_activado(void)
 {
   if (kempston_mouse_emulation.v) return 0;
   if (gunstick_emulation) return 0;
+  if (mouse_menu_disabled.v) return 0;
 
   return 1;
 }

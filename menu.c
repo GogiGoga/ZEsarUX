@@ -195,6 +195,9 @@ z80_bit menu_event_remote_protocol_enterstep={0};
 //Si menus de confirmacion asumen siempre yes y no preguntan nunca
 z80_bit force_confirm_yes={0};
 
+//Si raton no tiene accion sobre el menu
+z80_bit mouse_menu_disabled={0};
+
 
 void menu_dibuja_cuadrado(z80_byte x1,z80_byte y1,z80_byte x2,z80_byte y2,z80_byte color);
 void menu_desactiva_cuadrado(void);
