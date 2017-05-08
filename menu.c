@@ -15755,7 +15755,7 @@ void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
 	if (menu_find_lives_state==0) menu_find_bytes_clear_results_process();
 
 	//Suponemos que la segunda vez habra perdido al menos 1 vida
-	if (menu_find_lives_state==1 && lives_to_find>1) lives_to_find--;
+	if (menu_find_lives_state==1 && lives_to_find>0) lives_to_find--;
 
 	//Pedir vidas actuales
 	//Buscar en la memoria direccionable (0...65535) si se encuentra el byte
