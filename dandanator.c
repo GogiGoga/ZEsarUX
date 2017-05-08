@@ -302,10 +302,10 @@ void dandanator_write_byte(z80_int dir,z80_byte valor)
 				if (valor<40 && valor==dandanator_contador_command) {
 					//Contador para ejecutar comando simple despues de X t-estados
 					if (MACHINE_IS_SPECTRUM_16_48) {
-						dandanator_needed_t_states_command=518;
+						dandanator_needed_t_states_command=119;
 					}
 					else {
-						dandanator_needed_t_states_command=525;
+						dandanator_needed_t_states_command=121;
 					}
 
 					dandanator_set_pending_run_command();
