@@ -75,6 +75,9 @@ z80_bit debug_breakpoints_enabled={0};
 //breakpoints de condiciones
 char debug_breakpoints_conditions_array[MAX_BREAKPOINTS_CONDITIONS][MAX_BREAKPOINT_CONDITION_LENGTH];
 
+//acciones a ejecutar cuando salta un breakpoint
+char debug_breakpoints_actions_array[MAX_BREAKPOINTS_CONDITIONS][MAX_BREAKPOINT_CONDITION_LENGTH];
+
 //A 0 si ese breakpoint no ha saltado. A 1 si ya ha saltado
 int debug_breakpoints_conditions_saltado[MAX_BREAKPOINTS_CONDITIONS];
 
@@ -265,6 +268,7 @@ void init_breakpoints_table(void)
 
 	for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
 		debug_breakpoints_conditions_array[i][0]=0;
+    debug_breakpoints_actions_array[i][0]=0;
 		debug_breakpoints_conditions_saltado[i]=0;
 		debug_breakpoints_conditions_enabled[i]=0;
 	}
@@ -641,7 +645,7 @@ z80_byte lee_puerto_debug(z80_byte puerto_h,z80_byte puerto_l)
 
 
 
-//Mostrar mensaje que ha hecho saltar el breakpoint y abrir menu
+//Mostrar mensaje que ha hecho saltar el breakpoint y ejecutar accion (por defecto abrir menu)
 void cpu_core_loop_debug_breakpoint(char *message)
 {
 	menu_abierto=1;
@@ -1428,6 +1432,8 @@ void cpu_core_loop_debug_check_breakpoints(void)
 						debug_breakpoints_conditions_saltado[i]=1;
 	                                        char buffer_mensaje[MAX_BREAKPOINT_CONDITION_LENGTH+64];
         	                                sprintf(buffer_mensaje,"Condition: %s",&debug_breakpoints_conditions_array[i][0]);
+
+                                          //Ejecutar accion, por defecto es abrir menu
                 	                        cpu_core_loop_debug_breakpoint(buffer_mensaje);
 					}
                                 }
@@ -2706,6 +2712,19 @@ void debug_set_breakpoint(int breakpoint_index,char *condicion)
 
 }
 
+//Indice entre 0 y MAX_BREAKPOINTS_CONDITIONS-1
+void debug_set_breakpoint_action(int breakpoint_index,char *accion)
+{
+
+    if (breakpoint_index<0 || breakpoint_index>MAX_BREAKPOINTS_CONDITIONS-1) {
+      debug_printf(VERBOSE_ERR,"Index out of range setting breakpoint action");
+      return;
+    }
+
+
+    strcpy(debug_breakpoints_actions_array[breakpoint_index],accion);
+
+}
 
 void debug_view_basic(char *results_buffer)
 {

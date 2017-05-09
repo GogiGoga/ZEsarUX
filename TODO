@@ -1,12 +1,13 @@
 -cosas para la version 5.1
 
+-Condiciones y acciones. Usando condiciones de breakpoints poder hacer acciones, como:
+Si valor en dirección x (las vidas) cambia, entonces accion es modificar valor dirección x -> vidas infinitas (vidas fijas)
+
 -control menu raton no va bien en xwindows?
 
 -probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
 
 -En el FAQ, decir porque bajan fps y sube consumo de cpu al arrancar zxuno
-
--opcion para desactivar real joystick-> en linux virtual detecta mouse como joystick algunos eventos y se queda colgado (teclas pulsadas)
 
 -drivers video texto mouse estará dividido entre 8??
 
@@ -40,8 +41,6 @@ speech_filters 			-> incluido en binario
 
 
 -Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros
--Condiciones y acciones. Usando condiciones de breakpoints poder hacer acciones, como:
-Si valor en dirección x (las vidas) cambia, entonces accion es modificar valor dirección x -> vidas infinitas (vidas fijas)
 
 
 ---Fin cosas para version 5.1

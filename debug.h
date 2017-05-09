@@ -52,6 +52,9 @@ extern void init_breakpoints_table(void);
 #define MAX_BREAKPOINTS_CONDITIONS 10
 extern char debug_breakpoints_conditions_array[MAX_BREAKPOINTS_CONDITIONS][MAX_BREAKPOINT_CONDITION_LENGTH];
 
+//Acciones al saltar un breakpoint
+extern char debug_breakpoints_actions_array[MAX_BREAKPOINTS_CONDITIONS][MAX_BREAKPOINT_CONDITION_LENGTH];
+
 
 extern int debug_breakpoints_conditions_saltado[MAX_BREAKPOINTS_CONDITIONS];
 
@@ -220,6 +223,8 @@ extern void debug_dump_nested_functions(char *result);
 extern int debug_change_register(char *texto);
 
 extern void debug_set_breakpoint(int breakpoint_index,char *condicion);
+
+extern void debug_set_breakpoint_action(int breakpoint_index,char *accion);
 
 extern void debug_view_basic(char *results_buffer);
 

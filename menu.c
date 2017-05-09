@@ -4410,13 +4410,21 @@ void menu_breakpoints_conditions_set(MENU_ITEM_PARAMETERS)
 	//saltamos las primeras 2 lineas
 	int breakpoint_index=breakpoints_opcion_seleccionada-2;
 
-        char string_texto[MAX_BREAKPOINT_CONDITION_LENGTH];
+  char string_texto[MAX_BREAKPOINT_CONDITION_LENGTH];
 
-        sprintf (string_texto,"%s",debug_breakpoints_conditions_array[breakpoint_index]);
+  sprintf (string_texto,"%s",debug_breakpoints_conditions_array[breakpoint_index]);
 
-        menu_ventana_scanf("Condition",string_texto,MAX_BREAKPOINT_CONDITION_LENGTH);
+  menu_ventana_scanf("Condition",string_texto,MAX_BREAKPOINT_CONDITION_LENGTH);
 
   debug_set_breakpoint(breakpoint_index,string_texto);
+
+
+
+	sprintf (string_texto,"%s",debug_breakpoints_actions_array[breakpoint_index]);
+
+  menu_ventana_scanf("Action",string_texto,MAX_BREAKPOINT_CONDITION_LENGTH);
+
+  debug_set_breakpoint_action(breakpoint_index,string_texto);
 
 }
 
@@ -4543,19 +4551,26 @@ void menu_breakpoints(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_ayuda(array_menu_breakpoints,"It tests a condition using the same method as breakpoint conditions below");
 
                 for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
-			char string_condition_shown[15];
+			char string_condition_shown[13];
+			char string_action_shown[7];
+
+			char string_condition_action[33];
+
 			if (debug_breakpoints_conditions_array[i][0]) {
-				menu_tape_settings_trunc_name(debug_breakpoints_conditions_array[i],string_condition_shown,15);
+				menu_tape_settings_trunc_name(debug_breakpoints_conditions_array[i],string_condition_shown,13);
+				menu_tape_settings_trunc_name(debug_breakpoints_actions_array[i],string_action_shown,7);
+				if (debug_breakpoints_actions_array[i][0]) sprintf (string_condition_action,"%s->%s",string_condition_shown,string_action_shown);
+				else sprintf (string_condition_action,"%s->menu",string_condition_shown);
 			}
 			else {
-				sprintf(string_condition_shown,"None");
+				sprintf(string_condition_action,"None");
 			}
 
 			if (debug_breakpoints_conditions_enabled[i]==0 || debug_breakpoints_enabled.v==0) {
-				menu_add_item_menu_format(array_menu_breakpoints,MENU_OPCION_NORMAL,menu_breakpoints_conditions_set,menu_breakpoints_cond,"Disabled %d: %s",i+1,string_condition_shown);
+				menu_add_item_menu_format(array_menu_breakpoints,MENU_OPCION_NORMAL,menu_breakpoints_conditions_set,menu_breakpoints_cond,"Di %d: %s",i+1,string_condition_action);
 			}
                         else {
-				menu_add_item_menu_format(array_menu_breakpoints,MENU_OPCION_NORMAL,menu_breakpoints_conditions_set,menu_breakpoints_cond,"Enabled %d: %s",i+1,string_condition_shown);
+				menu_add_item_menu_format(array_menu_breakpoints,MENU_OPCION_NORMAL,menu_breakpoints_conditions_set,menu_breakpoints_cond,"En %d: %s",i+1,string_condition_action);
 			}
 
 
