@@ -2883,7 +2883,7 @@ int util_write_configfile(void)
   if (border_enabled.v==0)                    ADD_STRING_CONFIG,"--disableborder");
   if (mouse_pointer_shown.v==0)               ADD_STRING_CONFIG,"--hidemousepointer");
   if (mouse_menu_disabled.v)                  ADD_STRING_CONFIG,"--disablemenumouse");
-  
+
   if (menu_footer==0)                         ADD_STRING_CONFIG,"--disablefooter");
   if (menu_multitarea==0)                     ADD_STRING_CONFIG,"--disablemultitaskmenu");
 
@@ -3007,7 +3007,7 @@ int util_write_configfile(void)
   if (remote_protocol_enabled.v)              ADD_STRING_CONFIG,"--enable-remoteprotocol");
                                               ADD_STRING_CONFIG,"--remoteprotocol-port %d",remote_protocol_port);
 
-  //TODO disablerealjoystick
+  if (realjoystick_present.v==0)              ADD_STRING_CONFIG,"--disablerealjoystick");
   //TODO --joystick*
   if (realjoystick_clear_keys_on_smartload.v) ADD_STRING_CONFIG,"--clearkeylistonsmart");
   if (quickexit.v)                            ADD_STRING_CONFIG,"--quickexit");
