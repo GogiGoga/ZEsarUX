@@ -34,4 +34,9 @@ extern int audiosdl_samples;
 
 extern void audiosdl_get_buffer_info (int *buffer_size,int *current_buffer_position);
 
+#define MAX_AUDIOSDL_FIFO_MULTIPLIER 10
+#define MIN_AUDIOSDL_FIFO_MULTIPLIER 2
+
+extern int audiosdl_fifo_buffer_size_multiplier;
+
 #endif

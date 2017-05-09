@@ -31,4 +31,9 @@ extern void audiocoreaudio_end(void);
 
 extern void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_buffer_position);
 
+#define MAX_AUDIOCOREAUDIO_FIFO_MULTIPLIER 10
+#define MIN_AUDIOCOREAUDIO_FIFO_MULTIPLIER 2
+
+extern int audiocoreaudio_fifo_buffer_size_multiplier;
+
 #endif

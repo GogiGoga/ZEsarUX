@@ -52,7 +52,7 @@ int audiosdl_samples=DEFAULT_AUDIOSDL_SAMPLES;
 
 
 //buffer de destino para SDL2 audio debe ser unsigned
-unsigned char sdl2_unsigned_audio_buffer[AUDIO_BUFFER_SIZE];
+//unsigned char sdl2_unsigned_audio_buffer[AUDIO_BUFFER_SIZE];
 
 int dispositivo_sdl;
 
@@ -168,9 +168,21 @@ void audiosdl_empty_buffer(void)
 }
 
 //nuestra FIFO
-//#define FIFO_SDL_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
-#define FIFO_SDL_BUFFER_SIZE (AUDIO_BUFFER_SIZE*2)
-char audiosdl_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
+//#define audiosdl_return_fifo_buffer_size() (AUDIO_BUFFER_SIZE*4)
+//#define audiosdl_return_fifo_buffer_size() (AUDIO_BUFFER_SIZE*2)
+
+
+//Tamanyo de fifo. Es un multiplicador de AUDIO_BUFFER_SIZE
+int audiosdl_fifo_buffer_size_multiplier=2;
+int audiosdl_return_fifo_buffer_size(void)
+{
+  return AUDIO_BUFFER_SIZE*audiosdl_fifo_buffer_size_multiplier;
+}
+
+
+//nuestra FIFO. De tamayo maximo. Por defecto es x2 y llega hasta xMAX_AUDIOCOREAUDIO_FIFO_MULTIPLIER
+char audiosdl_fifo_sdl_buffer[AUDIO_BUFFER_SIZE*MAX_AUDIOSDL_FIFO_MULTIPLIER];
+
 
 //retorna numero de elementos en la fifo
 int audiosdl_fifo_sdl_return_size(void)
@@ -180,13 +192,13 @@ int audiosdl_fifo_sdl_return_size(void)
 
 	else {
 		//write es menor, cosa que quiere decir que hemos dado la vuelta
-		return (FIFO_SDL_BUFFER_SIZE-audiosdl_fifo_sdl_read_position)+audiosdl_fifo_sdl_write_position;
+		return (audiosdl_return_fifo_buffer_size()-audiosdl_fifo_sdl_read_position)+audiosdl_fifo_sdl_write_position;
 	}
 }
 
 void audiosdl_get_buffer_info (int *buffer_size,int *current_size)
 {
-  *buffer_size=FIFO_SDL_BUFFER_SIZE;
+  *buffer_size=audiosdl_return_fifo_buffer_size();
   *current_size=audiosdl_fifo_sdl_return_size();
 }
 
@@ -194,7 +206,7 @@ void audiosdl_get_buffer_info (int *buffer_size,int *current_size)
 int audiosdl_fifo_sdl_next_index(int v)
 {
 	v=v+1;
-	if (v==FIFO_SDL_BUFFER_SIZE) v=0;
+	if (v==audiosdl_return_fifo_buffer_size()) v=0;
 
 	return v;
 }
@@ -253,7 +265,7 @@ void audiosdl_fifo_sdl_read(char *destino,int longitud)
 
 int contador_buffer_sonido=0;
 
-char temporary_audiosdl_fifo_sdl_buffer[FIFO_SDL_BUFFER_SIZE];
+char temporary_audiosdl_fifo_sdl_buffer[AUDIO_BUFFER_SIZE*MAX_AUDIOSDL_FIFO_MULTIPLIER];
 
 //ver http://www.libsdl.org/release/SDL-1.2.15/docs/html/guideaudioexamples.html
 

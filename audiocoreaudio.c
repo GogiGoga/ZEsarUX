@@ -53,13 +53,16 @@ static int audio_output_started;
 void audiocoreaudio_fifo_write(char *origen,int longitud);
 
 
-//nuestra FIFO
+//Tamanyo de fifo. Es un multiplicador de AUDIO_BUFFER_SIZE
+int audiocoreaudio_fifo_buffer_size_multiplier=2;
+int audiocoreaudio_return_fifo_buffer_size(void)
+{
+  return AUDIO_BUFFER_SIZE*audiocoreaudio_fifo_buffer_size_multiplier;
+}
 
-//#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*4)
-#define FIFO_BUFFER_SIZE (AUDIO_BUFFER_SIZE*2)
 
-
-char audiocoreaudio_fifo_buffer[FIFO_BUFFER_SIZE];
+//nuestra FIFO. De tamayo maximo. Por defecto es x2 y llega hasta xMAX_AUDIOCOREAUDIO_FIFO_MULTIPLIER
+char audiocoreaudio_fifo_buffer[AUDIO_BUFFER_SIZE*MAX_AUDIOCOREAUDIO_FIFO_MULTIPLIER];
 
 static
 OSStatus coreaudiowrite( void *inRefCon,
@@ -353,13 +356,13 @@ int audiocoreaudio_fifo_return_size(void)
 
 	else {
 		//write es menor, cosa que quiere decir que hemos dado la vuelta
-		return (FIFO_BUFFER_SIZE-audiocoreaudio_fifo_read_position)+audiocoreaudio_fifo_write_position;
+		return (audiocoreaudio_return_fifo_buffer_size()-audiocoreaudio_fifo_read_position)+audiocoreaudio_fifo_write_position;
 	}
 }
 
 void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_size)
 {
-  *buffer_size=FIFO_BUFFER_SIZE;
+  *buffer_size=audiocoreaudio_return_fifo_buffer_size();
   *current_size=audiocoreaudio_fifo_return_size();
 }
 
@@ -367,7 +370,7 @@ void audiocoreaudio_get_buffer_info (int *buffer_size,int *current_size)
 int audiocoreaudio_fifo_next_index(int v)
 {
 	v=v+1;
-	if (v==FIFO_BUFFER_SIZE) v=0;
+	if (v==audiocoreaudio_return_fifo_buffer_size()) v=0;
 
 	return v;
 }

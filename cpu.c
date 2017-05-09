@@ -1166,6 +1166,9 @@ printf (
 #endif
 #endif
 
+#ifdef COMPILE_COREAUDIO
+								"--fifocorebuffersize n     Coreaudio fifo buffer size multiplier (2 to 10). Default 2. Lower values reduce latency but can increase cpu usage\n"
+#endif
 
 #ifdef COMPILE_SDL
 		);
@@ -1174,7 +1177,8 @@ printf (
 		//Cerramos el printf para que quede mas claro que hacemos un printf con un parametro
 		printf (
 		"--sdlsamplesize n          SDL audio sample size (128 to 2048). Default %d. Lower values reduce latency but can increase cpu usage\n",DEFAULT_AUDIOSDL_SAMPLES);
-
+		printf (
+		"--fifosdlbuffersize n      SDL fifo buffer size multiplier (2 to 10). Default 2. Lower values reduce latency but can increase cpu usage\n");
 
 
 		printf (
@@ -4830,6 +4834,19 @@ void parse_cmdline_options(void) {
 #endif
 
 
+#ifdef COMPILE_COREAUDIO
+
+	else if (!strcmp(argv[puntero_parametro],"--fifocorebuffersize")) {
+				 siguiente_parametro_argumento();
+				int valor=atoi(argv[puntero_parametro]);
+				if (valor<MIN_AUDIOCOREAUDIO_FIFO_MULTIPLIER || valor>MAX_AUDIOCOREAUDIO_FIFO_MULTIPLIER) {
+								printf ("Invalid Coreaudio Fifo Buffer size\n");
+								exit(1);
+				}
+				audiocoreaudio_fifo_buffer_size_multiplier=valor;
+			}
+#endif
+
 #ifdef COMPILE_SDL
 			else if (!strcmp(argv[puntero_parametro],"--sdlsamplesize")) {
 				siguiente_parametro_argumento();
@@ -4840,6 +4857,17 @@ void parse_cmdline_options(void) {
 				}
 				audiosdl_samples=valor;
 			}
+
+
+			else if (!strcmp(argv[puntero_parametro],"--fifosdlbuffersize")) {
+						 siguiente_parametro_argumento();
+						int valor=atoi(argv[puntero_parametro]);
+						if (valor<MIN_AUDIOSDL_FIFO_MULTIPLIER || valor>MAX_AUDIOSDL_FIFO_MULTIPLIER) {
+										printf ("Invalid SDL Fifo Buffer size\n");
+										exit(1);
+						}
+						audiosdl_fifo_buffer_size_multiplier=valor;
+					}
 
 #endif
 
