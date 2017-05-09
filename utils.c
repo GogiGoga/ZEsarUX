@@ -3007,7 +3007,7 @@ int util_write_configfile(void)
   if (remote_protocol_enabled.v)              ADD_STRING_CONFIG,"--enable-remoteprotocol");
                                               ADD_STRING_CONFIG,"--remoteprotocol-port %d",remote_protocol_port);
 
-  if (realjoystick_present.v==0)              ADD_STRING_CONFIG,"--disablerealjoystick");
+  if (realjoystick_disabled.v==1)              ADD_STRING_CONFIG,"--disablerealjoystick");
   //TODO --joystick*
   if (realjoystick_clear_keys_on_smartload.v) ADD_STRING_CONFIG,"--clearkeylistonsmart");
   if (quickexit.v)                            ADD_STRING_CONFIG,"--quickexit");

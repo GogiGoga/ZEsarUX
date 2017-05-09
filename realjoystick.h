@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -32,6 +32,8 @@ extern int realjoystick_hit();
 
 extern z80_bit realjoystick_present;
 
+extern z80_bit realjoystick_disabled;
+
 #define REALJOYSTICK_EVENT_UP 0
 #define REALJOYSTICK_EVENT_DOWN 1
 #define REALJOYSTICK_EVENT_LEFT 2
@@ -59,7 +61,7 @@ struct s_realjoystick_event_key_function {
 
 	//numero de boton
 	int button;
-	
+
 	//tipo de boton: 0-boton normal, +1 axis positivo, -1 axis negativo
 	int button_type;
 

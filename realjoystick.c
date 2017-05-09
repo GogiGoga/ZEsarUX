@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -53,10 +53,10 @@ By default, the device is opened in blocking mode.
 where js_event is defined as
 
 	struct js_event {
-		__u32 time;     // event timestamp in milliseconds 
-		__s16 value;    // value 
-		__u8 type;      // event type 
-		__u8 number;    // axis/button number 
+		__u32 time;     // event timestamp in milliseconds
+		__s16 value;    // value
+		__u8 type;      // event type
+		__u8 number;    // axis/button number
 	};
 
 If the read is successful, it will return sizeof(e), unless you wanted to read
@@ -68,20 +68,20 @@ more than one event per read as described in section 3.1.
 
 The possible values of ``type'' are
 
-	#define JS_EVENT_BUTTON         0x01    // button pressed/released 
-	#define JS_EVENT_AXIS           0x02    // joystick moved 
-	#define JS_EVENT_INIT           0x80    // initial state of device 
+	#define JS_EVENT_BUTTON         0x01    // button pressed/released
+	#define JS_EVENT_AXIS           0x02    // joystick moved
+	#define JS_EVENT_INIT           0x80    // initial state of device
 
 As mentioned above, the driver will issue synthetic JS_EVENT_INIT ORed
 events on open. That is, if it's issuing a INIT BUTTON event, the
 current type value will be
 
-	int type = JS_EVENT_BUTTON | JS_EVENT_INIT;	// 0x81 
+	int type = JS_EVENT_BUTTON | JS_EVENT_INIT;	// 0x81
 
 If you choose not to differentiate between synthetic or real events
 you can turn off the JS_EVENT_INIT bits
 
-	type &= ~JS_EVENT_INIT;				// 0x01 
+	type &= ~JS_EVENT_INIT;				// 0x01
 
 
 2.2 js_event.number
@@ -172,11 +172,11 @@ For example,
 		while (read (fd, &e, sizeof(e)) > 0) {
 			process_event (e);
 		}
-		// EAGAIN is returned when the queue is empty 
+		// EAGAIN is returned when the queue is empty
 		if (errno != EAGAIN) {
-			// error 
+			// error
 		}
-		// do something interesting with processed events 
+		// do something interesting with processed events
 	}
 
 One reason for emptying the queue is that if it gets full you'll start
@@ -219,13 +219,13 @@ process the events and keep reading it until you empty the driver queue.
 
 The joystick driver defines the following ioctl(2) operations.
 
-				// function			3rd arg  
-	#define JSIOCGAXES	// get number of axes		char	 
-	#define JSIOCGBUTTONS	// get number of buttons	char	 
-	#define JSIOCGVERSION	// get driver version		int	 
-	#define JSIOCGNAME(len) // get identifier string	char	 
-	#define JSIOCSCORR	// set correction values	&js_corr 
-	#define JSIOCGCORR	// get correction values	&js_corr 
+				// function			3rd arg
+	#define JSIOCGAXES	// get number of axes		char
+	#define JSIOCGBUTTONS	// get number of buttons	char
+	#define JSIOCGVERSION	// get driver version		int
+	#define JSIOCGNAME(len) // get identifier string	char
+	#define JSIOCSCORR	// set correction values	&js_corr
+	#define JSIOCGCORR	// get correction values	&js_corr
 
 For example, to read the number of axes
 
@@ -281,8 +281,8 @@ struct js_corr is defined as
 
 and ``type''
 
-	#define JS_CORR_NONE            0x00    // returns raw values 
-	#define JS_CORR_BROKEN          0x01    // broken line 
+	#define JS_CORR_NONE            0x00    // returns raw values
+	#define JS_CORR_BROKEN          0x01    // broken line
 
 
 5. Backward compatibility
@@ -294,7 +294,7 @@ The driver offers backward compatibility, though. Here's a quick summary:
 	struct JS_DATA_TYPE js;
 	while (1) {
 		if (read (fd, &js, JS_RETURN) != JS_RETURN) {
-			// error 
+			// error
 		}
 		usleep (1000);
 	}
@@ -303,9 +303,9 @@ As you can figure out from the example, the read returns immediately,
 with the actual state of the joystick.
 
 	struct JS_DATA_TYPE {
-		int buttons;    // immediate button state 
-		int x;          // immediate x axis value 
-		int y;          // immediate y axis value 
+		int buttons;    // immediate button state
+		int x;          // immediate x axis value
+		int y;          // immediate y axis value
 	};
 
 and JS_RETURN is defined as
@@ -402,6 +402,10 @@ typedef unsigned char __u8;
 int ptr_realjoystick;
 
 z80_bit realjoystick_present={1};
+
+
+//Si se desactiva por opcion de linea de comandos
+z80_bit realjoystick_disabled={0};
 
 //Si cada vez que se llama a smartload, se resetea tabla de botones a teclas
 z80_bit realjoystick_clear_keys_on_smartload={0};
@@ -664,7 +668,7 @@ int realjoystick_init(void)
 	debug_printf(VERBOSE_INFO,"Linux real joystick support disabled on compilation");
 	return 1;
 #endif
-	
+
 
 #ifndef MINGW
 	ptr_realjoystick=open(STRING_DEV_JOYSTICK,O_RDONLY|O_NONBLOCK);
@@ -674,7 +678,7 @@ int realjoystick_init(void)
         }
 
 
-	
+
 	int flags;
 	if((flags=fcntl(ptr_realjoystick,F_GETFL))==-1)
 	  {
@@ -687,9 +691,9 @@ int realjoystick_init(void)
 		  debug_printf(VERBOSE_ERR,"couldn't set joystick device non-blocking: %s",strerror(errno));
 		  return 1;
 	  }
-	
 
-	/*if (fcntl(ptr_realjoystick, F_SETFL, O_NONBLOCK)==-1) 
+
+	/*if (fcntl(ptr_realjoystick, F_SETFL, O_NONBLOCK)==-1)
           {
                   debug_printf(VERBOSE_ERR,"couldn't set joystick device non-blocking: %s",strerror(errno));
                   return 1;
@@ -794,7 +798,7 @@ int realjoystick_find_event_or_key(int indice_inicial,realjoystick_events_keys_f
         for (i=indice_inicial;i<maximo;i++) {
 		if (tabla[i].asignado.v==1) {
 			if (tabla[i].button==button) {
-				
+
 				//boton normal. no axis
 				if (type==JS_EVENT_BUTTON && tabla[i].button_type==0) return i;
 
@@ -804,9 +808,9 @@ int realjoystick_find_event_or_key(int indice_inicial,realjoystick_events_keys_f
 					//ver si coindice el axis
 					if (tabla[i].button_type==+1) {
 						if (value>0) return i;
-					} 
+					}
 
-                                	if (tabla[i].button_type==-1) {        
+                                	if (tabla[i].button_type==-1) {
                                         	if (value<0) return i;
 	                                }
 
@@ -842,7 +846,7 @@ int realjoystick_find_key(int indice_inicial,int button,int type,int value)
 
 
 
-void realjoystick_print_char(z80_byte caracter) 
+void realjoystick_print_char(z80_byte caracter)
 {
 
 	//if (menu_footer==0) return;
@@ -883,7 +887,7 @@ void realjoystick_set_reset_key(int index,int value)
 	}
 
 
-        else {	
+        else {
 		debug_printf (VERBOSE_DEBUG,"reset key %c",tecla);
 		ascii_to_keyboard_port_set_clear(tecla,0);
 		//reset_keyboard_ports();
@@ -995,7 +999,7 @@ void realjoystick_set_reset_action(int index,int value)
 	                        }
                 break;
 
- 
+
 	}
 
 }
@@ -1012,7 +1016,7 @@ void realjoystick_main(void)
 	while (realjoystick_read_event(&button,&type,&value) ==1 && realjoystick_present.v) {
 		//eventos de init no hacerles caso, de momento
 		if ( (type&JS_EVENT_INIT)!=JS_EVENT_INIT) {
-		
+
 			//buscamos el evento
 			int index=-1;
 			do {
@@ -1032,16 +1036,16 @@ void realjoystick_main(void)
 				if (type==JS_EVENT_AXIS) {
 					switch (index) {
 						case REALJOYSTICK_EVENT_UP:
-							//reset abajo	
+							//reset abajo
 							joystick_release_down();
 							realjoystick_set_reset_action(index,value);
 						break;
 
                                                 case REALJOYSTICK_EVENT_DOWN:
-                                                        //reset arriba   
+                                                        //reset arriba
                                                         joystick_release_up();
                                                         realjoystick_set_reset_action(index,value);
-                                                break;  
+                                                break;
 
                                                 case REALJOYSTICK_EVENT_LEFT:
                                                         //reset derecha
@@ -1088,9 +1092,9 @@ void realjoystick_main(void)
 			} while (index>=0);
 
 
-			
+
 		}
-		
+
 	}
 
 }
@@ -1237,7 +1241,7 @@ void realjoystick_copy_event_button_key(int indice_evento,int indice_tecla,z80_b
 
 //Devuelve 0 si ok
 int realjoystick_set_type(char *tipo) {
-                                
+
 				debug_printf (VERBOSE_INFO,"Setting joystick type %s",tipo);
 
                                 int i;
@@ -1249,7 +1253,7 @@ int realjoystick_set_type(char *tipo) {
 					return 1;
                                 }
 
-                                
+
                                 joystick_emulation=i;
 	return 0;
 }

@@ -4990,6 +4990,7 @@ void parse_cmdline_options(void) {
 
 			else if (!strcmp(argv[puntero_parametro],"--disablerealjoystick")) {
 				realjoystick_present.v=0;
+				realjoystick_disabled.v=1;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--joystickevent")) {
