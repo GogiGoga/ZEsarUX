@@ -6,6 +6,7 @@ Added setting to test configuration
 Added remote commands: get-audio-buffer-info, save-binary-internal
 Added QL GUI Style
 Added menu to find and set lives in games
+Added actions commands to breakpoints
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Some other minor bugfixes and improvements

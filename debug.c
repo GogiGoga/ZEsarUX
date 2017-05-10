@@ -3233,4 +3233,95 @@ int i;
 		printf ("parametro %d : [%s]\n",i,breakpoint_action_command_argv[i]);
 	}
 
+    //Gestion parametros
+    if (!strcmp(comando_sin_parametros,"write")) {
+      if (breakpoint_action_command_argc<2) printf ("Command needs two parameters\n");
+      else {
+        unsigned int direccion;
+        z80_byte valor;
+
+        direccion=parse_string_to_number(breakpoint_action_command_argv[0]);
+        valor=parse_string_to_number(breakpoint_action_command_argv[1]);
+
+        printf ("Running write command address %d value %d\n",direccion,valor);
+
+        poke_byte_z80_moto(direccion,valor);
+      }
+    }
+
+    else if (!strcmp(comando_sin_parametros,"call")) {
+      if (breakpoint_action_command_argc<1) printf ("Command needs one parameter\n");
+      else {
+        unsigned int direccion;
+
+        direccion=parse_string_to_number(breakpoint_action_command_argv[0]);
+
+        printf ("Running call command address : %d\n",direccion);
+        if (CPU_IS_MOTOROLA) printf ("Unimplemented command for motorola\n");
+        else {
+          push_valor(reg_pc);
+          reg_pc=direccion;
+        }
+      }
+    }
+
+    else if (!strcmp(comando_sin_parametros,"printc")) {
+      if (breakpoint_action_command_argc<1) printf ("Command needs one parameter\n");
+      else {
+        unsigned int caracter;
+
+        caracter=parse_string_to_number(breakpoint_action_command_argv[0]);
+
+        printf ("Running printc command character: %d\n",caracter);
+
+        printf ("%c",caracter);
+      }
+    }
+
+    else if (!strcmp(comando_sin_parametros,"printe")) {
+      if (breakpoint_action_command_argc<1) printf ("Command needs one parameter\n");
+      else {
+        char resultado[256];
+        resultado[0]=0;
+        //Unir parametros separados por espacios
+        for (i=0;i<breakpoint_action_command_argc;i++) {
+          int s=strlen(resultado);
+          sprintf (&resultado[s],"%s ",breakpoint_action_command_argv[i]);
+        }
+
+        printf ("Running printe command : %s\n",resultado);
+        char resultado_expresion[256];
+        debug_watches_loop(resultado,resultado_expresion);
+        printf ("%s\n",resultado_expresion);
+      }
+    }
+
+    else if (!strcmp(comando_sin_parametros,"prints")) {
+      if (breakpoint_action_command_argc<1) printf ("Command needs one parameter\n");
+      else {
+        char resultado[256];
+        resultado[0]=0;
+        //Unir parametros separados por espacios
+        for (i=0;i<breakpoint_action_command_argc;i++) {
+          int s=strlen(resultado);
+          sprintf (&resultado[s],"%s ",breakpoint_action_command_argv[i]);
+        }
+
+        printf ("Running prints command : %s\n",resultado);
+        printf ("%s\n",resultado);
+      }
+    }
+
+    else if (!strcmp(comando_sin_parametros,"set-register")) {
+      if (breakpoint_action_command_argc<1) printf ("Command needs one parameter\n");
+      else {
+        printf ("Running set-register command : %s\n",breakpoint_action_command_argv[0]);
+        debug_change_register(breakpoint_action_command_argv[0]);
+      }
+    }
+
+    else {
+      printf ("Unknown command %s\n",comando_sin_parametros);
+    }
+
 }
