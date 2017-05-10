@@ -21732,7 +21732,19 @@ void menu_inicio(void)
 
 	//ha saltado un breakpoint
 	else if (menu_breakpoint_exception.v) {
+		//Ver tipo de accion para ese breakpoint
+		printf ("indice breakpoint & accion : %d\n",catch_breakpoint_index);
+
+		//Si accion nula o menu o break
+		if (debug_breakpoints_actions_array[catch_breakpoint_index][0]==0 || 
+			!strcmp(debug_breakpoints_actions_array[catch_breakpoint_index],"menu") ||
+			!strcmp(debug_breakpoints_actions_array[catch_breakpoint_index],"break")	
+			)  {
+		
+
                 //menu_espera_no_tecla();
+        	//y desactivamos multitarea
+        	menu_multitarea=0;
 		menu_generic_message_format("Breakpoint","Catch Breakpoint: %s",catch_breakpoint_message);
 
 		menu_debug_registers(0);
@@ -21741,6 +21753,13 @@ void menu_inicio(void)
 
 		//Y despues de un breakpoint hacer que aparezca el menu normal y no vuelva a la ejecucion
 		menu_inicio_bucle();
+			}
+
+		else {
+			//Gestion acciones
+			printf ("Accion ejecutar: %s\n",debug_breakpoints_actions_array[catch_breakpoint_index]);
+			debug_run_action_breakpoint(debug_breakpoints_actions_array[catch_breakpoint_index]);
+		}
 
 
 	}

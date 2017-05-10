@@ -85,6 +85,8 @@ extern void reset_peek_byte_function_debug(void);
 #define MAX_MESSAGE_CATCH_BREAKPOINT (32*4)
 extern char catch_breakpoint_message[];
 
+extern int catch_breakpoint_index;
+
 extern void do_breakpoint_exception(char *message);
 
 
@@ -229,6 +231,8 @@ extern void debug_set_breakpoint_action(int breakpoint_index,char *accion);
 extern void debug_view_basic(char *results_buffer);
 
 extern void debug_get_ioports(char *stats_buffer);
+
+extern void debug_run_action_breakpoint(char *comando);
 
 
 #endif

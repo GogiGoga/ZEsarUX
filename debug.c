@@ -137,6 +137,9 @@ int debug_exitrom=0;
 //Mensaje que ha hecho saltar el breakpoint
 char catch_breakpoint_message[MAX_MESSAGE_CATCH_BREAKPOINT];
 
+//Id indice breakpoint que ha saltado
+int catch_breakpoint_index=0;
+
 
 //Core loop actual
 int cpu_core_loop_active;
@@ -649,8 +652,6 @@ z80_byte lee_puerto_debug(z80_byte puerto_h,z80_byte puerto_l)
 void cpu_core_loop_debug_breakpoint(char *message)
 {
 	menu_abierto=1;
-	//y desactivamos multitarea
-	menu_multitarea=0;
 	do_breakpoint_exception(message);
 }
 
@@ -1434,6 +1435,7 @@ void cpu_core_loop_debug_check_breakpoints(void)
         	                                sprintf(buffer_mensaje,"Condition: %s",&debug_breakpoints_conditions_array[i][0]);
 
                                           //Ejecutar accion, por defecto es abrir menu
+						catch_breakpoint_index=i;
                 	                        cpu_core_loop_debug_breakpoint(buffer_mensaje);
 					}
                                 }
@@ -3151,5 +3153,84 @@ void debug_get_ioports(char *stats_buffer)
   	}
 
           stats_buffer[index_buffer]=0;
+
+}
+
+
+//Parseo de parametros de comando.
+#define ACTION_MAX_PARAMETERS_COMMAND 10
+//array de punteros a comando y sus argumentos
+char *breakpoint_action_command_argv[ACTION_MAX_PARAMETERS_COMMAND];
+int breakpoint_action_command_argc;
+
+//Separar comando con codigos 0 y rellenar array de parametros
+void breakpoint_action_parse_commands_argvc(char *texto)
+{
+        breakpoint_action_command_argc=0;
+        while (*texto) {
+                //Inicio parametro
+                breakpoint_action_command_argv[breakpoint_action_command_argc++]=texto;
+                if (breakpoint_action_command_argc==ACTION_MAX_PARAMETERS_COMMAND) {
+                        debug_printf(VERBOSE_DEBUG,"Max parameters reached (%d)",ACTION_MAX_PARAMETERS_COMMAND);
+                        return;
+                }
+
+                //Ir hasta espacio o final
+                while (*texto && *texto!=' ') {
+                        texto++;
+                }
+
+                if ( (*texto)==0) return;
+
+                *texto=0; //Separar cadena
+                texto++;
+        }
+}
+
+
+
+void debug_run_action_breakpoint(char *comando)
+{
+                                //Gestion acciones
+                        printf ("Comando completo: %s\n",comando);
+
+int i;
+
+                                                                //Interpretar comando hasta espacio o final de linea
+                                                                char comando_sin_parametros[1024];
+
+                                                                for (i=0;comando[i] && comando[i]!=' ' && comando[i]!='\n' && comando[i]!='\r';i++) {
+                                                                        comando_sin_parametros[i]=comando[i];
+                                                                }
+
+                                                                comando_sin_parametros[i]=0;
+
+        printf ("Comando sin parametros: [%s]\n",comando_sin_parametros);
+
+
+        char parametros[1024];
+        parametros[0]=0;
+        int pindex=0;
+        if (comando[i]==' ') {
+                i++;
+                for (;comando[i] && comando[i]!='\n' && comando[i]!='\r';i++,pindex++) {
+                        parametros[pindex]=comando[i];
+                }
+        }
+
+        parametros[pindex]=0;
+
+
+        debug_printf (VERBOSE_DEBUG,"Action parameters: [%s]",parametros);
+
+
+        //Separar parametros
+	breakpoint_action_parse_commands_argvc(parametros);
+
+	printf ("total parametros: %d\n",breakpoint_action_command_argc);
+
+	for (i=0;i<breakpoint_action_command_argc;i++) {
+		printf ("parametro %d : [%s]\n",i,breakpoint_action_command_argv[i]);
+	}
 
 }
