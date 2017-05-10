@@ -4580,54 +4580,12 @@ void menu_breakpoints(MENU_ITEM_PARAMETERS)
 
 			menu_add_item_menu_valor_opcion(array_menu_breakpoints,i);
 
-			menu_add_item_menu_ayuda(array_menu_breakpoints,"Set a condition breakpoint. Press Space to disable or enable\n"
+			menu_add_item_menu_ayuda(array_menu_breakpoints,"Set a condition breakpoint and its action. Press Space to disable or enable\n"
+						HELP_MESSAGE_CONDITION_BREAKPOINT
+						"\n\n\n"
+						HELP_MESSAGE_BREAKPOINT_ACTION
 
-						"A condition breakpoint has the following format: \n"
-						"[REGISTER][CONDITION][VALUE] [OPERATOR] [REGISTER][CONDITION][VALUE] [OPERATOR] .... where: \n"
-						"[REGISTER] can be a CPU register or some pseudo variables: A,B,C,D,E,F,H,L,I,R,BC,DE,HL,SP,PC,IX,IY,"
-						"(BC),(DE),(HL),(SP),(PC),(IX),(IY), (NN), IFF1, IFF2, OPCODE,\n"
-						"RAM: RAM mapped on 49152-65535 on Spectrum 128 or Prism,\n"
-						"ROM: ROM mapped on 0-16383 on Spectrum 128,\n"
-						"SEG0, SEG1, SEG2, SEG3: memory banks mapped on each 4 memory segments on Z88\n"
-						"MRV: value returned on read memory operation\n"
-						"MWV: value written on write memory operation\n"
-						"MRA: address used on read memory operation\n"
-						"MWA: address used on write memory operation\n"
-						"PRV: value returned on read port operation\n"
-						"PWV: value written on write port operation\n"
-						"PRA: address used on read port operation\n"
-						"PWA: address used on write port operation\n"
-
-						"\n"
-
-						"ENTERROM: returns 1 the first time PC register is on ROM space (0-16383)\n"
-						"EXITROM: returns 1 the first time PC register is out ROM space (16384-65535)\n"
-						"Note: The last two only return 1 the first time the breakpoint is fired, or a watch is shown, "
-						"it will return 1 again only exiting required space address and entering again\n"
-
-						"\n"
-
-						"TSTATES: t-states total in a frame\n"
-						"TSTATESL: t-states in a scanline\n"
-						"TSTATESP: t-states partial\n"
-						"SCANLINE: scanline counter\n"
-
-						"\n"
-
-						"[CONDITION] must be one of: <,>,=,/  (/ means not equal)\n"
-						"[VALUE] must be a numeric value\n"
-						"[OPERATOR] must be one of the following: and, or, xor\n"
-						"Examples of conditions:\n"
-						"SP<32768 : it will match when SP register is below 32768\n"
-						"A=10 and BC<33 : it will match when A register is 10 and BC is below 33\n"
-						"OPCODE=ED4AH : it will match when running opcode ADC HL,BC\n"
-						"OPCODE=21H : it will match when running opcode LD HL,NN\n"
-						"OPCODE=210040H : it will match when running opcode LD HL,4000H\n"
-						"SEG2=40H : when memory bank 40H is mapped to memory segment 2 (49152-65535 range) on Z88\n"
-						"MWA<16384 : it will match when attempting to write in ROM\n"
-						"ENTERROM=1 : it will match when entering ROM space address\n"
-						"TSTATESP>69888 : it will match when partial counter has executed a 48k full video frame (you should reset it before)\n"
-						"\nNote: Any condition in the whole list can trigger a breakpoint");
+					);
 
                 }
 

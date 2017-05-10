@@ -742,8 +742,12 @@ struct s_items_ayuda items_ayuda[]={
 	{"save-binary-internal",NULL,"pointer lenght file [offset]","Dumps internal memory to file for a given memory pointer. "
 				"Pointer can be any of the hexdump-internal command\n"
 				"Use with care, pointer address is a memory address on the emulator program (not the emulated memory)"},
-	{"set-breakpoint","|sb","index [condition]","Sets a breakpoint at desired index entry with condition. If no condition set, breakpoint will be handled as disabled"},
-	{"set-breakpointaction","|sba","index [condition]","Sets a breakpoint action at desired index entry with condition."},
+	{"set-breakpoint","|sb","index [condition]","Sets a breakpoint at desired index entry with condition. If no condition set, breakpoint will be handled as disabled\n"
+	HELP_MESSAGE_CONDITION_BREAKPOINT
+	},
+	{"set-breakpointaction","|sba","index [condition]","Sets a breakpoint action at desired index entry with condition.\n"
+	HELP_MESSAGE_BREAKPOINT_ACTION
+	},
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
 				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 5 next opcodes on cpu stepping. "
