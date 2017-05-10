@@ -1088,6 +1088,9 @@ printf(
 		"--set-breakpoint n s       Set breakpoint with string s at position n. n must be between 1 and %d. string s must be written in \"\" if has spaces\n",MAX_BREAKPOINTS_CONDITIONS
 );
 
+printf(
+		"--set-breakpointaction n s Set breakpoint action with string s at position n. n must be between 1 and %d. string s must be written in \"\" if has spaces\n",MAX_BREAKPOINTS_CONDITIONS
+);
 
 printf (
 	  "--hardware-debug-ports     Enables hardware debug ports to be able to show on console numbers or ascii characters\n"
@@ -4974,6 +4977,24 @@ void parse_cmdline_options(void) {
 
 		 }
 
+		 else if (!strcmp(argv[puntero_parametro],"--set-breakpointaction")) {
+			 siguiente_parametro_argumento();
+			 int valor=atoi(argv[puntero_parametro]);
+			 valor--;
+
+			 siguiente_parametro_argumento();
+
+
+			 if (valor<0 || valor>MAX_BREAKPOINTS_CONDITIONS-1) {
+				 printf("Index %d out of range setting breakpoint action \"%s\"\n",valor+1,argv[puntero_parametro]);
+				 exit(1);
+			 }
+
+			 debug_set_breakpoint_action(valor,argv[puntero_parametro]);
+
+			 command_line_set_breakpoints.v=1;
+
+		 }
 
 		 else if (!strcmp(argv[puntero_parametro],"--hardware-debug-ports")) {
 			 hardware_debug_port.v=1;

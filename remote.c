@@ -706,6 +706,7 @@ struct s_items_ayuda items_ayuda[]={
   {"generate-nmi",NULL,NULL,"Generates a NMI"},
 	{"get-audio-buffer-info",NULL,NULL,"Get audio buffer information"},
   {"get-breakpoints","|gb",NULL,"Get breakpoints list"},
+	{"get-breakpointsactions","|gba",NULL,"Get breakpoints actions list"},
 	{"get-cpu-core-name",NULL,NULL,"Get emulation cpu core name"},
   {"get-current-machine","|gcm",NULL,"Returns current machine name"},
 	{"get-debug-settings","|gds",NULL,"Get debug settings on remote command protocol. See command set-debug-settings"},
@@ -742,6 +743,7 @@ struct s_items_ayuda items_ayuda[]={
 				"Pointer can be any of the hexdump-internal command\n"
 				"Use with care, pointer address is a memory address on the emulator program (not the emulated memory)"},
 	{"set-breakpoint","|sb","index [condition]","Sets a breakpoint at desired index entry with condition. If no condition set, breakpoint will be handled as disabled"},
+	{"set-breakpointaction","|sba","index [condition]","Sets a breakpoint action at desired index entry with condition."},
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
 				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 5 next opcodes on cpu stepping. "
@@ -834,6 +836,30 @@ void remote_get_breakpoints(int misocket)
   }
 }
 
+void remote_get_breakpointsactions(int misocket)
+{
+  int i;
+
+
+  for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
+		escribir_socket_format(misocket,"%d: ",i+1);
+
+    if (debug_breakpoints_actions_array[i][0]==0 ||
+			!strcmp(debug_breakpoints_actions_array[i],"menu") ||
+			!strcmp(debug_breakpoints_actions_array[i],"break")
+		) {
+			escribir_socket_format(misocket,"menu");
+    }
+    else {
+      escribir_socket_format(misocket,debug_breakpoints_actions_array[i]);
+    }
+
+    escribir_socket(misocket,"\n");
+
+  }
+}
+
+
 void remote_disable_breakpoint(int misocket,char *parametros)
 {
   //Separar id indice y condicion
@@ -916,6 +942,50 @@ void remote_set_breakpoint(int misocket,char *parametros)
   }
 
   debug_set_breakpoint(indice-1,&parametros[i]);
+}
+
+
+void remote_set_breakpointaction(int misocket,char *parametros)
+{
+  //Separar id indice y condicion
+  //Buscar hasta espacio
+  if (parametros[0]==0) {
+    escribir_socket(misocket,"Error. No parameters set");
+    return;
+  }
+  int i;
+
+  //Evaluar primer parametro
+  int indice=atoi(parametros);
+
+  if (indice<1 || indice>MAX_BREAKPOINTS_CONDITIONS) {
+    escribir_socket(misocket,"Error. Index out of range");
+    return;
+  }
+
+  //Buscar espacio del segundo parametro
+
+  for (i=0;parametros[i]!=' ' && parametros[i];i++);
+
+
+  //Si no hay espacio de segundo parametro, segundo parametro es nulo
+  //Sera igual escribir:
+  //set-breakpointaction 1[_espacio_][_fin_linea]
+  //o
+  //set-breakpointaction 1[_fin_linea]
+  if (parametros[i]!=0) {
+    i++;
+  }
+
+
+//Comprobar longitud condicion. Si condicion vacia, acabara desactivando el breakpoint
+  int longitud=strlen(&parametros[i]);
+  if (longitud>MAX_BREAKPOINT_CONDITION_LENGTH) {
+    escribir_socket(misocket,"Error. Action too long");
+    return;
+  }
+
+  debug_set_breakpoint_action(indice-1,&parametros[i]);
 }
 
 int remote_get_opcode_length(unsigned int direccion)
@@ -2786,6 +2856,10 @@ char buffer_retorno[2048];
     remote_get_breakpoints(misocket);
   }
 
+	//get-breakpoints, estado global y lista cada uno, si hay y si esta enabled
+	  else if (!strcmp(comando_sin_parametros,"get-breakpointsactions") || !strcmp(comando_sin_parametros,"gba")) {
+	    remote_get_breakpointsactions(misocket);
+	  }
 
 
 	else if (!strcmp(comando_sin_parametros,"get-cpu-core-name")) {
@@ -2985,6 +3059,11 @@ char buffer_retorno[2048];
 else if (!strcmp(comando_sin_parametros,"set-breakpoint") || !strcmp(comando_sin_parametros,"sb")) {
   if (debug_breakpoints_enabled.v==0) escribir_socket (misocket,"Error. You must enable breakpoints first");
   else remote_set_breakpoint(misocket,parametros);
+}
+
+else if (!strcmp(comando_sin_parametros,"set-breakpointaction") || !strcmp(comando_sin_parametros,"sba")) {
+  if (debug_breakpoints_enabled.v==0) escribir_socket (misocket,"Error. You must enable breakpoints first");
+  else remote_set_breakpointaction(misocket,parametros);
 }
 
 else if (!strcmp(comando_sin_parametros,"set-cr")) {

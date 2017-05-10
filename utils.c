@@ -2968,6 +2968,11 @@ int util_write_configfile(void)
                                               ADD_STRING_CONFIG,"--set-breakpoint %d \"%s\"",i+1,debug_breakpoints_conditions_array[i]);
 	}
 
+  for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
+    if (debug_breakpoints_actions_array[i][0]!=0)
+                                              ADD_STRING_CONFIG,"--set-breakpointaction %d \"%s\"",i+1,debug_breakpoints_actions_array[i]);
+  }
+
   if (hardware_debug_port.v)                  ADD_STRING_CONFIG,"--hardware-debug-ports");
 
   if (autoselect_snaptape_options.v==0)       ADD_STRING_CONFIG,"--noautoselectfileopt");
