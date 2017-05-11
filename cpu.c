@@ -5145,6 +5145,38 @@ void *thread_main_loop_function(void *nada)
 #endif
 
 
+void print_funny_message(void)
+{
+	//Mensaje para la ZXSpectr edition (ZEsarUX 4.1)
+	//no se si para versiones superiores lo seguire manteniendo...
+
+	//printf ("random: %d\n",randomize_noise[0]);
+
+	//mensajes random de broma
+	#define MAX_RANDOM_FUNNY_MESSAGES 9
+	char *random_funny_messajes[MAX_RANDOM_FUNNY_MESSAGES]={
+		"Detected SoundBlaster at A220 I5 D1 T2",
+		"DOS/4GW Protected Mode Run-time  Version 1.97",		//2
+		"Detected 4 MB expanded memory (EMS)",
+		"64K High Memory Area is available",								//4
+		"Detected Hercules Video Card 720x350",
+		"Detected Enhanced Graphics Adapter (EGA) 640×350",	//6
+		"Uncompressing Linux... done, booting the kernel",
+		"PhoenixBIOS 4.0 Release 6.0",											//8
+		"301-Keyboard not detected. Press F1 to continue",
+	};
+
+
+	int mensaje_gracioso=randomize_noise[0] % MAX_RANDOM_FUNNY_MESSAGES;
+	//printf ("indice mensaje gracioso: %d\n",mensaje_gracioso);
+	printf ("%s ... Just kidding ;)\n\n",random_funny_messajes[mensaje_gracioso]);
+							/*
+							printf ("386 Processor or higher detected\n"
+											"Using expanded memory (EMS)\n");
+							*/
+}
+
+
 //Proceso inicial
 int zesarux_main (int main_argc,char *main_argv[]) {
 
@@ -5383,15 +5415,11 @@ tooltip_enabled.v=1;
 
 	if (test_config_and_exit.v) exit(0);
 
-//Mensaje para la ZXSpectr edition (ZEsarUX 4.1)
-//no se si para versiones superiores lo seguire manteniendo...
+	//Init random value. Usado en AY Chip y Random ram y mensajes "kidding"
+init_randomize_noise_value();
 
-  printf ("Detected SoundBlaster at A220 I5 D1 T2 ... Just kidding ;) \n\n");
+	print_funny_message();
 
-                /*
-                printf ("386 Processor or higher detected\n"
-                        "Using expanded memory (EMS)\n");
-                */
 
 
 #ifdef MINGW
@@ -5416,8 +5444,8 @@ tooltip_enabled.v=1;
 		//Inicializacion maquina
 
 
-		//Init random value. Usado en AY Chip y Random ram
-	init_randomize_noise_value();
+
+
 
 
 	init_cpu_tables();
