@@ -3234,18 +3234,27 @@ int i;
 
         debug_printf (VERBOSE_DEBUG,"Action parameters: [%s]",parametros);
 
+        //A partir de aqui se tiene:
+        //variable comando_sin_parametros: comando tal cual inicial, sin parametros
+        //variable parametros: todos los comandos tal cual se han escrito, son sus espacios y todos
+
+        //Luego los comandos que necesiten parsear parametros pueden hacer:
+        //llamar a breakpoint_action_parse_commands_argvc para los comandos de 1 o mas parametros
+        //comandos de 1 solo parametro pueden usar tal cual la variable parametros. Util tambien para 1 solo parametro con espacios
+
 
         //Separar parametros
-	breakpoint_action_parse_commands_argvc(parametros);
+	       //breakpoint_action_parse_commands_argvc(parametros);
 
-	debug_printf (VERBOSE_DEBUG,"Total parameters: %d",breakpoint_action_command_argc);
+	//debug_printf (VERBOSE_DEBUG,"Total parameters: %d",breakpoint_action_command_argc);
 
-	for (i=0;i<breakpoint_action_command_argc;i++) {
-		debug_printf (VERBOSE_DEBUG,"Parameter %d : [%s]",i,breakpoint_action_command_argv[i]);
-	}
+	//for (i=0;i<breakpoint_action_command_argc;i++) {
+	//	debug_printf (VERBOSE_DEBUG,"Parameter %d : [%s]",i,breakpoint_action_command_argv[i]);
+	//}
 
     //Gestion parametros
     if (!strcmp(comando_sin_parametros,"write")) {
+      breakpoint_action_parse_commands_argvc(parametros);
       if (breakpoint_action_command_argc<2) debug_printf (VERBOSE_DEBUG,"Command needs two parameters");
       else {
         unsigned int direccion;
@@ -3261,6 +3270,7 @@ int i;
     }
 
     else if (!strcmp(comando_sin_parametros,"call")) {
+      breakpoint_action_parse_commands_argvc(parametros);
       if (breakpoint_action_command_argc<1) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
       else {
         unsigned int direccion;
@@ -3277,6 +3287,7 @@ int i;
     }
 
     else if (!strcmp(comando_sin_parametros,"printc")) {
+      breakpoint_action_parse_commands_argvc(parametros);
       if (breakpoint_action_command_argc<1) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
       else {
         unsigned int caracter;
@@ -3290,40 +3301,25 @@ int i;
     }
 
     else if (!strcmp(comando_sin_parametros,"printe")) {
-      if (breakpoint_action_command_argc<1) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
+      if (parametros[0]==0) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
       else {
-        char resultado[256];
-        resultado[0]=0;
-        //Unir parametros separados por espacios
-        for (i=0;i<breakpoint_action_command_argc;i++) {
-          int s=strlen(resultado);
-          sprintf (&resultado[s],"%s ",breakpoint_action_command_argv[i]);
-        }
-
-        debug_printf (VERBOSE_DEBUG,"Running printe command : %s",resultado);
+        debug_printf (VERBOSE_DEBUG,"Running printe command : %s",parametros);
         char resultado_expresion[256];
-        debug_watches_loop(resultado,resultado_expresion);
+        debug_watches_loop(parametros,resultado_expresion);
         printf ("%s\n",resultado_expresion);
       }
     }
 
     else if (!strcmp(comando_sin_parametros,"prints")) {
-      if (breakpoint_action_command_argc<1) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
+      if (parametros[0]==0) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
       else {
-        char resultado[256];
-        resultado[0]=0;
-        //Unir parametros separados por espacios
-        for (i=0;i<breakpoint_action_command_argc;i++) {
-          int s=strlen(resultado);
-          sprintf (&resultado[s],"%s ",breakpoint_action_command_argv[i]);
-        }
-
-        debug_printf (VERBOSE_DEBUG,"Running prints command : %s",resultado);
-        printf ("%s\n",resultado);
+        debug_printf (VERBOSE_DEBUG,"Running prints command : %s",parametros);
+        printf ("%s\n",parametros);
       }
     }
 
     else if (!strcmp(comando_sin_parametros,"set-register")) {
+      breakpoint_action_parse_commands_argvc(parametros);
       if (breakpoint_action_command_argc<1) debug_printf (VERBOSE_DEBUG,"Command needs one parameter");
       else {
         debug_printf (VERBOSE_DEBUG,"Running set-register command : %s",breakpoint_action_command_argv[0]);
