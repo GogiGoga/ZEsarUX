@@ -234,5 +234,7 @@ extern void debug_get_ioports(char *stats_buffer);
 
 extern void debug_run_action_breakpoint(char *comando);
 
+extern int debug_if_breakpoint_action_menu(int index);
+
 
 #endif

@@ -3156,6 +3156,17 @@ void debug_get_ioports(char *stats_buffer)
 
 }
 
+int debug_if_breakpoint_action_menu(int index)
+{
+  //Si accion nula o menu o break
+  if (debug_breakpoints_actions_array[index][0]==0 ||
+    !strcmp(debug_breakpoints_actions_array[index],"menu") ||
+    !strcmp(debug_breakpoints_actions_array[index],"break")
+  )  return 1;
+
+  return 0;
+}
+
 
 //Parseo de parametros de comando.
 #define ACTION_MAX_PARAMETERS_COMMAND 10

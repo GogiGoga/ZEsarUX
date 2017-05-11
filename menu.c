@@ -5304,10 +5304,11 @@ int continuous_step=0;
 
 void menu_debug_registers_gestiona_breakpoint(void)
 {
-                menu_breakpoint_exception.v=0;
+    menu_breakpoint_exception.v=0;
 		menu_breakpoint_exception_pending_show.v=1;
-                cpu_step_mode.v=1;
-                //printf ("Reg pc: %d\n",reg_pc);
+    cpu_step_mode.v=1;
+
+    //printf ("Reg pc: %d\n",reg_pc);
 		continuous_step=0;
 
 }
@@ -5468,7 +5469,7 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 
 	int valor_contador_segundo_anterior;
 
-valor_contador_segundo_anterior=contador_segundo;
+	valor_contador_segundo_anterior=contador_segundo;
 
 
 	//Ver si hemos entrado desde un breakpoint
@@ -5523,10 +5524,21 @@ valor_contador_segundo_anterior=contador_segundo;
         	        menu_cpu_core_loop();
 
 			if (menu_breakpoint_exception.v) {
-				menu_debug_registers_gestiona_breakpoint();
-				//Y redibujar ventana para reflejar breakpoint cond
-				menu_debug_registers_ventana();
+				//Si accion nula o menu o break
+				if (debug_if_breakpoint_action_menu(catch_breakpoint_index)) {
+				  menu_debug_registers_gestiona_breakpoint();
+				  //Y redibujar ventana para reflejar breakpoint cond
+				  menu_debug_registers_ventana();
+				}
+
+				else {
+					menu_breakpoint_exception.v=0;
+				  //Gestion acciones
+				  debug_run_action_breakpoint(debug_breakpoints_actions_array[catch_breakpoint_index]);
+				}
 			}
+
+
 
                 	acumulado=menu_da_todas_teclas();
 
@@ -5782,9 +5794,18 @@ valor_contador_segundo_anterior=contador_segundo;
 			}
 
 			if (menu_breakpoint_exception.v) {
-				menu_debug_registers_gestiona_breakpoint();
-                                //Y redibujar ventana para reflejar breakpoint cond
-                                menu_debug_registers_ventana();
+				//Si accion nula o menu o break
+				if (debug_if_breakpoint_action_menu(catch_breakpoint_index)) {
+				  menu_debug_registers_gestiona_breakpoint();
+				  //Y redibujar ventana para reflejar breakpoint cond
+				  menu_debug_registers_ventana();
+				}
+
+				else {
+					menu_breakpoint_exception.v=0;
+				  //Gestion acciones
+				  debug_run_action_breakpoint(debug_breakpoints_actions_array[catch_breakpoint_index]);
+				}
 			}
 
 		}
@@ -21568,7 +21589,7 @@ void menu_inicio_pre_retorno(void)
         menu_button_quickload.v=0;
         menu_button_osdkeyboard.v=0;
         menu_button_exit_emulator.v=0;
-	menu_event_drag_drop.v=0;
+				menu_event_drag_drop.v=0;
         menu_breakpoint_exception.v=0;
 				menu_event_remote_protocol_enterstep.v=0;
 
@@ -21693,29 +21714,25 @@ void menu_inicio(void)
 		//Ver tipo de accion para ese breakpoint
 		//printf ("indice breakpoint & accion : %d\n",catch_breakpoint_index);
 
+
 		//Si accion nula o menu o break
-		if (debug_breakpoints_actions_array[catch_breakpoint_index][0]==0 ||
-			!strcmp(debug_breakpoints_actions_array[catch_breakpoint_index],"menu") ||
-			!strcmp(debug_breakpoints_actions_array[catch_breakpoint_index],"break")
-			)  {
+		if (debug_if_breakpoint_action_menu(catch_breakpoint_index)) {
+
+			//menu_espera_no_tecla();
+      //y desactivamos multitarea
+      menu_multitarea=0;
+			menu_generic_message_format("Breakpoint","Catch Breakpoint: %s",catch_breakpoint_message);
+
+			menu_debug_registers(0);
+      cls_menu_overlay();
 
 
-                //menu_espera_no_tecla();
-        	//y desactivamos multitarea
-        	menu_multitarea=0;
-		menu_generic_message_format("Breakpoint","Catch Breakpoint: %s",catch_breakpoint_message);
-
-		menu_debug_registers(0);
-                cls_menu_overlay();
-
-
-		//Y despues de un breakpoint hacer que aparezca el menu normal y no vuelva a la ejecucion
-		menu_inicio_bucle();
-			}
+			//Y despues de un breakpoint hacer que aparezca el menu normal y no vuelva a la ejecucion
+			menu_inicio_bucle();
+		}
 
 		else {
 			//Gestion acciones
-			//printf ("Accion ejecutar: %s\n",debug_breakpoints_actions_array[catch_breakpoint_index]);
 			debug_run_action_breakpoint(debug_breakpoints_actions_array[catch_breakpoint_index]);
 		}
 
