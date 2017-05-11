@@ -2082,25 +2082,9 @@ int remote_command_argc;
 //Separar comando con codigos 0 y rellenar array de parametros
 void remote_parse_commands_argvc(char *texto)
 {
-	remote_command_argc=0;
-	while (*texto) {
-		//Inicio parametro
-		remote_command_argv[remote_command_argc++]=texto;
-		if (remote_command_argc==REMOTE_MAX_PARAMETERS_COMMAND) {
-			debug_printf(VERBOSE_DEBUG,"Max parameters reached (%d)",REMOTE_MAX_PARAMETERS_COMMAND);
-			return;
-		}
 
-		//Ir hasta espacio o final
-		while (*texto && *texto!=' ') {
-			texto++;
-		}
+  remote_command_argc=util_parse_commands_argvc(texto, remote_command_argv, REMOTE_MAX_PARAMETERS_COMMAND);
 
-		if ( (*texto)==0) return;
-
-		*texto=0; //Separar cadena
-		texto++;
-	}
 }
 
 void remote_dump_nested_core_functions(int misocket)

@@ -7808,3 +7808,33 @@ void util_sprintf_address_hex(menu_z80_moto_int p,char *string_address)
     sprintf (string_address,"%04XH",p);
   }
 }
+
+
+
+//Separar comando con codigos 0 y rellenar array de parametros
+int util_parse_commands_argvc(char *texto, char *parm_argv[], int maximo)
+{
+
+        int args=0;
+
+        while (*texto) {
+                //Inicio parametro
+                parm_argv[args++]=texto;
+                if (args==maximo) {
+                        debug_printf(VERBOSE_DEBUG,"Max parameters reached (%d)",maximo);
+                        return args;
+                }
+
+                //Ir hasta espacio o final
+                while (*texto && *texto!=' ') {
+                        texto++;
+                }
+
+                if ( (*texto)==0) return args;
+
+                *texto=0; //Separar cadena
+                texto++;
+        }
+
+        return args;
+}

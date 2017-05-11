@@ -3177,25 +3177,8 @@ int breakpoint_action_command_argc;
 //Separar comando con codigos 0 y rellenar array de parametros
 void breakpoint_action_parse_commands_argvc(char *texto)
 {
-        breakpoint_action_command_argc=0;
-        while (*texto) {
-                //Inicio parametro
-                breakpoint_action_command_argv[breakpoint_action_command_argc++]=texto;
-                if (breakpoint_action_command_argc==ACTION_MAX_PARAMETERS_COMMAND) {
-                        debug_printf(VERBOSE_DEBUG,"Max parameters reached (%d)",ACTION_MAX_PARAMETERS_COMMAND);
-                        return;
-                }
+  breakpoint_action_command_argc=util_parse_commands_argvc(texto, breakpoint_action_command_argv, ACTION_MAX_PARAMETERS_COMMAND);
 
-                //Ir hasta espacio o final
-                while (*texto && *texto!=' ') {
-                        texto++;
-                }
-
-                if ( (*texto)==0) return;
-
-                *texto=0; //Separar cadena
-                texto++;
-        }
 }
 
 

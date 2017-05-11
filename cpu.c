@@ -5147,8 +5147,8 @@ void *thread_main_loop_function(void *nada)
 
 void print_funny_message(void)
 {
-	//Mensaje para la ZXSpectr edition (ZEsarUX 4.1)
-	//no se si para versiones superiores lo seguire manteniendo...
+	//Mensaje gracioso de arranque que empezó con la ZXSpectr edition (ZEsarUX 4.1)
+	//El primero era: Detected SoundBlaster at A220 I5 D1 T2
 
 	//printf ("random: %d\n",randomize_noise[0]);
 

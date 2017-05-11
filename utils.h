@@ -524,4 +524,6 @@ extern int si_menu_mouse_activado(void);
 
 //extern long long int parse_string_to_long_number(char *texto);
 
+extern int util_parse_commands_argvc(char *texto, char *parm_argv[], int maximo);
+
 #endif
