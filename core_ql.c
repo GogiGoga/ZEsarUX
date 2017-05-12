@@ -74,6 +74,61 @@ void core_ql_trap_one(void)
 
 }
 
+unsigned int pre_io_open_a[8];
+unsigned int pre_io_open_d[8];
+
+void ql_store_a_registers(unsigned int *destino, int ultimo)
+{
+  if (ultimo>=0) destino[0]=m68k_get_reg(NULL,M68K_REG_A0);
+  if (ultimo>=1) destino[1]=m68k_get_reg(NULL,M68K_REG_A1);
+  if (ultimo>=2) destino[2]=m68k_get_reg(NULL,M68K_REG_A2);
+  if (ultimo>=3) destino[3]=m68k_get_reg(NULL,M68K_REG_A3);
+  if (ultimo>=4) destino[4]=m68k_get_reg(NULL,M68K_REG_A4);
+  if (ultimo>=5) destino[5]=m68k_get_reg(NULL,M68K_REG_A5);
+  if (ultimo>=6) destino[6]=m68k_get_reg(NULL,M68K_REG_A6);
+  if (ultimo>=7) destino[7]=m68k_get_reg(NULL,M68K_REG_A7);
+}
+
+void ql_store_d_registers(unsigned int *destino, int ultimo)
+{
+  if (ultimo>=0) destino[0]=m68k_get_reg(NULL,M68K_REG_D0);
+  if (ultimo>=1) destino[1]=m68k_get_reg(NULL,M68K_REG_D1);
+  if (ultimo>=2) destino[2]=m68k_get_reg(NULL,M68K_REG_D2);
+  if (ultimo>=3) destino[3]=m68k_get_reg(NULL,M68K_REG_D3);
+  if (ultimo>=4) destino[4]=m68k_get_reg(NULL,M68K_REG_D4);
+  if (ultimo>=5) destino[5]=m68k_get_reg(NULL,M68K_REG_D5);
+  if (ultimo>=6) destino[6]=m68k_get_reg(NULL,M68K_REG_D6);
+  if (ultimo>=7) destino[7]=m68k_get_reg(NULL,M68K_REG_D7);
+}
+
+
+
+void ql_restore_a_registers(unsigned int *origen, int ultimo)
+{
+  if (ultimo>=0) m68k_set_reg(M68K_REG_A0,origen[0]);
+  if (ultimo>=1) m68k_set_reg(M68K_REG_A1,origen[1]);
+  if (ultimo>=2) m68k_set_reg(M68K_REG_A2,origen[2]);
+  if (ultimo>=3) m68k_set_reg(M68K_REG_A3,origen[3]);
+  if (ultimo>=4) m68k_set_reg(M68K_REG_A4,origen[4]);
+  if (ultimo>=5) m68k_set_reg(M68K_REG_A5,origen[5]);
+  if (ultimo>=6) m68k_set_reg(M68K_REG_A6,origen[6]);
+  if (ultimo>=7) m68k_set_reg(M68K_REG_A7,origen[7]);
+}
+
+
+void ql_restore_d_registers(unsigned int *origen, int ultimo)
+{
+  if (ultimo>=0) m68k_set_reg(M68K_REG_D0,origen[0]);
+  if (ultimo>=1) m68k_set_reg(M68K_REG_D1,origen[1]);
+  if (ultimo>=2) m68k_set_reg(M68K_REG_D2,origen[2]);
+  if (ultimo>=3) m68k_set_reg(M68K_REG_D3,origen[3]);
+  if (ultimo>=4) m68k_set_reg(M68K_REG_D4,origen[4]);
+  if (ultimo>=5) m68k_set_reg(M68K_REG_D5,origen[5]);
+  if (ultimo>=6) m68k_set_reg(M68K_REG_D6,origen[6]);
+  if (ultimo>=7) m68k_set_reg(M68K_REG_D7,origen[7]);
+}
+
+
 void core_ql_trap_two(void)
 {
 
@@ -81,14 +136,11 @@ void core_ql_trap_two(void)
 
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
 
-      /*case 1:
-        //Open a channel
-        reg_a0=m68k_get_reg(NULL,M68K_REG_A0);
-        printf ("Trap 2. D0=1 open a channel. Name Address: %06XH\n",reg_a0);
-        //En A0 , direccion. primero word con longitud texto, luego texto
-        int longitud_nombre=peek_byte_z80_moto(reg_a0)*256+peek_byte_z80_moto(reg_a0+1);
-        printf ("Longitud nombre canal: %d\n",longitud_nombre);
-      break;*/
+      case 1:
+        //Open a channel. IO.OPEN Guardo todos registros A y D yo internamente de D2,D3,A2,A3 para restaurarlos despues de que se hace el trap de microdrive
+        ql_store_a_registers(pre_io_open_a,7);
+        ql_store_d_registers(pre_io_open_d,7);
+      break;
 
       default:
       debug_printf (VERBOSE_PARANOID,"Trap 2. D0=%02XH",m68k_get_reg(NULL,M68K_REG_D0));
@@ -101,7 +153,8 @@ void core_ql_trap_two(void)
 void core_ql_trap_three(void)
 {
 
-  debug_printf (VERBOSE_PARANOID,"Trap 3. D0=%02XH A0=%08XH is : ",m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0));
+  debug_printf (VERBOSE_PARANOID,"Trap 3. D0=%02XH A0=%08XH PC=%05XH is : ",
+    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_PC));
 
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
     case 0x4:
@@ -298,6 +351,36 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       encontrado=util_strcasestr(nombre_archivo, buscar);
       if (encontrado) {
         debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything");
+
+/*
+069CC movea.l A1, A0                              |L069CC MOVEA.L A1,A0
+069CE move.w  (A6,A1.l), -(A7)                    |       MOVE.W  $00(A6,A1.L),-(A7)
+069D2 trap    #$4                                 |       TRAP    #$04
+>069D4 trap    #$2                                 |       TRAP    #$02
+069D6 moveq   #$3, D3                             |       MOVEQ   #$03,D3
+069D8 add.w   (A7)+, D3                           |       ADD.W   (A7)+,D3
+069DA bclr    #$0, D3                             |       BCLR    #$00,D3
+069DE add.l   D3, ($58,A6)                        |       ADD.L   D3,$0058(A6)
+
+Es ese trap 2 el que se llama al hacer lbytes mdv...
+
+Y entra asi:
+command@cpu-step> run
+Running until a breakpoint, menu opening or other event
+PC: 069D4 SP: 3FFC0 USP: 3FFC0 SR: 0000 :
+
+A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6: 0003F068 A7: 0003FFC0 D0: 00000001 D1: FFFFFFFF D2: 00000058 D3: 00000001 D4: 00000001 D5: 00000000 D6: 00000000 D7: 00000000
+069D4 trap    #$2
+
+*/
+
+        //D2,D3,A2,A3 se tienen que preservar, segun dice el trap.
+        //Segun la info general de los traps, tambien se deben guardar de D4 a D7 y A4 a A6. Directamente guardo todos los D y A excepto A7
+
+        ql_restore_d_registers(pre_io_open_d,7);
+        ql_restore_a_registers(pre_io_open_a,6);
+
+
         m68k_set_reg(M68K_REG_PC,0x5e);
         int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
         reg_a7 +=12;
@@ -317,7 +400,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
         to an error string, relative to address $8000. The string is in the usual Qdos form of a word giving the length of
         the string, followed by the characters.
         */
-        
+
 
         //No error. Si no se asigna D0, se cuelga igualmente pero no da el error "error in expression"
         m68k_set_reg(M68K_REG_D0,0);
@@ -357,7 +440,6 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
     */
     if (get_pc_register()==0x0032a) {
       core_ql_trap_three();
-
     }
 
 

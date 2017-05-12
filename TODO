@@ -9,6 +9,7 @@ Hago que abra el menu como si saltase un breakpoint cuando se abre un "mdv"*
 Si pruebo a retornar error "not found" se muestra correctamnete "not found" y se vuelve a quedar en el bucle dichoso colgado
 
 Puede que se cuelgue en ese bucle porque al volver del trap de la interrupcion no se restauran correctamente algunos registros
+Igualmente hago que al volver de ese trap se conserve correctamente A2, A3, D2, D3 e igualmente falla
 
 -- Fin estado funciones microdrive QL
 
