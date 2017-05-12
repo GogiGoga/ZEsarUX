@@ -318,12 +318,12 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
         the string, followed by the characters.
         */
 
-        //No error
+        //No error. Si no se asigna D0, se cuelga igualmente pero no da el error "error in expression"
         m68k_set_reg(M68K_REG_D0,0);
 
         //D1= Job ID. TODO. Parece que da error "error in expression" porque no se asigna un job id valido?
         //Parece que D1 vuelve con -1
-        m68k_set_reg(M68K_REG_D1,0); //Valor de D1 inventado
+        m68k_set_reg(M68K_REG_D1,0); //Valor de D1 inventado. Da igual, tambien fallara
         /*
 
         */
