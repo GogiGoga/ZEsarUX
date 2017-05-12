@@ -446,11 +446,11 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
         //Hacer saltar el menu como si fuese breakpoint debugger
         //Tener en cuenta que la accion del breakpoint 0 sea nula, sino no se abriria el menu
-        catch_breakpoint_index=0;
+        /*catch_breakpoint_index=0;
         menu_breakpoint_exception.v=1;
         menu_abierto=1;
         sprintf (catch_breakpoint_message,"Opened file %s",ql_nombre_archivo_load);
-        printf ("Abrimos menu\n");
+        printf ("Abrimos menu\n");*/
 
         //sleep(5);
       }

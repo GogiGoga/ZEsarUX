@@ -1,5 +1,12 @@
+--set-breakpoint 1 "pc=069D4H" 
+--set-breakpoint 2 "D0=47H and PC=0032AH" 
+
 
 ---
+Estado funciones microdrive QL a 12 Mayo segunda parte
+Ya carga bytes, aunque header retorna basura y parece no afectarle
+
+
 Estado funciones microdrive QL a 12 Mayo:
 -En IO.OPEN, cuando se abre nombre "mdv"* retorno correctamente valor de "no error", pero tambien espera un valor de job id creado.
 Quiza ese job id tiene que ser mismo valor de D1?
