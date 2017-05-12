@@ -118,6 +118,7 @@ void core_ql_trap_three(void)
 
     case 0x48:
       debug_printf (VERBOSE_PARANOID,"Trap 3: FS.LOAD");
+      sleep(5);
     break;
 
     default:
@@ -284,6 +285,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       //printf ("\n");
       nombre_archivo[i++]=0;
       debug_printf (VERBOSE_PARANOID,"Channel name: %s",nombre_archivo);
+      //sleep(1);
 
       //Hacer que si es mdv1_ ... volver
 
@@ -305,10 +307,25 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
         //Metemos channel id (A0) inventado
         m68k_set_reg(M68K_REG_A0,100);
 
+        //Como decir no error
+        /*
+        When the TRAP operation is complete, control is returned to the program at the location following the TRAP instruction,
+        with an error key in all 32 bits of D0. This key is set to zero if the operation has been completed successfully,
+        and is set to a negative number for any of the system-defined errors (see section 17.1 for a list of the meanings
+        of the possible error codes). The key may also be set to a positive number, in which case that number is a pointer
+        to an error string, relative to address $8000. The string is in the usual Qdos form of a word giving the length of
+        the string, followed by the characters.
+        */
+
+        //No error
+        m68k_set_reg(M68K_REG_D0,0);
+
         //Parece que no sirve de mucho, despues de hacer esto se queda en un bucle de:
         //Trap 3. D0=04H A0=00000000H: IO.EDLIN
         //Trap 3. D0=07H A0=00000000H: IO.SSTRG
         //Eso tanto con dir mdv1_ o con lbytes mdv1_archivo,xxxx
+
+        sleep(5);
       }
 
     }
