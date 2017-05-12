@@ -2895,20 +2895,13 @@ char buffer_retorno[2048];
 
 	else if (!strcmp(comando_sin_parametros,"hexdump") || !strcmp(comando_sin_parametros,"h")) {
 		remote_parse_commands_argvc(parametros);
-		/*int i;
-		for (i=0;i<remote_command_argc;i++) {
-			printf ("%d %s\n",i,remote_command_argv[i]);
-		}*/
 
 		if (remote_command_argc!=2) {
 			escribir_socket(misocket,"ERROR. Needs two parameters");
 			return;
 		}
 
-
-
 		int inicio=parse_string_to_number(remote_command_argv[0]);
-
 		int longitud=parse_string_to_number(remote_command_argv[1]);
 
 		remote_hexdump(misocket,inicio,longitud);
@@ -2917,10 +2910,6 @@ char buffer_retorno[2048];
 
 	else if (!strcmp(comando_sin_parametros,"hexdump-internal")) {
 		remote_parse_commands_argvc(parametros);
-		/*int i;
-		for (i=0;i<remote_command_argc;i++) {
-			printf ("%d %s\n",i,remote_command_argv[i]);
-		}*/
 
 		if (remote_command_argc<2) {
 			escribir_socket(misocket,"ERROR. Needs two parameters minimum");
@@ -2959,7 +2948,7 @@ char buffer_retorno[2048];
 	}
 
 	else if (!strcmp(comando_sin_parametros,"noop")) {
-		//No hacer absolutamente nodo
+		//No hacer absolutamente nada
 	}
 
 	else if (!strcmp(comando_sin_parametros,"read-mapped-memory")) {

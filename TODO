@@ -12,6 +12,7 @@
 probado lo siguiente:
 * resetear a 0 cada driver al iniciar: ningun cambio
 * poner a 0 tambien fifo_read_position al hacer empty buffer: ningun cambio
+->Quiza solucion es que haga reseteo solo cuando se haya llenado 1 vez el buffer al menos
 
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc
 
@@ -1276,6 +1277,8 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 
 *** Core CPU ***
+
+-Desensamblado mediante ejecución de código. Que desensamble solo lo que ejecute y lógicamente evite repetidos
 
 -funcion strcasestr da warning al compilar en linux
 
