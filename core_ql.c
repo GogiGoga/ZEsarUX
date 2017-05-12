@@ -148,25 +148,6 @@ void cpu_core_loop_ql(void)
                 if (chardetect_printchar_enabled.v) chardetect_printchar();
 
 
-		//Autoload
-		//Si hay cinta insertada
-		if (  (tape_loadsave_inserted & TAPE_LOAD_INSERTED)!=0 || (realtape_inserted.v==1)
-
-		) {
-			//Y si hay que hacer autoload
-			if (initial_tap_load.v==1 && initial_tap_sequence==0) {
-
-				//Para Ace. TODO
-		                /*if (reg_pc==0xXXXXX) {
-        		                debug_printf (VERBOSE_INFO,"Autoload tape");
-                		        initial_tap_sequence=1;
-		                }
-				*/
-
-
-			}
-		}
-
 
     //Traps de intercepcion de teclado
     //F1 y F2 iniciales
@@ -346,32 +327,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 
 		if (0==1) { }
 
-			/*
-			if (tap_load_detect_ql()) {
-				audio_playing.v=0;
 
-				draw_tape_text();
-
-				tap_load_ql();
-
-
-	                        //audio_playing.v=1;
-        	                timer_reset();
-
-			}
-		//Interceptar rutina de grabacion. TODO
-
-			else	if (tap_save_detect_ql()) {
-        	                	audio_playing.v=0;
-
-					draw_tape_text();
-
-					tap_save_ql();
-
-	                        	timer_reset();
-
-        	        }
-			*/
 
 
 		else {
@@ -419,22 +375,8 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 //		m68k_disassemble(buffer_disassemble,registropcql,M68K_CPU_TYPE_68000);
 
 
-				//temp
+				//Simplemente incrementamos los t-estados un valor inventado, aunque luego al final parece ser parecido a la realidad
 				t_estados+=4;
-
-
-
-				/*
-				if (iff1.v==1) {
-
-					//solo cuando cambia de 1 a 0
-					if ( (reg_r_antes_zx8081 & 64)==64 && (reg_r & 64)==0 ) {
-
-						interrupcion_maskable_generada.v=1;
-
-					}
-				}
-				*/
 
 
                         }
@@ -457,30 +399,6 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 
                         audio_valor_enviar_sonido +=da_output_ay();
 
-
-                        //if (zx8081_vsync_sound.v==1) {
-
-
-				/*
-			if (beeper_enabled.v) {
-	                        if (beeper_real_enabled==0) {
-        	                        audio_valor_enviar_sonido += da_amplitud_speaker_ql();
-                	        }
-
-                        	else {
-                                	audio_valor_enviar_sonido += get_value_beeper_sum_array();
-	                                beeper_new_line();
-        	                }
-			}
-				*/
-
-
-                        //}
-
-			//else {
-			//	//Si no hay vsync sound, beeper sound off, forzamos que hay silencio de beepr
-			//	beeper_silence_detection_counter=SILENCE_DETECTION_MAX;
-			//}
 
 
 
@@ -581,6 +499,8 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 * read addresses
 pc_intr equ     $18021  bits 4..0 set as pending level 2 interrupts
 */
+
+      //Sirve para algo esto????
 			ql_pc_intr |=31;
 			m68k_set_irq(2);
 			//Esto acaba generando llamadas a leer PC_INTR		Interrupt register
@@ -649,42 +569,10 @@ pc_intr equ     $18021  bits 4..0 set as pending level 2 interrupts
 						interrupcion_non_maskable_generada.v=0;
 
 
-						/*
-
-
-						//NMI wait 14 estados
-						t_estados += 14;
-
-
-                                                z80_byte reg_pc_h,reg_pc_l;
-                                                reg_pc_h=value_16_to_8h(reg_pc);
-                                                reg_pc_l=value_16_to_8l(reg_pc);
-
-						//3 estados
-                                                poke_byte(--reg_sp,reg_pc_h);
-						//3 estados
-                                                poke_byte(--reg_sp,reg_pc_l);
-
-
-						reg_r++;
-						iff1.v=0;
-						//printf ("Calling NMI with pc=0x%x\n",reg_pc);
-
-						//Otros 6 estados
-						t_estados += 6;
-
-						//Total NMI: NMI WAIT 14 estados + NMI CALL 12 estados
-						reg_pc= 0x66;
-
-						//temp
-
-						t_estados -=15;
-
-						*/
 
 					}
 
-					//else {
+
 					if (1==1) {
 
 
@@ -695,50 +583,7 @@ pc_intr equ     $18021  bits 4..0 set as pending level 2 interrupts
 						//Tratar interrupciones maskable
 
 
-						/*
-                                                //INT wait 10 estados. Valor de pruebas
-                                                t_estados += 10;
 
-						interrupcion_maskable_generada.v=0;
-
-						z80_byte reg_pc_h,reg_pc_l;
-						reg_pc_h=value_16_to_8h(reg_pc);
-						reg_pc_l=value_16_to_8l(reg_pc);
-
-						poke_byte(--reg_sp,reg_pc_h);
-						poke_byte(--reg_sp,reg_pc_l);
-
-						reg_r++;
-
-						iff1.v=0;
-
-
-
-						//IM0/1
-						if (im_mode==0 || im_mode==1) {
-                                                        reg_pc=56;
-                                                        //oficial:
-							t_estados += 7;
-
-							t_estados -=6;
-
-
-
-						}
-						else {
-						//IM 2.
-
-							z80_int temp_i;
-							z80_byte dir_l,dir_h;
-							temp_i=reg_i*256+255;
-							dir_l=peek_byte(temp_i++);
-							dir_h=peek_byte(temp_i);
-							reg_pc=value_8_to_16(dir_h,dir_l);
-							t_estados += 7 ;
-
-						}
-
-						*/
 
 					}
 				}
@@ -746,7 +591,7 @@ pc_intr equ     $18021  bits 4..0 set as pending level 2 interrupts
 
 			}
 
-                }
+  }
 
 
 }
