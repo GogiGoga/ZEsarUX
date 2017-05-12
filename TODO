@@ -1,3 +1,18 @@
+
+---
+Estado funciones microdrive QL a 12 Mayo:
+-En IO.OPEN, cuando se abre nombre "mdv"* retorno correctamente valor de "no error", pero tambien espera un valor de job id creado.
+Quiza ese job id tiene que ser mismo valor de D1?
+En cualquier caso, modifique o no valor de D1, acaba retornando error de "error in expression" y se queda en un bucle de lectura de teclado (y no lee teclado)
+Hago que abra el menu como si saltase un breakpoint cuando se abre un "mdv"*
+
+Si pruebo a retornar error "not found" se muestra correctamnete "not found" y se vuelve a quedar en el bucle dichoso colgado
+
+Puede que se cuelgue en ese bucle porque al volver del trap de la interrupcion no se restauran correctamente algunos registros
+
+-- Fin estado funciones microdrive QL
+
+
 -cosas para la version 5.1
 
 -control menu raton no va bien en xwindows?
