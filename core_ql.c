@@ -57,6 +57,9 @@ extern unsigned char ql_pc_intr;
 
 int refresca=0;
 
+
+char ql_nombre_archivo_load[255];
+
 void core_ql_trap_one(void)
 {
 
@@ -76,6 +79,10 @@ void core_ql_trap_one(void)
 
 unsigned int pre_io_open_a[8];
 unsigned int pre_io_open_d[8];
+
+
+unsigned int pre_fs_headr_a[8];
+unsigned int pre_fs_headr_d[8];
 
 void ql_store_a_registers(unsigned int *destino, int ultimo)
 {
@@ -167,11 +174,28 @@ void core_ql_trap_three(void)
 
     case 0x47:
       debug_printf (VERBOSE_PARANOID,"Trap 3: FS.HEADR");
+      //Guardar registros
+      ql_store_a_registers(pre_fs_headr_a,7);
+      ql_store_d_registers(pre_fs_headr_d,7);
     break;
 
     case 0x48:
-      debug_printf (VERBOSE_PARANOID,"Trap 3: FS.LOAD");
-      sleep(5);
+      debug_printf (VERBOSE_PARANOID,"Trap 3: FS.LOAD. Lenght: %d Channel: %d Addres: %05XH"
+          ,m68k_get_reg(NULL,M68K_REG_D2),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1)  );
+      //D2.L length of file. A0 channellD. A1 base address for load
+      sleep(2);
+      /*
+      Prueba cargar bytes
+      */
+
+      if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
+        debug_printf (VERBOSE_PARANOID,"Loading file %s",ql_nombre_archivo_load);
+        //void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
+
+        //longitud la saco del propio archivo, ya que no me llega bien de momento pues no retornaba bien fs.headr
+        int longitud=get_file_size(ql_nombre_archivo_load);
+        load_binary_file(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
+      }
     break;
 
     default:
@@ -322,7 +346,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 */
     if (get_pc_register()==0x032B4) {
       //en A0
-      char nombre_archivo[255];
+      //char ql_nombre_archivo_load[255];
       int reg_a0=m68k_get_reg(NULL,M68K_REG_A0);
       int longitud_nombre=peek_byte_z80_moto(reg_a0)*256+peek_byte_z80_moto(reg_a0+1);
       reg_a0 +=2;
@@ -332,12 +356,12 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       int i=0;
       for (;longitud_nombre;longitud_nombre--) {
         c=peek_byte_z80_moto(reg_a0++);
-        nombre_archivo[i++]=c;
+        ql_nombre_archivo_load[i++]=c;
         //printf ("%c",c);
       }
       //printf ("\n");
-      nombre_archivo[i++]=0;
-      debug_printf (VERBOSE_PARANOID,"Channel name: %s",nombre_archivo);
+      ql_nombre_archivo_load[i++]=0;
+      debug_printf (VERBOSE_PARANOID,"Channel name: %s",ql_nombre_archivo_load);
       //sleep(1);
 
       //Hacer que si es mdv1_ ... volver
@@ -348,7 +372,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       //set-register pc=5eh. apunta a un rte
       char *buscar="mdv";
       char *encontrado;
-      encontrado=util_strcasestr(nombre_archivo, buscar);
+      encontrado=util_strcasestr(ql_nombre_archivo_load, buscar);
       if (encontrado) {
         debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything");
 
@@ -402,7 +426,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         */
 
 
-        //No error. Si no se asigna D0, se cuelga igualmente pero no da el error "error in expression"
+        //No error.
         m68k_set_reg(M68K_REG_D0,0);
 
         //Probar retornar Not found (NF)
@@ -425,7 +449,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         catch_breakpoint_index=0;
         menu_breakpoint_exception.v=1;
         menu_abierto=1;
-        sprintf (catch_breakpoint_message,"Opened file %s",nombre_archivo);
+        sprintf (catch_breakpoint_message,"Opened file %s",ql_nombre_archivo_load);
         printf ("Abrimos menu\n");
 
         //sleep(5);
@@ -442,7 +466,29 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
       core_ql_trap_three();
     }
 
+    //Quiza Trap 3 FS.HEADR acaba saltando a 0337C move.l  A0, D7
+    if (get_pc_register()==0x0337C) {
+        debug_printf (VERBOSE_PARANOID,"FS.HEADR. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
 
+        //Si canal es el mio ficticio 100
+        if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
+          ql_restore_d_registers(pre_fs_headr_d,7);
+          ql_restore_a_registers(pre_fs_headr_a,6);
+
+          //Volver de ese trap
+          m68k_set_reg(M68K_REG_PC,0x5e);
+          int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
+          reg_a7 +=12;
+          m68k_set_reg(M68K_REG_A7,reg_a7);
+
+          //No error.
+          m68k_set_reg(M68K_REG_D0,0);
+
+          //D1.W length of header read. A1 top of read buffer
+          m68k_set_reg(M68K_REG_D1,10); //Cuanto ocupa una cabecera??? 10 por ejemplo
+
+        }
+    }
 
 		if (0==1) { }
 
