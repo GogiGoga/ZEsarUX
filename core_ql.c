@@ -309,6 +309,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 
         //Como decir no error
         /*
+        pg 11 qltm.pdf
         When the TRAP operation is complete, control is returned to the program at the location following the TRAP instruction,
         with an error key in all 32 bits of D0. This key is set to zero if the operation has been completed successfully,
         and is set to a negative number for any of the system-defined errors (see section 17.1 for a list of the meanings
@@ -320,12 +321,27 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
         //No error
         m68k_set_reg(M68K_REG_D0,0);
 
+        //D1= Job ID. TODO. Parece que da error "error in expression" porque no se asigna un job id valido?
+        //Parece que D1 vuelve con -1
+        m68k_set_reg(M68K_REG_D1,0); //Valor de D1 inventado
+        /*
+
+        */
+
         //Parece que no sirve de mucho, despues de hacer esto se queda en un bucle de:
         //Trap 3. D0=04H A0=00000000H: IO.EDLIN
         //Trap 3. D0=07H A0=00000000H: IO.SSTRG
         //Eso tanto con dir mdv1_ o con lbytes mdv1_archivo,xxxx
 
-        sleep(5);
+        //Hacer saltar el menu como si fuese breakpoint debugger
+        //Tener en cuenta que la accion del breakpoint 0 sea nula, sino no se abriria el menu
+        catch_breakpoint_index=0;
+        menu_breakpoint_exception.v=1;
+        menu_abierto=1;
+        sprintf (catch_breakpoint_message,"Opened file %s",nombre_archivo);
+        printf ("Abrimos menu\n");
+
+        //sleep(5);
       }
 
     }

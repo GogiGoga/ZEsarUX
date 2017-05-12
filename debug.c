@@ -472,6 +472,7 @@ void debug_printf (int debuglevel, const char * format , ...)
 
 	//en el caso de stdout, no aparecera ventana igualmente, pero el error ya se vera por consola
         if (!strcmp(scr_driver_name,"stdout")) return;
+        if (!strcmp(scr_driver_name,"simpletext")) return;
         if (!strcmp(scr_driver_name,"null")) return;
         if (!strcmp(scr_driver_name,"")) return;
         sprintf (pending_error_message,"%s",buffer_inicial);
