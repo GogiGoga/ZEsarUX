@@ -183,7 +183,7 @@ void core_ql_trap_two(void)
       break;
 
       default:
-      debug_printf (VERBOSE_PARANOID,"Unknown trap");
+        debug_printf (VERBOSE_PARANOID,"Unknown trap");
       break;
 
     }
@@ -503,9 +503,8 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
 
 
+        //Volver de ese trap
         m68k_set_reg(M68K_REG_PC,0x5e);
-
-
         //Ajustar stack para volver
         int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
         reg_a7 +=12;
@@ -606,11 +605,6 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
           ql_restore_d_registers(pre_fs_load_d,7);
           ql_restore_a_registers(pre_fs_load_a,6);
-
-          //sleep(2);
-          /*
-          Prueba cargar bytes
-          */
 
           unsigned int longitud=m68k_get_reg(NULL,M68K_REG_D2);
 
