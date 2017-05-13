@@ -472,6 +472,8 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       if (encontrado) {
         debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything");
 
+        //ql_debug_force_breakpoint("En FS.LOAD");
+
 /*
 069CC movea.l A1, A0                              |L069CC MOVEA.L A1,A0
 069CE move.w  (A6,A1.l), -(A7)                    |       MOVE.W  $00(A6,A1.L),-(A7)
