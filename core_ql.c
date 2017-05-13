@@ -529,7 +529,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         m68k_set_reg(M68K_REG_D0,0);
 
         if (!si_existe_archivo(ql_nombre_archivo_load)) {
-
+          debug_printf(VERBOSE_PARANOID,"File %s not found",ql_nombre_archivo_load)
           //Retornar Not found (NF)
           m68k_set_reg(M68K_REG_D0,-7);
         }

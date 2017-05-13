@@ -6,6 +6,8 @@
 
 Estado a 13 de Mayo
 -tanto lrun como load programa en basic borra la pantalla e inicializa  el basic pero no llama a cargar datos de microdrive
+muestran misma basura por pantalla que salia cuando tenia el trap de boot
+-si existe un archivo llamado "MDV1_BOOT" acaba sacando la misma basura por pantalla
 -lbytes funciona perfectamente
 
 Estado funciones microdrive QL a 12 Mayo segunda parte
