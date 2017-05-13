@@ -13,7 +13,7 @@ muestran misma basura por pantalla que salia cuando tenia el trap de boot
 -Quiza fallan load, lrun porque intenta buscar algo en memoria de la informacion del canal abierto (100)
 Como obtener 18.3 SuperBASIC Variables? pagina 161
 Quiza hay que llamar a mt.inf, luego ver valor sv_basic en esa tabla
-Quiza system variables esta cerca de 259754? este 259754 puede ser SV_RAMT
+Quiza system variables esta cerca de 259754? este 259754 puede ser SV_RAMT -> Parece que no
 
 
 Pagina 55
