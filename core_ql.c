@@ -60,17 +60,29 @@ int refresca=0;
 
 char ql_nombre_archivo_load[255];
 
+void ql_debug_force_breakpoint(char *message)
+{
+  catch_breakpoint_index=0;
+  menu_breakpoint_exception.v=1;
+  menu_abierto=1;
+  sprintf (catch_breakpoint_message,"%s",message);
+  printf ("Abrimos menu\n");
+}
+
 void core_ql_trap_one(void)
 {
 
+  debug_printf (VERBOSE_PARANOID,"Trap 1. D0=%02XH A0=%08XH A1=%08XH PC=%05XH is : ",
+    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_PC));
+
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
 
-      /*case 1:
-
-      break;*/
+      case 0x10:
+        debug_printf (VERBOSE_PARANOID,"Trap 1: MT.DMODE");
+      break;
 
       default:
-        debug_printf (VERBOSE_PARANOID,"Trap 1. D0=%02XH",m68k_get_reg(NULL,M68K_REG_D0));
+        debug_printf (VERBOSE_PARANOID,"Unknown trap");
       break;
 
     }
@@ -83,6 +95,9 @@ unsigned int pre_io_open_d[8];
 
 unsigned int pre_fs_headr_a[8];
 unsigned int pre_fs_headr_d[8];
+
+unsigned int pre_fs_load_a[8];
+unsigned int pre_fs_load_d[8];
 
 void ql_store_a_registers(unsigned int *destino, int ultimo)
 {
@@ -157,11 +172,69 @@ void core_ql_trap_two(void)
 
 }
 
+void ql_get_file_header(char *nombre,unsigned int destino)
+{
+  /*
+  pagina 38. 7.0 Directory Device Drivers
+  Each file is assumed to have a 64-byte header (the logical beginning of file is set to byte 64, not byte zero). This header should be formatted as follows:
+
+  00  long        file length
+  04  byte        file access key (not yet implemented - currently always zero)
+  05  byte        file type
+  06  8 bytes     file type-dependent information
+  0E  2+36 bytes  filename
+  34 long         reserved for update date (not yet implemented)
+  38 long         reserved for reference date (not yet implemented)
+  3c long         reserved for backup date (not yet implemented)
+
+  The current file types allowed are: 2, which is a relocatable object file;
+  1, which is an executable program;
+  255 is a directory;
+  and 0 which is anything else
+
+  In the case of file type 1,the first longword of type-dependent information holds
+  the default size of the data space for the program.
+
+  Ejecutable quiere decir binario??
+  Si es un basic, es tipo 0?
+
+  */
+
+  debug_printf(VERBOSE_PARANOID,"Returning header for file %s on address %05XH",nombre,destino);
+
+  //Inicializamos cabecera a 0
+  int i;
+  for (i=0;i<64;i++) ql_writebyte(destino+i,0);
+
+  unsigned int tamanyo=get_file_size(nombre);
+  //Guardar tamanyo big endian
+  ql_writebyte(destino+0,(tamanyo>>24)&255);
+  ql_writebyte(destino+1,(tamanyo>>16)&255);
+  ql_writebyte(destino+2,(tamanyo>>8)&255);
+  ql_writebyte(destino+3,tamanyo&255);
+
+  //Tipo
+  ql_writebyte(destino+5,0); //ejecutable 1
+
+  //Nombre. de momento me lo invento para ir rapido
+  ql_writebyte(destino+0xe,0); //longitud nombre en big endian
+  ql_writebyte(destino+0xf,4); //longitud nombre en big endian
+
+  ql_writebyte(destino+0x10,'p');
+  ql_writebyte(destino+0x11,'e');
+  ql_writebyte(destino+0x12,'p');
+  ql_writebyte(destino+0x13,'e');
+
+  //Falta el "default size of the data space for the program" ?
+
+
+}
+
 void core_ql_trap_three(void)
 {
 
-  debug_printf (VERBOSE_PARANOID,"Trap 3. D0=%02XH A0=%08XH PC=%05XH is : ",
-    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_PC));
+  debug_printf (VERBOSE_PARANOID,"Trap 3. D0=%02XH A0=%08XH A1=%08XH PC=%05XH is : ",
+    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_PC));
 
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
     case 0x4:
@@ -177,25 +250,22 @@ void core_ql_trap_three(void)
       //Guardar registros
       ql_store_a_registers(pre_fs_headr_a,7);
       ql_store_d_registers(pre_fs_headr_d,7);
+
+
     break;
 
     case 0x48:
-      debug_printf (VERBOSE_PARANOID,"Trap 3: FS.LOAD. Lenght: %d Channel: %d Addres: %05XH"
+      debug_printf (VERBOSE_PARANOID,"Trap 3: FS.LOAD. Lenght: %d Channel: %d Address: %05XH"
           ,m68k_get_reg(NULL,M68K_REG_D2),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1)  );
       //D2.L length of file. A0 channellD. A1 base address for load
-      sleep(2);
-      /*
-      Prueba cargar bytes
-      */
 
-      if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
-        debug_printf (VERBOSE_PARANOID,"Loading file %s",ql_nombre_archivo_load);
-        //void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
+      ql_debug_force_breakpoint("En FS.LOAD");
 
-        //longitud la saco del propio archivo, ya que no me llega bien de momento pues no retornaba bien fs.headr
-        int longitud=get_file_size(ql_nombre_archivo_load);
-        load_binary_file(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
-      }
+      //Guardar registros
+      ql_store_a_registers(pre_fs_load_a,7);
+      ql_store_d_registers(pre_fs_load_d,7);
+
+
     break;
 
     default:
@@ -467,17 +537,22 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
     }
 
     //Quiza Trap 3 FS.HEADR acaba saltando a 0337C move.l  A0, D7
-    if (get_pc_register()==0x0337C) {
+    if (get_pc_register()==0x0337C && m68k_get_reg(NULL,M68K_REG_D0)==0x47) {
         debug_printf (VERBOSE_PARANOID,"FS.HEADR. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
 
         //Si canal es el mio ficticio 100
         if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
+          //Devolver cabecera. Se supone que el sistema operativo debe asignar espacio para la cabecera? Posiblemente si.
+          //Forzamos meter cabecera en espacio de memoria de pantalla a ver que pasa
+          ql_get_file_header(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1));
+          //ql_get_file_header(ql_nombre_archivo_load,131072); //131072=pantalla
+
           ql_restore_d_registers(pre_fs_headr_d,7);
           ql_restore_a_registers(pre_fs_headr_a,6);
 
           //Volver de ese trap
           m68k_set_reg(M68K_REG_PC,0x5e);
-          int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
+          unsigned int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
           reg_a7 +=12;
           m68k_set_reg(M68K_REG_A7,reg_a7);
 
@@ -485,10 +560,71 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
           m68k_set_reg(M68K_REG_D0,0);
 
           //D1.W length of header read. A1 top of read buffer
-          m68k_set_reg(M68K_REG_D1,10); //Cuanto ocupa una cabecera??? 10 por ejemplo
+          m68k_set_reg(M68K_REG_D1,64);
+
+          //Decimos que A1 es A1 top of read buffer
+          unsigned int reg_a1=m68k_get_reg(NULL,M68K_REG_A1);
+          reg_a1 +=64;
+          m68k_set_reg(M68K_REG_A1,reg_a1);
+
+
+          //Le decimos en A1 que la cabecera esta en la memoria de pantalla
+          //m68k_set_reg(M68K_REG_A1,131072);
 
         }
     }
+
+
+
+    //FS.LOAD
+    if (get_pc_register()==0x0337C && m68k_get_reg(NULL,M68K_REG_D0)==0x48) {
+        debug_printf (VERBOSE_PARANOID,"FS.LOAD. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
+
+        //Si canal es el mio ficticio 100
+        if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
+
+          ql_restore_d_registers(pre_fs_load_d,7);
+          ql_restore_a_registers(pre_fs_load_a,6);
+
+          sleep(2);
+          /*
+          Prueba cargar bytes
+          */
+
+          unsigned int longitud=m68k_get_reg(NULL,M68K_REG_D2);
+
+
+            debug_printf (VERBOSE_PARANOID,"Loading file %s at address %05XH with lenght: %d",ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
+            //void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
+
+            //longitud la saco del propio archivo, ya que no me llega bien de momento pues no retornaba bien fs.headr
+            //int longitud=get_file_size(ql_nombre_archivo_load);
+            load_binary_file(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
+
+
+
+          //Volver de ese trap
+          m68k_set_reg(M68K_REG_PC,0x5e);
+          unsigned int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
+          reg_a7 +=12;
+          m68k_set_reg(M68K_REG_A7,reg_a7);
+
+          //No error.
+          m68k_set_reg(M68K_REG_D0,0);
+
+
+          //Decimos que A1 es A1 top address after load
+          unsigned int reg_a1=m68k_get_reg(NULL,M68K_REG_A1);
+          reg_a1 +=longitud;
+          m68k_set_reg(M68K_REG_A1,reg_a1);
+
+
+          //Le decimos en A1 que la cabecera esta en la memoria de pantalla
+          //m68k_set_reg(M68K_REG_A1,131072);
+
+        }
+    }
+
 
 		if (0==1) { }
 

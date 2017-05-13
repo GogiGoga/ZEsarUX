@@ -59,6 +59,7 @@ extern unsigned char ql_mc_stat;
 
 extern unsigned char ql_readbyte_no_ports(unsigned int Address);
 extern void ql_writebyte_no_ports(unsigned int Address,unsigned char valor);
+extern void ql_writebyte(unsigned int Address, unsigned char Data);
 extern void ql_ipc_reset(void);
 
 //Funciones legacy solo para interceptar posibles llamadas a poke, peek etc en caso de motorola

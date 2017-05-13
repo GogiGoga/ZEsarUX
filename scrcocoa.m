@@ -915,7 +915,7 @@ NSPoint locationInView = [self convertPoint:[event locationInWindow]
 	}
 
 
-                        debug_printf (VERBOSE_PARANOID,"Mouse motion. X: %d Y:%d kempston x: %d y: %d",mouse_x,mouse_y,kempston_mouse_x,kempston_mouse_y);
+                        //debug_printf (VERBOSE_PARANOID,"Mouse motion. X: %d Y:%d kempston x: %d y: %d",mouse_x,mouse_y,kempston_mouse_x,kempston_mouse_y);
 }
 
 - (BOOL)acceptsFirstResponder {
