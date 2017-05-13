@@ -49,7 +49,7 @@
 
 
 //Numero de canal ficticio para archivos que se abran mdv o flp, para distinguirlos de los que gestiona el sistema
-#define QL_ID_CANAL_INVENTADO_MICRODRIVE 100000
+#define QL_ID_CANAL_INVENTADO_MICRODRIVE 100
 
 z80_byte byte_leido_core_ql;
 char buffer_disassemble[100000];
@@ -75,13 +75,22 @@ void core_ql_trap_one(void)
 
   //Ver pagina 173. 18.14 Trap Keys
 
-  debug_printf (VERBOSE_PARANOID,"Trap 1. D0=%02XH A0=%08XH A1=%08XH PC=%05XH is : ",
-    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_PC));
+  debug_printf (VERBOSE_PARANOID,"Trap 1. D0=%02XH D1=%02XH A0=%08XH A1=%08XH A6=%08XH PC=%05XH is : ",
+    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_D1),m68k_get_reg(NULL,M68K_REG_A0),
+    m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_A6),m68k_get_reg(NULL,M68K_REG_PC));
 
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
 
       case 0x10:
         debug_printf (VERBOSE_PARANOID,"Trap 1: MT.DMODE");
+      break;
+
+      case 0x11:
+        debug_printf (VERBOSE_PARANOID,"Trap 1: MT.IPCOM");
+      break;
+
+      case 0x16:
+        debug_printf (VERBOSE_PARANOID,"Trap 1: MT.ALBAS allocate BASIC area");
       break;
 
       case 0x17:
