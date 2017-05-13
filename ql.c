@@ -673,12 +673,12 @@ if ( (columna>=0 && fila>=0) || ql_pressed_backspace) {
 
 	}
 	else {
-		debug_printf (VERBOSE_PARANOID,"Repeating key");
+		//debug_printf (VERBOSE_PARANOID,"Repeating key");
 		ql_ipc_last_nibble_to_read[0]=ql_ipc_last_nibble_to_read[1]=ql_ipc_last_nibble_to_read[2]=ql_ipc_last_nibble_to_read[3]=ql_ipc_last_nibble_to_read[4]=ql_ipc_last_nibble_to_read[5]=0;
 	}
 }
 else {
-	debug_printf (VERBOSE_PARANOID,"Unknown key");
+	//debug_printf (VERBOSE_PARANOID,"Unknown key");
 	ql_mantenido_pulsada_tecla=0;
 	ql_ipc_last_nibble_to_read[0]=ql_ipc_last_nibble_to_read[1]=ql_ipc_last_nibble_to_read[2]=ql_ipc_last_nibble_to_read[3]=ql_ipc_last_nibble_to_read[4]=0;
 }
@@ -690,7 +690,9 @@ else {
 
 					//printf ("Ultimo pc_intr: %d\n",temp_pcintr);
 
-				for (i=0;i<ql_ipc_last_nibble_to_read_length;i++) debug_printf (VERBOSE_PARANOID,"Return IPC values:[%d] = %02XH",i,ql_ipc_last_nibble_to_read[i]);
+				for (i=0;i<ql_ipc_last_nibble_to_read_length;i++) {
+					//debug_printf (VERBOSE_PARANOID,"Return IPC values:[%d] = %02XH",i,ql_ipc_last_nibble_to_read[i]);
+				}
 
 }
 
@@ -812,7 +814,9 @@ ipc..wp equ     6       return state of p26, currently not connected
 							//Si tecla no pulsada
 							if (!ql_pulsado_tecla()) ql_ipc_last_nibble_to_read[0]=4;
 
-							else debug_printf (VERBOSE_DEBUG,"Write ipc command 1: Report input status pressed key");
+							else {
+								//debug_printf (VERBOSE_DEBUG,"Write ipc command 1: Report input status pressed key");
+							}
 							//if ((puerto_49150&1)) ql_ipc_last_nibble_to_read[0]=4;
 
 							//printf ("Valor a retornar: %d\n",ql_ipc_last_nibble_to_read[0]&15);
@@ -823,7 +827,7 @@ ipc..wp equ     6       return state of p26, currently not connected
 
 						case 8:
 
-							debug_printf (VERBOSE_DEBUG,"Write ipc command 8: Read key. PC=%08XH",get_pc_register() );
+							//debug_printf (VERBOSE_DEBUG,"Write ipc command 8: Read key. PC=%08XH",get_pc_register() );
 
 							ql_ipc_write_ipc_teclado();
 
@@ -992,7 +996,7 @@ XL00352 EQU L00352
 			ql_pc_intr=0;
 			//if ((puerto_49150&1)==0) ql_pc_intr |=2;
 			if (ql_pulsado_tecla() ) {
-				debug_printf (VERBOSE_DEBUG,"Read PC_INTR pressed key");
+				//debug_printf (VERBOSE_DEBUG,"Read PC_INTR pressed key");
 				ql_pc_intr |=2;
 			}
 			//printf ("------------Retornando %d\n",ql_pc_intr);

@@ -49,7 +49,7 @@
 
 
 //Numero de canal ficticio para archivos que se abran mdv o flp, para distinguirlos de los que gestiona el sistema
-#define QL_ID_CANAL_INVENTADO_MICRODRIVE 100
+#define QL_ID_CANAL_INVENTADO_MICRODRIVE 100000
 
 z80_byte byte_leido_core_ql;
 char buffer_disassemble[100000];
@@ -382,10 +382,10 @@ set-register pc=04B50h
 
     */
     //TODO: saltar esta llamada de manera mas elegante
-    if ( get_pc_register()==0x04B4C) {
+    /*if ( get_pc_register()==0x04B4C) {
       debug_printf(VERBOSE_DEBUG,"QL Trap ROM: Skipping MDV1 boot");
       m68k_set_reg(M68K_REG_PC,0x04B50);
-    }
+    }*/
 
 
     /* Lectura de tecla */
@@ -394,7 +394,7 @@ set-register pc=04B50h
       //Temp solo cuando se pulsa enter
       //if ((puerto_49150&1)==0) {
       if (ql_pulsado_tecla()) {
-        debug_printf(VERBOSE_DEBUG,"QL Trap ROM: Tell one key pressed");
+        //debug_printf(VERBOSE_DEBUG,"QL Trap ROM: Tell one key pressed");
         m68k_set_reg(M68K_REG_D7,0x01);
       }
       else {
@@ -407,7 +407,7 @@ set-register pc=04B50h
     if (get_pc_register()==0x02E6A) {
       //if ((puerto_49150&1)==0) {
       if (ql_pulsado_tecla()) {
-        debug_printf(VERBOSE_DEBUG,"QL Trap ROM: Tell 1 key pressed");
+        //debug_printf(VERBOSE_DEBUG,"QL Trap ROM: Tell 1 key pressed");
         m68k_set_reg(M68K_REG_D1,1);
         //L02E6A MOVE.B  D1,D5         * d1=d5=d4 : number of bytes in buffer
       }
