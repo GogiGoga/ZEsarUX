@@ -6276,10 +6276,14 @@ Spectrum Cassette Blocks
         return 0;
 }
 
-
-void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
+//Retorna 0 si ok
+//1 si archivo no encontrado
+//2 si error leyendo
+int load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
 {
+  int returncode=0;
 
+  if (!si_existe_archivo(binary_file_load)) return 1;
 
                 if (MACHINE_IS_SPECTRUM) {
                   if (valor_leido_longitud==0 || valor_leido_longitud>65536) valor_leido_longitud=65536;
@@ -6301,6 +6305,7 @@ void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor
                                   if (!ptr_binaryfile_load)
                                 {
                                       debug_printf (VERBOSE_ERR,"Unable to open Binary file %s",binary_file_load);
+                                      returncode=2;
 
                                   }
                                 else {
@@ -6321,6 +6326,9 @@ void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor
                                   fclose(ptr_binaryfile_load);
 
                                 }
+
+    return returncode;
+
 }
 
 

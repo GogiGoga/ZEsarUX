@@ -48,7 +48,8 @@
 #include "ula.h"
 
 
-
+//Numero de canal ficticio para archivos que se abran mdv o flp, para distinguirlos de los que gestiona el sistema
+#define QL_ID_CANAL_INVENTADO_MICRODRIVE 100
 
 z80_byte byte_leido_core_ql;
 char buffer_disassemble[100000];
@@ -380,7 +381,7 @@ saltamos ese trap
 set-register pc=04B50h
 
     */
-
+    //TODO: saltar esta llamada de manera mas elegante
     if ( get_pc_register()==0x04B4C) {
       debug_printf(VERBOSE_DEBUG,"QL Trap ROM: Skipping MDV1 boot");
       m68k_set_reg(M68K_REG_PC,0x04B50);
@@ -470,9 +471,9 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       char *encontrado;
       encontrado=util_strcasestr(ql_nombre_archivo_load, buscar);
       if (encontrado) {
-        debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything");
+        debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything because file is mdv*");
 
-        //ql_debug_force_breakpoint("En FS.LOAD");
+        //ql_debug_force_breakpoint("En IO.OPEN");
 
 /*
 069CC movea.l A1, A0                              |L069CC MOVEA.L A1,A0
@@ -510,7 +511,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
 
         //Metemos channel id (A0) inventado
-        m68k_set_reg(M68K_REG_A0,100);
+        m68k_set_reg(M68K_REG_A0,QL_ID_CANAL_INVENTADO_MICRODRIVE);
 
         //Como decir no error
         /*
@@ -527,8 +528,11 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         //No error.
         m68k_set_reg(M68K_REG_D0,0);
 
-        //Probar retornar Not found (NF)
-        //m68k_set_reg(M68K_REG_D0,-7);
+        if (!si_existe_archivo(ql_nombre_archivo_load)) {
+
+          //Retornar Not found (NF)
+          m68k_set_reg(M68K_REG_D0,-7);
+        }
 
         //D1= Job ID. TODO. Parece que da error "error in expression" porque no se asigna un job id valido?
         //Parece que D1 entra con -1, que quiere decir "the channel will be associated with the current job"
@@ -537,20 +541,6 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
         */
 
-        //Parece que no sirve de mucho, despues de hacer esto se queda en un bucle de:
-        //Trap 3. D0=04H A0=00000000H: IO.EDLIN
-        //Trap 3. D0=07H A0=00000000H: IO.SSTRG
-        //Eso tanto con dir mdv1_ o con lbytes mdv1_archivo,xxxx
-
-        //Hacer saltar el menu como si fuese breakpoint debugger
-        //Tener en cuenta que la accion del breakpoint 0 sea nula, sino no se abriria el menu
-        /*catch_breakpoint_index=0;
-        menu_breakpoint_exception.v=1;
-        menu_abierto=1;
-        sprintf (catch_breakpoint_message,"Opened file %s",ql_nombre_archivo_load);
-        printf ("Abrimos menu\n");*/
-
-        //sleep(5);
       }
 
     }
@@ -569,7 +559,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         debug_printf (VERBOSE_PARANOID,"FS.HEADR. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
 
         //Si canal es el mio ficticio 100
-        if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
+        if (m68k_get_reg(NULL,M68K_REG_A0)==QL_ID_CANAL_INVENTADO_MICRODRIVE) {
           //Devolver cabecera. Se supone que el sistema operativo debe asignar espacio para la cabecera? Posiblemente si.
           //Forzamos meter cabecera en espacio de memoria de pantalla a ver que pasa
           ql_get_file_header(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1));
@@ -609,12 +599,12 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         debug_printf (VERBOSE_PARANOID,"FS.LOAD. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
 
         //Si canal es el mio ficticio 100
-        if (m68k_get_reg(NULL,M68K_REG_A0)==100) {
+        if (m68k_get_reg(NULL,M68K_REG_A0)==QL_ID_CANAL_INVENTADO_MICRODRIVE) {
 
           ql_restore_d_registers(pre_fs_load_d,7);
           ql_restore_a_registers(pre_fs_load_a,6);
 
-          sleep(2);
+          //sleep(2);
           /*
           Prueba cargar bytes
           */
@@ -639,6 +629,8 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
           //No error.
           m68k_set_reg(M68K_REG_D0,0);
+
+          //m68k_set_reg(M68K_REG_D0,-7);
 
 
           //Decimos que A1 es A1 top address after load

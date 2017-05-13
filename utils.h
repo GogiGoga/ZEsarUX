@@ -369,7 +369,7 @@ extern int convert_p_to_rwa(char *origen, char *destino);
 extern int convert_tap_to_rwa(char *origen, char *destino);
 extern z80_bit quickload_guessing_tzx_type;
 
-extern void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud);
+extern int load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud);
 extern void parse_customfile_options(void);
 extern void parse_custom_file_config(char *archivo);
 

@@ -750,7 +750,7 @@ struct s_items_ayuda items_ayuda[]={
 	},
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
-				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 5 next opcodes on cpu stepping. "
+				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 8 next opcodes on cpu stepping. "
 				"Bit 2: Do not add a L preffix when searching source code labels"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
@@ -1230,7 +1230,7 @@ void remote_get_regs_disassemble(int misocket)
 
   //Y desensamblar direccion donde apunta el PC
 	int lineas=1;
-	if (remote_debug_settings&2) lineas=5;
+	if (remote_debug_settings&2) lineas=8;
   remote_disassemble(misocket,get_pc_register(),lineas,1 );
 
 }
