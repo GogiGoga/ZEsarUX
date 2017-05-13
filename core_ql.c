@@ -180,9 +180,6 @@ void core_ql_trap_two(void)
 
       case 2:
         debug_printf(VERBOSE_PARANOID,"Trap 1. IO.CLOSE");
-        //Open a channel. IO.OPEN Guardo todos registros A y D yo internamente de D2,D3,A2,A3 para restaurarlos despues de que se hace el trap de microdrive
-        ql_store_a_registers(pre_io_open_a,7);
-        ql_store_d_registers(pre_io_open_d,7);
       break;
 
       default:
@@ -502,12 +499,18 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
         ql_restore_d_registers(pre_io_open_d,7);
         ql_restore_a_registers(pre_io_open_a,6);
+        //ql_restore_a_registers(pre_io_open_a,7);
+
 
 
         m68k_set_reg(M68K_REG_PC,0x5e);
+
+
+        //Ajustar stack para volver
         int reg_a7=m68k_get_reg(NULL,M68K_REG_A7);
         reg_a7 +=12;
         m68k_set_reg(M68K_REG_A7,reg_a7);
+
 
 
         //Metemos channel id (A0) inventado
@@ -529,7 +532,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         m68k_set_reg(M68K_REG_D0,0);
 
         if (!si_existe_archivo(ql_nombre_archivo_load)) {
-          debug_printf(VERBOSE_PARANOID,"File %s not found",ql_nombre_archivo_load)
+          debug_printf(VERBOSE_PARANOID,"File %s not found",ql_nombre_archivo_load);
           //Retornar Not found (NF)
           m68k_set_reg(M68K_REG_D0,-7);
         }
