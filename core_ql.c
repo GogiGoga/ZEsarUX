@@ -49,7 +49,7 @@
 
 
 //Numero de canal ficticio para archivos que se abran mdv o flp, para distinguirlos de los que gestiona el sistema
-#define QL_ID_CANAL_INVENTADO_MICRODRIVE 100
+#define QL_ID_CANAL_INVENTADO_MICRODRIVE 1
 
 z80_byte byte_leido_core_ql;
 char buffer_disassemble[100000];
@@ -81,8 +81,14 @@ void core_ql_trap_one(void)
 
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
 
+      case 0x01:
+        debug_printf (VERBOSE_PARANOID,"Trap 1: MT.INF");
+        //ql_debug_force_breakpoint("despues MT.INF");
+      break;
+
       case 0x10:
         debug_printf (VERBOSE_PARANOID,"Trap 1: MT.DMODE");
+        //ql_debug_force_breakpoint("despues DMODE");
       break;
 
       case 0x11:

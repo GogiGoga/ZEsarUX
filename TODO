@@ -10,20 +10,21 @@ muestran misma basura por pantalla que salia cuando tenia el trap de boot
 -si existe un archivo llamado "MDV1_BOOT" acaba sacando la misma basura por pantalla
 -lbytes funciona perfectamente
 
-Estado funciones microdrive QL a 12 Mayo segunda parte
-Ya carga bytes, aunque header retorna basura y parece no afectarle
+-Quiza fallan load, lrun porque intenta buscar algo en memoria de la informacion del canal abierto (100)
+Como obtener 18.3 SuperBASIC Variables? pagina 161
+Quiza hay que llamar a mt.inf, luego ver valor sv_basic en esa tabla
+Quiza system variables esta cerca de 259754? este 259754 puede ser SV_RAMT
 
 
-Estado funciones microdrive QL a 12 Mayo:
--En IO.OPEN, cuando se abre nombre "mdv"* retorno correctamente valor de "no error", pero tambien espera un valor de job id creado.
-Quiza ese job id tiene que ser mismo valor de D1?
-En cualquier caso, modifique o no valor de D1, acaba retornando error de "error in expression" y se queda en un bucle de lectura de teclado (y no lee teclado)
-Hago que abra el menu como si saltase un breakpoint cuando se abre un "mdv"*
+Pagina 55
+9.11 The Channel Table
+A channel number (#n) is an index to an entry in the SuperBASIC channel table. This is a table of items which are each of length CH.LENCH (currently $28) bytes. The base of the table is at BV_CHBAS(A6), and the top is at BV_CHP(A6); thus the base of the entry for channel #n is given by:
+(n*CH.LENCH+BV_CHBAS(A6)) (A6)
+The format of each table entry is as follows:
 
-Si pruebo a retornar error "not found" se muestra correctamnete "not found" y se vuelve a quedar en el bucle dichoso colgado
 
-Puede que se cuelgue en ese bucle porque al volver del trap de la interrupcion no se restauran correctamente algunos registros
-Igualmente hago que al volver de ese trap se conserve correctamente A2, A3, D2, D3 e igualmente falla
+
+
 
 -- Fin estado funciones microdrive QL
 
