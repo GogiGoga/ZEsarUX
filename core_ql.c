@@ -72,6 +72,8 @@ void ql_debug_force_breakpoint(char *message)
 void core_ql_trap_one(void)
 {
 
+  //Ver pagina 173. 18.14 Trap Keys
+
   debug_printf (VERBOSE_PARANOID,"Trap 1. D0=%02XH A0=%08XH A1=%08XH PC=%05XH is : ",
     m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_PC));
 
@@ -80,6 +82,11 @@ void core_ql_trap_one(void)
       case 0x10:
         debug_printf (VERBOSE_PARANOID,"Trap 1: MT.DMODE");
       break;
+
+      case 0x17:
+        debug_printf (VERBOSE_PARANOID,"Trap 1: MT.REBAS release BASIC area");
+      break;
+
 
       default:
         debug_printf (VERBOSE_PARANOID,"Unknown trap");
@@ -156,16 +163,29 @@ void core_ql_trap_two(void)
 
   //int reg_a0;
 
+  //Ver pagina 173. 18.14 Trap Keys
+
+  debug_printf (VERBOSE_PARANOID,"Trap 1. D0=%02XH A0=%08XH A1=%08XH PC=%05XH is : ",
+    m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_PC));
+
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
 
       case 1:
+        debug_printf(VERBOSE_PARANOID,"Trap 1. IO.OPEN");
+        //Open a channel. IO.OPEN Guardo todos registros A y D yo internamente de D2,D3,A2,A3 para restaurarlos despues de que se hace el trap de microdrive
+        ql_store_a_registers(pre_io_open_a,7);
+        ql_store_d_registers(pre_io_open_d,7);
+      break;
+
+      case 2:
+        debug_printf(VERBOSE_PARANOID,"Trap 1. IO.CLOSE");
         //Open a channel. IO.OPEN Guardo todos registros A y D yo internamente de D2,D3,A2,A3 para restaurarlos despues de que se hace el trap de microdrive
         ql_store_a_registers(pre_io_open_a,7);
         ql_store_d_registers(pre_io_open_d,7);
       break;
 
       default:
-      debug_printf (VERBOSE_PARANOID,"Trap 2. D0=%02XH",m68k_get_reg(NULL,M68K_REG_D0));
+      debug_printf (VERBOSE_PARANOID,"Unknown trap");
       break;
 
     }
@@ -233,10 +253,16 @@ void ql_get_file_header(char *nombre,unsigned int destino)
 void core_ql_trap_three(void)
 {
 
+//Ver pagina 173. 18.14 Trap Keys
+
   debug_printf (VERBOSE_PARANOID,"Trap 3. D0=%02XH A0=%08XH A1=%08XH PC=%05XH is : ",
     m68k_get_reg(NULL,M68K_REG_D0),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1),m68k_get_reg(NULL,M68K_REG_PC));
 
   switch(m68k_get_reg(NULL,M68K_REG_D0)) {
+    case 0x2:
+      debug_printf(VERBOSE_PARANOID,"Trap 3: IO.FLINE. fetch a line of bytes");
+    break;
+
     case 0x4:
       debug_printf (VERBOSE_PARANOID,"Trap 3: IO.EDLIN");
     break;
@@ -259,7 +285,7 @@ void core_ql_trap_three(void)
           ,m68k_get_reg(NULL,M68K_REG_D2),m68k_get_reg(NULL,M68K_REG_A0),m68k_get_reg(NULL,M68K_REG_A1)  );
       //D2.L length of file. A0 channellD. A1 base address for load
 
-      ql_debug_force_breakpoint("En FS.LOAD");
+      //ql_debug_force_breakpoint("En FS.LOAD");
 
       //Guardar registros
       ql_store_a_registers(pre_fs_load_a,7);
@@ -414,7 +440,7 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 032B4 subq.b  #1, D0
 
 */
-    if (get_pc_register()==0x032B4) {
+    if (get_pc_register()==0x032B4 && m68k_get_reg(NULL,M68K_REG_D0)==1) {
       //en A0
       //char ql_nombre_archivo_load[255];
       int reg_a0=m68k_get_reg(NULL,M68K_REG_A0);
