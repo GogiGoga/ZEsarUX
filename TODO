@@ -3,6 +3,11 @@
 
 
 ---
+
+Estado a 13 de Mayo
+-tanto lrun como load programa en basic borra la pantalla e inicializa  el basic pero no llama a cargar datos de microdrive
+-lbytes funciona perfectamente
+
 Estado funciones microdrive QL a 12 Mayo segunda parte
 Ya carga bytes, aunque header retorna basura y parece no afectarle
 
