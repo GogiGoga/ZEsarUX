@@ -164,7 +164,7 @@ short sine_table[FRECUENCIA_CONSTANTE_NORMAL_SONIDO];
 
 //z80_bit turbosound_enabled={0};
 
-int total_ay_chips=3;
+int total_ay_chips=1;
 
 //Chip de sonido activo (0 o 1)
 int ay_chip_selected=0;

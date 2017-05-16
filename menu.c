@@ -20924,7 +20924,8 @@ void menu_settings_audio(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_ayuda(array_menu_settings_audio,"Enable Turbosound");
 			*/
 
-			menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_change_ay_chips,NULL,"Total AY Chips: %d",total_ay_chips);
+			menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_change_ay_chips,NULL,"Total AY Chips: %d %s",total_ay_chips,
+				(total_ay_chips==2 ? "Turbosound" : "") );
 
 
 
