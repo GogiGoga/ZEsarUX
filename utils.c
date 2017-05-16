@@ -2985,7 +2985,7 @@ int util_write_configfile(void)
   if (spritechip_enabled.v)                   ADD_STRING_CONFIG,"--enablezgx");
   if (beeper_enabled.v==0)                    ADD_STRING_CONFIG,"--disablebeeper");
   if (beeper_real_enabled==0)                 ADD_STRING_CONFIG,"--disablerealbeeper");
-  if (total_ay_chips>1)                       ADD_STRING_CONFIG,"--totalaychips %d");
+  if (ay_retorna_numero_chips()>1)            ADD_STRING_CONFIG,"--totalaychips %d",ay_retorna_numero_chips() );
   if (specdrum_enabled.v)                     ADD_STRING_CONFIG,"--enablespecdrum");
   if (snow_effect_enabled.v)                  ADD_STRING_CONFIG,"--snoweffect");
   if (audiovolume!=100)                       ADD_STRING_CONFIG,"--audiovolume %d",audiovolume);

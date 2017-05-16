@@ -7103,6 +7103,9 @@ void menu_ay_registers_overlay(void)
 
 	int total_chips=ay_retorna_numero_chips();
 
+	//Como maximo mostrarmos 3 canales ay
+	if (total_chips>3) total_chips=3;
+
 	int chip;
 
 	int linea=0;
@@ -7135,6 +7138,10 @@ void menu_ay_registers_overlay(void)
 			sprintf (textotono,"Channel C:  %3s %7d Hz",get_note_name(freq_c),freq_c);
 			menu_escribe_linea_opcion(linea++,-1,1,textotono);
 
+
+			//Si hay 3 canales, los 3 siguientes items no se ven
+			if (total_chips<3) {
+
 			                        //Frecuencia ruido
                         int freq_temp=ay_3_8912_registros[chip][6] & 31;
                         //printf ("Valor registros ruido : %d Hz\n",freq_temp);
@@ -7164,8 +7171,9 @@ void menu_ay_registers_overlay(void)
 			int freq_env_decimal=freq_envelope-(freq_env_10*10);
 
 			sprintf (textotono,"Freq Envelope:   %4d.%1d Hz",freq_env_10,freq_env_decimal);
+      menu_escribe_linea_opcion(linea++,-1,1,textotono);
 
-                        menu_escribe_linea_opcion(linea++,-1,1,textotono);
+
 
 			char envelope_name[32];
 			z80_byte env_type=ay_3_8912_registros[chip][13] & 0x0F;
@@ -7173,17 +7181,26 @@ void menu_ay_registers_overlay(void)
 			sprintf (textotono,"Env.: %2d (%s)",env_type,envelope_name);
                         menu_escribe_linea_opcion(linea++,-1,1,textotono);
 
+
+			}
+
+
+
 			sprintf (textotono,"Tone Channels:  %c %c %c",
 				( (ay_3_8912_registros[chip][7]&1)==0 ? 'A' : ' '),
 				( (ay_3_8912_registros[chip][7]&2)==0 ? 'B' : ' '),
 				( (ay_3_8912_registros[chip][7]&4)==0 ? 'C' : ' '));
 			menu_escribe_linea_opcion(linea++,-1,1,textotono);
 
+			//Si hay 3 canales, los 3 siguientes items no se ven
+			if (total_chips<3) {
+
                         sprintf (textotono,"Noise Channels: %c %c %c",
                                 ( (ay_3_8912_registros[chip][7]&8)==0  ? 'A' : ' '),
                                 ( (ay_3_8912_registros[chip][7]&16)==0 ? 'B' : ' '),
                                 ( (ay_3_8912_registros[chip][7]&32)==0 ? 'C' : ' '));
                         menu_escribe_linea_opcion(linea++,-1,1,textotono);
+			}
 
 	}
 
@@ -7200,8 +7217,11 @@ void menu_ay_registers(MENU_ITEM_PARAMETERS)
 					return;
 				}
 
-        if (ay_retorna_numero_chips()==1) menu_dibuja_ventana(1,5,30,14,"AY Registers");
-	else menu_dibuja_ventana(1,0,30,24,"AY Registers");
+				int total_chips=ay_retorna_numero_chips();
+				if (total_chips>3) total_chips=3;
+
+        if (total_chips==1) menu_dibuja_ventana(1,5,30,14,"AY Registers");
+				else menu_dibuja_ventana(1,0,30,24,"AY Registers");
 
         z80_byte acumulado;
 
@@ -7661,6 +7681,8 @@ void menu_ay_pianokeyboard_overlay(void)
 
 	int total_chips=ay_retorna_numero_chips();
 
+	if (total_chips>2) total_chips=2;
+
 	int chip;
 
 	int linea=1;
@@ -7716,16 +7738,21 @@ void menu_ay_pianokeyboard(MENU_ITEM_PARAMETERS)
 					return;
 				}
 
+				int  total_chips=ay_retorna_numero_chips();
+				if (total_chips>2) total_chips=2;
+
 				if (!si_mostrar_ay_piano_grafico()) {
 					//Dibujar ay piano con texto
-        	if (ay_retorna_numero_chips()==1) menu_dibuja_ventana(9,7,14,11,"AY Piano");
+
+
+        	if (total_chips==1) menu_dibuja_ventana(9,7,14,11,"AY Piano");
 					else menu_dibuja_ventana(9,2,14,20,"AY Piano");
 				}
 				//#define PIANO_GRAPHIC_BASE_X 7
 				//#define PIANO_GRAPHIC_BASE_Y 7
 				else {
 					//Dibujar ay piano con grafico
-					if (ay_retorna_numero_chips()==1) {
+					if (total_chips==1) {
 						piano_graphic_base_y=5;
 						menu_dibuja_ventana(PIANO_GRAPHIC_BASE_X,piano_graphic_base_y,14,13,"AY Piano");
 					}
