@@ -60,7 +60,7 @@ Drivers audio:
 -probar autodetect WRX mode on ZX80/81
 -probar chroma81 en zx81
 -probar chip sonido AY, en spectrum (ay y fuller) y zx81 (quicksilva(asteroids, defenda zx80)  y bi-pak (aydemo, pink panther...))
--probar turbosound
+-probar turbosound, 3 chips ay
 -probar specdrum
 -probar opcion ay speech on/off con chase hq por ejemplo
 -probar view ay keyboard con media/spectrum/myself/testpiano.tap  y demos turbosound

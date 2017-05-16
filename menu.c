@@ -7305,7 +7305,7 @@ void menu_ay_pianokeyboard_insert_inverse(char *origen_orig, int indice)
 int piano_graphic_base_y=0;
 
 
-//Escala alto en vertical teclado piano segun si ay chip>2
+//Escala alto en vertical teclado piano segun si ay chip>2, para que el teclado sea mas pequeñito
 int scale_y_chip(int y)
 {
 	if (ay_retorna_numero_chips()<3) return y;
@@ -7703,10 +7703,7 @@ void menu_ay_pianokeyboard_overlay(void)
 	//Max 3 ay chips
 	if (total_chips>3) total_chips=3;
 
-	if (!si_mostrar_ay_piano_grafico()) {
-		//Dibujar ay piano con texto. Maximo dos chips
-		if (total_chips>2) total_chips=2;
-	}
+
 
 	//if (total_chips>2) total_chips=2;
 
@@ -7737,17 +7734,24 @@ void menu_ay_pianokeyboard_overlay(void)
 			if (ay_3_8912_registros[chip][7]&2 || ay_3_8912_registros[chip][9]==0) nota_b[0]=0;
 			if (ay_3_8912_registros[chip][7]&4 || ay_3_8912_registros[chip][10]==0) nota_c[0]=0;
 
+			int incremento_linea=3;
+
+			if (!si_mostrar_ay_piano_grafico()) {
+				//Dibujar ay piano con texto. Comprimir el texto (quitar linea de entre medio) cuando hay 3 chips
+				if (total_chips>2) incremento_linea=2;
+			}
+
 
 			menu_ay_pianokeyboard_draw_piano(linea,canal,nota_a);
-			linea+=3;
+			linea+=incremento_linea;
 			canal++;
 
 			menu_ay_pianokeyboard_draw_piano(linea,canal,nota_b);
-			linea+=3;
+			linea+=incremento_linea;
 			canal++;
 
 			menu_ay_pianokeyboard_draw_piano(linea,canal,nota_c);
-			linea+=3;
+			linea+=incremento_linea;
 			canal++;
 
 	}
@@ -7770,11 +7774,10 @@ void menu_ay_pianokeyboard(MENU_ITEM_PARAMETERS)
 				if (total_chips>3) total_chips=3;
 
 				if (!si_mostrar_ay_piano_grafico()) {
-					//Dibujar ay piano con texto. Maximo dos chips
-					if (total_chips>2) total_chips=2;
 
 					if (total_chips==1) menu_dibuja_ventana(9,7,14,11,"AY Piano");
-          else menu_dibuja_ventana(9,2,14,20,"AY Piano");
+          else if (total_chips==2) menu_dibuja_ventana(9,2,14,20,"AY Piano");
+					else if (total_chips==3) menu_dibuja_ventana(9,1,14,22,"AY Piano");
 
 				}
 				//#define PIANO_GRAPHIC_BASE_X 7
