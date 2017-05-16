@@ -7331,6 +7331,19 @@ void menu_ay_pianokeyboard_draw_graphical_piano_draw_pixel_zoom(int x,int y,int 
 
 }
 
+//Escala alto en vertical teclado piano segun si ay chip>2
+int scale_y_chip(int y)
+{
+	if (ay_retorna_numero_chips()<3) return y;
+
+	//Casos:
+	//3,4,7,8,29
+
+	//temp
+	return y;
+}
+
+
 //Basandome en coordenadas basicas sin zoom
 void menu_ay_pianokeyboard_draw_graphical_piano_draw_line(int x, int y, int stepx, int stepy, int length, int color)
 {
@@ -7739,14 +7752,16 @@ void menu_ay_pianokeyboard(MENU_ITEM_PARAMETERS)
 				}
 
 				int  total_chips=ay_retorna_numero_chips();
-				if (total_chips>2) total_chips=2;
+				//Max 3 ay chips
+				if (total_chips>3) total_chips=3;
 
 				if (!si_mostrar_ay_piano_grafico()) {
-					//Dibujar ay piano con texto
+					//Dibujar ay piano con texto. Maximo dos chips
+					if (total_chips>2) total_chips=2;
 
+					if (total_chips==1) menu_dibuja_ventana(9,7,14,11,"AY Piano");
+          else menu_dibuja_ventana(9,2,14,20,"AY Piano");
 
-        	if (total_chips==1) menu_dibuja_ventana(9,7,14,11,"AY Piano");
-					else menu_dibuja_ventana(9,2,14,20,"AY Piano");
 				}
 				//#define PIANO_GRAPHIC_BASE_X 7
 				//#define PIANO_GRAPHIC_BASE_Y 7
@@ -7756,9 +7771,14 @@ void menu_ay_pianokeyboard(MENU_ITEM_PARAMETERS)
 						piano_graphic_base_y=5;
 						menu_dibuja_ventana(PIANO_GRAPHIC_BASE_X,piano_graphic_base_y,14,13,"AY Piano");
 					}
-					else {
+					else if (total_chips==2) {
 						piano_graphic_base_y=1;
 						menu_dibuja_ventana(PIANO_GRAPHIC_BASE_X,piano_graphic_base_y,14,22,"AY Piano");
+					}
+
+					else if (total_chips==3) {
+						piano_graphic_base_y=0;
+						menu_dibuja_ventana(PIANO_GRAPHIC_BASE_X,piano_graphic_base_y,14,24,"AY Piano");
 					}
 				}
 
