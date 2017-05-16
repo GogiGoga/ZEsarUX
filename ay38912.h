@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -24,8 +24,8 @@
 
 #include "cpu.h"
 
-//Chips ay presentes
-#define NUMERO_AY_CHIPS 2
+//Maximo Chips ay presentes
+#define MAX_AY_CHIPS 3
 
 extern z80_bit ay_chip_present;
 extern void out_port_ay(z80_int puerto,z80_byte value);
@@ -38,7 +38,7 @@ extern z80_bit ay_envelopes_enabled;
 extern z80_byte ay_3_8912_registro_sel[];
 
 
-extern z80_byte ay_3_8912_registros[NUMERO_AY_CHIPS][16];
+extern z80_byte ay_3_8912_registros[][16];
 
 //1'7734*1000000 (Hz) en Spectrum
 //En Amstrad, 1 MHz
@@ -77,11 +77,13 @@ extern z80_bit autoenable_ay_chip;
 
 extern void return_envelope_name(int value,char *string);
 
-extern z80_bit turbosound_enabled;
+//extern z80_bit turbosound_enabled;
+extern int total_ay_chips;
 
 extern void turbosound_disable(void);
 extern void turbosound_enable(void);
 extern int ay_retorna_numero_chips(void);
+extern void set_total_ay_chips(int total);
 
 extern int ay_chip_selected;
 

@@ -7943,12 +7943,12 @@ void menu_audio_beep_volume(MENU_ITEM_PARAMETERS)
         output_beep_filter_volume=v;
 }
 
-void menu_audio_turbosound(MENU_ITEM_PARAMETERS)
+/*void menu_audio_turbosound(MENU_ITEM_PARAMETERS)
 {
 	if (turbosound_enabled.v) turbosound_disable();
 	else turbosound_enable();
 }
-
+*/
 
 /*
 
@@ -8408,44 +8408,7 @@ void menu_audio_settings(MENU_ITEM_PARAMETERS)
 					menu_add_item_menu_format(array_menu_audio_settings,MENU_OPCION_NORMAL,menu_ay_player_player,NULL,"AY ~~Player");
 					menu_add_item_menu_shortcut(array_menu_audio_settings,'p');
 
-/*
-		menu_add_item_menu_inicial_format(&array_menu_audio_settings,MENU_OPCION_NORMAL,menu_audio_volume,NULL,"Audio Output ~~Volume: %d %%", audiovolume);
-		menu_add_item_menu_shortcut(array_menu_audio_settings,'v');
 
-		menu_add_item_menu_format(array_menu_audio_settings,MENU_OPCION_NORMAL,menu_audio_ay_chip,NULL,"~~AY Chip: %s", (ay_chip_present.v==1 ? "On" : "Off"));
-		menu_add_item_menu_shortcut(array_menu_audio_settings,'a');
-		menu_add_item_menu_tooltip(array_menu_audio_settings,"Enable AY Chip on this machine");
-		menu_add_item_menu_ayuda(array_menu_audio_settings,"It enables the AY Chip for the machine, by activating the following hardware:\n"
-					"-Normal AY Chip for Spectrum\n"
-					"-Fuller audio box for Spectrum\n"
-					"-Quicksilva QS Sound board on ZX80/81\n"
-					"-Bi-Pak ZON-X81 Sound on ZX80/81\n"
-			);
-
-		menu_add_item_menu_format(array_menu_audio_settings,MENU_OPCION_NORMAL,menu_audio_turbosound,NULL,"~~Turbosound: %s",(turbosound_enabled.v==1 ? "On" : "Off"));
-
-		menu_add_item_menu_shortcut(array_menu_audio_settings,'t');
-		menu_add_item_menu_tooltip(array_menu_audio_settings,"Enable Turbosound");
-		menu_add_item_menu_ayuda(array_menu_audio_settings,"Enable Turbosound");
-
-
-		menu_add_item_menu_format(array_menu_audio_settings,MENU_OPCION_NORMAL,menu_audio_ay_chip_autoenable,NULL,"Autoenable AY Chip: %s",(autoenable_ay_chip.v==1 ? "On" : "Off"));
-		menu_add_item_menu_tooltip(array_menu_audio_settings,"Enable AY Chip automatically when it is needed");
-		menu_add_item_menu_ayuda(array_menu_audio_settings,"This option is usefor for example on Spectrum 48k games that uses AY Chip "
-					"and for some ZX80/81 games that also uses it (Bi-Pak ZON-X81, but not Quicksilva QS Sound board)");
-
-
-		menu_add_item_menu_format(array_menu_audio_settings,MENU_OPCION_NORMAL,menu_audio_envelopes,menu_cond_ay_chip,"AY ~~Envelopes: %s", (ay_envelopes_enabled.v==1 ? "On" : "Off"));
-		menu_add_item_menu_shortcut(array_menu_audio_settings,'e');
-		menu_add_item_menu_tooltip(array_menu_audio_settings,"Enable or disable volume envelopes for the AY Chip");
-		menu_add_item_menu_ayuda(array_menu_audio_settings,"Enable or disable volume envelopes for the AY Chip");
-
-		menu_add_item_menu_format(array_menu_audio_settings,MENU_OPCION_NORMAL,menu_audio_speech,menu_cond_ay_chip,"AY ~~Speech: %s", (ay_speech_enabled.v==1 ? "On" : "Off"));
-		menu_add_item_menu_shortcut(array_menu_audio_settings,'s');
-		menu_add_item_menu_tooltip(array_menu_audio_settings,"Enable or disable AY Speech effects");
-		menu_add_item_menu_ayuda(array_menu_audio_settings,"These effects are used, for example, in Chase H.Q.");
-
-		*/
 
 
 
@@ -20924,6 +20887,14 @@ void menu_audio_beeper(MENU_ITEM_PARAMETERS)
 	beeper_enabled.v ^=1;
 }
 
+void menu_audio_change_ay_chips(MENU_ITEM_PARAMETERS)
+{
+	if (total_ay_chips==MAX_AY_CHIPS) total_ay_chips=1;
+	else total_ay_chips++;
+
+	ay_chip_selected=0;
+}
+
 void menu_settings_audio(MENU_ITEM_PARAMETERS)
 {
         menu_item *array_menu_settings_audio;
@@ -20945,11 +20916,16 @@ void menu_settings_audio(MENU_ITEM_PARAMETERS)
 					"-Bi-Pak ZON-X81 Sound on ZX80/81\n"
 			);
 
+			/*
 		menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_turbosound,NULL,"~~Turbosound: %s",(turbosound_enabled.v==1 ? "On" : "Off"));
 
 		menu_add_item_menu_shortcut(array_menu_settings_audio,'t');
 		menu_add_item_menu_tooltip(array_menu_settings_audio,"Enable Turbosound");
 		menu_add_item_menu_ayuda(array_menu_settings_audio,"Enable Turbosound");
+			*/
+
+			menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_change_ay_chips,NULL,"Total AY Chips: %d",total_ay_chips);
+
 
 
 		menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_ay_chip_autoenable,NULL,"Autoenable AY Chip: %s",(autoenable_ay_chip.v==1 ? "On" : "Off"));

@@ -1128,7 +1128,7 @@ printf (
 		"--disableenvelopes         Disable AY Envelopes\n"
 		"--disablebeeper            Disable Beeper\n"
     "--disablerealbeeper        Disable real Beeper sound\n"
-		"--enableturbosound         Enable Turbo Sound emulation\n"
+		"--totalaychips  n          Number of ay chips. Default 1\n"
 		"--enablespecdrum           Enable Specdrum emulation\n"
 		"--audiovolume n            Sets the audio output volume to percentage n\n"
 		"--zx8081vsyncsound         Enable vsync/tape sound on ZX80/81\n"
@@ -2684,7 +2684,8 @@ void set_machine_params(void)
 		//Chloe 280SE lleva turbosound
 		if (MACHINE_IS_CHLOE_280SE) {
 		        ay_chip_selected=0;
-		        turbosound_enabled.v=1;
+		        //turbosound_enabled.v=1;
+						total_ay_chips=2;
 		}
 
 
@@ -4718,8 +4719,15 @@ void parse_cmdline_options(void) {
 				beeper_enabled.v=0;
 			}
 
-			else if (!strcmp(argv[puntero_parametro],"--enableturbosound")) {
-                                turbosound_enabled.v=1;
+			else if (!strcmp(argv[puntero_parametro],"--totalaychips")) {
+				siguiente_parametro_argumento();
+				int valor=atoi(argv[puntero_parametro]);
+
+				if (valor>MAX_AY_CHIPS || valor<1) {
+					printf ("Invalid ay chip value\n");
+					exit (1);
+				}
+        set_total_ay_chips(valor);
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--enablespecdrum")) {

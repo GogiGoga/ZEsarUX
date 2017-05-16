@@ -1084,8 +1084,9 @@ void zxuno_set_emulator_setting_devcontrol_ditay(void)
         z80_byte ditay=zxuno_ports[0x0E]&2;
         debug_printf (VERBOSE_INFO,"Apply DEVCONTROL.DITAY change: %s",(ditay ? "disabled" : "enabled") );
 
-        if (ditay) turbosound_disable();
-        else turbosound_enable();
+        if (ditay) set_total_ay_chips(1);
+        else set_total_ay_chips(2);
+
 }
 
 

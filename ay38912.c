@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -162,7 +162,9 @@ short sine_table[FRECUENCIA_CONSTANTE_NORMAL_SONIDO];
 
 
 
-z80_bit turbosound_enabled={0};
+//z80_bit turbosound_enabled={0};
+
+int total_ay_chips=3;
 
 //Chip de sonido activo (0 o 1)
 int ay_chip_selected=0;
@@ -171,45 +173,45 @@ int ay_chip_selected=0;
 //Variables que dependen del chip activo
 //
 //16 BYTES Contenido de los registros del chip de sonido
-z80_byte ay_3_8912_registros[NUMERO_AY_CHIPS][16];
+z80_byte ay_3_8912_registros[MAX_AY_CHIPS][16];
 
 //Ultimo registro seleccionado por el puerto 65533
-z80_byte ay_3_8912_registro_sel[NUMERO_AY_CHIPS];
+z80_byte ay_3_8912_registro_sel[MAX_AY_CHIPS];
 
 //frecuencia de canal de envelope
-int freq_envelope[NUMERO_AY_CHIPS];
+int freq_envelope[MAX_AY_CHIPS];
 
 //contador de canal de ruido .... (FRECUENCIA_CONSTANTE_NORMAL_SONIDO/freq_ruido)
-int contador_envelope[NUMERO_AY_CHIPS];
+int contador_envelope[MAX_AY_CHIPS];
 
-int ciclo_envolvente[NUMERO_AY_CHIPS];
+int ciclo_envolvente[MAX_AY_CHIPS];
 
-int ciclo_envolvente_10_14_signo[NUMERO_AY_CHIPS];
+int ciclo_envolvente_10_14_signo[MAX_AY_CHIPS];
 
 //frecuencia de cada canal
-int freq_tono_A[NUMERO_AY_CHIPS],freq_tono_B[NUMERO_AY_CHIPS],freq_tono_C[NUMERO_AY_CHIPS];
+int freq_tono_A[MAX_AY_CHIPS],freq_tono_B[MAX_AY_CHIPS],freq_tono_C[MAX_AY_CHIPS];
 
 //contador de cada canal... (FRECUENCIA_CONSTANTE_NORMAL_SONIDO/freq_tono)
-int contador_tono_A[NUMERO_AY_CHIPS],contador_tono_B[NUMERO_AY_CHIPS],contador_tono_C[NUMERO_AY_CHIPS];
+int contador_tono_A[MAX_AY_CHIPS],contador_tono_B[MAX_AY_CHIPS],contador_tono_C[MAX_AY_CHIPS];
 
 //ultimo valor enviado para cada canal, valores con signo:
-short ultimo_valor_tono_A[NUMERO_AY_CHIPS];
-short ultimo_valor_tono_B[NUMERO_AY_CHIPS];
-short ultimo_valor_tono_C[NUMERO_AY_CHIPS];
+short ultimo_valor_tono_A[MAX_AY_CHIPS];
+short ultimo_valor_tono_B[MAX_AY_CHIPS];
+short ultimo_valor_tono_C[MAX_AY_CHIPS];
 
-char ultimo_valor_envolvente[NUMERO_AY_CHIPS];
+char ultimo_valor_envolvente[MAX_AY_CHIPS];
 
 //frecuencia de canal de ruido
-int freq_ruido[NUMERO_AY_CHIPS];
+int freq_ruido[MAX_AY_CHIPS];
 
 //contador de canal de ruido .... (FRECUENCIA_CONSTANTE_NORMAL_SONIDO/freq_ruido)
-int contador_ruido[NUMERO_AY_CHIPS];
+int contador_ruido[MAX_AY_CHIPS];
 
 //ultimo valor enviado para canal de ruido. valor con signo:
-short ultimo_valor_ruido[NUMERO_AY_CHIPS];
+short ultimo_valor_ruido[MAX_AY_CHIPS];
 
 //valor randomize
-z80_int randomize_noise[NUMERO_AY_CHIPS];
+z80_int randomize_noise[MAX_AY_CHIPS];
 
 //
 //Fin variables que dependen del chip activo
@@ -250,7 +252,7 @@ void init_chip_ay(void)
 	//resetear valores de cada chip
 	int chip;
 
-	for (chip=0;chip<NUMERO_AY_CHIPS;chip++) {
+	for (chip=0;chip<MAX_AY_CHIPS;chip++) {
 
 		//resetear valores de puertos de sonido
 		int r;
@@ -302,7 +304,7 @@ float sineval,radians;
 		radians=radians/((float)(FRECUENCIA_CONSTANTE_NORMAL_SONIDO));
 		sineval=sin(radians);
 		sine_table[i]=32767*sineval;
-		
+
 		debug_printf (VERBOSE_DEBUG,"i=%d radians=%f sine=%f value=%d",i,radians,sineval,sine_table[i]);
 	}
 
@@ -311,6 +313,7 @@ float sineval,radians;
 
 }
 
+/*
 void turbosound_disable(void)
 {
 	debug_printf (VERBOSE_INFO,"Disabling Turbosound");
@@ -325,7 +328,16 @@ void turbosound_enable(void)
 	turbosound_enabled.v=1;
 	init_chip_ay();
 }
-	
+*/
+
+void set_total_ay_chips(int total)
+{
+
+	if (total>MAX_AY_CHIPS || total<1) cpu_panic("Invalid value for ay chips");
+
+	ay_chip_selected=0;
+	total_ay_chips=total;
+}
 
 void ay_randomize(int chip)
 {
@@ -453,7 +465,7 @@ COMMENT !
 
 		else volumen=15;
 	}
-                
+
 
 	//if (volumen>15) printf ("  Error volumen >15\n");
         valor=valor*volume_table[volumen];
@@ -579,7 +591,7 @@ ese valor ya se repite por si solo
 			volumen=ciclo_envolvente[ay_chip_selected];
 			break;
 
-		case 10: /*    \./  \./    El . significa un ciclo adicional repitiendo el 0      */  
+		case 10: /*    \./  \./    El . significa un ciclo adicional repitiendo el 0      */
 			if (ciclo_envolvente_10_14_signo[ay_chip_selected]==+1) volumen=15-ciclo_envolvente[ay_chip_selected];
 			else volumen=ciclo_envolvente[ay_chip_selected];
 			break;
@@ -703,20 +715,27 @@ if (ay_chip_present.v==0) return;
 
 
 
-int ay_retorna_numero_chips(void)
+/*int ay_retorna_numero_chips(void)
 {
 	int chips=1;
         if (turbosound_enabled.v) chips++;
 	return chips;
-}
+}*/
 
+
+int ay_retorna_numero_chips(void)
+{
+
+	return total_ay_chips;
+
+}
 
 void ay_chip_siguiente_ciclo(void)
 {
 
 	int chips=ay_retorna_numero_chips();
 	int j;
-	for (j=0;j<chips;j++) {	
+	for (j=0;j<chips;j++) {
 		ay_chip_siguiente_ciclo_siguiente(j);
 	}
 
@@ -754,12 +773,12 @@ z80_byte in_port_ay(z80_byte puerto_h)
                         	ay_3_8912_registros[ay_chip_selected][14]=acumulado;
 
 				//printf ("temp. valor aychip gunstick : %d\n",acumulado);
-				
+
         	        }
 
 		}
 
-		return ay_3_8912_registros[ay_chip_selected][r]; 
+		return ay_3_8912_registros[ay_chip_selected][r];
         }
 
 	return 255;
@@ -781,7 +800,7 @@ void establece_frecuencia_tono(z80_byte indice, int *freq_tono)
 	if (!freq_temp) freq_temp++;
 
         *freq_tono=FRECUENCIA_AY/freq_temp;
-        
+
 	//printf ("Valor freq_tono : %d\n",*freq_tono);
 
 	/* Pruebas notas
@@ -799,8 +818,8 @@ void establece_frecuencia_tono(z80_byte indice, int *freq_tono)
 	1773400/16= 110.837 KHz
 
 	*/
-		
-        
+
+
 	//freq_tono realmente tiene frecuencia*2... dice cada cuando se conmuta de signo
 	//esto ya no hace falta con la tabla... multiplicador=1
 	*freq_tono=(*freq_tono)*TEMP_MULTIPLICADOR;
@@ -836,14 +855,43 @@ void out_port_ay(z80_int puerto,z80_byte value)
 
 	//printf ("Out port ay chip. Puerto: %d Valor: %d\n",puerto,value);
 	if (puerto==65533) {
-		//Ver si seleccion de chip turbosound
-		if (turbosound_enabled.v &&
-		   (value==255 || value==254)
-		) {
+		//Ver si seleccion de chip turbosound o 3 canales AY
+
+		int value_sin_mascara=value & 156; //10011100
+
+		if (total_ay_chips>1 && value_sin_mascara==156) {
+
+		/*the IC selection still the same
+		TS is 111111 XX
+		I suppose 255 value for first chip, 254 for second and 253 for third, right?
+
+		11 to 1st ay, 10 to 2nd, 01 to 3rd and 00 to SID
+		yes
+		I made a change to pan the channels, but you can start with these.
+		TBBlue now uses bit 6 and 5 to pan
+		1LR111XX
+		its compatible with original TS, because the tracas are selected by 111111XX, got it?
+		Example:
+		select 2nd AY with audio on Right side only
+		10111110
+		2nd AY, left side only 11011110
+		3rd AY, both sides: 11111101
+		*/
+
+
+		//if (turbosound_enabled.v &&
+		//   (value==255 || value==254 || value==253)
+		//)
+		//{
+
+			int chip_seleccionado=value&3;
+
 			//printf ("ay chip selection: %d\n",value);
-			if (value==255) ay_chip_selected=0;
-			if (value==254) ay_chip_selected=1;
+			if (chip_seleccionado==3) ay_chip_selected=0;
+			if (chip_seleccionado==2) ay_chip_selected=1;
+			if (chip_seleccionado==1 && total_ay_chips>2) ay_chip_selected=2;
 		}
+
 
 		else {
 
@@ -855,7 +903,7 @@ void out_port_ay(z80_int puerto,z80_byte value)
 	else if (puerto==49149) {
 		//valor a registro
 		ay_3_8912_registros[ay_chip_selected][ay_3_8912_registro_sel[ay_chip_selected]&15]=value;
-	
+
 
 	//imprimir registros
 		/*int r;
@@ -876,15 +924,15 @@ void out_port_ay(z80_int puerto,z80_byte value)
 			establece_frecuencia_tono(0,&freq_tono_A[ay_chip_selected]);
 
 		}
-                
+
                 if (ay_3_8912_registro_sel[ay_chip_selected] ==2 || ay_3_8912_registro_sel[ay_chip_selected] == 3) {
                         //Canal B
 			//establece_frecuencia_tono(2,&freq_tono_B[ay_chip_selected],&contador_tono_B[ay_chip_selected]);
 			establece_frecuencia_tono(2,&freq_tono_B[ay_chip_selected]);
-                        
+
                 }
 
-                
+
                 if (ay_3_8912_registro_sel[ay_chip_selected] ==4 || ay_3_8912_registro_sel[ay_chip_selected] == 5) {
                         //Canal C
 			//establece_frecuencia_tono(4,&freq_tono_C[ay_chip_selected],&contador_tono_C[ay_chip_selected]);
@@ -940,7 +988,7 @@ void out_port_ay(z80_int puerto,z80_byte value)
 
 			SI X=6927
 
-			Minimo valor(maxima frecuencia)=1. 
+			Minimo valor(maxima frecuencia)=1.
 
 			X/1= aprox 6000 Hz
 
@@ -953,15 +1001,15 @@ void out_port_ay(z80_int puerto,z80_byte value)
 
 			*/
 
-        
+
 		        //controlamos divisiones por cero
 			if (!freq_temp) freq_temp++;
 		        freq_envelope[ay_chip_selected]=FRECUENCIA_ENVELOPE/freq_temp;
-        
+
 		        if (freq_envelope[ay_chip_selected]>FRECUENCIA_CONSTANTE_NORMAL_SONIDO) {
 		                //debug_printf (VERBOSE_DEBUG,"Frequency envelope %d out of range",freq_envelope[ay_chip_selected]);
 		                freq_envelope[ay_chip_selected]=FRECUENCIA_CONSTANTE_NORMAL_SONIDO;
-		        }       
+		        }
 
 
         //si la frecuencia del envelope es exactamente igual a la del sonido
@@ -977,8 +1025,8 @@ void out_port_ay(z80_int puerto,z80_byte value)
 		freq_envelope[ay_chip_selected] /=3;
 	}
 
-        
-        
+
+
 		        //debug_printf (VERBOSE_DEBUG,"Frequency envelope *10 : %d Hz",freq_envelope[ay_chip_selected]);
 
 
@@ -1011,4 +1059,3 @@ void activa_ay_chip_si_conviene(void)
 		}
 	}
 }
-
