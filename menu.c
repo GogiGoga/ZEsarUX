@@ -20965,7 +20965,7 @@ void menu_audio_audiodac_set_port(MENU_ITEM_PARAMETERS)
 {
 	char string_port[4];
 
-	sprintf (string_port,"0");
+	sprintf (string_port,"%02XH",audiodac_types[MAX_AUDIODAC_TYPES-1].port);
 
 	menu_ventana_scanf("Port Value",string_port,4);
 
