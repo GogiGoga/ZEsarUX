@@ -363,8 +363,8 @@ void cpu_core_loop_spectrum(void)
 					}
 				}
 
-				if (specdrum_enabled.v) {
-					specdrum_mix();
+				if (audiodac_enabled.v) {
+					audiodac_mix();
 				}
 
 

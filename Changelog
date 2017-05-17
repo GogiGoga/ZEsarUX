@@ -8,6 +8,7 @@ Added QL GUI Style
 Added menu to find and set lives in games
 Added actions commands to breakpoints, so you can run some actions when a breakpoint is fired
 Added up to three AY Chips
+Added emulation of other DAC chips appart from Specdrum: Covox, etc
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Some other minor bugfixes and improvements

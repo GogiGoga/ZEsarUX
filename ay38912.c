@@ -884,12 +884,12 @@ void out_port_ay(z80_int puerto,z80_byte value)
 		//)
 		//{
 
-			int chip_seleccionado=value&3;
+			int value_chip=value&3;
 
 			//printf ("ay chip selection: %d\n",value);
-			if (chip_seleccionado==3) ay_chip_selected=0;
-			if (chip_seleccionado==2) ay_chip_selected=1;
-			if (chip_seleccionado==1 && total_ay_chips>2) ay_chip_selected=2;
+			if (value_chip==3) ay_chip_selected=0;
+			if (value_chip==2) ay_chip_selected=1;
+			if (value_chip==1 && total_ay_chips>2) ay_chip_selected=2;
 		}
 
 

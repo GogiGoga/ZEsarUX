@@ -2986,7 +2986,7 @@ int util_write_configfile(void)
   if (beeper_enabled.v==0)                    ADD_STRING_CONFIG,"--disablebeeper");
   if (beeper_real_enabled==0)                 ADD_STRING_CONFIG,"--disablerealbeeper");
   if (ay_retorna_numero_chips()>1)            ADD_STRING_CONFIG,"--totalaychips %d",ay_retorna_numero_chips() );
-  if (specdrum_enabled.v)                     ADD_STRING_CONFIG,"--enablespecdrum");
+  if (audiodac_enabled.v)                     ADD_STRING_CONFIG,"--enableaudiodac");
   if (snow_effect_enabled.v)                  ADD_STRING_CONFIG,"--snoweffect");
   if (audiovolume!=100)                       ADD_STRING_CONFIG,"--audiovolume %d",audiovolume);
   if (ay_player_exit_emulator_when_finish.v)  ADD_STRING_CONFIG,"--ayplayer-end-exit");

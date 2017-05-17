@@ -186,13 +186,28 @@ extern z80_bit ay_player_repeat_file;
 
 extern z80_bit ay_player_cpc_mode;
 
-extern z80_byte specdrum_last_value_data;
+extern z80_byte audiodac_last_value_data;
 
-extern z80_bit specdrum_enabled;
+extern z80_bit audiodac_enabled;
+
+extern int audiodac_selected_type;
+
+//extern z80_int audiodac_custom_port;
+
+struct s_audiodac_type {
+  char name[20];
+  z80_int port;
+};
+
+typedef struct s_audiodac_type audiodac_type;
+
+#define MAX_AUDIODAC_TYPES 5
+
+extern audiodac_type audiodac_types[];
 
 extern z80_bit beeper_enabled;
 
-extern void specdrum_mix(void);
+extern void audiodac_mix(void);
 
 
 #endif

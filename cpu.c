@@ -1129,7 +1129,7 @@ printf (
 		"--disablebeeper            Disable Beeper\n"
     "--disablerealbeeper        Disable real Beeper sound\n"
 		"--totalaychips  n          Number of ay chips. Default 1\n"
-		"--enablespecdrum           Enable Specdrum emulation\n"
+		"--enableaudiodac           Enable DAC emulation. By default Specdrum\n"
 		"--audiovolume n            Sets the audio output volume to percentage n\n"
 		"--zx8081vsyncsound         Enable vsync/tape sound on ZX80/81\n"
 
@@ -4730,8 +4730,8 @@ void parse_cmdline_options(void) {
         set_total_ay_chips(valor);
 			}
 
-			else if (!strcmp(argv[puntero_parametro],"--enablespecdrum")) {
-																specdrum_enabled.v=1;
+			else if (!strcmp(argv[puntero_parametro],"--enableaudiodac")) {
+																audiodac_enabled.v=1;
 			}
 
 

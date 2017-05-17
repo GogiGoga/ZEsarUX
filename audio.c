@@ -73,9 +73,23 @@ char output_beep_filter_volume=122;
 char audio_valor_enviar_sonido;
 
 
-z80_byte specdrum_last_value_data;
+z80_byte audiodac_last_value_data;
 
-z80_bit specdrum_enabled={0};
+z80_bit audiodac_enabled={0};
+
+//z80_int audiodac_port=0xDF; //Por defecto puerto specdrum
+
+int audiodac_selected_type=0;
+
+
+audiodac_type audiodac_types[MAX_AUDIODAC_TYPES]={
+	{"Specdrum",0xDF},
+	{"Covox Pentagon",0xFB},
+	{"Covox Scorpion",0xDD},
+	{"GS Covox",0xB3},
+	{"Custom",0}
+};
+
 
 //apunta al buffer de audio activo para llenar
 char *audio_buffer=NULL;
@@ -1589,16 +1603,16 @@ void ay_player_stop_player(void)
 }
 
 
-//Mezclar la salida actual de sonido con el specdrum.
-//El specdrum es muy simple, lo que hace es generar un valor de onda de 8 bits signed
-void specdrum_mix(void)
+//Mezclar la salida actual de sonido con el audiodac.
+//El audiodac es muy simple, lo que hace es generar un valor de onda de 8 bits signed
+void audiodac_mix(void)
 {
 	//Pasar valor a signed
-	char valor_signed_specdrum=(specdrum_last_value_data-128);
+	char valor_signed_audiodac=(audiodac_last_value_data-128);
 
 	//Mezclar con el valor de salida
 	int v;
-	v=audio_valor_enviar_sonido+valor_signed_specdrum;
+	v=audio_valor_enviar_sonido+valor_signed_audiodac;
 	v /=2;
 
 	audio_valor_enviar_sonido=v;

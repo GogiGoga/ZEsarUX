@@ -6360,9 +6360,9 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 
 
-	//Specdrum
-	if (specdrum_enabled.v && puerto_l==0xDF) {
-		specdrum_last_value_data=value;
+	//DAC Audio
+	if (audiodac_enabled.v && puerto_l==audiodac_types[audiodac_selected_type].port) {
+		audiodac_last_value_data=value;
 		silence_detection_counter=0;
 	}
 
@@ -6380,10 +6380,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 
 	/*
-	Parece que hay especificados estos otros 3 puertos para specdrum, aunqe no veo que se usen, mas alla de enviar un 80H
+	Parece que hay especificados estos otros 3 puertos para audiodac, aunqe no veo que se usen, mas alla de enviar un 80H
 	en cada canal al cargar la demo. Supuestamente tiene 3 canales pero sumando el DF y estos 3 puertos ya son 4???
 	if (puerto_l==0xFF || puerto_l==0x9f || puerto_l==0xbf) {
-		printf ("Puerto specdrum : %04XH value: %d\n",puerto,value);
+		printf ("Puerto audiodac : %04XH value: %d\n",puerto,value);
 	}*/
 
 //ZEsarUX ZXI ports
@@ -6394,7 +6394,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 
 
-	//debug_printf (VERBOSE_DEBUG,"Out Port %x unknown written with value %x, PC after=0x%x",puerto,value,reg_pc);
+	debug_printf (VERBOSE_DEBUG,"Out Port %x unknown written with value %x, PC after=0x%x",puerto,value,reg_pc);
 }
 
 
