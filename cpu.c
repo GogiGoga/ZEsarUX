@@ -4725,21 +4725,22 @@ void parse_cmdline_options(void) {
 				beeper_enabled.v=0;
 			}
 
-			else if (!strcmp(argv[puntero_parametro],"--totalaychips")
-			|| !strcmp(argv[puntero_parametro],"--turbosound")
-
-			) {
+			else if (!strcmp(argv[puntero_parametro],"--turbosound")) {
 
 				int valor;
 
-				//Opcion obsoleta
-				if (!strcmp(argv[puntero_parametro],"--turbosound")) {
 					//TODO. No aparece en el menu el error
-					avisar_opcion_obsoleta("--turbosound setting is obsolete. Use --totalaychips");
+					avisar_opcion_obsoleta("--turbosound setting is obsolete since version 5.1. Use --totalaychips");
 					valor=2;
-				}
 
-				else {
+				set_total_ay_chips(valor);
+
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--totalaychips")) {
+
+				int valor;
+
 					siguiente_parametro_argumento();
 					valor=atoi(argv[puntero_parametro]);
 
@@ -4747,17 +4748,14 @@ void parse_cmdline_options(void) {
 						printf ("Invalid ay chip value\n");
 						exit (1);
 					}
-				}
+				
         set_total_ay_chips(valor);
-
-
-
 
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--enablespecdrum")) {
 				//TODO. No aparece en el menu el error
-				avisar_opcion_obsoleta("--enablespecdrum setting is obsolete. Use --enableaudiodac");
+				avisar_opcion_obsoleta("--enablespecdrum setting is obsolete since version 5.1. Use --enableaudiodac");
 																audiodac_enabled.v=1;
 			}
 
