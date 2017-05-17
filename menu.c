@@ -20940,15 +20940,25 @@ void menu_setting_ay_piano_grafico(MENU_ITEM_PARAMETERS)
 	setting_mostrar_ay_piano_grafico.v ^=1;
 }
 
-void menu_audio_audiodac(MENU_ITEM_PARAMETERS)
+/*void menu_audio_audiodac(MENU_ITEM_PARAMETERS)
 {
 	audiodac_enabled.v ^=1;
-}
+}*/
 
 void menu_audio_audiodac_type(MENU_ITEM_PARAMETERS)
 {
-	audiodac_selected_type++;
-	if (audiodac_selected_type==MAX_AUDIODAC_TYPES) audiodac_selected_type=0;
+	if (audiodac_enabled.v==0) {
+		audiodac_enabled.v=1;
+		audiodac_selected_type=0;
+	}
+
+	else {
+		audiodac_selected_type++;
+		if (audiodac_selected_type==MAX_AUDIODAC_TYPES) {
+			audiodac_selected_type=0;
+			audiodac_enabled.v=0;
+		}
+	}
 }
 
 void menu_audio_audiodac_set_port(MENU_ITEM_PARAMETERS)
@@ -21049,19 +21059,26 @@ void menu_settings_audio(MENU_ITEM_PARAMETERS)
 
 
 		if (MACHINE_IS_SPECTRUM) {
-			menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_audiodac,NULL,"DAC: %s",(audiodac_enabled.v ? "On" : "Off" ));
-			if (audiodac_enabled.v) {
-				menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_audiodac_type,NULL,"Type: %s P: %02XH",
-					audiodac_types[audiodac_selected_type].name,audiodac_types[audiodac_selected_type].port);
+			char string_audiodac[32];
 
-				menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_audiodac_set_port,NULL,"Set custom port");
+				if (audiodac_enabled.v) {
+					sprintf (string_audiodac,". %s",audiodac_types[audiodac_selected_type].name);
+				}
+				else {
+					strcpy(string_audiodac,"");
+				}
+
+				menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_audiodac_type,NULL,"DAC: %s%s",(audiodac_enabled.v ? "On" : "Off" ),
+						string_audiodac);
+				if (audiodac_enabled.v) {
+					menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_audiodac_set_port,NULL,"Port: %02XH",audiodac_types[audiodac_selected_type].port);
+				}
 
 
-			}
 		}
 
 
-                menu_add_item_menu(array_menu_settings_audio,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+    menu_add_item_menu(array_menu_settings_audio,"",MENU_OPCION_SEPARADOR,NULL,NULL);
 
 
 		if (!MACHINE_IS_ZX8081) {

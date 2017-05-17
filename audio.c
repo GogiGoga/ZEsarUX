@@ -89,6 +89,53 @@ audiodac_type audiodac_types[MAX_AUDIODAC_TYPES]={
 	{"GS Covox",0xB3},
 	{"Custom",0}
 };
+/*
+http://velesoft.speccy.cz/da_for_zx-cz.htm
+
+STEREO COVOX PORTS
+ #0F = channel 1
+ #4F = channel 2
+ STEREO COVOX PORTS  - SPRINTER 2000
+ #FB = channel 1
+ #4F = channel 2
+ STEREO COVOX PORTS  - PROFI
+ #3F = left channel
+ #5F = right channel
+ #7F = 8255 control register ( out value #80)
+
+
+
+
+
+ COVOX PORTS
+
+ computer
+
+port
+
+ Pentagon/ATM
+ ZS Scorpion/ZX Profi
+ ZX Profi
+ GS COVOX	#FB
+#DD
+#BB55
+#B3
+
+
+Česká varianta s 8255(UR-4)
+
+V ČR je nejrozšířenější varianta tříkanálového převodníku připojeného k interface UR-4(PIO). Všechny tři převodníky jsou připojeny přímo na výstupy bran A,B,C obvodu 8255 v UR-4. Stereo výstup je zapojený jako ACB stereo, podobně jako u Melodiku.
+
+ PORTY
+  #1F = channel A
+ #3F = channel B
+ #5F = channel C
+ #7F = 8255 control register (out value #80)
+
+
+ */
+
+
 
 
 //apunta al buffer de audio activo para llenar
