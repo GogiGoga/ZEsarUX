@@ -6394,7 +6394,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 
 
-	debug_printf (VERBOSE_DEBUG,"Out Port %x unknown written with value %x, PC after=0x%x",puerto,value,reg_pc);
+	//debug_printf (VERBOSE_DEBUG,"Out Port %x unknown written with value %x, PC after=0x%x",puerto,value,reg_pc);
 }
 
 
