@@ -1755,6 +1755,12 @@ void random_ram(z80_byte *puntero,int longitud)
 }
 
 
+void avisar_opcion_obsoleta(char *texto){
+	//Solo avisa si no hay guardado de configuracion
+	//Porque si hay guardado, al guardarlo ya lo grabara como toca
+	if (save_configuration_file_on_exit.v==0) debug_printf (VERBOSE_ERR,"%s",texto);
+}
+
 //Patron de llenado para inves: FF,00,FF,00, etc...
 void random_ram_inves(z80_byte *puntero,int longitud)
 {
@@ -4719,15 +4725,40 @@ void parse_cmdline_options(void) {
 				beeper_enabled.v=0;
 			}
 
-			else if (!strcmp(argv[puntero_parametro],"--totalaychips")) {
-				siguiente_parametro_argumento();
-				int valor=atoi(argv[puntero_parametro]);
+			else if (!strcmp(argv[puntero_parametro],"--totalaychips")
+			|| !strcmp(argv[puntero_parametro],"--turbosound")
 
-				if (valor>MAX_AY_CHIPS || valor<1) {
-					printf ("Invalid ay chip value\n");
-					exit (1);
+			) {
+
+				int valor;
+
+				//Opcion obsoleta
+				if (!strcmp(argv[puntero_parametro],"--turbosound")) {
+					//TODO. No aparece en el menu el error
+					avisar_opcion_obsoleta("--turbosound setting is obsolete. Use --totalaychips");
+					valor=2;
+				}
+
+				else {
+					siguiente_parametro_argumento();
+					valor=atoi(argv[puntero_parametro]);
+
+					if (valor>MAX_AY_CHIPS || valor<1) {
+						printf ("Invalid ay chip value\n");
+						exit (1);
+					}
 				}
         set_total_ay_chips(valor);
+
+
+
+
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--enablespecdrum")) {
+				//TODO. No aparece en el menu el error
+				avisar_opcion_obsoleta("--enablespecdrum setting is obsolete. Use --enableaudiodac");
+																audiodac_enabled.v=1;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--enableaudiodac")) {
