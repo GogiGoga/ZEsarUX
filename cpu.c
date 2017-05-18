@@ -895,6 +895,37 @@ util_stats_init();
 
 }
 
+char *string_machines_list_description=
+							" ZX80     ZX-80\n"
+							" ZX81     ZX-81\n"
+              " 16k      Spectrum 16k\n"
+              " 48k      Spectrum 48k\n"
+              " 48ks     Spectrum 48k (Spanish)\n"
+              " Inves    Inves Spectrum+\n"
+					    " TK90X    Microdigital TK90X\n"
+					    " TK90XS   Microdigital TK90X (Spanish)\n"
+					    " TK95     Microdigital TK95\n"
+              " 128k     Spectrum 128k\n"
+              " 128ks    Spectrum 128k (Spanish)\n"
+              " P2       Spectrum +2\n"
+              " P2F      Spectrum +2 (French)\n"
+              " P2S      Spectrum +2 (Spanish)\n"
+              " P2A40    Spectrum +2A (ROM v4.0)\n"
+              " P2A41    Spectrum +2A (ROM v4.1)\n"
+              " P2AS     Spectrum +2A (Spanish)\n"
+							" QL       QL\n"
+							" Z88      Cambridge Z88\n"
+							" TS2068   Timex TS 2068\n"
+							" Sam      Sam Coupe\n"
+					    " Pentagon Pentagon 128\n"
+							" Chloe140 Chloe 140 SE\n"
+							" Chloe280 Chloe 280 SE\n"
+							" ZXUNO    ZX-Uno\n"
+							" Prism    Prism\n"
+							" TBBlue   TBBlue/ZX Spectrum Next\n"
+					    " ACE      Jupiter Ace\n"
+					    " CPC464   Amstrad CPC 464\n"
+							;
 
 
 void cpu_help(void)
@@ -998,38 +1029,13 @@ void cpu_help(void)
 
 	printf ("\n");
 
-	printf ("--machine          Machine type: \n"
-							" ZX80     ZX-80\n"
-							" ZX81     ZX-81\n"
-              " 16k      Spectrum 16k\n"
-              " 48k      Spectrum 48k\n"
-              " 48ks     Spectrum 48k (Spanish)\n"
-              " Inves    Inves Spectrum+\n"
-					    " TK90X    Microdigital TK90X\n"
-					    " TK90XS   Microdigital TK90X (Spanish)\n"
-					    " TK95     Microdigital TK95\n"
-              " 128k     Spectrum 128k\n"
-              " 128ks    Spectrum 128k (Spanish)\n"
-              " P2       Spectrum +2\n"
-              " P2F      Spectrum +2 (French)\n"
-              " P2S      Spectrum +2 (Spanish)\n"
-              " P2A40    Spectrum +2A (ROM v4.0)\n"
-              " P2A41    Spectrum +2A (ROM v4.1)\n"
-              " P2AS     Spectrum +2A (Spanish)\n"
-							" QL       QL\n"
-							" Z88      Cambridge Z88\n"
-							" TS2068   Timex TS 2068\n"
-							" Sam      Sam Coupe\n"
-					    " Pentagon Pentagon 128\n"
-							" Chloe140 Chloe 140 SE\n"
-							" Chloe280 Chloe 280 SE\n"
-							" ZXUNO    ZX-Uno\n"
-							" Prism    Prism\n"
-							" TBBlue   TBBlue/ZX Spectrum Next\n"
-					    " ACE      Jupiter Ace\n"
-					    " CPC464   Amstrad CPC 464\n"
+	printf ("--machine          Machine type: \n");
 
-					"\n"
+	printf ("%s",string_machines_list_description);
+
+			
+
+		printf ("\n"
 		"--noconfigfile     Do not load configuration file. This parameter must be the first and it's ignored if written on config file\n"
 		"--experthelp       Show expert options\n"
 		"\n"
@@ -4748,7 +4754,7 @@ void parse_cmdline_options(void) {
 						printf ("Invalid ay chip value\n");
 						exit (1);
 					}
-				
+
         set_total_ay_chips(valor);
 
 			}

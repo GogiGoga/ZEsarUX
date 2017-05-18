@@ -11109,3 +11109,24 @@ void scr_refresca_pantalla_cpc_text(void (*fun_color) (z80_byte color,int *brill
 
 
 }
+
+
+void screen_set_window_zoom(int z)
+{
+
+	if (z>9 || z<1) {
+		debug_printf (VERBOSE_ERR,"Invalid zoom value %d",z);
+		return;
+	}
+
+	scr_end_pantalla();
+
+	zoom_x=zoom_y=z;
+	modificado_border.v=1;
+
+	scr_init_pantalla();
+	set_putpixel_zoom();
+
+
+	menu_init_footer();
+}

@@ -16960,21 +16960,9 @@ void menu_interface_zoom(MENU_ITEM_PARAMETERS)
         menu_ventana_scanf("Window Zoom",string_zoom,2);
 
         temp_zoom=parse_string_to_number(string_zoom);
-	if (temp_zoom>9 || temp_zoom<1) {
-		debug_printf (VERBOSE_ERR,"Invalid zoom value %s",string_zoom);
-		return;
-	}
-
-	scr_end_pantalla();
-
-	zoom_x=zoom_y=temp_zoom;
-	modificado_border.v=1;
-
-	scr_init_pantalla();
-	set_putpixel_zoom();
 
 
-	menu_init_footer();
+	screen_set_window_zoom(temp_zoom);
 
 }
 

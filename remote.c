@@ -713,7 +713,7 @@ struct s_items_ayuda items_ayuda[]={
 
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
 
-
+	{"get-machines",NULL,NULL,"Returns list of emulated machines"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
   {"get-registers","|gr",NULL,"Get CPU registers"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
@@ -755,6 +755,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-machine","|sm","machine_name","Set machine"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
+	{"set-window-zoom",NULL,"zoom","Sets window zoom"},
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a byte at desired address on mapped memory"},
@@ -2873,6 +2874,9 @@ char buffer_retorno[2048];
 		escribir_socket(misocket,stats_buffer);
 	}
 
+	else if (!strcmp(comando_sin_parametros,"get-machines")) {
+		escribir_socket (misocket,string_machines_list_description);
+	}
 
 	else if (!strcmp(comando_sin_parametros,"get-os")) {
 		escribir_socket (misocket,COMPILATION_SYSTEM);
@@ -3099,6 +3103,24 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 
 			else verbose_level=i;
 		}
+	}
+
+	else if (!strcmp(comando_sin_parametros,"set-window-zoom") ) {
+		if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+		else {
+
+			//Entramos en el mismo modo que cpu-step para poder congelar la emulacion
+			remote_cpu_enter_step(misocket);
+			if (menu_event_remote_protocol_enterstep.v==0) return;
+
+			int z=parse_string_to_number(parametros);
+
+			screen_set_window_zoom(z);
+
+
+			remote_cpu_exit_step(misocket);
+		}
+
 	}
 
   else if (!strcmp(comando_sin_parametros,"smartload") || !strcmp(comando_sin_parametros,"sl")) {

@@ -557,5 +557,7 @@ extern void scr_refresca_pantalla_y_border_ql(void);
 
 extern z80_bit no_fadeout_exit;
 
+extern void screen_set_window_zoom(int z);
+
 
 #endif
