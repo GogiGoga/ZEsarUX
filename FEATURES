@@ -84,7 +84,7 @@
 
 -Handles compressed formats zip, tar, rar, gz through external utilities
 
--Supports AY Chip, Turbosound, Specdrum
+-Supports AY Chip, Turbosound (2 AY Channels), 3 AY Channels, different DAC: Specdrum, Covox
 
 -Supports Quicksilva, ZON-X81, and VSYNC-based sound on ZX80/81
 

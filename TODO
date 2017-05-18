@@ -36,12 +36,6 @@ The format of each table entry is as follows:
 -mejorar deteccion frecuencia sonido en audio wave form
 -beeper piano
 
--remote command que permita set machine por id
-
--Comando remoto que retorne los id y nombres de maquinas
-
--actualizar features con nuevas caracteristicas: dac (covox, etc), 3 chips ay (9 canales)
-
 -quiza inicializacion de ruido de cada chip ay debe ser diferente
 
 -ym2413 chip de sonido del tbblue

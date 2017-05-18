@@ -260,6 +260,11 @@ A: You can not change it. ZEsarUX does not emulate the ZX-Uno FPGA. ZEsarUX emul
 So, you can not change the emulation core, you can not, for example, upload a FPGA core with emulation for Atari 2600...
 
 
+Q: Why ZX-Uno boot and bios seem to use a lot of physical CPU and reduces FPS?
+A: On ZX-Uno boot process and entering its bios, the Z80 Turbo mode is set to 8X, so the emulator uses eight times the cpu power more than on normal 1X mode. This is why it uses more physical CPU and FPS are reduced. It should not happen if your computer is very fast.
+You may change a the setting "Deny turbo on boot" on menu Settings->Hardware so it denies changing turbo mode on these 2 cases
+
+
 ----------------------------------------------------------------------------
 
 
