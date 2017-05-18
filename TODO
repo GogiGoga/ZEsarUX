@@ -1,11 +1,12 @@
 
+
+--- Estado funciones microdrive QL
+
 --set-breakpoint 1 "pc=069D4H" 
 --set-breakpoint 2 "D0=47H and PC=0032AH" 
 
 
----
-
-Estado a 13 de Mayo
+QL Estado a 13 de Mayo
 -tanto lrun como load programa en basic borra la pantalla e inicializa  el basic pero no llama a cargar datos de microdrive
 muestran misma basura por pantalla que salia cuando tenia el trap de boot
 -si existe un archivo llamado "MDV1_BOOT" acaba sacando la misma basura por pantalla
@@ -31,6 +32,25 @@ The format of each table entry is as follows:
 
 
 -cosas para la version 5.1
+
+-mejorar deteccion frecuencia sonido en audio wave form
+-beeper piano
+
+-remote command que permita set machine por id
+
+-Comando remoto que retorne los id y nombres de maquinas
+
+-actualizar features con nuevas caracteristicas: dac (covox, etc), 3 chips ay (9 canales)
+
+-quiza inicializacion de ruido de cada chip ay debe ser diferente
+
+-ym2413 chip de sonido del tbblue
+
+-pentagon 512 y superiores modos de paginacion ram
+http://www.zxuno.com/forum/viewtopic.php?f=12&t=400
+relacionado:
+http://www.zxuno.com/forum/viewtopic.php?f=37&t=552&sid=88847dce1ad30a54353f35884937ef1f
+
 
 -control menu raton no va bien en xwindows?
 

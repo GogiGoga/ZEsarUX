@@ -6696,7 +6696,47 @@ void customconfig_help(void)
 	);
 }
 
+//Devuelve -1 si desconocida
+int get_machine_id_by_name(char *machine_name)
+{
 
+  int return_machine;
+                                if (!strcmp(machine_name,"16k")) return_machine=0;
+                                else if (!strcasecmp(machine_name,"48k")) return_machine=1;
+                                else if (!strcasecmp(machine_name,"48ks")) return_machine=20;
+                                else if (!strcasecmp(machine_name,"Inves")) return_machine=2;
+                                else if (!strcasecmp(machine_name,"TK90X")) return_machine=3;
+                                else if (!strcasecmp(machine_name,"TK90XS")) return_machine=4;
+                                else if (!strcasecmp(machine_name,"TK95")) return_machine=5;
+                                else if (!strcasecmp(machine_name,"128k")) return_machine=6;
+                                else if (!strcasecmp(machine_name,"128ks")) return_machine=7;
+                                else if (!strcasecmp(machine_name,"P2")) return_machine=8;
+                                else if (!strcasecmp(machine_name,"P2F")) return_machine=9;
+                                else if (!strcasecmp(machine_name,"P2S")) return_machine=10;
+                                else if (!strcasecmp(machine_name,"P2A40")) return_machine=11;
+                                else if (!strcasecmp(machine_name,"P2A41")) return_machine=12;
+                                else if (!strcasecmp(machine_name,"P2AS")) return_machine=13;
+                                else if (!strcasecmp(machine_name,"ZXUNO")) return_machine=14;
+                                else if (!strcasecmp(machine_name,"Chloe140")) return_machine=15;
+                                else if (!strcasecmp(machine_name,"Chloe280")) return_machine=16;
+                                else if (!strcasecmp(machine_name,"TS2068")) return_machine=17;
+                                else if (!strcasecmp(machine_name,"Prism")) return_machine=18;
+                                else if (!strcasecmp(machine_name,"TBBlue")) return_machine=19;
+                                else if (!strcasecmp(machine_name,"Pentagon")) return_machine=21;
+                                else if (!strcasecmp(machine_name,"ZX80")) return_machine=120;
+                                else if (!strcasecmp(machine_name,"ZX81")) return_machine=121;
+                                else if (!strcasecmp(machine_name,"ACE")) return_machine=122;
+                                else if (!strcasecmp(machine_name,"Z88")) return_machine=130;
+                                else if (!strcasecmp(machine_name,"CPC464")) return_machine=140;
+                                else if (!strcasecmp(machine_name,"SAM")) return_machine=150;
+                                else if (!strcasecmp(machine_name,"QL")) return_machine=160;
+                                else {
+                                        debug_printf (VERBOSE_ERR,"Unknown machine %s",machine_name);
+                                        return_machine=-1;
+                                }
+
+	return return_machine;
+}
 
 
 
@@ -6704,40 +6744,11 @@ void customconfig_help(void)
 int set_machine_type_by_name(char *machine_name)
 {
 
+  int maquina=get_machine_id_by_name(machine_name);
+  if (maquina==-1) return 1;
 
-                                if (!strcmp(machine_name,"16k")) current_machine_type=0;
-                                else if (!strcasecmp(machine_name,"48k")) current_machine_type=1;
-                                else if (!strcasecmp(machine_name,"48ks")) current_machine_type=20;
-                                else if (!strcasecmp(machine_name,"Inves")) current_machine_type=2;
-                                else if (!strcasecmp(machine_name,"TK90X")) current_machine_type=3;
-                                else if (!strcasecmp(machine_name,"TK90XS")) current_machine_type=4;
-                                else if (!strcasecmp(machine_name,"TK95")) current_machine_type=5;
-                                else if (!strcasecmp(machine_name,"128k")) current_machine_type=6;
-                                else if (!strcasecmp(machine_name,"128ks")) current_machine_type=7;
-                                else if (!strcasecmp(machine_name,"P2")) current_machine_type=8;
-                                else if (!strcasecmp(machine_name,"P2F")) current_machine_type=9;
-                                else if (!strcasecmp(machine_name,"P2S")) current_machine_type=10;
-                                else if (!strcasecmp(machine_name,"P2A40")) current_machine_type=11;
-                                else if (!strcasecmp(machine_name,"P2A41")) current_machine_type=12;
-                                else if (!strcasecmp(machine_name,"P2AS")) current_machine_type=13;
-                                else if (!strcasecmp(machine_name,"ZXUNO")) current_machine_type=14;
-                                else if (!strcasecmp(machine_name,"Chloe140")) current_machine_type=15;
-                                else if (!strcasecmp(machine_name,"Chloe280")) current_machine_type=16;
-                                else if (!strcasecmp(machine_name,"TS2068")) current_machine_type=17;
-                                else if (!strcasecmp(machine_name,"Prism")) current_machine_type=18;
-                                else if (!strcasecmp(machine_name,"TBBlue")) current_machine_type=19;
-                                else if (!strcasecmp(machine_name,"Pentagon")) current_machine_type=21;
-                                else if (!strcasecmp(machine_name,"ZX80")) current_machine_type=120;
-                                else if (!strcasecmp(machine_name,"ZX81")) current_machine_type=121;
-                                else if (!strcasecmp(machine_name,"ACE")) current_machine_type=122;
-                                else if (!strcasecmp(machine_name,"Z88")) current_machine_type=130;
-                                else if (!strcasecmp(machine_name,"CPC464")) current_machine_type=140;
-                                else if (!strcasecmp(machine_name,"SAM")) current_machine_type=150;
-                                else if (!strcasecmp(machine_name,"QL")) current_machine_type=160;
-                                else {
-                                        debug_printf (VERBOSE_ERR,"Unknown machine %s",machine_name);
-                                        return 1;
-                                }
+  current_machine_type=maquina;
+
 
 	return 0;
 }
