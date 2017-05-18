@@ -3282,7 +3282,7 @@ void *thread_remote_protocol_function(void *nada)
 				          //char bienvenida[1024];
 				          //sprintf (bienvenida,"%s","Welcome to ZEsarUX remote protocol\n");
 				          //write(sock_conectat,bienvenida,strlen(bienvenida));
-                  escribir_socket(sock_conectat,"Welcome to ZEsarUX remote protocol\nWrite help for available commands\n");
+                  escribir_socket(sock_conectat,"Welcome to ZEsarUX remote command protocol (ZRCP)\nWrite help for available commands\n");
 
           //if ( (write(sock,buffer,longitut)) <0 ) return -1;
 

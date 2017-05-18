@@ -112,7 +112,7 @@
 
 -Supports playing .AY sound files
 
--Supports remote command protocol. You can do enhanced debugging on ZEsarUX by using a telnet client.
+-Supports ZEsarUX remote command protocol (ZRCP). You can do enhanced debugging on ZEsarUX by using a telnet client.
 
 -Powerful debug features: Registers, Dissassemble, Conditional Breakpoints using text expressions, Watches, Step-to-step, Load source code, Hexadecimal Dump, View Sprites, Find byte (useful to find POKEs), CPU Transaction log, View BASIC
 

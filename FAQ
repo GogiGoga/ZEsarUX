@@ -162,6 +162,19 @@ A: There are three kind of video drivers:
 ----------------------------------------------------------------------------
 
 
+Debugging
+---------
+
+Q: What is ZEsarUX remote command protocol?
+A: ZEsarUX remote command protocol (or ZRCP) is a kind of API you can connect to ZEsarUX using a network tcp port. You can connect to it using
+a telnet client, or maybe you can create a external frontend (maybe an IDE) that connects remotely to ZEsarUX and interacts with it.
+It's disabled by default, you may enable it from Settings->Debug or from command line with --enable-remoteprotocol. The default port is 10000.
+It's supported on all emulator versions, but on Windows it's only supported on the ZEsarUX-pthreads version
+
+
+----------------------------------------------------------------------------
+
+
 Windows
 -------
 
@@ -174,7 +187,7 @@ Q: How can I select files from other drives?
 A: On file selector window, you must switch to File name section (pressing TAB twice) and write letter number and ':', for example: C:
 Remember that : appears pressing symbol shift (Ctrl or Alt)+letter Z
 
-Q: I enabled the remote protocol, used a telnet client to client, but I only see the Welcome message and I can not type anything
+Q: I enabled the ZEsarUX remote command protocol, used a telnet client to client, but I only see the Welcome message and I can not type anything
 A: Try disabling Windows firewall
 
 

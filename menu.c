@@ -21266,8 +21266,8 @@ menu_add_item_menu_format(array_menu_settings_debug,MENU_OPCION_NORMAL, menu_bre
 
 #ifdef USE_PTHREADS
 		menu_add_item_menu_format(array_menu_settings_debug,MENU_OPCION_NORMAL, menu_debug_configuration_remoteproto,NULL,"Remote protocol: %s",(remote_protocol_enabled.v ? "Enabled" : "Disabled") );
-		menu_add_item_menu_tooltip(array_menu_settings_debug,"Enables or disables remote command protocol");
-		menu_add_item_menu_ayuda(array_menu_settings_debug,"Enables or disables remote command protocol");
+		menu_add_item_menu_tooltip(array_menu_settings_debug,"Enables or disables ZEsarUX remote command protocol (ZRCP)");
+		menu_add_item_menu_ayuda(array_menu_settings_debug,"Enables or disables ZEsarUX remote command protocol (ZRCP)");
 
 		if (remote_protocol_enabled.v) {
 			menu_add_item_menu_format(array_menu_settings_debug,MENU_OPCION_NORMAL, menu_debug_configuration_remoteproto_port,NULL,"Remote protocol port: %d",remote_protocol_port );
