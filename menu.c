@@ -6888,7 +6888,7 @@ void menu_audio_draw_sound_wave(void)
 	int signoanterior=0;
 	int signoactual=0;
 
-	int audiomedio=0,audiomin=0,audiomax=0;
+	int audiomedio=0,audiomin=127,audiomax=-128;
 
 	char valor_sonido;
 
