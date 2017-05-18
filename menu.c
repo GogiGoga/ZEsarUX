@@ -6837,7 +6837,7 @@ void menu_linea(int x,int y1,int y2,int color)
 
 int menu_sound_wave_llena=1;
 
-char menu_audio_draw_sound_wave_valor_medio;
+char menu_audio_draw_sound_wave_valor_medio,menu_audio_draw_sound_wave_valor_max,menu_audio_draw_sound_wave_valor_min;
 int menu_audio_draw_sound_wave_frecuencia_aproximada;
 
 void menu_audio_draw_sound_wave(void)
@@ -6880,7 +6880,7 @@ void menu_audio_draw_sound_wave(void)
 
 
 
-	//Obtenemos antes valor medio total
+	//Obtenemos antes valor medio total y tambien maximo y minimo
 	//Esto solo es necesario para dibujar onda llena
 
 	//Obtenemos tambien cuantas veces cambia de signo (y por tanto, obtendremos frecuencia aproximada)
@@ -6888,7 +6888,7 @@ void menu_audio_draw_sound_wave(void)
 	int signoanterior=0;
 	int signoactual=0;
 
-	int audiomedio=0;
+	int audiomedio=0,audiomin=0,audiomax=0;
 
 	char valor_sonido;
 
@@ -6900,6 +6900,9 @@ void menu_audio_draw_sound_wave(void)
 	for (i=0;i<AUDIO_BUFFER_SIZE;i++) {
 		valor_sonido=audio_buffer[i];
 		audiomedio +=valor_sonido;
+
+		if (valor_sonido>audiomax) audiomax=valor_sonido;
+		if (valor_sonido<audiomin) audiomin=valor_sonido;
 
 		valor_sonido_sin_signo=valor_sonido;
 
@@ -6924,6 +6927,9 @@ void menu_audio_draw_sound_wave(void)
 	audiomedio /=AUDIO_BUFFER_SIZE;
 	//printf ("valor medio: %d\n",audiomedio);
 	menu_audio_draw_sound_wave_valor_medio=audiomedio;
+
+	menu_audio_draw_sound_wave_valor_min=audiomin;
+	menu_audio_draw_sound_wave_valor_max=audiomax;
 
 	audiomedio=audiomedio*alto/256;
 
@@ -7046,7 +7052,8 @@ void menu_audio_espectro_sonido(MENU_ITEM_PARAMETERS)
                        if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
 			char buffer_texto_medio[40];
-			sprintf (buffer_texto_medio,"Average level: %d",menu_audio_draw_sound_wave_valor_medio);
+			sprintf (buffer_texto_medio,"Avg.: %d Min: %d Max: %d",
+				menu_audio_draw_sound_wave_valor_medio,menu_audio_draw_sound_wave_valor_min,menu_audio_draw_sound_wave_valor_max);
 			menu_escribe_linea_opcion(1,-1,1,buffer_texto_medio);
 			sprintf (buffer_texto_medio,"Average freq: %d Hz (%s)",
 				menu_audio_draw_sound_wave_frecuencia_aproximada,get_note_name(menu_audio_draw_sound_wave_frecuencia_aproximada));
@@ -21003,16 +21010,10 @@ void menu_settings_audio(MENU_ITEM_PARAMETERS)
 					"-Bi-Pak ZON-X81 Sound on ZX80/81\n"
 			);
 
-			/*
-		menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_turbosound,NULL,"~~Turbosound: %s",(turbosound_enabled.v==1 ? "On" : "Off"));
 
-		menu_add_item_menu_shortcut(array_menu_settings_audio,'t');
-		menu_add_item_menu_tooltip(array_menu_settings_audio,"Enable Turbosound");
-		menu_add_item_menu_ayuda(array_menu_settings_audio,"Enable Turbosound");
-			*/
 
-			menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_change_ay_chips,NULL,"Total AY Chips: %d %s",total_ay_chips,
-				(total_ay_chips==2 ? "Turbosound" : "") );
+			menu_add_item_menu_format(array_menu_settings_audio,MENU_OPCION_NORMAL,menu_audio_change_ay_chips,NULL,"Total AY Chips: %d%s",total_ay_chips,
+				(total_ay_chips==2 ? ". Turbosound" : "") );
 
 
 
