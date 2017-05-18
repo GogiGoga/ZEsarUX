@@ -466,8 +466,9 @@ COMMENT !
 		else volumen=15;
 	}
 
+	volumen=volumen & 15; //Evitar valores de volumen fuera de rango que vengan de los registros de volumen
 
-	//if (volumen>15) printf ("  Error volumen >15\n");
+	//if (volumen>15) printf ("  Error volumen >15 : %d\n",volumen);
         valor=valor*volume_table[volumen];
 	valor=valor/32767;
 	valor8=valor;

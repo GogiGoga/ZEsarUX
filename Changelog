@@ -11,6 +11,7 @@ Added up to three AY Chips
 Added emulation of other DAC chips appart from Specdrum: Covox, etc
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
+Fixed AY sound bugs when volume levels where > 15
 Some other minor bugfixes and improvements
 
 
