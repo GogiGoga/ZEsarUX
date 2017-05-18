@@ -6561,7 +6561,7 @@ void parse_customfile_options(void)
                                 machine_name=argv[puntero_parametro];
 
                                 if (set_machine_type_by_name(machine_name)) {
-					//Error. Volver sin leer mas parametros
+					                               //Error. Volver sin leer mas parametros
                                         return;
                                 }
 

@@ -752,6 +752,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
 				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 8 next opcodes on cpu stepping. "
 				"Bit 2: Do not add a L preffix when searching source code labels"},
+	{"set-machine","|sm","machine_name","Set machine"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
@@ -3050,6 +3051,30 @@ else if (!strcmp(comando_sin_parametros,"set-cr")) {
 else if (!strcmp(comando_sin_parametros,"set-debug-settings") || !strcmp(comando_sin_parametros,"sds")) {
 	if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
 	else remote_debug_settings=parse_string_to_number(parametros);
+}
+
+else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_parametros,"sm")) {
+	if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+	else {
+
+		//Entramos en el mismo modo que cpu-step para poder congelar la emulacion
+		remote_cpu_enter_step(misocket);
+		if (menu_event_remote_protocol_enterstep.v==0) return;
+
+		if (set_machine_type_by_name(parametros)) {
+						 //Error.
+						escribir_socket_format(misocket,"ERROR. Unknown machine %s",parametros);
+		}
+
+		else {
+			set_machine(NULL);
+			cold_start_cpu_registers();
+			reset_cpu();
+		}
+
+		remote_cpu_exit_step(misocket);
+	}
+
 }
 
 	else if (!strcmp(comando_sin_parametros,"set-register") || !strcmp(comando_sin_parametros,"sr")) {
