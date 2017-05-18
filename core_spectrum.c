@@ -381,6 +381,8 @@ void cpu_core_loop_spectrum(void)
 					audio_valor_enviar_sonido=audio_adjust_volume(audio_valor_enviar_sonido);
 				}
 
+				//if (audio_valor_enviar_sonido>127 || audio_valor_enviar_sonido<-128) printf ("Error audio value: %d\n",audio_valor_enviar_sonido);
+
 				audio_buffer[audio_buffer_indice]=audio_valor_enviar_sonido;
 
 

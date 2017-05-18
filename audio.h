@@ -151,6 +151,7 @@ extern void fallback_audio_null(void);
 extern void audio_empty_buffer(void);
 
 extern char audio_valor_enviar_sonido;
+//extern int audio_valor_enviar_sonido;
 
 extern int audio_ay_player_load(char *filename);
 extern z80_byte *audio_ay_player_mem;

@@ -71,6 +71,7 @@ char output_beep_filter_volume=122;
 
 //Valor del sample de sonido que se envia cada vez. Usado en cada core_
 char audio_valor_enviar_sonido;
+//int audio_valor_enviar_sonido;
 
 
 z80_byte audiodac_last_value_data;

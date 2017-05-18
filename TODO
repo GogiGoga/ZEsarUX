@@ -33,6 +33,10 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-revisar mezclado ay+beeper . posiblemente set_value_beeper acaba sacando algun valor beeper 50*2 y se sale todo de rango?
+o bien el mezclado de chip ay
+
+
 -mejorar deteccion frecuencia sonido en audio wave form
 -beeper piano
 
@@ -49,8 +53,6 @@ http://www.zxuno.com/forum/viewtopic.php?f=37&t=552&sid=88847dce1ad30a54353f3588
 -control menu raton no va bien en xwindows?
 
 -probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
-
--En el FAQ, decir porque bajan fps y sube consumo de cpu al arrancar zxuno
 
 -drivers video texto mouse estará dividido entre 8??
 

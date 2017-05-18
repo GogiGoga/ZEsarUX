@@ -5600,6 +5600,10 @@ void set_value_beeper (int v)
   //temp normal en fuse
   value_beeper = -beeper_ampl[3] + beeper_ampl[v]*2;
 
+	//int pp;
+	//pp=value_beeper = -beeper_ampl[3] + beeper_ampl[v]*2;
+	//if (pp<50 || pp>50) printf ("%d\n",pp);
+
   }
 
   //temp prueba para que sonido en grabacion no sea negativo
