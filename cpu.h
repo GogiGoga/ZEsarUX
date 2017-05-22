@@ -278,7 +278,7 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 #define MACHINE_ID_SPECTRUM_48 1
 #define MACHINE_ID_CPC_464     140
 #define MACHINE_ID_QL_STANDARD     160
-#define MACHINE_ID_PENTAGON128 21
+#define MACHINE_ID_PENTAGON 21
 
 
 //Condiciones de maquinas activas
@@ -287,9 +287,9 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 #define MACHINE_IS_SPECTRUM_48 (current_machine_type==MACHINE_ID_SPECTRUM_48)
 #define MACHINE_IS_INVES (current_machine_type==2)
 #define MACHINE_IS_SPECTRUM_16_48 ( (current_machine_type<=5) || current_machine_type==20 )
-#define MACHINE_IS_SPECTRUM_128_P2 ( (current_machine_type>=6 && current_machine_type<=10) || MACHINE_IS_PENTAGON128)
+#define MACHINE_IS_SPECTRUM_128_P2 ( (current_machine_type>=6 && current_machine_type<=10) || MACHINE_IS_PENTAGON)
 #define MACHINE_IS_SPECTRUM_P2A (current_machine_type>=11 && current_machine_type<=13)
-#define MACHINE_IS_SPECTRUM_128_P2_P2A ( (current_machine_type>=6 && current_machine_type<=13) || MACHINE_IS_PENTAGON128)
+#define MACHINE_IS_SPECTRUM_128_P2_P2A ( (current_machine_type>=6 && current_machine_type<=13) || MACHINE_IS_PENTAGON)
 #define MACHINE_IS_ZXUNO (current_machine_type==14)
 
 #define MACHINE_IS_CHLOE_140SE (current_machine_type==15)
@@ -299,7 +299,7 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 #define MACHINE_IS_PRISM (current_machine_type==18)
 #define MACHINE_IS_TBBLUE (current_machine_type==19)
 #define MACHINE_IS_SPECTRUM_PLUS_SPA (current_machine_type==20)
-#define MACHINE_IS_PENTAGON128 (current_machine_type==MACHINE_ID_PENTAGON128)
+#define MACHINE_IS_PENTAGON (current_machine_type==MACHINE_ID_PENTAGON)
 
 #define MACHINE_IS_ZX80 (current_machine_type==120)
 #define MACHINE_IS_ZX81 (current_machine_type==121)

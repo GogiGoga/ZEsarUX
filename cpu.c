@@ -917,7 +917,7 @@ char *string_machines_list_description=
 							" Z88      Cambridge Z88\n"
 							" TS2068   Timex TS 2068\n"
 							" Sam      Sam Coupe\n"
-					    " Pentagon Pentagon 128\n"
+					    " Pentagon Pentagon\n"
 							" Chloe140 Chloe 140 SE\n"
 							" Chloe280 Chloe 280 SE\n"
 							" ZXUNO    ZX-Uno\n"
@@ -1817,7 +1817,7 @@ struct s_machine_names machine_names[]={
 					    {"Prism",       			18},
 					    {"TBBLue",   			19},
 					    {"Spectrum 48k (Spanish)",		20},
-					    {"Pentagon 128",		21},
+					    {"Pentagon",		21},
                                             {"ZX-80",  				120},
                                             {"ZX-81",  				121},
 					    {"Jupiter Ace",  			122},
@@ -2188,7 +2188,7 @@ void set_machine_params(void)
 18=Prism
 19=TBBlue
 20=Spectrum + Spanish
-21=Pentagon 128
+21=Pentagon 
 22-29 Reservado (Spectrum)
 120=zx80 (old 20)
 121=zx81 (old 21)
@@ -2222,7 +2222,7 @@ void set_machine_params(void)
 		//al intentar desactivar allow_write, se produce segmentation fault
 
 		//Si maquina anterior era pentagon, desactivar timing pentagon y activar contended memory
-		if (last_machine_type==MACHINE_ID_PENTAGON128) {
+		if (last_machine_type==MACHINE_ID_PENTAGON) {
 			debug_printf(VERBOSE_DEBUG,"Disabling pentagon timing and enabling contended memory because previous machine was Pentagon");
 			pentagon_timing.v=0;
 			contend_enabled.v=1;
@@ -2378,7 +2378,7 @@ void set_machine_params(void)
 				contend_pages_128k_p2a=contend_pages_p2a;
 			}
 
-			if (MACHINE_IS_PENTAGON128) {
+			if (MACHINE_IS_PENTAGON) {
 				contend_enabled.v=0;
 				ula_enable_pentagon_timing_no_common();
 			}
