@@ -1321,6 +1321,8 @@ printf (
                 "--zx8081ram16KC000         Emulate 16K RAM in C000H for ZX80/ZX81\n"
 		"--acemem n                 Emulate 3, 19 or 35 kb of memory on Jupiter Ace\n"
 
+		"--128kmem n                Set more than 128k RAM for 128k machines. Allowed values: 128, 256, 512"
+
 
 
 		"\n"
@@ -3920,6 +3922,33 @@ void parse_cmdline_options(void) {
                         }
 
 
+			else if (!strcmp(argv[puntero_parametro],"--128kmem")) {
+                                siguiente_parametro_argumento();
+				int valor=atoi(argv[puntero_parametro]);
+				z80_byte multiplicador;
+				switch (valor) {
+
+					case 128:
+						multiplicador=1;
+					break;
+
+					case 256:
+						multiplicador=2;
+					break;
+
+					case 512:
+						multiplicador=4;
+					break;
+
+
+					default:
+						printf ("Invalid RAM value\n");
+						exit(1);
+					break;
+				}
+
+				mem_set_multiplicador_128(multiplicador);
+      }
 
 
 			else if (!strcmp(argv[puntero_parametro],"--scr")) {
