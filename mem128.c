@@ -37,7 +37,10 @@
 #include "superupgrade.h"
 
 //Direcciones donde estan cada pagina de ram
-z80_byte *ram_mem_table[8];
+//Antes habian 8 solo (8 paginas de 16kb cada una)
+//Ahora hay 32 (para un maximo de 512 kb)
+//z80_byte *ram_mem_table[8];
+z80_byte *ram_mem_table[32];
 
 //Direcciones donde estan cada pagina de rom
 //array para +2a usamos 4 elementos
@@ -49,6 +52,12 @@ z80_byte *memory_paged[4];
 
 z80_byte puerto_32765=0;
 z80_byte puerto_8189=0;
+
+//Si hay mas de 128kb para maquinas tipo 128k y +2a
+//Si vale 1, solo 128k
+//Si vale 2, hay 256 kb
+//Si vale 4, hay 512 kb
+int mem128_multiplicador=1;
 
 
 //Paginas mapeadas en cada zona de RAM. Se solamente usa en menu debug y breakpoints, no para el core de emulacion
@@ -212,7 +221,7 @@ z80_byte *get_base_mem_pantalla_continue(void)
 				return tbblue_ram_memory_pages[5];
 			}
 
-			
+
 	                if (puerto_32765 & 8) {
         	                return tbblue_ram_memory_pages[7];
                 	}
@@ -430,7 +439,6 @@ void mem_set_normal_pages_p2a(void)
 void mem_page_ram_p2a(void)
 {
         //asignar ram
-	//memory_paged[3]=ram_mem_table[(puerto_32765&7)];
 	mem_page_ram_128k();
 
 }
@@ -449,12 +457,60 @@ void mem_page_rom_p2a(void)
 			debug_paginas_memoria_mapeadas[0]=128+rom_entra;
 }
 
+//En maquinas 128k, devuelve bits 3 bajos de puerto 32765
+//Si se pasa a 256k o 512k, se usan tambien bits 6 y 7
+//Bits 0-2: 3 bits bajos de numero de pagina que entra
+//Bit 6: Bit 3 de pagina que entra
+//Bit 7: Bit 4 de pagina que entra
+z80_byte mem_get_ram_page(void)
+{
+
+	//printf ("Valor 32765: %d\n",puerto_32765);
+
+	z80_byte ram_entra=puerto_32765&7;
+
+	z80_byte bit3=0;
+	z80_byte bit4=0;
+
+	if (mem128_multiplicador==2 || mem128_multiplicador==4) {
+		bit3=puerto_32765&64;  //Bit 6
+		//Lo movemos a bit 3
+		bit3=bit3>>3;
+	}
+
+  if (mem128_multiplicador==4) {
+      bit4=puerto_32765&128;  //Bit 7
+      //Lo movemos a bit 4
+      bit4=bit4>>3;
+  }
+
+
+	ram_entra=ram_entra|bit3|bit4;
+
+	//printf ("ram entra: %d\n",ram_entra);
+
+	return ram_entra;
+}
+
+void mem_set_multiplicador_128(z80_byte valor)
+{
+	if (valor==1 || valor==2 || valor==4) {
+		mem128_multiplicador=valor;
+	}
+	else {
+		cpu_panic("128k multiplier ram value invalid");
+	}
+}
+
+
+
 void mem_page_ram_128k(void)
 {
 
 	if (ula_disabled_ram_paging.v) return;
 
-	z80_byte ramentra=puerto_32765&7;
+	//z80_byte ramentra=puerto_32765&7;
+	z80_byte ramentra=mem_get_ram_page();
         //asignar ram
 	memory_paged[3]=ram_mem_table[ramentra];
 
@@ -556,4 +612,37 @@ void mem128_p2a_write_page_port(z80_int puerto, z80_byte value)
         	                return;
 			}
 		}
+}
+
+void mem_init_memory_tables_128k(void)
+{
+
+                int puntero=0;
+                int i;
+                for (i=0;i<2;i++) {
+                        rom_mem_table[i]=&memoria_spectrum[puntero];
+                        puntero +=16384;
+                }
+
+                for (i=0;i<32;i++) {
+                        ram_mem_table[i]=&memoria_spectrum[puntero];
+                        puntero +=16384;
+                }
+}
+
+
+void mem_init_memory_tables_p2a(void)
+{
+
+                int puntero=0;
+                int i;
+                for (i=0;i<4;i++) {
+                        rom_mem_table[i]=&memoria_spectrum[puntero];
+                        puntero +=16384;
+                }
+
+                for (i=0;i<32;i++) {
+                        ram_mem_table[i]=&memoria_spectrum[puntero];
+                        puntero +=16384;
+                }
 }

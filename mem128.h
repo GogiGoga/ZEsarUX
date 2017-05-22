@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -24,12 +24,14 @@
 
 #include "cpu.h"
 
-extern z80_byte *ram_mem_table[8];
-extern z80_byte *rom_mem_table[4];
-extern z80_byte *memory_paged[4];
+extern z80_byte *ram_mem_table[];
+extern z80_byte *rom_mem_table[];
+extern z80_byte *memory_paged[];
 extern z80_byte *get_base_mem_pantalla(void);
 
 extern z80_byte debug_paginas_memoria_mapeadas[];
+
+extern int mem128_multiplicador;
 
 extern z80_byte puerto_32765;
 extern z80_byte puerto_8189;
@@ -45,6 +47,11 @@ extern int get_actual_rom_p2a(void);
 extern int get_actual_rom_128k(void);
 extern void mem128_p2a_write_page_port(z80_int puerto, z80_byte value);
 extern z80_byte *get_base_mem_pantalla_attributes(void);
+
+extern void mem_init_memory_tables_128k(void);
+extern void mem_init_memory_tables_p2a(void);
+
+extern void mem_set_multiplicador_128(z80_byte valor);
 
 
 #endif

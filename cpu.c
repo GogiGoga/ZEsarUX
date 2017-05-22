@@ -2013,44 +2013,22 @@ void malloc_mem_machine(void) {
 
         else if (MACHINE_IS_SPECTRUM_128_P2) {
 
-                //32 kb rom, 128 ram
-                malloc_machine((32+128)*1024);
-                random_ram(memoria_spectrum+32768,131072);
+                //32 kb rom, 128-512 ram
+                malloc_machine((32+512)*1024);
+                random_ram(memoria_spectrum+32768,512*1024);
 
-                int puntero=0;
-                int i;
-                for (i=0;i<2;i++) {
-                        rom_mem_table[i]=&memoria_spectrum[puntero];
-                        puntero +=16384;
-                }
-
-                for (i=0;i<8;i++) {
-                        ram_mem_table[i]=&memoria_spectrum[puntero];
-                        puntero +=16384;
-                }
-
+		mem_init_memory_tables_128k();
                 mem_set_normal_pages_128k();
 
         }
 
 	 else if (MACHINE_IS_SPECTRUM_P2A) {
 
-                //64 kb rom, 128 ram
-                malloc_machine((64+128)*1024);
-                random_ram(memoria_spectrum+65536,131072);
+                //64 kb rom, 128-512 ram
+                malloc_machine((64+512)*1024);
+                random_ram(memoria_spectrum+65536,512*1024);
 
-                int puntero=0;
-                int i;
-                for (i=0;i<4;i++) {
-                        rom_mem_table[i]=&memoria_spectrum[puntero];
-                        puntero +=16384;
-                }
-
-                for (i=0;i<8;i++) {
-                        ram_mem_table[i]=&memoria_spectrum[puntero];
-                        puntero +=16384;
-                }
-
+		mem_init_memory_tables_p2a();
                 mem_set_normal_pages_p2a();
 
         }
