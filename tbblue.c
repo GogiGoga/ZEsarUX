@@ -262,7 +262,7 @@ void tbblue_mem_page_ram_rom(void)
 z80_byte tbblue_mem_get_ram_page(void)
 {
 
-	//printf ("Valor 32765: %d\n",puerto_32765);
+	printf ("Valor 32765: %d\n",puerto_32765);
 
 	z80_byte ram_entra=puerto_32765&7;
 
@@ -289,7 +289,7 @@ z80_byte tbblue_mem_get_ram_page(void)
 
 	ram_entra=ram_entra|bit3|bit4;
 
-	//printf ("ram entra: %d\n",ram_entra);
+	printf ("ram entra: %d\n",ram_entra);
 
 	return ram_entra;
 }

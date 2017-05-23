@@ -10,6 +10,7 @@ Added actions commands to breakpoints, so you can run some actions when a breakp
 Added up to three AY Chips
 Added emulation of other DAC chips appart from Specdrum: Covox, etc
 Added setting to set 256kb or 512kb on Spectrum 128k machines
+Improved TBBlue emulation: 1 MB RAM
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15
