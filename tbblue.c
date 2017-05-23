@@ -34,8 +34,8 @@
 #include "ulaplus.h"
 #include "screen.h"
 
-//Punteros a los 8 bloques de 16kb de ram de spectrum
-z80_byte *tbblue_ram_memory_pages[8];
+//Punteros a los 32 bloques de 16kb de ram de spectrum
+z80_byte *tbblue_ram_memory_pages[32];
 
 //Punteros a los 4 bloques de 16kb de rom de spectrum
 z80_byte *tbblue_rom_memory_pages[4];
@@ -118,26 +118,49 @@ z80_byte tbblue_last_register;
 void tbblue_init_memory_tables(void)
 {
 /*
-0x000000 - 0x03FFFF (256K) => DivMMC RAM
-0x040000 - 0x05FFFF (128K) => Speecy RAM
-0x060000 - 0x063FFF (16K) => DivMMC ROM (ESXDOS)
-0x064000 - 0x067FFF (16K) => Multiface ROM
-0x068000 - 0x06BFFF (16K) => Multiface ROM
-0x06C000 - 0x06FFFF (16K) => Multiface RAM
-0x070000 to 0x07FFFF (64K) => Speccy ROM
+
+Primer bloque de ram: memoria interna de tbblue en principio no accesible por el spectrum:
+
+TBBlue’s default 512K SRAM is mapped as follows:
+
+0x000000 – 0x01FFFF (128K) => DivMMC RAM
+0x020000 – 0x03FFFF (128K) => Layer2 RAM
+0x040000 – 0x05FFFF (128K) => ??????????
+0x060000 – 0x06FFFF (64K) => ESXDOS and Multiface RAM
+0x060000 – 0x063FFF (16K) => ESXDOS ROM
+0x064000 – 0x067FFF (16K) => Multiface ROM
+0x068000 – 0x06BFFF (16K) => Multiface extra ROM
+0x06c000 – 0x06FFFF (16K) => Multiface RAM
+0x070000 – 0x07FFFF (64K) => ZX Spectrum ROM
+
+
+
+
+Segundo bloque de ram: 512K, todo accesible para Spectrum. Se mapean 256 o 512 mediante bit 6 y 7 de puerto 32765
+0x080000 - 0x0FFFFF (512K) => Speccy RAM
+
+Luego 8 KB de rom de la fpga
+0x100000 - 0x101FFF
+
+
 */
+
+
+
 
 
 	int i,indice;
 
 	//Los 8 KB de la fpga ROM estan al final
-	tbblue_fpga_rom=&memoria_spectrum[512*1024];
+	tbblue_fpga_rom=&memoria_spectrum[1024*1024];
 
-	for (i=0;i<8;i++) {
-		indice=0x040000+16384*i;
+	//32 Paginas RAM spectrum 512k
+	for (i=0;i<32;i++) {
+		indice=0x080000+16384*i;
 		tbblue_ram_memory_pages[i]=&memoria_spectrum[indice];
 	}
 
+	//4 Paginas ROM
 	for (i=0;i<4;i++) {
 		indice=0x070000+16384*i;
 		tbblue_rom_memory_pages[i]=&memoria_spectrum[indice];
@@ -236,6 +259,40 @@ void tbblue_mem_page_ram_rom(void)
 	}
 }
 
+z80_byte tbblue_mem_get_ram_page(void)
+{
+
+	//printf ("Valor 32765: %d\n",puerto_32765);
+
+	z80_byte ram_entra=puerto_32765&7;
+
+	z80_byte bit3=0;
+	z80_byte bit4=0;
+
+	//Forzamos a que lea siempre bit 6 y 7 del puerto 32765
+	//Dejamos esto asi por si en un futuro hay manera de limitar la lectura de esos bits
+
+	int multiplicador=4; //multiplicamos 128*4
+
+	if (multiplicador==2 || multiplicador==4) {
+		bit3=puerto_32765&64;  //Bit 6
+		//Lo movemos a bit 3
+		bit3=bit3>>3;
+	}
+
+  if (multiplicador==4) {
+      bit4=puerto_32765&128;  //Bit 7
+      //Lo movemos a bit 4
+      bit4=bit4>>3;
+  }
+
+
+	ram_entra=ram_entra|bit3|bit4;
+
+	//printf ("ram entra: %d\n",ram_entra);
+
+	return ram_entra;
+}
 
 
 void tbblue_set_memory_pages(void)
@@ -286,7 +343,7 @@ void tbblue_set_memory_pages(void)
                         tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
                         tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
 
-			ram_page=puerto_32765&7;
+			ram_page=tbblue_mem_get_ram_page();
                         tbblue_memory_paged[3]=tbblue_ram_memory_pages[ram_page];
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
@@ -328,7 +385,7 @@ void tbblue_set_memory_pages(void)
                         tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
                         tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
 
-                        ram_page=puerto_32765&7;
+                        ram_page=tbblue_mem_get_ram_page();
                         tbblue_memory_paged[3]=tbblue_ram_memory_pages[ram_page];
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;

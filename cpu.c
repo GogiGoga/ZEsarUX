@@ -2090,10 +2090,10 @@ void malloc_mem_machine(void) {
 
         else if (MACHINE_IS_TBBLUE) {
 
-		//512 KB RAM + 8 KB ROM (8 kb repetido dos veces)
-                malloc_machine( (512+8*2)*1024);
+		//1024 KB RAM + 8 KB ROM (8 kb repetido dos veces)
+                malloc_machine( (1024+8*2)*1024);
 
-                random_ram(memoria_spectrum,(512+8*2)*1024);
+                random_ram(memoria_spectrum,(1024+8*2)*1024);
 
 
                 tbblue_init_memory_tables();
@@ -2188,7 +2188,7 @@ void set_machine_params(void)
 18=Prism
 19=TBBlue
 20=Spectrum + Spanish
-21=Pentagon 
+21=Pentagon
 22-29 Reservado (Spectrum)
 120=zx80 (old 20)
 121=zx81 (old 21)
