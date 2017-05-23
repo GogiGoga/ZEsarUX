@@ -407,7 +407,7 @@ char array_fabricantes_hotkey_letra[]="satimzcjvbulp";
 18=Prism
 19=TBBlue
 20=Spectrum + Spanish
-21=Pentagon 
+21=Pentagon
 120=zx80
 121=zx81
 122=jupiter ace
@@ -2575,6 +2575,7 @@ void reset_keyboard_ports(void)
         puerto_especial1=255;
         puerto_especial2=255;
         puerto_especial3=255;
+        puerto_especial4=255;
 
         puerto_especial_joystick=0;
 
@@ -4791,9 +4792,110 @@ void convert_numeros_letras_puerto_teclado(z80_byte tecla,int pressrelease)
 
 }
 
+//Retorna no 0 si hay redefinicion de tecla F (no es default)
+int util_set_reset_key_continue_f_functions(enum util_teclas tecla,int pressrelease)
+{
+
+  printf ("tecla: %d pressrelease: %d menu_abierto: %d\n",tecla,pressrelease,menu_abierto);
+
+  if (menu_abierto) return 0;
+  //Ver si la tecla F esta asignada
+  //enum defined_f_function_ids defined_f_functions_keys_array[MAX_F_FUNCTIONS_KEYS]
+
+  int indice;
+
+  switch (tecla) {
+    case UTIL_KEY_F1:
+      indice=0;
+    break;
+
+    case UTIL_KEY_F2:
+      indice=1;
+    break;
+
+    case UTIL_KEY_F3:
+      indice=2;
+    break;
+
+    case UTIL_KEY_F4:
+      indice=3;
+    break;
+
+    case UTIL_KEY_F5:
+      indice=4;
+      //printf ("F5!!\n");
+    break;
+
+    case UTIL_KEY_F6:
+      indice=5;
+    break;
+
+    case UTIL_KEY_F7:
+      indice=6;
+    break;
+
+    case UTIL_KEY_F8:
+      indice=7;
+    break;
+
+    case UTIL_KEY_F9:
+      indice=8;
+    break;
+
+    case UTIL_KEY_F10:
+      indice=9;
+    break;
+
+    case UTIL_KEY_F11:
+      indice=10;
+    break;
+
+    case UTIL_KEY_F12:
+      indice=11;
+    break;
+
+    case UTIL_KEY_F13:
+      indice=12;
+    break;
+
+    case UTIL_KEY_F14:
+      indice=13;
+    break;
+
+    case UTIL_KEY_F15:
+      indice=14;
+    break;
+
+    default:
+      return 0;
+    break;
+  }
+
+  enum defined_f_function_ids accion=defined_f_functions_keys_array[indice];
+
+  printf ("Tecla: F%d Accion: %s\n",indice+1,defined_f_functions_array[accion].texto_funcion);
+
+  if (accion!=F_FUNCION_DEFAULT) {
+    if (pressrelease) {
+      //Activar funcion f en menu
+      menu_button_f_function.v=1;
+      menu_button_f_function_index=indice;
+      menu_abierto=1;
+
+
+    }
+    return 1;
+  }
+
+  return 0;
+}
+
 void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 {
 
+  //Ver si hay teclas F redefinidas
+
+  if (util_set_reset_key_continue_f_functions(tecla,pressrelease)) return;
 
         //temp reasignacion
         //if (tecla==UTIL_KEY_ALT_R) tecla=UTIL_KEY_ENTER;

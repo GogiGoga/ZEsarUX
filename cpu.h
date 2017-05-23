@@ -152,6 +152,7 @@ extern z80_byte puerto_32766; //    db              255  ; B    N    M    Simb S
 extern z80_byte puerto_especial1;
 extern z80_byte puerto_especial2;
 extern z80_byte puerto_especial3;
+extern z80_byte puerto_especial4;
 
 
 extern z80_int *registro_ixiy;

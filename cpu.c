@@ -471,6 +471,7 @@ z80_byte puerto_32766=255; //    db              255  ; B    N    M    Simb Spac
 z80_byte puerto_especial1=255; //   ;  .  .  PgDn  PgUp ESC ;
 z80_byte puerto_especial2=255; //   F5 F4 F3 F2 F1
 z80_byte puerto_especial3=255; //  F10 F9 F8 F7 F6
+z80_byte puerto_especial4=255; //  F15 F14 F13 F12 F11
 
 z80_bit chloe_keyboard={0};
 
@@ -1307,8 +1308,20 @@ printf (
                 "                           Key must be ascii character numbers or a character included in escaped quotes, like: 97 (for 'a') or \\'q\\'\n"
                 "                           (the escaped quotes are used only in command line; on configuration file, they are normal quotes '')\n"
 
+		);
 
 
+		printf (
+	  "--def-f-function key action  Define F key to do an action. action can be: ");
+
+		int i;
+			for (i=0;i<MAX_F_FUNCTIONS;i++) {
+				printf ("%s ",defined_f_functions_array[i].texto_funcion);
+			}
+
+
+
+		printf (
 		"\n"
                 "\n"
                 "Memory Settings\n"
@@ -4298,6 +4311,30 @@ void parse_cmdline_options(void) {
 				if (util_add_redefinir_tecla(tecla_original,tecla_redefinida)) {
 					exit(1);
 				}
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--def-f-function")) {
+				siguiente_parametro_argumento();
+				if (argv[puntero_parametro][0]!='F' && argv[puntero_parametro][0]!='f') {
+					printf ("Unknown key\n");
+					exit(1);
+				}
+
+				int valor=atoi(&argv[puntero_parametro][1]);
+
+				if (valor<1 || valor>MAX_F_FUNCTIONS_KEYS) {
+					printf ("Invalid key\n");
+					exit(1);
+				}
+
+				siguiente_parametro_argumento();
+
+				if (menu_define_key_function(valor,argv[puntero_parametro])) {
+					printf ("Invalid action\n");
+					exit(1);
+				}
+
+
 			}
 
 

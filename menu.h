@@ -60,6 +60,40 @@ struct s_overlay_screen {
 
 typedef struct s_overlay_screen overlay_screen;
 
+enum defined_f_function_ids {
+	//reset, hard-reset, nmi, open menu, ocr, smartload, osd keyboard, exitemulator.
+	F_FUNCION_DEFAULT,
+	F_FUNCION_NOTHING,
+	F_FUNCION_RESET,
+	F_FUNCION_HARDRESET,
+	F_FUNCION_NMI,
+	F_FUNCION_OPENMENU,
+	F_FUNCION_OCR,
+	F_FUNCION_SMARTLOAD,
+	F_FUNCION_OSDKEYBOARD,
+	F_FUNCION_EXITEMULATOR
+};
+
+//Define teclas F que se pueden mapear a acciones
+struct s_defined_f_function {
+	char texto_funcion[20];
+	enum defined_f_function_ids id_funcion;
+};
+
+typedef struct s_defined_f_function defined_f_function;
+
+#define MAX_F_FUNCTIONS 10
+extern defined_f_function defined_f_functions_array[];
+
+
+#define MAX_F_FUNCTIONS_KEYS 15
+
+//Array de teclas F mapeadas
+extern enum defined_f_function_ids defined_f_functions_keys_array[];
+
+extern int menu_define_key_function(int tecla,char *funcion);
+
+
 extern overlay_screen overlay_screen_array[];
 //extern overlay_screen second_overlay_screen_array[];
 
@@ -154,6 +188,8 @@ extern z80_bit menu_button_exit_emulator;
 extern z80_bit menu_event_drag_drop;
 //extern char menu_event_drag_drop_file[PATH_MAX];
 extern z80_bit menu_event_remote_protocol_enterstep;
+extern z80_bit menu_button_f_function;
+extern int menu_button_f_function_index;
 
 extern int menu_contador_teclas_repeticion;
 extern int menu_segundo_contador_teclas_repeticion;

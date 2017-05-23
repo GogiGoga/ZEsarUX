@@ -123,6 +123,60 @@ int menu_speech_tecla_pulsada=0;
 int menu_overlay_activo=0;
 
 
+defined_f_function defined_f_functions_array[MAX_F_FUNCTIONS]={
+	{"Default",F_FUNCION_DEFAULT},
+	{"Nothing",F_FUNCION_NOTHING},
+	{"Reset",F_FUNCION_RESET},
+	{"HardReset",F_FUNCION_HARDRESET},
+	{"NMI",F_FUNCION_NMI},
+	{"OpenMenu",F_FUNCION_OPENMENU},
+	{"OCR",F_FUNCION_OCR},
+	{"SmartLoad",F_FUNCION_SMARTLOAD},
+	{"OSDKeyboard",F_FUNCION_OSDKEYBOARD},
+	{"ExitEmulator",F_FUNCION_EXITEMULATOR}
+};
+
+//Funciones de teclas F mapeadas. Desde F1 hasta F15
+enum defined_f_function_ids defined_f_functions_keys_array[MAX_F_FUNCTIONS_KEYS]={
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT, //F5
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT, //F10
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT,
+	F_FUNCION_DEFAULT //F15
+};
+
+
+//Definir una tecla a una funcion
+//Entrada: tecla: 1...15 F1...15   funcion: string correspondiente a defined_f_functions_array
+//Devuelve 0 si ok
+int menu_define_key_function(int tecla,char *funcion)
+{
+	if (tecla<1 || tecla>MAX_F_FUNCTIONS_KEYS) return 1;
+
+	//Buscar en todos los strings de funciones cual es
+
+	int i;
+
+	for (i=0;i<MAX_F_FUNCTIONS;i++) {
+		if (!strcasecmp(funcion,defined_f_functions_array[i].texto_funcion)) {
+			enum defined_f_function_ids id=defined_f_functions_array[i].id_funcion;
+			defined_f_functions_keys_array[tecla-1]=id;
+			return 0;
+		}
+	}
+
+	return 1;
+}
 
 //funcion activa de overlay
 void (*menu_overlay_function)(void);
@@ -185,6 +239,10 @@ z80_bit menu_button_osdkeyboard_enter={0};
 z80_bit menu_button_exit_emulator={0};
 
 z80_bit menu_event_drag_drop={0};
+
+z80_bit menu_button_f_function={0};
+
+int menu_button_f_function_index;
 
 //char menu_event_drag_drop_file[PATH_MAX];
 
@@ -661,6 +719,7 @@ z80_byte puerto_32766=255; //    db              255  ; B    N    M    Simb Spac
 z80_byte puerto_especial1=255; //   ;  .  .  .  . ESC ;
 z80_byte puerto_especial2=255; //   F5 F4 F3 F2 F1
 z80_byte puerto_especial3=255; //  F10 F9 F8 F7 F6
+z80_byte puerto_especial4=255; //  F15 F14 F13 F12 F1
 */
 
 static char menu_array_keys_65022[]="asdfg";
@@ -2825,7 +2884,7 @@ z80_byte menu_da_todas_teclas(void)
 	acumulado=255;
 
 	//symbol i shift no cuentan por separado
-	acumulado=acumulado & (puerto_65278 | 1) & puerto_65022 & puerto_64510 & puerto_63486 & puerto_61438 & puerto_57342 & puerto_49150 & (puerto_32766 |2) & puerto_especial1 & puerto_especial2 & puerto_especial3;
+	acumulado=acumulado & (puerto_65278 | 1) & puerto_65022 & puerto_64510 & puerto_63486 & puerto_61438 & puerto_57342 & puerto_49150 & (puerto_32766 |2) & puerto_especial1 & puerto_especial2 & puerto_especial3 & puerto_especial4;
 
 	//no ignorar disparo
 	z80_byte valor_joystick=(puerto_especial_joystick&31)^255;
@@ -21688,11 +21747,53 @@ void menu_inicio_pre_retorno(void)
 				menu_event_drag_drop.v=0;
         menu_breakpoint_exception.v=0;
 				menu_event_remote_protocol_enterstep.v=0;
+				menu_button_f_function.v=0;
 
         reset_menu_overlay_function();
         menu_abierto=0;
 
         timer_reset();
+
+}
+
+void menu_process_f_functions(void)
+{
+
+	int indice=menu_button_f_function_index;
+
+	enum defined_f_function_ids accion=defined_f_functions_keys_array[indice];
+
+	printf ("Menu process Tecla: F%d Accion: %s\n",indice+1,defined_f_functions_array[accion].texto_funcion);
+
+	switch (accion)
+	{
+		case F_FUNCION_DEFAULT:
+		break;
+
+		case F_FUNCION_NOTHING:
+		break;
+
+		case F_FUNCION_RESET:
+			reset_cpu();
+		break;
+
+		case F_FUNCION_NMI:
+			generate_nmi();
+		break;
+
+		case F_FUNCION_EXITEMULATOR:
+			end_emulator();
+		break;
+
+
+/*
+		F_FUNCION_HARDRESET,
+		F_FUNCION_OPENMENU,
+		F_FUNCION_OCR,
+		F_FUNCION_SMARTLOAD,
+		F_FUNCION_OSDKEYBOARD,
+		F_FUNCION_EXITEMULATOR*/
+	}
 
 }
 
@@ -21846,6 +21947,18 @@ void menu_inicio(void)
 		}
 
 		//Salida
+		cls_menu_overlay();
+	}
+
+	else if (menu_button_f_function.v) {
+		//Entrada
+		menu_espera_no_tecla();
+
+		//Procesar comandos F
+
+		menu_process_f_functions();
+
+
 		cls_menu_overlay();
 	}
 
