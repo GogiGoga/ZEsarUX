@@ -719,7 +719,7 @@ z80_byte puerto_32766=255; //    db              255  ; B    N    M    Simb Spac
 z80_byte puerto_especial1=255; //   ;  .  .  .  . ESC ;
 z80_byte puerto_especial2=255; //   F5 F4 F3 F2 F1
 z80_byte puerto_especial3=255; //  F10 F9 F8 F7 F6
-z80_byte puerto_especial4=255; //  F15 F14 F13 F12 F1
+z80_byte puerto_especial4=255; //  F15 F14 F13 F12 F11
 */
 
 static char menu_array_keys_65022[]="asdfg";

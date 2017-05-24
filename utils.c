@@ -3009,6 +3009,16 @@ int util_write_configfile(void)
   if (menu_force_writing_inverse_color.v)     ADD_STRING_CONFIG,"--forcevisiblehotkeys");
   if (force_confirm_yes.v)                    ADD_STRING_CONFIG,"--forceconfirmyes");
                                               ADD_STRING_CONFIG,"--gui-style \"%s\"",definiciones_estilos_gui[estilo_gui_activo].nombre_estilo);
+
+
+  for (i=0;i<MAX_F_FUNCTIONS_KEYS;i++) {
+    enum defined_f_function_ids accion=defined_f_functions_keys_array[i];
+    if (accion!=F_FUNCION_DEFAULT) {
+                                              ADD_STRING_CONFIG,"--def-f-function F%d \"%s\"",i+1,defined_f_functions_array[accion].texto_funcion);
+    }
+  }
+
+
   if (input_file_keyboard_name!=NULL)         ADD_STRING_CONFIG,"--keyboardspoolfile \"%s\"",input_file_keyboard_name);
                                               ADD_STRING_CONFIG,"--joystickemulated \"%s\"",joystick_texto[joystick_emulation]);
 
@@ -5451,13 +5461,41 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                                 }
                         break;
 
+                        //z80_byte puerto_especial3=255; //  F10 F9 F8 F7 F6
+
+                        //F6 pulsado. De momento no hace nada, solo activa bits de puerto_especial3 que se pueden leer desde menu
+                        case UTIL_KEY_F6:
+
+                                if (pressrelease) {
+                                        puerto_especial3 &=255-1;
+                                }
+                                else {
+                                        puerto_especial3 |=1;
+                                }
+                        break;
+
+                        //F7 pulsado. De momento no hace nada, solo activa bits de puerto_especial3 que se pueden leer desde menu
+                        case UTIL_KEY_F7:
+
+                                if (pressrelease) {
+                                        puerto_especial3 &=255-2;
+                                }
+                                else {
+                                        puerto_especial3 |=2;
+                                }
+                        break;
+
 
 			//F8 pulsado. On Screen keyboard, De momento solo en spectrum
                         case UTIL_KEY_F8:
-				if (pressrelease) {
-				menu_abierto=1;
-				menu_button_osdkeyboard.v=1;
-                     	}
+				                      if (pressrelease) {
+				                            menu_abierto=1;
+				                             menu_button_osdkeyboard.v=1;
+                                     puerto_especial3 &=255-4;
+                     	        }
+                              else {
+                                    puerto_especial3 |=4;
+                              }
 
                         break;
 
@@ -5468,6 +5506,10 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                                 if (pressrelease) {
                                         menu_abierto=1;
                                         menu_button_quickload.v=1;
+                                        puerto_especial3 &=255-8;
+                                }
+                                else {
+                                  puerto_especial3 |=8;
                                 }
 
                         break;
@@ -5482,6 +5524,70 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                                         puerto_especial3 |=16;
                                 }
                         break;
+
+
+                        //z80_byte puerto_especial3=255; //  F10 F9 F8 F7 F6
+
+
+                        //z80_byte puerto_especial4=255; //  F15 F14 F13 F12 F11
+
+                        //F11 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        case UTIL_KEY_F11:
+
+                                if (pressrelease) {
+                                        puerto_especial4 &=255-1;
+                                }
+                                else {
+                                        puerto_especial4 |=1;
+                                }
+                        break;
+
+                        //F12 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        case UTIL_KEY_F12:
+
+                                if (pressrelease) {
+                                        puerto_especial4 &=255-2;
+                                }
+                                else {
+                                        puerto_especial4 |=2;
+                                }
+                        break;
+
+                        //F13 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        case UTIL_KEY_F13:
+
+                                if (pressrelease) {
+                                        puerto_especial4 &=255-4;
+                                }
+                                else {
+                                        puerto_especial4 |=4;
+                                }
+                        break;
+
+                        //F14 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        case UTIL_KEY_F14:
+
+                                if (pressrelease) {
+                                        puerto_especial4 &=255-8;
+                                }
+                                else {
+                                        puerto_especial4 |=8;
+                                }
+                        break;
+
+                        //F15 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        case UTIL_KEY_F15:
+
+                                if (pressrelease) {
+                                        puerto_especial4 &=255-16;
+                                }
+                                else {
+                                        puerto_especial4 |=16;
+                                }
+                        break;
+
+
+
 
                         //ESC pulsado. Para Z88 y tecla menu
                         case UTIL_KEY_ESC:

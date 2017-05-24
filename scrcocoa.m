@@ -237,7 +237,7 @@ NSInteger pixel_screen_height;
 
 int keymap[] =
 {
-    'a',
+    'a',    //0
     's',
     'd',
     'f',
@@ -247,7 +247,7 @@ int keymap[] =
     'x',
     'c',
     'v',
-    COCOA_SECOND_BACKSLASH,
+    COCOA_SECOND_BACKSLASH,  //10
     'b',
     'q',
     'w',
@@ -257,7 +257,7 @@ int keymap[] =
     't',
     '1',
     '2',
-    '3',
+    '3',  //20
     '4',
     '6',
     '5',
@@ -267,7 +267,7 @@ int keymap[] =
     '-',
     '8',
     '0',
-    ']',
+    ']',  //30
     'o',
     'u',
     '[',
@@ -277,7 +277,7 @@ int keymap[] =
     'l',
     'j',
     '\'',
-    'k',
+    'k',  //40
     ';',
     '\\',
     ',',
@@ -287,7 +287,7 @@ int keymap[] =
     '.',
     COCOA_KEY_TAB,
     ' ',
-    '`',
+    '`',  //50
     COCOA_KEY_BACKSPACE,
     0,
     COCOA_KEY_ESCAPE,
@@ -297,7 +297,7 @@ COCOA_KEY_LSHIFT,
 COCOA_KEY_CAPSLOCK,
 COCOA_KEY_LALT,
 COCOA_KEY_LCTRL,
-COCOA_KEY_RSHIFT,
+COCOA_KEY_RSHIFT, //60
 COCOA_KEY_RALT,
 COCOA_KEY_RCTRL,
 0,
@@ -307,7 +307,7 @@ COCOA_KEY_KP_COMMA,
 COCOA_KEY_KP_MULTIPLY,
 0,
 COCOA_KEY_KP_PLUS,
-0,
+0, //70
 COCOA_KEY_NUMLOCK,
 0,
 0,
@@ -317,7 +317,7 @@ COCOA_KEY_KP_ENTER,
 0,
 COCOA_KEY_KP_MINUS,
 0,
-0,
+0,  //80
 COCOA_KEY_KP_EQUALS,
 COCOA_KEY_KP0,
 COCOA_KEY_KP1,
@@ -327,7 +327,7 @@ COCOA_KEY_KP4,
 COCOA_KEY_KP5,
 COCOA_KEY_KP6,
 COCOA_KEY_KP7,
-0,
+0,  //90
 COCOA_KEY_KP8,
 COCOA_KEY_KP9,
 0,
@@ -337,27 +337,27 @@ COCOA_KEY_F5,
 COCOA_KEY_F6,
 COCOA_KEY_F7,
 COCOA_KEY_F3,
-COCOA_KEY_F8,
+COCOA_KEY_F8,  //100
 COCOA_KEY_F9,
 0,
 COCOA_KEY_F11,
 0,
-COCOA_KEY_PRINT,
+COCOA_KEY_F13, //COCOA_KEY_PRINT,
 0,
-COCOA_KEY_SCROLLOCK,
+COCOA_KEY_F14, //COCOA_KEY_SCROLLOCK,
 0,
 COCOA_KEY_F10,
-0,
+0, //110
 COCOA_KEY_F12,
 0,
-COCOA_KEY_PAUSE,
+COCOA_KEY_F15, //COCOA_KEY_PAUSE,
 COCOA_KEY_INSERT,
 COCOA_KEY_HOME,
 COCOA_KEY_PAGEUP,
 COCOA_KEY_DELETE,
 COCOA_KEY_F4,
 COCOA_KEY_END,
-COCOA_KEY_F2,
+COCOA_KEY_F2, //120
 COCOA_KEY_PAGEDOWN,
 COCOA_KEY_F1,
 COCOA_KEY_LEFT,
@@ -1352,7 +1352,7 @@ int scrcocoa_keymap_z88_cpc_leftz; //Tecla a la izquierda de la Z. Solo usada en
         int cocoakeycode;
         NSPoint p = [event locationInWindow];
         cocoakeycode=[event keyCode];
-        //printf ("cocoakeycode tecla %d pressrelease: %d\n",cocoakeycode,pressrelease);
+        printf ("cocoakeycode tecla %d pressrelease: %d\n",cocoakeycode,pressrelease);
 
 	int teclareal=0;
         //printf ("gestionTecla.tecla: %d contador: %d\n",cocoakeycode,temp_cocoa_contador++);
@@ -1586,6 +1586,17 @@ int scrcocoa_keymap_z88_cpc_leftz; //Tecla a la izquierda de la Z. Solo usada en
 				util_set_reset_key(UTIL_KEY_F5,pressrelease);
                         break;
 
+
+												//F6 pulsado
+                        case COCOA_KEY_F6:
+                                util_set_reset_key(UTIL_KEY_F6,pressrelease);
+                        break;
+
+												//F7 pulsado
+                        case COCOA_KEY_F7:
+                                util_set_reset_key(UTIL_KEY_F7,pressrelease);
+                        break;
+
 /*
 
                         //simulador de joystick
@@ -1611,6 +1622,31 @@ int scrcocoa_keymap_z88_cpc_leftz; //Tecla a la izquierda de la Z. Solo usada en
                         //F10 pulsado
                         case COCOA_KEY_F10:
                                 util_set_reset_key(UTIL_KEY_F10,pressrelease);
+                        break;
+
+												//F11 pulsado
+                        case COCOA_KEY_F11:
+                                util_set_reset_key(UTIL_KEY_F11,pressrelease);
+                        break;
+
+												//F12 pulsado
+                        case COCOA_KEY_F12:
+                                util_set_reset_key(UTIL_KEY_F12,pressrelease);
+                        break;
+
+												//F13 pulsado
+                        case COCOA_KEY_F13:
+                                util_set_reset_key(UTIL_KEY_F13,pressrelease);
+                        break;
+
+												//F14 pulsado
+                        case COCOA_KEY_F14:
+                                util_set_reset_key(UTIL_KEY_F14,pressrelease);
+                        break;
+
+												//F15 pulsado
+                        case COCOA_KEY_F15:
+                                util_set_reset_key(UTIL_KEY_F15,pressrelease);
                         break;
 
 
