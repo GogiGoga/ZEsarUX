@@ -163,6 +163,73 @@ void tbblue_out_sprite_sprite(value)
 
 
 
+void tbsprite_do_overlay(void)
+{
+
+        //spritechip activo o no?
+        if ( (tbblue_registers[21]&1)==0) return;
+
+				//printf ("tbblue sprite chip activo\n");
+
+
+        int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
+        int y=t_scanline_draw-screen_invisible_borde_superior;
+        if (border_enabled.v==0) y=y-screen_borde_superior;
+        z80_int *puntero_buf_rainbow;
+        puntero_buf_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
+        puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+
+				printf ("overlay y: %d\n",y);
+
+        //Bucle para cada sprite
+        int conta_sprites;
+        for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
+					int sprite_x;
+					z80_byte sprite_y;
+
+					z80_byte index_pattern;
+
+					/*
+					[0] 1st: X position (bits 7-0).
+					[1] 2nd: Y position (0-255).
+					[2] 3rd: bits 7-4 is palette offset, bit 3 is X MSB, bit 2 is X mirror, bit 1 is Y mirror and bit 0 is visible flag.
+					[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
+					*/
+
+					//Si sprite visible
+					if (tbsprite_sprites[conta_sprites][2]&1) {
+						sprite_x=tbsprite_sprites[conta_sprites][0] | (tbsprite_sprites[conta_sprites][2]<<5);
+						sprite_y=tbsprite_sprites[conta_sprites][1];
+						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
+						//Si coordenada y esta en margen y sprite activo
+
+						int diferencia=scanline_copia-sprite_y;
+						int alto_sprite=16;
+
+						//Pintar el sprite si esta en rango de coordenada y
+						if (diferencia>=0 && diferencia<alto_sprite && scanline_copia<192) {
+							int offset_pattern=0;
+							//saltar coordenada y
+							offset_pattern +=16*diferencia;
+
+							//index_pattern +=offset_pattern;
+
+							//index_pattern ya apunta a pattern a pintar en pantalla
+							z80_int *puntero_buf_rainbow_sprite;
+							puntero_buf_rainbow_sprite=puntero_buf_rainbow+sprite_x;
+
+							//Dibujar linea x
+							int i;
+							for (i=0;i<16;i++) {
+								*puntero_buf_rainbow_sprite=tbsprite_patterns[index_pattern][offset_pattern++];
+								puntero_buf_rainbow_sprite++;
+							}
+						}
+
+				}
+			}
+
+}
 
 
 
