@@ -4806,7 +4806,7 @@ void convert_numeros_letras_puerto_teclado(z80_byte tecla,int pressrelease)
 int util_set_reset_key_continue_f_functions(enum util_teclas tecla,int pressrelease)
 {
 
-  printf ("tecla: %d pressrelease: %d menu_abierto: %d\n",tecla,pressrelease,menu_abierto);
+  //printf ("tecla: %d pressrelease: %d menu_abierto: %d\n",tecla,pressrelease,menu_abierto);
 
   if (menu_abierto) return 0;
   //Ver si la tecla F esta asignada
@@ -4883,7 +4883,7 @@ int util_set_reset_key_continue_f_functions(enum util_teclas tecla,int pressrele
 
   enum defined_f_function_ids accion=defined_f_functions_keys_array[indice];
 
-  printf ("Tecla: F%d Accion: %s\n",indice+1,defined_f_functions_array[accion].texto_funcion);
+  debug_printf (VERBOSE_DEBUG,"Key: F%d Action: %s",indice+1,defined_f_functions_array[accion].texto_funcion);
 
   if (accion!=F_FUNCION_DEFAULT) {
     if (pressrelease) {

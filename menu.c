@@ -12609,7 +12609,7 @@ void menu_hardware_set_f_func_action(MENU_ITEM_PARAMETERS)
 {
         hardware_set_f_func_action_opcion_seleccionada=defined_f_functions_keys_array[valor_opcion];
 
-				printf ("valor opcion: %d linea menu: %d\n",valor_opcion,hardware_set_f_func_action_opcion_seleccionada);
+				//printf ("valor opcion: %d linea menu: %d\n",valor_opcion,hardware_set_f_func_action_opcion_seleccionada);
 
 				//printf ("valor opcion: %d\n",valor_opcion);
 
@@ -12640,7 +12640,7 @@ void menu_hardware_set_f_func_action(MENU_ITEM_PARAMETERS)
                 //menu_add_item_menu(array_menu_hardware_set_f_func_action,"ESC Back",MENU_OPCION_NORMAL|MENU_OPCION_ESC,NULL,NULL);
                 menu_add_ESC_item(array_menu_hardware_set_f_func_action);
 
-                retorno_menu=menu_dibuja_menu(&hardware_set_f_func_action_opcion_seleccionada,&item_seleccionado,array_menu_hardware_set_f_func_action,"Redefine keys" );
+                retorno_menu=menu_dibuja_menu(&hardware_set_f_func_action_opcion_seleccionada,&item_seleccionado,array_menu_hardware_set_f_func_action,"Set F keys" );
 
                 cls_menu_overlay();
 
@@ -12700,7 +12700,7 @@ void menu_hardware_set_f_functions(MENU_ITEM_PARAMETERS)
                 //menu_add_item_menu(array_menu_hardware_set_f_functions,"ESC Back",MENU_OPCION_NORMAL|MENU_OPCION_ESC,NULL,NULL);
                 menu_add_ESC_item(array_menu_hardware_set_f_functions);
 
-                retorno_menu=menu_dibuja_menu(&hardware_set_f_functions_opcion_seleccionada,&item_seleccionado,array_menu_hardware_set_f_functions,"Redefine keys" );
+                retorno_menu=menu_dibuja_menu(&hardware_set_f_functions_opcion_seleccionada,&item_seleccionado,array_menu_hardware_set_f_functions,"Set F keys" );
 
                 cls_menu_overlay();
 
@@ -12778,10 +12778,10 @@ void menu_hardware_settings(MENU_ITEM_PARAMETERS)
 
 
 		//Redefine keys
-		menu_add_item_menu_format(array_menu_hardware_settings,MENU_OPCION_NORMAL,menu_hardware_set_f_functions,NULL,"Set F keys functions");
-		//menu_add_item_menu_shortcut(array_menu_hardware_settings,'f');
-		//menu_add_item_menu_tooltip(array_menu_hardware_settings,"Redefine one key to another");
-		//menu_add_item_menu_ayuda(array_menu_hardware_settings,"Redefine one key to another");
+		menu_add_item_menu_format(array_menu_hardware_settings,MENU_OPCION_NORMAL,menu_hardware_set_f_functions,NULL,"Set F keys fu~~nctions");
+		menu_add_item_menu_shortcut(array_menu_hardware_settings,'n');
+		menu_add_item_menu_tooltip(array_menu_hardware_settings,"Assign actions to F keys");
+		menu_add_item_menu_ayuda(array_menu_hardware_settings,"Assign actions to F keys");
 
 
 		if (MACHINE_IS_SPECTRUM || MACHINE_IS_ZX8081 || MACHINE_IS_SAM) {
