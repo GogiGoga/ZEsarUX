@@ -263,7 +263,7 @@ void tbsprite_do_overlay(void)
 								//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
 								z80_int color_final=ulaplus_palette_table[color]+ULAPLUS_INDEX_FIRST_COLOR;
 
-								color_final=ulaplus_palette_table[colorulaplus]+ULAPLUS_INDEX_FIRST_COLOR;
+								color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
 								//color_final=ulaplus_rgb_table[color_final];
 
 								*puntero_buf_rainbow_sprite=color_final;
