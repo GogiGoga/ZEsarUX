@@ -214,6 +214,8 @@ extern long int get_file_size(char *nombre);
 
 extern int lee_archivo(char *nombre,char *buffer,int max_longitud);
 
+extern int util_get_configfile_name(char *configfile);
+
 //extern void util_print_second_overlay(char *texto, int x, int y);
 
 //valores usados en funcion util_set_reset_mouse

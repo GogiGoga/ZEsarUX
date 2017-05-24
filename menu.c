@@ -20200,10 +20200,18 @@ void menu_about_running_info(MENU_ITEM_PARAMETERS)
         }
         string_audio_drivers[i]=0;
 
+				char configfile[PATH_MAX];
+
+				if (util_get_configfile_name(configfile)==0)  {
+					sprintf(configfile,"Unknown");
+				}
 
 	menu_generic_message_format("Running info",
-		"Video Driver: %s\nAvailable video drivers: %s\nAudio Driver: %s\nAvailable audio drivers: %s\n",
-		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers);
+		"Video Driver: %s\nAvailable video drivers: %s\n\nAudio Driver: %s\nAvailable audio drivers: %s\n\n"
+		"Configuration file: %s\n",
+		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile);
+
+
 
 
 	//temp prueba
