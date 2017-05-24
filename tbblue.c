@@ -101,7 +101,7 @@ void tbblue_reset_sprites(void)
 
 void tbblue_out_port_sprite_index(value)
 {
-	printf ("Out tbblue_out_port_sprite_index %02XH\n",value);
+	//printf ("Out tbblue_out_port_sprite_index %02XH\n",value);
 	tbsprite_index_palette=tbsprite_index_pattern=tbsprite_index_sprite=value;
 
 	tbsprite_index_pattern_subindex=tbsprite_index_sprite_subindex=0;
@@ -109,20 +109,26 @@ void tbblue_out_port_sprite_index(value)
 
 void tbblue_out_sprite_palette(value)
 {
-	printf ("Out tbblue_out_sprite_palette %02XH\n",value);
+	//printf ("Out tbblue_out_sprite_palette %02XH\n",value);
+
+	tbsprite_palette[tbsprite_index_palette]=value;
+	if (tbsprite_index_palette==255) tbsprite_index_palette=0;
+	else tbsprite_index_palette++;
 }
 
 void tbblue_out_sprite_pattern(value)
 {
-	printf ("Out tbblue_out_sprite_pattern. Index: %d subindex: %d %02XH\n",tbsprite_index_pattern,tbsprite_index_pattern_subindex,value);
+
 
 	//z80_byte tbsprite_index_pattern,tbsprite_index_pattern_subindex;
 	//z80_byte tbsprite_patterns[TBBLUE_MAX_PATTERNS][256];
 
 
-
-
 	tbsprite_patterns[tbsprite_index_pattern][tbsprite_index_pattern_subindex]=value;
+
+printf ("Out tbblue_out_sprite_pattern. Index: %d subindex: %d %02XH\n",tbsprite_index_pattern,tbsprite_index_pattern_subindex,
+tbsprite_patterns[tbsprite_index_pattern][tbsprite_index_pattern_subindex]);
+
 	if (tbsprite_index_pattern_subindex==255) {
 		tbsprite_index_pattern_subindex=0;
 		tbsprite_index_pattern++;
@@ -134,7 +140,7 @@ void tbblue_out_sprite_pattern(value)
 
 void tbblue_out_sprite_sprite(value)
 {
-	printf ("Out tbblue_out_sprite_sprite. Index: %d subindex: %d %02XH\n",tbsprite_index_sprite,tbsprite_index_sprite_subindex,value);
+	//printf ("Out tbblue_out_sprite_sprite. Index: %d subindex: %d %02XH\n",tbsprite_index_sprite,tbsprite_index_sprite_subindex,value);
 
 
 	/*
@@ -143,8 +149,8 @@ void tbblue_out_sprite_sprite(value)
 	[2] 3rd: bits 7-4 is palette offset, bit 3 is X MSB, bit 2 is X mirror, bit 1 is Y mirror and bit 0 is visible flag.
 	[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
 	*/
-		if (tbsprite_index_sprite_subindex==0) printf ("x: %d\n",value);
-		if (tbsprite_index_sprite_subindex==1) printf ("y: %d\n",value);
+		//if (tbsprite_index_sprite_subindex==0) printf ("x: %d\n",value);
+		//if (tbsprite_index_sprite_subindex==1) printf ("y: %d\n",value);
 
 	//z80_byte tbsprite_sprites[TBBLUE_MAX_SPRITES][4];
 
@@ -153,6 +159,7 @@ void tbblue_out_sprite_sprite(value)
 
 	tbsprite_sprites[tbsprite_index_sprite][tbsprite_index_sprite_subindex]=value;
 	if (tbsprite_index_sprite_subindex==3) {
+		printf ("sprite %d [3] pattern: %d\n",tbsprite_index_sprite,tbsprite_sprites[tbsprite_index_sprite][3]&63);
 		tbsprite_index_sprite_subindex=0;
 		tbsprite_index_sprite++;
 		if (tbsprite_index_sprite>=TBBLUE_MAX_SPRITES) tbsprite_index_sprite=0;
@@ -179,15 +186,34 @@ void tbsprite_do_overlay(void)
         puntero_buf_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
         puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 
-				printf ("overlay y: %d\n",y);
+				//printf ("overlay y: %d\n",y);
 
         //Bucle para cada sprite
         int conta_sprites;
+				z80_byte index_pattern;
+
+		int i;
+		int offset_pattern;
+				/*for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
+						offset_pattern=0;
+						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
+				for (i=0;i<16;i++) {
+					z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern++];
+					printf ("index color: %d\n",index_color);
+				}
+			}
+
+
+				return;
+
+				*/
+
+
         for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
 					int sprite_x;
 					z80_byte sprite_y;
 
-					z80_byte index_pattern;
+
 
 					/*
 					[0] 1st: X position (bits 7-0).
@@ -198,7 +224,7 @@ void tbsprite_do_overlay(void)
 
 					//Si sprite visible
 					if (tbsprite_sprites[conta_sprites][2]&1) {
-						sprite_x=tbsprite_sprites[conta_sprites][0] | (tbsprite_sprites[conta_sprites][2]<<5);
+						sprite_x=tbsprite_sprites[conta_sprites][0]; // | ((tbsprite_sprites[conta_sprites][2]&8)<<5);
 						sprite_y=tbsprite_sprites[conta_sprites][1];
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
@@ -208,7 +234,7 @@ void tbsprite_do_overlay(void)
 
 						//Pintar el sprite si esta en rango de coordenada y
 						if (diferencia>=0 && diferencia<alto_sprite && scanline_copia<192) {
-							int offset_pattern=0;
+							offset_pattern=0;
 							//saltar coordenada y
 							offset_pattern +=16*diferencia;
 
@@ -219,9 +245,28 @@ void tbsprite_do_overlay(void)
 							puntero_buf_rainbow_sprite=puntero_buf_rainbow+sprite_x;
 
 							//Dibujar linea x
-							int i;
+
 							for (i=0;i<16;i++) {
-								*puntero_buf_rainbow_sprite=tbsprite_patterns[index_pattern][offset_pattern++];
+								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern++];
+								printf ("index color: %d\n",index_color);
+								z80_byte color=tbsprite_palette[index_color];
+
+								//Pasamos de RGB a GRB
+								z80_byte r,g,b;
+								r=(color>>5)&7;
+								g=(color>>2)&7;
+								b=(color&3);
+
+								z80_byte colorulaplus=(g<<5)|(r<<2)|b;
+
+
+								//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
+								z80_int color_final=ulaplus_palette_table[color]+ULAPLUS_INDEX_FIRST_COLOR;
+
+								color_final=ulaplus_palette_table[colorulaplus]+ULAPLUS_INDEX_FIRST_COLOR;
+								//color_final=ulaplus_rgb_table[color_final];
+
+								*puntero_buf_rainbow_sprite=color_final;
 								puntero_buf_rainbow_sprite++;
 							}
 						}
