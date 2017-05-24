@@ -1352,7 +1352,7 @@ int scrcocoa_keymap_z88_cpc_leftz; //Tecla a la izquierda de la Z. Solo usada en
         int cocoakeycode;
         NSPoint p = [event locationInWindow];
         cocoakeycode=[event keyCode];
-        printf ("cocoakeycode tecla %d pressrelease: %d\n",cocoakeycode,pressrelease);
+        //printf ("cocoakeycode tecla %d pressrelease: %d\n",cocoakeycode,pressrelease);
 
 	int teclareal=0;
         //printf ("gestionTecla.tecla: %d contador: %d\n",cocoakeycode,temp_cocoa_contador++);

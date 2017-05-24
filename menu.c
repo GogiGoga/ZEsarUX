@@ -12601,19 +12601,23 @@ void menu_multiface(MENU_ITEM_PARAMETERS)
 
 
 
+
+
+
+
 void menu_hardware_set_f_func_action(MENU_ITEM_PARAMETERS)
 {
-        //hardware_set_f_func_action_opcion_seleccionada=defined_f_functions_keys_array[valor_opcion];
+        hardware_set_f_func_action_opcion_seleccionada=defined_f_functions_keys_array[valor_opcion];
 
-				//printf ("valor opcion: %d linea menu: %d\n",valor_opcion,hardware_set_f_func_action_opcion_seleccionada);
+				printf ("valor opcion: %d linea menu: %d\n",valor_opcion,hardware_set_f_func_action_opcion_seleccionada);
 
-				printf ("valor opcion: %d\n",valor_opcion);
+				//printf ("valor opcion: %d\n",valor_opcion);
 
 
         menu_item *array_menu_hardware_set_f_func_action;
         menu_item item_seleccionado;
         int retorno_menu;
-        do {
+        //do {
 
                 char buffer_texto[40];
 
@@ -12641,16 +12645,22 @@ void menu_hardware_set_f_func_action(MENU_ITEM_PARAMETERS)
                 cls_menu_overlay();
 
 
-if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+								if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+
+												//Si se pulsa Enter
+												int indice=hardware_set_f_func_action_opcion_seleccionada;
+												defined_f_functions_keys_array[valor_opcion]=indice;
+
+												/*
                         //llamamos por valor de funcion
                         if (item_seleccionado.menu_funcion!=NULL) {
                                 //printf ("actuamos por funcion\n");
                                 item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
                                 cls_menu_overlay();
-                        }
+                        }*/
                 }
 
-        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
+        //} while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
 }
 
 
@@ -12677,6 +12687,7 @@ void menu_hardware_set_f_functions(MENU_ITEM_PARAMETERS)
                         if (i==0) menu_add_item_menu_inicial_format(&array_menu_hardware_set_f_functions,MENU_OPCION_NORMAL,menu_hardware_set_f_func_action,NULL,buffer_texto);
                         else menu_add_item_menu_format(array_menu_hardware_set_f_functions,MENU_OPCION_NORMAL,menu_hardware_set_f_func_action,NULL,buffer_texto);
 
+												menu_add_item_menu_valor_opcion(array_menu_hardware_set_f_functions,i);
 
                         //menu_add_item_menu_tooltip(array_menu_hardware_set_f_functions,"Redefine the key");
                         //menu_add_item_menu_ayuda(array_menu_hardware_set_f_functions,"Indicates which key on the Spectrum keyboard is sent when "
@@ -12694,7 +12705,7 @@ void menu_hardware_set_f_functions(MENU_ITEM_PARAMETERS)
                 cls_menu_overlay();
 
 
-if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+								if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
                         //llamamos por valor de funcion
                         if (item_seleccionado.menu_funcion!=NULL) {
                                 //printf ("actuamos por funcion\n");
@@ -21888,7 +21899,7 @@ void menu_process_f_functions(void)
 
 	enum defined_f_function_ids accion=defined_f_functions_keys_array[indice];
 
-	printf ("Menu process Tecla: F%d Accion: %s\n",indice+1,defined_f_functions_array[accion].texto_funcion);
+	//printf ("Menu process Tecla: F%d Accion: %s\n",indice+1,defined_f_functions_array[accion].texto_funcion);
 
 	switch (accion)
 	{
