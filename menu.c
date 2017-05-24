@@ -21785,8 +21785,28 @@ void menu_process_f_functions(void)
 			reset_cpu();
 		break;
 
+		case F_FUNCION_HARDRESET:
+			hard_reset_cpu();
+		break;
+
 		case F_FUNCION_NMI:
 			generate_nmi();
+		break;
+
+		case F_FUNCION_OPENMENU:
+			menu_inicio_bucle();
+		break;
+
+		case F_FUNCION_OCR:
+			textspeech_enviar_speech_pantalla();
+		break;
+
+		case F_FUNCION_SMARTLOAD:
+			menu_quickload(0);
+		break;
+
+		case F_FUNCION_OSDKEYBOARD:
+			menu_onscreen_keyboard(0);
 		break;
 
 		case F_FUNCION_EXITEMULATOR:
@@ -21795,12 +21815,9 @@ void menu_process_f_functions(void)
 
 
 /*
-		F_FUNCION_HARDRESET,
 		F_FUNCION_OPENMENU,
 		F_FUNCION_OCR,
-		F_FUNCION_SMARTLOAD,
-		F_FUNCION_OSDKEYBOARD,
-		F_FUNCION_EXITEMULATOR*/
+		*/
 	}
 
 }
@@ -21882,7 +21899,7 @@ void menu_inicio(void)
 		menu_espera_no_tecla();
 		menu_onscreen_keyboard(0);
 		cls_menu_overlay();
-        }
+  }
 
 
 

@@ -231,6 +231,10 @@ NSInteger pixel_screen_height;
 
 #define COCOA_KEY_KP_COMMA 312
 
+#define COCOA_KEY_F13 313
+#define COCOA_KEY_F14 314
+#define COCOA_KEY_F15 315
+
 int keymap[] =
 {
     'a',
