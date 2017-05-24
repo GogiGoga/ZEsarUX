@@ -550,6 +550,8 @@ int timexcart_opcion_seleccionada=0;
 int mmc_divmmc_opcion_seleccionada=0;
 int ide_divide_opcion_seleccionada=0;
 int hardware_redefine_keys_opcion_seleccionada=0;
+int hardware_set_f_functions_opcion_seleccionada=0;
+int hardware_set_f_func_action_opcion_seleccionada=0;
 int ula_settings_opcion_seleccionada=0;
 //int debug_configuration_opcion_seleccionada=0;
 int dandanator_opcion_seleccionada=0;
@@ -12599,6 +12601,114 @@ void menu_multiface(MENU_ITEM_PARAMETERS)
 
 
 
+void menu_hardware_set_f_func_action(MENU_ITEM_PARAMETERS)
+{
+        //hardware_set_f_func_action_opcion_seleccionada=defined_f_functions_keys_array[valor_opcion];
+
+				//printf ("valor opcion: %d linea menu: %d\n",valor_opcion,hardware_set_f_func_action_opcion_seleccionada);
+
+				printf ("valor opcion: %d\n",valor_opcion);
+
+
+        menu_item *array_menu_hardware_set_f_func_action;
+        menu_item item_seleccionado;
+        int retorno_menu;
+        do {
+
+                char buffer_texto[40];
+
+                int i;
+                for (i=0;i<MAX_F_FUNCTIONS;i++) {
+
+                  //enum defined_f_function_ids accion=defined_f_functions_keys_array[i];
+
+                  sprintf (buffer_texto,"%s",defined_f_functions_array[i].texto_funcion);
+
+
+                        if (i==0) menu_add_item_menu_inicial_format(&array_menu_hardware_set_f_func_action,MENU_OPCION_NORMAL,NULL,NULL,buffer_texto);
+                        else menu_add_item_menu_format(array_menu_hardware_set_f_func_action,MENU_OPCION_NORMAL,NULL,NULL,buffer_texto);
+
+												}
+
+
+
+                menu_add_item_menu(array_menu_hardware_set_f_func_action,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+                //menu_add_item_menu(array_menu_hardware_set_f_func_action,"ESC Back",MENU_OPCION_NORMAL|MENU_OPCION_ESC,NULL,NULL);
+                menu_add_ESC_item(array_menu_hardware_set_f_func_action);
+
+                retorno_menu=menu_dibuja_menu(&hardware_set_f_func_action_opcion_seleccionada,&item_seleccionado,array_menu_hardware_set_f_func_action,"Redefine keys" );
+
+                cls_menu_overlay();
+
+
+if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+                        //llamamos por valor de funcion
+                        if (item_seleccionado.menu_funcion!=NULL) {
+                                //printf ("actuamos por funcion\n");
+                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
+                                cls_menu_overlay();
+                        }
+                }
+
+        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
+}
+
+
+
+void menu_hardware_set_f_functions(MENU_ITEM_PARAMETERS)
+{
+        menu_item *array_menu_hardware_set_f_functions;
+        menu_item item_seleccionado;
+        int retorno_menu;
+        do {
+
+                char buffer_texto[40];
+
+                int i;
+                for (i=0;i<MAX_F_FUNCTIONS_KEYS;i++) {
+
+                  enum defined_f_function_ids accion=defined_f_functions_keys_array[i];
+
+                  sprintf (buffer_texto,"Key F%d : %s",i+1,defined_f_functions_array[accion].texto_funcion);
+
+
+
+
+                        if (i==0) menu_add_item_menu_inicial_format(&array_menu_hardware_set_f_functions,MENU_OPCION_NORMAL,menu_hardware_set_f_func_action,NULL,buffer_texto);
+                        else menu_add_item_menu_format(array_menu_hardware_set_f_functions,MENU_OPCION_NORMAL,menu_hardware_set_f_func_action,NULL,buffer_texto);
+
+
+                        //menu_add_item_menu_tooltip(array_menu_hardware_set_f_functions,"Redefine the key");
+                        //menu_add_item_menu_ayuda(array_menu_hardware_set_f_functions,"Indicates which key on the Spectrum keyboard is sent when "
+                          //                      "pressed the original key");
+												}
+
+
+
+                menu_add_item_menu(array_menu_hardware_set_f_functions,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+                //menu_add_item_menu(array_menu_hardware_set_f_functions,"ESC Back",MENU_OPCION_NORMAL|MENU_OPCION_ESC,NULL,NULL);
+                menu_add_ESC_item(array_menu_hardware_set_f_functions);
+
+                retorno_menu=menu_dibuja_menu(&hardware_set_f_functions_opcion_seleccionada,&item_seleccionado,array_menu_hardware_set_f_functions,"Redefine keys" );
+
+                cls_menu_overlay();
+
+
+if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+                        //llamamos por valor de funcion
+                        if (item_seleccionado.menu_funcion!=NULL) {
+                                //printf ("actuamos por funcion\n");
+                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
+                                cls_menu_overlay();
+                        }
+                }
+
+        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
+}
+
+
+
+
 
 //menu hardware settings
 void menu_hardware_settings(MENU_ITEM_PARAMETERS)
@@ -12654,6 +12764,13 @@ void menu_hardware_settings(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_shortcut(array_menu_hardware_settings,'f');
 		menu_add_item_menu_tooltip(array_menu_hardware_settings,"Redefine one key to another");
 		menu_add_item_menu_ayuda(array_menu_hardware_settings,"Redefine one key to another");
+
+
+		//Redefine keys
+		menu_add_item_menu_format(array_menu_hardware_settings,MENU_OPCION_NORMAL,menu_hardware_set_f_functions,NULL,"Set F keys functions");
+		//menu_add_item_menu_shortcut(array_menu_hardware_settings,'f');
+		//menu_add_item_menu_tooltip(array_menu_hardware_settings,"Redefine one key to another");
+		//menu_add_item_menu_ayuda(array_menu_hardware_settings,"Redefine one key to another");
 
 
 		if (MACHINE_IS_SPECTRUM || MACHINE_IS_ZX8081 || MACHINE_IS_SAM) {
