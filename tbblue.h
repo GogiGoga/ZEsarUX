@@ -64,6 +64,11 @@ extern void tbblue_set_timing_48k(void);
 #define TBBLUE_REGISTER_PORT 0x243b
 #define TBBLUE_VALUE_PORT 0x253b
 
+#define TBBLUE_SPRITE_INDEX_PORT 0x303B
+#define TBBLUE_SPRITE_PALETTE_PORT 0x53
+#define TBBLUE_SPRITE_PATTERN_PORT 0x55
+#define TBBLUE_SPRITE_SPRITE_PORT 0x57
+
 
 extern z80_byte tbblue_registers[];
 
@@ -73,5 +78,9 @@ extern z80_byte tbblue_get_value_port(void);
 extern void tbblue_set_register_port(z80_byte value);
 extern void tbblue_set_value_port(z80_byte value);
 extern z80_byte tbblue_get_value_port_register(z80_byte registro);
+
+#define TBBLUE_MAX_PATTERNS 64
+#define TBBLUE_MAX_SPRITES 64
+#define TBBLUE_TRANSPARENT_COLOR 0x73
 
 #endif

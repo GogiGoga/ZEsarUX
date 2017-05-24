@@ -6153,6 +6153,13 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
                                 tbblue_set_memory_pages();
                         }
 
+		if (puerto==TBBLUE_SPRITE_INDEX_PORT)	tbblue_out_port_sprite_index(value);
+		if (puerto==TBBLUE_SPRITE_PALETTE_PORT)	tbblue_out_sprite_palette(value);
+		if (puerto==TBBLUE_SPRITE_PATTERN_PORT) tbblue_out_sprite_pattern(value);
+		if (puerto==TBBLUE_SPRITE_SPRITE_PORT) tbblue_out_sprite_sprite(value);
+
+
+
 	}
 
 

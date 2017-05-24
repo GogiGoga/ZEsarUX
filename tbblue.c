@@ -46,6 +46,126 @@ z80_byte *tbblue_fpga_rom;
 z80_byte *tbblue_memory_paged[4];
 
 
+//Sprites
+
+//Paleta de 256 colores formato RRRGGGBB
+z80_byte tbsprite_palette[256];
+//64 patterns de Sprites
+/*
+In the palette each byte represents the colors in the RRRGGGBB format, and the pink color, defined by standard 1110011, is reserved for the transparent color.
+*/
+z80_byte tbsprite_patterns[TBBLUE_MAX_PATTERNS][256];
+//64 sprites
+/*
+[0] 1st: X position (bits 7-0).
+[1] 2nd: Y position (0-255).
+[2] 3rd: bits 7-4 is palette offset, bit 3 is X MSB, bit 2 is X mirror, bit 1 is Y mirror and bit 0 is visible flag.
+[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
+*/
+z80_byte tbsprite_sprites[TBBLUE_MAX_SPRITES][4];
+
+//Indices al indicar paleta, pattern, sprites. Subindex indica dentro de cada pattern o sprite a que posicion (0..3 en sprites o 0..255 en pattern ) apunta
+z80_byte tbsprite_index_palette;
+z80_byte tbsprite_index_pattern,tbsprite_index_pattern_subindex;
+z80_byte tbsprite_index_sprite,tbsprite_index_sprite_subindex;
+
+
+void tbblue_reset_sprites(void)
+{
+	//Inicializar Paleta
+	int i;
+
+	for (i=0;i<256;i++) tbsprite_palette[i]=i;
+
+	//Resetear patterns todos a transparente
+	for (i=0;i<TBBLUE_MAX_PATTERNS;i++) {
+		int j;
+		for (j=0;j<256;j++) {
+			tbsprite_patterns[i][j]=TBBLUE_TRANSPARENT_COLOR;
+		}
+	}
+
+	//Poner toda info de sprites a 0. Seria quiza suficiente con poner bit de visible a 0
+	for (i=0;i<TBBLUE_MAX_SPRITES;i++) {
+		tbsprite_sprites[i][0]=0;
+		tbsprite_sprites[i][1]=0;
+		tbsprite_sprites[i][2]=0;
+		tbsprite_sprites[i][3]=0;
+	}
+
+
+	tbsprite_index_palette=tbsprite_index_pattern=tbsprite_index_sprite=0;
+
+}
+
+
+void tbblue_out_port_sprite_index(value)
+{
+	printf ("Out tbblue_out_port_sprite_index %02XH\n",value);
+	tbsprite_index_palette=tbsprite_index_pattern=tbsprite_index_sprite=value;
+
+	tbsprite_index_pattern_subindex=tbsprite_index_sprite_subindex=0;
+}
+
+void tbblue_out_sprite_palette(value)
+{
+	printf ("Out tbblue_out_sprite_palette %02XH\n",value);
+}
+
+void tbblue_out_sprite_pattern(value)
+{
+	printf ("Out tbblue_out_sprite_pattern. Index: %d subindex: %d %02XH\n",tbsprite_index_pattern,tbsprite_index_pattern_subindex,value);
+
+	//z80_byte tbsprite_index_pattern,tbsprite_index_pattern_subindex;
+	//z80_byte tbsprite_patterns[TBBLUE_MAX_PATTERNS][256];
+
+
+
+
+	tbsprite_patterns[tbsprite_index_pattern][tbsprite_index_pattern_subindex]=value;
+	if (tbsprite_index_pattern_subindex==255) {
+		tbsprite_index_pattern_subindex=0;
+		tbsprite_index_pattern++;
+		if (tbsprite_index_pattern>=TBBLUE_MAX_PATTERNS) tbsprite_index_pattern=0;
+	}
+	else tbsprite_index_pattern_subindex++;
+
+}
+
+void tbblue_out_sprite_sprite(value)
+{
+	printf ("Out tbblue_out_sprite_sprite. Index: %d subindex: %d %02XH\n",tbsprite_index_sprite,tbsprite_index_sprite_subindex,value);
+
+
+	/*
+	[0] 1st: X position (bits 7-0).
+	[1] 2nd: Y position (0-255).
+	[2] 3rd: bits 7-4 is palette offset, bit 3 is X MSB, bit 2 is X mirror, bit 1 is Y mirror and bit 0 is visible flag.
+	[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
+	*/
+		if (tbsprite_index_sprite_subindex==0) printf ("x: %d\n",value);
+		if (tbsprite_index_sprite_subindex==1) printf ("y: %d\n",value);
+
+	//z80_byte tbsprite_sprites[TBBLUE_MAX_SPRITES][4];
+
+	//Indices al indicar paleta, pattern, sprites. Subindex indica dentro de cada pattern o sprite a que posicion (0..3 en sprites o 0..255 en pattern ) apunta
+	//z80_byte tbsprite_index_sprite,tbsprite_index_sprite_subindex;
+
+	tbsprite_sprites[tbsprite_index_sprite][tbsprite_index_sprite_subindex]=value;
+	if (tbsprite_index_sprite_subindex==3) {
+		tbsprite_index_sprite_subindex=0;
+		tbsprite_index_sprite++;
+		if (tbsprite_index_sprite>=TBBLUE_MAX_SPRITES) tbsprite_index_sprite=0;
+	}
+
+	else tbsprite_index_sprite_subindex++;
+}
+
+
+
+
+
+
 
 //'bootrom' takes '1' on hard-reset and takes '0' if there is any writing on the i/o port 'config1'. It can not be read.
 z80_bit tbblue_bootrom={1};
@@ -523,6 +643,8 @@ void tbblue_hard_reset(void)
 
 	tbblue_set_emulator_setting_divmmc();
 	tbblue_set_emulator_setting_ulaplus();
+
+	tbblue_reset_sprites();
 
 }
 
