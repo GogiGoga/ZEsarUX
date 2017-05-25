@@ -169,6 +169,30 @@ void tbblue_out_sprite_sprite(value)
 }
 
 
+#define MAX_X_SPRITE_LINE 320
+z80_byte sprite_line[MAX_X_SPRITE_LINE];
+
+
+
+void tbsprite_put_color_line(int x,z80_byte color)
+{
+
+	//Si coordenadas invalidas, volver
+	if (x<0 || x>=MAX_X_SPRITE_LINE) return;
+
+	//Si color transparente, no hacer nada
+	if (color==TBBLUE_TRANSPARENT_COLOR) return;
+
+	//Ver si habia un color y activar bit colision
+	z80_byte color_antes=sprite_line[x];
+
+	if (color_antes!=TBBLUE_TRANSPARENT_COLOR) {
+		//TODO: colision
+	}
+
+	sprite_line[x]=color;
+
+}
 
 void tbsprite_do_overlay(void)
 {
@@ -184,7 +208,9 @@ void tbsprite_do_overlay(void)
         if (border_enabled.v==0) y=y-screen_borde_superior;
         z80_int *puntero_buf_rainbow;
         puntero_buf_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
-        puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+
+
+        //puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 
 				//printf ("overlay y: %d\n",y);
 
@@ -209,6 +235,13 @@ void tbsprite_do_overlay(void)
 				*/
 
 
+
+				//Inicializar linea a transparente
+				for (i=0;i<MAX_X_SPRITE_LINE;i++) {
+					sprite_line[i]=TBBLUE_TRANSPARENT_COLOR;
+				}
+
+
         for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
 					int sprite_x;
 					z80_byte sprite_y;
@@ -221,10 +254,18 @@ void tbsprite_do_overlay(void)
 					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 1 is Y mirror and bit 1 is visible flag and bit 0 is X MSB.
 					[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
 					*/
+					/*
+					Because sprites can be displayed on top of the ZX Spectrum border, the coordinates of each sprite can range
+					from 0 to 319 for the X axis and 0 to 255 for the Y axis. For both axes, values from 0 to 31 are reserved
+					for the Left or top border, for the X axis the values 288 to 319 is reserved for the right border and for
+					the Y axis values 224 to 255 for the lower border.
+
+If the display of the sprites on the border is disabled, the coordinates of the sprites range from (32,32) to (287,223).
+*/
 
 					//Si sprite visible
 					if (tbsprite_sprites[conta_sprites][2]&2) {
-						sprite_x=tbsprite_sprites[conta_sprites][0]; // | ((tbsprite_sprites[conta_sprites][2]&1)<<8);
+						sprite_x=tbsprite_sprites[conta_sprites][0] | ((tbsprite_sprites[conta_sprites][2]&1)<<8);
 
 						//printf ("sprite %d x: %d \n",conta_sprites,sprite_x);
 
@@ -241,11 +282,9 @@ void tbsprite_do_overlay(void)
 							//saltar coordenada y
 							offset_pattern +=16*diferencia;
 
-							//index_pattern +=offset_pattern;
-
 							//index_pattern ya apunta a pattern a pintar en pantalla
-							z80_int *puntero_buf_rainbow_sprite;
-							puntero_buf_rainbow_sprite=puntero_buf_rainbow+sprite_x;
+							//z80_int *puntero_buf_rainbow_sprite;
+							//puntero_buf_rainbow_sprite=puntero_buf_rainbow+sprite_x;
 
 							//Dibujar linea x
 
@@ -254,27 +293,43 @@ void tbsprite_do_overlay(void)
 								//printf ("index color: %d\n",index_color);
 								z80_byte color=tbsprite_palette[index_color];
 
-								//Pasamos de RGB a GRB
-								z80_byte r,g,b;
-								r=(color>>5)&7;
-								g=(color>>2)&7;
-								b=(color&3);
-
-								z80_byte colorulaplus=(g<<5)|(r<<2)|b;
+								tbsprite_put_color_line(sprite_x++,color);
 
 
-								//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
-								z80_int color_final=ulaplus_palette_table[color]+ULAPLUS_INDEX_FIRST_COLOR;
-
-								color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
-								//color_final=ulaplus_rgb_table[color_final];
-
-								*puntero_buf_rainbow_sprite=color_final;
-								puntero_buf_rainbow_sprite++;
 							}
 						}
 
 				}
+			}
+
+			//Dibujar linea de sprites en pantalla ignorando color transparente
+
+			//Inicializar linea a transparente
+			for (i=0;i<MAX_X_SPRITE_LINE;i++) {
+				z80_byte color=sprite_line[i];
+				if (color!=TBBLUE_TRANSPARENT_COLOR) {
+
+					//Pasamos de RGB a GRB
+					z80_byte r,g,b;
+					r=(color>>5)&7;
+					g=(color>>2)&7;
+					b=(color&3);
+
+					z80_byte colorulaplus=(g<<5)|(r<<2)|b;
+
+
+					//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
+					z80_int color_final;
+
+					color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
+					//color_final=ulaplus_rgb_table[color_final];
+
+					*puntero_buf_rainbow=color_final;
+					
+				}
+
+				puntero_buf_rainbow++;
+
 			}
 
 }
