@@ -159,7 +159,7 @@ void tbblue_out_sprite_sprite(value)
 
 	tbsprite_sprites[tbsprite_index_sprite][tbsprite_index_sprite_subindex]=value;
 	if (tbsprite_index_sprite_subindex==3) {
-		printf ("sprite %d [3] pattern: %d\n",tbsprite_index_sprite,tbsprite_sprites[tbsprite_index_sprite][3]&63);
+		//printf ("sprite %d [3] pattern: %d\n",tbsprite_index_sprite,tbsprite_sprites[tbsprite_index_sprite][3]&63);
 		tbsprite_index_sprite_subindex=0;
 		tbsprite_index_sprite++;
 		if (tbsprite_index_sprite>=TBBLUE_MAX_SPRITES) tbsprite_index_sprite=0;
@@ -212,7 +212,9 @@ void tbsprite_do_overlay(void)
 
         //puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 
-				//printf ("overlay y: %d\n",y);
+				//printf ("overlay t_scanline_draw: %d y: %d\n",t_scanline_draw,y);
+
+				//Aqui tenemos el y=0 arriba del todo del border
 
         //Bucle para cada sprite
         int conta_sprites;
@@ -244,7 +246,7 @@ void tbsprite_do_overlay(void)
 
         for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
 					int sprite_x;
-					z80_byte sprite_y;
+					int sprite_y;
 
 
 
@@ -271,11 +273,17 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 						sprite_y=tbsprite_sprites[conta_sprites][1];
 
+						//Posicionamos esa y teniendo en cuenta que nosotros contamos 0 arriba del todo del border en cambio sprites aqui
+						//Considera y=32 dentro de pantalla y y=0..31 en el border
+						sprite_y +=screen_borde_superior-32;
+						//Si y==32-> y=32+48-32=32+16=48
+						//Si y==0 -> y=48-32=16
+
 
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
 
-						int diferencia=scanline_copia-sprite_y;
+						int diferencia=y-sprite_y;
 						int alto_sprite=16;
 
 						//Pintar el sprite si esta en rango de coordenada y
