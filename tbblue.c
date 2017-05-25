@@ -225,6 +225,9 @@ void tbsprite_do_overlay(void)
 					//Si sprite visible
 					if (tbsprite_sprites[conta_sprites][2]&1) {
 						sprite_x=tbsprite_sprites[conta_sprites][0]; // | ((tbsprite_sprites[conta_sprites][2]&8)<<5);
+
+						printf ("sprite %d x: %d \n",conta_sprites,sprite_x);
+
 						sprite_y=tbsprite_sprites[conta_sprites][1];
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
