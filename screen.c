@@ -4951,7 +4951,7 @@ void screen_store_scanline_rainbow_solo_display(void)
 		//Aqui se entra tanto si es spectrum como si es prism
 		screen_store_scanline_rainbow_solo_display_ulaplus_lineal();
 		spritechip_do_overlay();
-		if (MACHINE_IS_TBBLUE) tbsprite_do_overlay();
+		if (MACHINE_IS_TBBLUE && rainbow_enabled.v) tbsprite_do_overlay();
 		return;
 	}
 

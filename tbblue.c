@@ -270,6 +270,8 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//printf ("sprite %d x: %d \n",conta_sprites,sprite_x);
 
 						sprite_y=tbsprite_sprites[conta_sprites][1];
+
+
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
 
@@ -304,6 +306,14 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 			//Dibujar linea de sprites en pantalla ignorando color transparente
 
+			//Tener en cuenta que de 0..31 en x es el border
+			//Posicionar puntero rainbow en zona interior pantalla-32 pixels border
+
+			//TODO: que pasara con border desactivado
+			puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+
+			puntero_buf_rainbow -=32;
+
 			//Inicializar linea a transparente
 			for (i=0;i<MAX_X_SPRITE_LINE;i++) {
 				z80_byte color=sprite_line[i];
@@ -325,7 +335,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 					//color_final=ulaplus_rgb_table[color_final];
 
 					*puntero_buf_rainbow=color_final;
-					
+
 				}
 
 				puntero_buf_rainbow++;
