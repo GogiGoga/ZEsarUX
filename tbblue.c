@@ -218,15 +218,15 @@ void tbsprite_do_overlay(void)
 					/*
 					[0] 1st: X position (bits 7-0).
 					[1] 2nd: Y position (0-255).
-					[2] 3rd: bits 7-4 is palette offset, bit 3 is X MSB, bit 2 is X mirror, bit 1 is Y mirror and bit 0 is visible flag.
+					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 1 is Y mirror and bit 1 is visible flag and bit 0 is X MSB.
 					[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
 					*/
 
 					//Si sprite visible
-					if (tbsprite_sprites[conta_sprites][2]&1) {
-						sprite_x=tbsprite_sprites[conta_sprites][0]; // | ((tbsprite_sprites[conta_sprites][2]&8)<<5);
+					if (tbsprite_sprites[conta_sprites][2]&2) {
+						sprite_x=tbsprite_sprites[conta_sprites][0]; // | ((tbsprite_sprites[conta_sprites][2]&1)<<8);
 
-						printf ("sprite %d x: %d \n",conta_sprites,sprite_x);
+						//printf ("sprite %d x: %d \n",conta_sprites,sprite_x);
 
 						sprite_y=tbsprite_sprites[conta_sprites][1];
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
