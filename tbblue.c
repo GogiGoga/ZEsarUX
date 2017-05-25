@@ -251,7 +251,7 @@ void tbsprite_do_overlay(void)
 
 							for (i=0;i<16;i++) {
 								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern++];
-								printf ("index color: %d\n",index_color);
+								//printf ("index color: %d\n",index_color);
 								z80_byte color=tbsprite_palette[index_color];
 
 								//Pasamos de RGB a GRB
