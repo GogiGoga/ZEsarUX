@@ -259,7 +259,7 @@ void tbsprite_do_overlay(void)
 					/*
 					[0] 1st: X position (bits 7-0).
 					[1] 2nd: Y position (0-255).
-					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 1 is Y mirror and bit 1 is visible flag and bit 0 is X MSB.
+					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror and bit 1 is visible flag and bit 0 is X MSB.
 					[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
 					*/
 					/*
@@ -285,21 +285,25 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//Si y==32-> y=32+48-32=32+16=48
 						//Si y==0 -> y=48-32=16
 
+						z80_byte mirror_x=tbsprite_sprites[conta_sprites][2]&8;
+						//[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror and bit 1 is visible flag and bit 0 is X MSB
+
 
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
 
 						int diferencia=y-sprite_y;
 						int alto_sprite=16;
+						int ancho_sprite=16;
 
 						//Pintar el sprite si esta en rango de coordenada y
-						if (diferencia>=0 && diferencia<alto_sprite && scanline_copia<192) {
+						if (diferencia>=0 && diferencia<alto_sprite && scanline_copia<192+32) {
 
 
 
 							offset_pattern=0;
 							//saltar coordenada y
-							offset_pattern +=16*diferencia;
+							offset_pattern +=ancho_sprite*diferencia;
 
 							//index_pattern ya apunta a pattern a pintar en pantalla
 							//z80_int *puntero_buf_rainbow_sprite;
@@ -307,12 +311,20 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 							//Dibujar linea x
 
-							for (i=0;i<16;i++) {
-								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern++];
+							//Cambiar offset si mirror x, ubicarlo a la derecha del todo
+							if (mirror_x) offset_pattern=offset_pattern+ancho_sprite-1;
+
+							for (i=0;i<ancho_sprite;i++) {
+								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern];
+
+								if (mirror_x) offset_pattern--;
+								else offset_pattern++;
+
 								//printf ("index color: %d\n",index_color);
 								z80_byte color=tbsprite_palette[index_color];
 
 								tbsprite_put_color_line(sprite_x++,color);
+
 
 							}
 
@@ -321,7 +333,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 							if (total_sprites==MAX_SPRITES_PER_LINE) {
 								//max sprites per line flag
 								tbblue_port_303b |=2;
-								printf ("set max sprites per line flag\n");
+								//printf ("set max sprites per line flag\n");
 							}
 
 						}
