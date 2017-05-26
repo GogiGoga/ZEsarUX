@@ -133,6 +133,9 @@ defined_f_function defined_f_functions_array[MAX_F_FUNCTIONS]={
 	{"OCR",F_FUNCION_OCR},
 	{"SmartLoad",F_FUNCION_SMARTLOAD},
 	{"OSDKeyboard",F_FUNCION_OSDKEYBOARD},
+	{"ReloadMMC",F_FUNCION_RELOADMMC},
+	{"DebugCPU",F_FUNCION_DEBUGCPU},
+	{"Pause",F_FUNCION_PAUSE},
 	{"ExitEmulator",F_FUNCION_EXITEMULATOR}
 };
 
@@ -21896,6 +21899,8 @@ void menu_inicio_pre_retorno(void)
 void menu_process_f_functions(void)
 {
 
+	int antes_multitarea;
+
 	int indice=menu_button_f_function_index;
 
 	enum defined_f_function_ids accion=defined_f_functions_keys_array[indice];
@@ -21936,6 +21941,23 @@ void menu_process_f_functions(void)
 
 		case F_FUNCION_OSDKEYBOARD:
 			menu_onscreen_keyboard(0);
+		break;
+
+		case F_FUNCION_RELOADMMC:
+			mmc_read_file_to_memory();
+		break;
+
+		case F_FUNCION_DEBUGCPU:
+			menu_debug_registers(0);
+		break;
+
+		case F_FUNCION_PAUSE:
+			//Guardar valor anterior multitarea
+			antes_multitarea=menu_multitarea;
+			menu_multitarea=0;
+			menu_espera_tecla();
+			//restaurar
+			menu_multitarea=antes_multitarea;
 		break;
 
 		case F_FUNCION_EXITEMULATOR:
@@ -22131,7 +22153,7 @@ void menu_inicio(void)
 
 		menu_process_f_functions();
 
-
+		menu_muestra_pending_error_message(); //Si se genera un error derivado de funcion F
 		cls_menu_overlay();
 	}
 

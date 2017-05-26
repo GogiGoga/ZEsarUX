@@ -216,7 +216,7 @@ void mmc_flush_flash_to_disk(void)
 int mmc_read_file_to_memory(void)
 {
   if (mmc_memory_pointer==NULL || mmc_enabled.v==0) {
-    debug_printf(VERBOSE_ERR,"MMC is not enabled. You should not get this message");
+    debug_printf(VERBOSE_ERR,"MMC is not enabled");
     return 1;
   }
 
