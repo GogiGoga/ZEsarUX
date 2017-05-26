@@ -69,6 +69,18 @@ z80_byte tbsprite_index_palette;
 z80_byte tbsprite_index_pattern,tbsprite_index_pattern_subindex;
 z80_byte tbsprite_index_sprite,tbsprite_index_sprite_subindex;
 
+/*
+Port 0x303B, if read, returns some information:
+
+Bits 7-2: Reserved, must be 0.
+Bit 1: max sprites per line flag.
+Bit 0: Collision flag.
+Port 0x303B, if written, defines the sprite slot to be configured by ports 0x55 and 0x57, and also initializes the address of the palette.
+
+*/
+
+z80_byte tbblue_port_303b;
+
 
 void tbblue_reset_sprites(void)
 {
@@ -95,6 +107,8 @@ void tbblue_reset_sprites(void)
 
 
 	tbsprite_index_palette=tbsprite_index_pattern=tbsprite_index_sprite=0;
+
+	tbblue_port_303b=0;
 
 }
 
@@ -172,6 +186,8 @@ void tbblue_out_sprite_sprite(value)
 #define MAX_X_SPRITE_LINE 320
 z80_byte sprite_line[MAX_X_SPRITE_LINE];
 
+#define MAX_SPRITES_PER_LINE 12
+
 
 
 void tbsprite_put_color_line(int x,z80_byte color)
@@ -187,7 +203,9 @@ void tbsprite_put_color_line(int x,z80_byte color)
 	z80_byte color_antes=sprite_line[x];
 
 	if (color_antes!=TBBLUE_TRANSPARENT_COLOR) {
-		//TODO: colision
+		//colision
+		tbblue_port_303b |=1;
+		//printf ("set colision flag\n");
 	}
 
 	sprite_line[x]=color;
@@ -222,20 +240,6 @@ void tbsprite_do_overlay(void)
 
 		int i;
 		int offset_pattern;
-				/*for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
-						offset_pattern=0;
-						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
-				for (i=0;i<16;i++) {
-					z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern++];
-					printf ("index color: %d\n",index_color);
-				}
-			}
-
-
-				return;
-
-				*/
-
 
 
 				//Inicializar linea a transparente
@@ -243,8 +247,10 @@ void tbsprite_do_overlay(void)
 					sprite_line[i]=TBBLUE_TRANSPARENT_COLOR;
 				}
 
+				int total_sprites=0;
 
-        for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES;conta_sprites++) {
+
+        for (conta_sprites=0;conta_sprites<TBBLUE_MAX_SPRITES && total_sprites<MAX_SPRITES_PER_LINE;conta_sprites++) {
 					int sprite_x;
 					int sprite_y;
 
@@ -288,6 +294,9 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 						//Pintar el sprite si esta en rango de coordenada y
 						if (diferencia>=0 && diferencia<alto_sprite && scanline_copia<192) {
+
+
+
 							offset_pattern=0;
 							//saltar coordenada y
 							offset_pattern +=16*diferencia;
@@ -305,8 +314,16 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 								tbsprite_put_color_line(sprite_x++,color);
 
-
 							}
+
+							total_sprites++;
+							//printf ("total sprites in this line: %d\n",total_sprites);
+							if (total_sprites==MAX_SPRITES_PER_LINE) {
+								//max sprites per line flag
+								tbblue_port_303b |=2;
+								printf ("set max sprites per line flag\n");
+							}
+
 						}
 
 				}
