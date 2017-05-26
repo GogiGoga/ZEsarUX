@@ -21955,6 +21955,7 @@ void menu_process_f_functions(void)
 			//Guardar valor anterior multitarea
 			antes_multitarea=menu_multitarea;
 			menu_multitarea=0;
+			audio_playing.v=0;
 			menu_espera_tecla();
 			//restaurar
 			menu_multitarea=antes_multitarea;
