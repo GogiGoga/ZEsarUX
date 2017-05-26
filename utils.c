@@ -2947,8 +2947,15 @@ int util_write_configfile(void)
   if (mmc_file_name[0]!=0)                    ADD_STRING_CONFIG,"--mmc-file \"%s\"",mmc_file_name);
   if (mmc_enabled.v)                          ADD_STRING_CONFIG,"--enable-mmc");
   if (divmmc_mmc_ports_enabled.v)             ADD_STRING_CONFIG,"--enable-divmmc-ports");
+
+
+  //El siguiente setting no guardarlo si maquina es tbblue, pues acaba activando el divmmc paging en tbblue y entonces esto provoca que no arranque la tbblue rom
+  if (!MACHINE_IS_TBBLUE) {
   if (divmmc_mmc_ports_enabled.v && divmmc_diviface_enabled.v)
                                               ADD_STRING_CONFIG,"--enable-divmmc");
+  }                                          
+
+
 
   if (divmmc_rom_name[0]!=0)                  ADD_STRING_CONFIG,"--divmmc-rom \"%s\"",divmmc_rom_name);
   if (zxmmc_emulation.v)                      ADD_STRING_CONFIG,"--enable-zxmmc");
