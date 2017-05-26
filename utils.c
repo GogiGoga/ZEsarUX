@@ -4900,11 +4900,199 @@ int util_set_reset_key_continue_f_functions(enum util_teclas tecla,int pressrele
   return 0;
 }
 
+
+//Aqui solo se activan/desactivan bits de puerto_especial para teclas F
+void util_set_reset_key_continue_tecla_f(enum util_teclas tecla,int pressrelease)
+{
+
+switch(tecla)
+{
+
+  //F1 pulsado
+  case UTIL_KEY_F1:
+
+          if (pressrelease) {
+                  puerto_especial2 &=255-1;
+          }
+          else {
+                  puerto_especial2 |=1;
+          }
+  break;
+
+  //F2 pulsado
+  case UTIL_KEY_F2:
+
+          if (pressrelease) {
+                  puerto_especial2 &=255-2;
+          }
+          else {
+                  puerto_especial2 |=2;
+          }
+  break;
+
+
+  case UTIL_KEY_F3:
+
+          if (pressrelease) {
+                  puerto_especial2 &=255-4;
+          }
+          else {
+                  puerto_especial2 |=4;
+          }
+  break;
+
+
+       case UTIL_KEY_F4:
+           if (pressrelease) {
+             puerto_especial2 &=255-8;
+           }
+
+           else {
+             puerto_especial2 |=8;
+           }
+      break;
+
+
+  case UTIL_KEY_F5:
+
+          if (pressrelease) {
+                  puerto_especial2 &=255-16;
+          }
+          else {
+                  puerto_especial2 |=16;
+          }
+  break;
+
+
+  case UTIL_KEY_F6:
+
+          if (pressrelease) {
+                  puerto_especial3 &=255-1;
+          }
+          else {
+                  puerto_especial3 |=1;
+          }
+  break;
+
+
+  case UTIL_KEY_F7:
+
+          if (pressrelease) {
+                  puerto_especial3 &=255-2;
+          }
+          else {
+                  puerto_especial3 |=2;
+          }
+  break;
+
+
+  case UTIL_KEY_F8:
+        if (pressrelease) {
+               puerto_especial3 &=255-4;
+        }
+        else {
+              puerto_especial3 |=4;
+        }
+
+  break;
+
+
+  case UTIL_KEY_F9:
+
+          if (pressrelease) {
+              puerto_especial3 &=255-8;
+          }
+          else {
+              puerto_especial3 |=8;
+          }
+
+  break;
+
+
+  case UTIL_KEY_F10:
+
+          if (pressrelease) {
+                  puerto_especial3 &=255-16;
+          }
+          else {
+                  puerto_especial3 |=16;
+          }
+  break;
+
+
+  case UTIL_KEY_F11:
+
+          if (pressrelease) {
+                  puerto_especial4 &=255-1;
+          }
+          else {
+                  puerto_especial4 |=1;
+          }
+  break;
+
+
+  case UTIL_KEY_F12:
+
+          if (pressrelease) {
+                  puerto_especial4 &=255-2;
+          }
+          else {
+                  puerto_especial4 |=2;
+          }
+  break;
+
+
+  case UTIL_KEY_F13:
+
+          if (pressrelease) {
+                  puerto_especial4 &=255-4;
+          }
+          else {
+                  puerto_especial4 |=4;
+          }
+  break;
+
+
+  case UTIL_KEY_F14:
+
+          if (pressrelease) {
+                  puerto_especial4 &=255-8;
+          }
+          else {
+                  puerto_especial4 |=8;
+          }
+  break;
+
+
+  case UTIL_KEY_F15:
+
+          if (pressrelease) {
+                  puerto_especial4 &=255-16;
+          }
+          else {
+                  puerto_especial4 |=16;
+          }
+  break;
+
+  default:
+    //Para que no se queje el compilador
+  break;
+
+}
+
+//printf ("puerto especial 4 en set: %d\n",puerto_especial4);
+
+}
+
 void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 {
 
-  //Ver si hay teclas F redefinidas
+  //Activar bits de puertos_especiales para teclas F
+  //Hay que hacerlo asi para que el menu se vea notificado de pulsacion o no pulsacion de esas teclas, estén o no asignadas a funciones
+  //Sirve por ejemplo para que si tenemos mapeado F13 a hard reset, al pulsar F13, cuando se llama a menu_espera_no_tecla, que funcione
+  util_set_reset_key_continue_tecla_f(tecla,pressrelease);
 
+  //Ver si hay teclas F redefinidas
   if (util_set_reset_key_continue_f_functions(tecla,pressrelease)) return;
 
         //temp reasignacion
@@ -5393,12 +5581,10 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                         case UTIL_KEY_F1:
 
                                 if (pressrelease) {
-                                        puerto_especial2 &=255-1;
                                         blink_kbd_a14 &= (255-128);
                                         ql_keyboard_table[0] &= (255-2);
                                 }
                                 else {
-                                        puerto_especial2 |=1;
                                         blink_kbd_a14 |= 128;
                                         ql_keyboard_table[0] |= 2;
                                 }
@@ -5408,12 +5594,10 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                         case UTIL_KEY_F2:
 
                                 if (pressrelease) {
-                                        puerto_especial2 &=255-2;
                                         blink_kbd_a15 &= (255-16);
                                         ql_keyboard_table[0] &= (255-8);
                                 }
                                 else {
-                                        puerto_especial2 |=2;
                                         blink_kbd_a15 |= 16;
                                         ql_keyboard_table[0] |= 8;
                                 }
@@ -5424,12 +5608,10 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                         case UTIL_KEY_F3:
 
                                 if (pressrelease) {
-                                        puerto_especial2 &=255-4;
                                         blink_kbd_a14 &= (255-8);
                                         ql_keyboard_table[0] &= (255-16);
                                 }
                                 else {
-                                        puerto_especial2 |=4;
                                         blink_kbd_a14 |= 8;
                                         ql_keyboard_table[0] |= 16;
                                 }
@@ -5451,37 +5633,35 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                         case UTIL_KEY_F5:
 
                                 if (pressrelease) {
-                                        puerto_especial2 &=255-16;
 					                              menu_abierto=1;
                                         ql_keyboard_table[0] &= (255-32); //Caso especial F5 y QL
                                 }
                                 else {
-                                        puerto_especial2 |=16;
                                         ql_keyboard_table[0] |= 32;
                                 }
                         break;
 
                         //z80_byte puerto_especial3=255; //  F10 F9 F8 F7 F6
 
-                        //F6 pulsado. De momento no hace nada, solo activa bits de puerto_especial3 que se pueden leer desde menu
+                        //F6 pulsado. De momento no hace nada
                         case UTIL_KEY_F6:
 
                                 if (pressrelease) {
-                                        puerto_especial3 &=255-1;
+
                                 }
                                 else {
-                                        puerto_especial3 |=1;
+
                                 }
                         break;
 
-                        //F7 pulsado. De momento no hace nada, solo activa bits de puerto_especial3 que se pueden leer desde menu
+                        //F7 pulsado. De momento no hace nada
                         case UTIL_KEY_F7:
 
                                 if (pressrelease) {
-                                        puerto_especial3 &=255-2;
+
                                 }
                                 else {
-                                        puerto_especial3 |=2;
+
                                 }
                         break;
 
@@ -5491,10 +5671,8 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 				                      if (pressrelease) {
 				                            menu_abierto=1;
 				                             menu_button_osdkeyboard.v=1;
-                                     puerto_especial3 &=255-4;
                      	        }
                               else {
-                                    puerto_especial3 |=4;
                               }
 
                         break;
@@ -5506,10 +5684,8 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                                 if (pressrelease) {
                                         menu_abierto=1;
                                         menu_button_quickload.v=1;
-                                        puerto_especial3 &=255-8;
                                 }
                                 else {
-                                  puerto_especial3 |=8;
                                 }
 
                         break;
@@ -5518,10 +5694,8 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                         case UTIL_KEY_F10:
 
                                 if (pressrelease) {
-                                        puerto_especial3 &=255-16;
                                 }
                                 else {
-                                        puerto_especial3 |=16;
                                 }
                         break;
 
@@ -5531,58 +5705,48 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 
                         //z80_byte puerto_especial4=255; //  F15 F14 F13 F12 F11
 
-                        //F11 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        //F11 pulsado. De momento no hace nada
                         case UTIL_KEY_F11:
 
                                 if (pressrelease) {
-                                        puerto_especial4 &=255-1;
                                 }
                                 else {
-                                        puerto_especial4 |=1;
                                 }
                         break;
 
-                        //F12 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        //F12 pulsado. De momento no hace nada
                         case UTIL_KEY_F12:
 
                                 if (pressrelease) {
-                                        puerto_especial4 &=255-2;
                                 }
                                 else {
-                                        puerto_especial4 |=2;
                                 }
                         break;
 
-                        //F13 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        //F13 pulsado. De momento no hace nada
                         case UTIL_KEY_F13:
 
                                 if (pressrelease) {
-                                        puerto_especial4 &=255-4;
                                 }
                                 else {
-                                        puerto_especial4 |=4;
                                 }
                         break;
 
-                        //F14 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        //F14 pulsado. De momento no hace nada
                         case UTIL_KEY_F14:
 
                                 if (pressrelease) {
-                                        puerto_especial4 &=255-8;
                                 }
                                 else {
-                                        puerto_especial4 |=8;
                                 }
                         break;
 
-                        //F15 pulsado. De momento no hace nada, solo activa bits de puerto_especial4 que se pueden leer desde menu
+                        //F15 pulsado. De momento no hace nada
                         case UTIL_KEY_F15:
 
                                 if (pressrelease) {
-                                        puerto_especial4 &=255-16;
                                 }
                                 else {
-                                        puerto_especial4 |=16;
                                 }
                         break;
 

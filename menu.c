@@ -2888,6 +2888,7 @@ z80_byte menu_da_todas_teclas(void)
 	//symbol i shift no cuentan por separado
 	acumulado=acumulado & (puerto_65278 | 1) & puerto_65022 & puerto_64510 & puerto_63486 & puerto_61438 & puerto_57342 & puerto_49150 & (puerto_32766 |2) & puerto_especial1 & puerto_especial2 & puerto_especial3 & puerto_especial4;
 
+
 	//no ignorar disparo
 	z80_byte valor_joystick=(puerto_especial_joystick&31)^255;
 	acumulado=acumulado & valor_joystick;
@@ -21960,11 +21961,30 @@ void menu_inicio(void)
 
 
 	//Resetear todas teclas. Por si esta el spool file activo. Conservando estado de tecla ESC pulsada o no
-	z80_byte estado_ESC=puerto_especial1&1;
+	/*z80_byte estado_ESC=puerto_especial1&1;
 	reset_keyboard_ports();
 
 	//estaba pulsado ESC
 	if (!estado_ESC) puerto_especial1 &=(255-1);
+
+	*/
+
+	//Resetear todas teclas excepto bits de puertos especiales
+	z80_byte p_puerto_especial1,p_puerto_especial2,p_puerto_especial3,p_puerto_especial4;
+
+	p_puerto_especial1=puerto_especial1;
+	p_puerto_especial2=puerto_especial2;
+	p_puerto_especial3=puerto_especial3;
+	p_puerto_especial4=puerto_especial4;
+
+	reset_keyboard_ports();
+
+	//Restaurar estado teclas especiales, para poder esperar a liberar dichas teclas, por ejemplo
+	puerto_especial1=p_puerto_especial1;
+	puerto_especial2=p_puerto_especial2;
+	puerto_especial3=p_puerto_especial3;
+	puerto_especial4=p_puerto_especial4;
+
 
 	//Desactivar fire, por si esta disparador automatico
 	joystick_release_fire();
