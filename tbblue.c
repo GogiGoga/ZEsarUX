@@ -140,8 +140,8 @@ void tbblue_out_sprite_pattern(value)
 
 	tbsprite_patterns[tbsprite_index_pattern][tbsprite_index_pattern_subindex]=value;
 
-printf ("Out tbblue_out_sprite_pattern. Index: %d subindex: %d %02XH\n",tbsprite_index_pattern,tbsprite_index_pattern_subindex,
-tbsprite_patterns[tbsprite_index_pattern][tbsprite_index_pattern_subindex]);
+//printf ("Out tbblue_out_sprite_pattern. Index: %d subindex: %d %02XH\n",tbsprite_index_pattern,tbsprite_index_pattern_subindex,
+//tbsprite_patterns[tbsprite_index_pattern][tbsprite_index_pattern_subindex]);
 
 	if (tbsprite_index_pattern_subindex==255) {
 		tbsprite_index_pattern_subindex=0;
@@ -287,7 +287,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 						z80_byte mirror_x=tbsprite_sprites[conta_sprites][2]&8;
 						//[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror and bit 1 is visible flag and bit 0 is X MSB
-
+						z80_byte mirror_y=tbsprite_sprites[conta_sprites][2]&4;
 
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
@@ -302,8 +302,13 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 
 							offset_pattern=0;
+
+							//Aplicar mirror si conviene y situarnos en la ultima linea
+							if (mirror_y) offset_pattern=offset_pattern+ancho_sprite*(alto_sprite-1);
+
 							//saltar coordenada y
-							offset_pattern +=ancho_sprite*diferencia;
+							if (mirror_y) offset_pattern -=ancho_sprite*diferencia;
+							else offset_pattern +=ancho_sprite*diferencia;
 
 							//index_pattern ya apunta a pattern a pintar en pantalla
 							//z80_int *puntero_buf_rainbow_sprite;
@@ -313,6 +318,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 							//Cambiar offset si mirror x, ubicarlo a la derecha del todo
 							if (mirror_x) offset_pattern=offset_pattern+ancho_sprite-1;
+
 
 							for (i=0;i<ancho_sprite;i++) {
 								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern];
