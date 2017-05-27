@@ -341,7 +341,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//Pintar el sprite si esta en rango de coordenada y
 						if (diferencia>=0 && diferencia<alto_sprite && y>=rangoymin && y<=rangoymax) {
 
-							printf ("y: %d t_scanline_draw: %d rainbowy:%d sprite_y: %d\n",y,t_scanline_draw,rainbowy,sprite_y);
+							//printf ("y: %d t_scanline_draw: %d rainbowy:%d sprite_y: %d\n",y,t_scanline_draw,rainbowy,sprite_y);
 
 							offset_pattern=0;
 
@@ -469,6 +469,23 @@ Register:
 
 }
 
+
+z80_byte tbblue_get_port_sprite_index(void)
+{
+	/*
+	Port 0x303B, if read, returns some information:
+
+Bits 7-2: Reserved, must be 0.
+Bit 1: max sprites per line flag.
+Bit 0: Collision flag.
+*/
+	z80_byte value=tbblue_port_303b;
+	//Cuando se lee, se resetean bits 0 y 1
+	tbblue_port_303b &=(255-1-2);
+
+	return value;
+
+}
 
 
 
