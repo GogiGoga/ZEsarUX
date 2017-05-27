@@ -157,16 +157,6 @@ void tbblue_out_sprite_sprite(value)
 	//printf ("Out tbblue_out_sprite_sprite. Index: %d subindex: %d %02XH\n",tbsprite_index_sprite,tbsprite_index_sprite_subindex,value);
 
 
-	/*
-	[0] 1st: X position (bits 7-0).
-	[1] 2nd: Y position (0-255).
-	[2] 3rd: bits 7-4 is palette offset, bit 3 is X MSB, bit 2 is X mirror, bit 1 is Y mirror and bit 0 is visible flag.
-	[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
-	*/
-		//if (tbsprite_index_sprite_subindex==0) printf ("x: %d\n",value);
-		//if (tbsprite_index_sprite_subindex==1) printf ("y: %d\n",value);
-
-	//z80_byte tbsprite_sprites[TBBLUE_MAX_SPRITES][4];
 
 	//Indices al indicar paleta, pattern, sprites. Subindex indica dentro de cada pattern o sprite a que posicion (0..3 en sprites o 0..255 en pattern ) apunta
 	//z80_byte tbsprite_index_sprite,tbsprite_index_sprite_subindex;
@@ -188,8 +178,20 @@ z80_byte sprite_line[MAX_X_SPRITE_LINE];
 
 #define MAX_SPRITES_PER_LINE 12
 
+#define TBBLUE_SPRITE_BORDER 32
 
 
+/*
+Port 0x243B is write-only and is used to set the registry number.
+
+Port 0x253B is used to access the registry value.
+
+Register:
+(R/W) 21 => Sprite system
+ bits 7-2 = Reserved, must be 0
+ bit 1 = Over border (1 = yes)
+ bit 0 = Sprites visible (1 = visible)
+*/
 void tbsprite_put_color_line(int x,z80_byte color)
 {
 
@@ -221,11 +223,32 @@ void tbsprite_do_overlay(void)
 				//printf ("tbblue sprite chip activo\n");
 
 
-        int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
-        int y=t_scanline_draw-screen_invisible_borde_superior;
-        if (border_enabled.v==0) y=y-screen_borde_superior;
-        z80_int *puntero_buf_rainbow;
-        puntero_buf_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
+        //int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
+        int y=t_scanline_draw; //0..63 es border (8 no visibles)
+
+				int border_no_visible=screen_indice_inicio_pant-TBBLUE_SPRITE_BORDER;
+
+				y -=border_no_visible;
+
+				//Ejemplo: scanline_draw=32 (justo donde se ve sprites). border_no_visible=64-32 =32
+				//y=y-32 -> y=0
+
+
+				//Situamos el 0 32 pixeles por encima de dentro de pantalla, tal cual como funcionan las cordenadas de sprite de tbblue
+
+
+        //if (border_enabled.v==0) y=y-screen_borde_superior;
+        //z80_int *puntero_buf_rainbow;
+        //puntero_buf_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
+
+
+				//Calculos exclusivos para puntero buffer rainbow
+		    int rainbowy=t_scanline_draw-screen_invisible_borde_superior;
+		    if (border_enabled.v==0) rainbowy=rainbowy-screen_borde_superior;
+		    z80_int *puntero_buf_rainbow;
+		    puntero_buf_rainbow=&rainbow_buffer[ rainbowy*get_total_ancho_rainbow() ];
+
+
 
 
         //puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
@@ -240,6 +263,8 @@ void tbsprite_do_overlay(void)
 
 		int i;
 		int offset_pattern;
+
+		z80_byte sprites_over_border=tbblue_registers[21]&2;
 
 
 				//Inicializar linea a transparente
@@ -257,10 +282,13 @@ void tbsprite_do_overlay(void)
 
 
 					/*
+
 					[0] 1st: X position (bits 7-0).
 					[1] 2nd: Y position (0-255).
-					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror and bit 1 is visible flag and bit 0 is X MSB.
+					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror, bit 1 is visible flag and bit 0 is X MSB.
 					[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
+
+
 					*/
 					/*
 					Because sprites can be displayed on top of the ZX Spectrum border, the coordinates of each sprite can range
@@ -281,7 +309,8 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 						//Posicionamos esa y teniendo en cuenta que nosotros contamos 0 arriba del todo del border en cambio sprites aqui
 						//Considera y=32 dentro de pantalla y y=0..31 en el border
-						sprite_y +=screen_borde_superior-32;
+						//sprite_y +=screen_borde_superior-32;
+
 						//Si y==32-> y=32+48-32=32+16=48
 						//Si y==0 -> y=48-32=16
 
@@ -296,10 +325,23 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						int alto_sprite=16;
 						int ancho_sprite=16;
 
+						int rangoymin, rangoymax;
+
+						if (sprites_over_border) {
+							rangoymin=0;
+							rangoymax=TBBLUE_SPRITE_BORDER+192+TBBLUE_SPRITE_BORDER-1;
+						}
+
+						else {
+							rangoymin=TBBLUE_SPRITE_BORDER;
+							rangoymax=TBBLUE_SPRITE_BORDER+191;
+						}
+
+
 						//Pintar el sprite si esta en rango de coordenada y
-						if (diferencia>=0 && diferencia<alto_sprite && scanline_copia<192+32) {
+						if (diferencia>=0 && diferencia<alto_sprite && y>=rangoymin && y<=rangoymax) {
 
-
+							printf ("y: %d t_scanline_draw: %d rainbowy:%d sprite_y: %d\n",y,t_scanline_draw,rainbowy,sprite_y);
 
 							offset_pattern=0;
 
@@ -352,33 +394,73 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 			//Tener en cuenta que de 0..31 en x es el border
 			//Posicionar puntero rainbow en zona interior pantalla-32 pixels border
 
-			//TODO: que pasara con border desactivado
 			puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 
-			puntero_buf_rainbow -=32;
+			puntero_buf_rainbow -=TBBLUE_SPRITE_BORDER;
 
 			//Inicializar linea a transparente
+
+/*
+Port 0x243B is write-only and is used to set the registry number.
+
+Port 0x253B is used to access the registry value.
+
+Register:
+(R/W) 21 => Sprite system
+ bits 7-2 = Reserved, must be 0
+ bit 1 = Over border (1 = yes)
+ bit 0 = Sprites visible (1 = visible)
+ */
+
+
+
+			//Si no se permite en el border, rango entre 0..31 y 288..319 no permitido
+			/*
+			#define MAX_X_SPRITE_LINE 320
+			z80_byte sprite_line[MAX_X_SPRITE_LINE];
+
+			#define MAX_SPRITES_PER_LINE 12
+
+			#define TBBLUE_SPRITE_BORDER 32
+			*/
+
+			int rangoxmin, rangoxmax;
+
+			if (sprites_over_border) {
+				rangoxmin=0;
+				rangoxmax=TBBLUE_SPRITE_BORDER+256+TBBLUE_SPRITE_BORDER-1;
+			}
+
+			else {
+				rangoxmin=TBBLUE_SPRITE_BORDER;
+				rangoxmax=TBBLUE_SPRITE_BORDER+255;
+			}
+
 			for (i=0;i<MAX_X_SPRITE_LINE;i++) {
 				z80_byte color=sprite_line[i];
-				if (color!=TBBLUE_TRANSPARENT_COLOR) {
 
-					//Pasamos de RGB a GRB
-					z80_byte r,g,b;
-					r=(color>>5)&7;
-					g=(color>>2)&7;
-					b=(color&3);
+				if (i>=rangoxmin && i<=rangoxmax) {
 
-					z80_byte colorulaplus=(g<<5)|(r<<2)|b;
+					if (color!=TBBLUE_TRANSPARENT_COLOR) {
+
+						//Pasamos de RGB a GRB
+						z80_byte r,g,b;
+						r=(color>>5)&7;
+						g=(color>>2)&7;
+						b=(color&3);
+
+						z80_byte colorulaplus=(g<<5)|(r<<2)|b;
 
 
-					//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
-					z80_int color_final;
+						//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
+						z80_int color_final;
 
-					color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
-					//color_final=ulaplus_rgb_table[color_final];
+						color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
+						//color_final=ulaplus_rgb_table[color_final];
 
-					*puntero_buf_rainbow=color_final;
+						*puntero_buf_rainbow=color_final;
 
+					}
 				}
 
 				puntero_buf_rainbow++;
