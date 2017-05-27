@@ -18800,6 +18800,11 @@ void menu_hotswap_machine(MENU_ITEM_PARAMETERS)
                         }
 
 
+			if (MACHINE_IS_CHROME) {
+									                                hotswap_machine_opcion_seleccionada=0;
+									                                menu_add_item_menu_inicial(&array_menu_machine_selection,"Spectrum 48k",MENU_OPCION_NORMAL,NULL,NULL);
+						}
+
 
 
                         menu_add_item_menu(array_menu_machine_selection,"",MENU_OPCION_SEPARADOR,NULL,NULL);
@@ -19015,7 +19020,11 @@ void menu_hotswap_machine(MENU_ITEM_PARAMETERS)
                                         salir_todos_menus=1;
                                         return; //Para evitar saltar a otro if
                                 }
-
+																if (MACHINE_IS_CHROME) {
+																																hotswap_any_machine_to_spec48();
+																																salir_todos_menus=1;
+																																return; //Para evitar saltar a otro if
+																												}
 
 
 

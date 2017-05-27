@@ -976,6 +976,20 @@ void inicializa_tabla_contend(void)
 
 	}
 
+
+  if (MACHINE_IS_CHROME) {
+    //128k
+                timings=contend_patron_65432100;
+
+    //Empieza en 14365 con 65432100, esto poniendo offset_time=-1
+                //offset_time=-1;
+
+    offset_time=3; //6,5,4,3,2,1,0,0 pattern starts at 14361 segun http://www.worldofspectrum.org/faq/reference/128kreference.htm
+                offset_patron=-1;
+
+
+  }
+
         if (MACHINE_IS_CHLOE) {
                 //Como 48k
                 timings=contend_patron_65432100;

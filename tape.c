@@ -954,7 +954,11 @@ int tap_load_detect(void)
 
 		else if (MACHINE_IS_TBBLUE) {
                         if (reg_pc!=1378) return 0;
-                }
+    }
+
+    else if (MACHINE_IS_CHROME) {
+                        if (reg_pc!=1378) return 0;
+    }
 
 
 		//Para Timex
@@ -1056,6 +1060,15 @@ int tap_load_detect(void)
 				return 1;
 
                 }
+
+  if (MACHINE_IS_CHROME) {
+            				//Ver que instruccion sea IN A,FEH, en caso de rutina normal de la ROM
+          if (peek_byte_no_time(reg_pc)!=0xDB) return 0;
+          if (peek_byte_no_time(reg_pc+1)!=0xFE) return 0;
+
+            				return 1;
+
+      }
 
 
                 if (MACHINE_IS_ZXUNO_BOOTM_DISABLED) {
@@ -1197,6 +1210,19 @@ int tap_save_detect(void)
                 }
 
 		if (MACHINE_IS_PRISM) {
+			//Como maquina +2A
+			//Ver que instruccion sea ld hl,1f80
+                                if (peek_byte_no_time(reg_pc)!=0x21) return 0;
+                                if (peek_byte_no_time(reg_pc+1)!=0x80) return 0;
+                                if (peek_byte_no_time(reg_pc+2)!=0x1f) return 0;
+
+
+                                //Sea cual sea la rom, si reg_pc coincide e instruccion es la indicada antes
+                                return 1;
+		}
+
+
+    if (MACHINE_IS_CHROME) {
 			//Como maquina +2A
 			//Ver que instruccion sea ld hl,1f80
                                 if (peek_byte_no_time(reg_pc)!=0x21) return 0;

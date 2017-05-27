@@ -6224,14 +6224,14 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 				if (MACHINE_IS_CHROME) {
 						//Puerto tipicamente 32765
 															// the hardware will respond only to those port addresses with bit 1 reset, bit 14 set and bit 15 reset (as opposed to just bits 1 and 15 reset on the 128K/+2).
-						if ( (puerto & 49154) == 16384 ) {
+						if ( (puerto & 49154) == 16384  && ((puerto_32765 & 32)==0)  ) {
 							puerto_32765=value;
 							chrome_set_memory_pages();
 						}
 
 						//Puerto tipicamente 8189
 						 // the hardware will respond to all port addresses with bit 1 reset, bit 12 set and bits 13, 14 and 15 reset).
-						if ( (puerto & 61442 )== 4096) {
+						if ( si_chrome_features_enabled() && ((puerto_32765 & 32)==0) && (puerto & 61442 )== 4096) {
 //printf ("TBBLUE changing port 8189 value=0x%02XH\n",value);
 										puerto_8189=value;
 

@@ -2510,6 +2510,11 @@ void set_machine_params(void)
 															 ula_contend_port_late=ula_contend_port_late_chrome;
 
 
+			 	                		screen_testados_linea=228;
+			         	        		screen_invisible_borde_superior=7;
+			                 			screen_invisible_borde_derecho=104;
+
+
 											 }
 
                else if (MACHINE_IS_TIMEX_TS2068) {
