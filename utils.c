@@ -7119,6 +7119,7 @@ int get_machine_id_by_name(char *machine_name)
                                 else if (!strcasecmp(machine_name,"Prism")) return_machine=18;
                                 else if (!strcasecmp(machine_name,"TBBlue")) return_machine=19;
                                 else if (!strcasecmp(machine_name,"Pentagon")) return_machine=21;
+                                else if (!strcasecmp(machine_name,"Chrome")) return_machine=MACHINE_ID_CHROME;
                                 else if (!strcasecmp(machine_name,"ZX80")) return_machine=120;
                                 else if (!strcasecmp(machine_name,"ZX81")) return_machine=121;
                                 else if (!strcasecmp(machine_name,"ACE")) return_machine=122;
@@ -7241,6 +7242,10 @@ break;
 
 case 21:
 strcpy(machine_name,"Pentagon");
+break;
+
+case MACHINE_ID_CHROME:
+strcpy(machine_name,"Chrome");
 break;
 
 case 120:

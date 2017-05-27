@@ -1233,7 +1233,7 @@ timex.o: timex.c timex.h cpu.h debug.h contend.h tape.h mem128.h menu.h
 chloe.o: chloe.c chloe.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h prism.h 
 	\$(CC) \$(CFLAGS) -c chloe.c
 
-chrome.o: chloe.c chloe.h cpu.h mem128.h debug.h contend.h  
+chrome.o: chrome.c chrome.h cpu.h mem128.h debug.h contend.h  
 	\$(CC) \$(CFLAGS) -c chrome.c
 
 prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h utils.h menu.h

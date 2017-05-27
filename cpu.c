@@ -3245,6 +3245,10 @@ void rom_load(char *romfilename)
                 romfilename="pentagon.rom";
                 break;
 
+								case MACHINE_ID_CHROME:
+								romfilename="chrome.rom";
+								break;
+
 
                 case 120:
                 romfilename="zx80.rom";
@@ -3416,7 +3420,7 @@ Total 20 pages=320 Kb
 
 								else if (MACHINE_IS_CHROME) {
 									//160 K RAM, 64 K ROM
-									leidos=fread(chrome_rom_mem_table[0],1,65336,ptr_romfile);
+									leidos=fread(chrome_rom_mem_table[0],1,65536,ptr_romfile);
 									if (leidos!=65536) {
 									     cpu_panic("Error loading ROM");
 									}
