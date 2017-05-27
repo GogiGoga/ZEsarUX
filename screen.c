@@ -47,6 +47,7 @@
 #include "sam.h"
 #include "ql.h"
 #include "timer.h"
+#include "tbblue.h"
 
 
 //Incluimos estos dos para la funcion de fade out
@@ -5988,6 +5989,21 @@ G  G   R   R   B   B
                         }
 
 
+												//trama de grises para rgb8
+												//z80_byte color;
+												
+									for (i=0;i<256;i++) {
+																			int r,g,b;
+																			int valorgris=i;
+																			VALOR_GRIS_A_R_G_B
+
+																			color32=(r<<16)|(g<<8)|b;
+
+																									screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i, color32);
+
+			}
+
+
 
 		}
 
@@ -6061,7 +6077,7 @@ G  G   R   R   B   B
                         }
 
 			//Colores sam coupe
-                       for (i=0;i<128;i++) {
+        for (i=0;i<128;i++) {
 				/*
 
 Bit 0 BLU0 least significant bit of blue.
@@ -6090,7 +6106,14 @@ Bit 6 GRN1 most  significant bit of green.
                                         r,g,b);
 
                                 screen_set_colour_normal(SAM_INDEX_FIRST_COLOR+i, color32);
-                        }
+        }
+
+
+				//Colores RGB8
+				for (i=0;i<256;i++) {
+					debug_printf (VERBOSE_DEBUG,"RGB8 color: %02XH 32 bit: %06XH",get_rgb8_color(i));
+					screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i,get_rgb8_color(i));
+				}
 
 
 
@@ -11131,4 +11154,43 @@ void screen_set_window_zoom(int z)
 
 
 	menu_init_footer();
+}
+
+
+
+
+
+
+//Retorna color RGB en formato 32 bits para un color rgb en formato 8 bit de RRRGGGBB. Actualmente de momento solo usado en TBBLUE
+//NO es mismo formato que tabla de ulaplus. Ulaplus tiene formato GGGRRRBB
+int get_rgb8_color (z80_byte color)
+{
+	//Minitablas de conversion de 3 bits a 8 bits
+	z80_byte color_3_to_8[8]={
+	0,36,73,109,146,182,219,255
+	};
+
+	int color32;
+	z80_byte r,g,b;
+	z80_byte r8,g8,b8;
+
+
+		r=(color>>5)&7;
+		g=(color>>2)&7;
+
+		//componente b es un tanto esoterico
+		//The missing lowest blue bit is set to OR of the other two blue bits (Bb becomes 000 for 00, and Bb1 for anything else)
+		b=(color&3);
+		b=(b<<1);
+		if (b) b=b|1;
+
+		//Pasamos cada componente de 3 bits a su correspondiente de 8 bits
+		r8=color_3_to_8[r];
+		g8=color_3_to_8[g];
+		b8=color_3_to_8[b];
+
+		color32=(r8<<16)|(g8<<8)|b8;
+		return color32;
+
+
 }

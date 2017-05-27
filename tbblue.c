@@ -318,6 +318,8 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror and bit 1 is visible flag and bit 0 is X MSB
 						z80_byte mirror_y=tbsprite_sprites[conta_sprites][2]&4;
 
+						z80_byte palette_offset=(tbsprite_sprites[conta_sprites][2]>>4)&15;
+
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
 
@@ -364,6 +366,9 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 							for (i=0;i<ancho_sprite;i++) {
 								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern];
+
+								//Sumar palette offset. Logicamente si es >256 el resultado, dará la vuelta el contador
+								index_color +=palette_offset;
 
 								if (mirror_x) offset_pattern--;
 								else offset_pattern++;
@@ -444,7 +449,7 @@ Register:
 					if (color!=TBBLUE_TRANSPARENT_COLOR) {
 
 						//Pasamos de RGB a GRB
-						z80_byte r,g,b;
+						/*z80_byte r,g,b;
 						r=(color>>5)&7;
 						g=(color>>2)&7;
 						b=(color&3);
@@ -453,9 +458,11 @@ Register:
 
 
 						//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
-						z80_int color_final;
 
-						color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
+
+						color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;*/
+						z80_int color_final;
+						color_final=RGB8_INDEX_FIRST_COLOR+color;
 						//color_final=ulaplus_rgb_table[color_final];
 
 						*puntero_buf_rainbow=color_final;

@@ -125,6 +125,7 @@ La tabla ulaplus_rgb_table tiene para cada valor posible de rgb de ula plus su c
 */
 
 //Inicializar tabla de colores de rgb ulaplus (8 bit) a 32 bit
+//Esta ulaplus_rgb_table solo se utiliza directamente una sola vez, y es al inicializar la tabla de colores del emulador, que se queda en el offset ULAPLUS_INDEX_FIRST_COLOR
 void init_ulaplus_table(void)
 {
 	debug_printf (VERBOSE_DEBUG,"Initializing ULAplus rgb color table conversion");
