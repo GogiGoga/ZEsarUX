@@ -94,7 +94,15 @@ z80_byte chrome_get_rom_bank(void)
 
         z80_byte banco;
 
-        banco=((puerto_32765>>4)&1)+((puerto_8189>>1)&2);
+        banco=((puerto_32765>>4)&1);
+
+				/*
+				Port 1FFDh (read/write)
+			Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading from port 7FFDh, i2c interface. This downgrade Chrome to a simple 128K spectrum clone)
+			*/
+			  if (si_chrome_features_enabled()) {
+				banco +=((puerto_8189>>1)&2);
+				}
 
 
 
@@ -105,7 +113,7 @@ z80_byte chrome_get_ram_bank_c0(void)
 {
         z80_byte banco;
 
-      	banco=(puerto_32765&7)+((puerto_32765>>3)&24);
+      	banco=puerto_32765&7;
 
         return banco;
 }
@@ -120,9 +128,26 @@ z80_byte chrome_get_ram_bank_40(void)
 				Bit 1 High bit of ROM selection and bank 8 (0) or 9 (1) if bit0 = 1.
 				Bit 2 if 1 maps bank9 at 4000h, video page is still displayed and can be accessed at C000h.*/
 
-				if (puerto_8189&4) banco=9;
+
+				/*
+				Port 1FFDh (read/write)
+			Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading from port 7FFDh, i2c interface. This downgrade Chrome to a simple 128K spectrum clone)
+			*/
+				if (si_chrome_features_enabled() ) {
+					if (puerto_8189&4) banco=9;
+				}
 
         return banco;
+}
+
+int si_chrome_features_enabled(void)
+{
+	/*
+	Port 1FFDh (read/write)
+Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading from port 7FFDh, i2c interface. This downgrade Chrome to a simple 128K spectrum clone)
+*/
+	if ( (puerto_8189&32)==0) return 1;
+	return 0;
 }
 
 void chrome_set_memory_pages(void)
@@ -138,7 +163,7 @@ void chrome_set_memory_pages(void)
 	Bit 1 High bit of ROM selection and bank 8 (0) or 9 (1) if bit0 = 1.
 	*/
 	//TODO: Banco 8 o 9 se pueden escribir?
-	if (puerto_8189&1) {
+	if (puerto_8189&1  && si_chrome_features_enabled()) {
 		z80_byte r;
 
 		if (puerto_8189&1) r=9;

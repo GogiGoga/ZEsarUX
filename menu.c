@@ -5057,7 +5057,7 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                         menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
     //Paginas memoria
-    if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_TBBLUE || superupgrade_enabled.v) {
+    if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME) {
                                 int pagina;
                                 //4 paginas, texto 5 caracteres max
                                 char texto_paginas[4][5];
@@ -5090,6 +5090,8 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 
                                 menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
                         }
+
+
 
 			//Si dandanator y maquina 48kb
 			if (MACHINE_IS_SPECTRUM_16_48 && dandanator_switched_on.v) {

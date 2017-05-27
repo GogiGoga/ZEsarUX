@@ -5335,7 +5335,16 @@ z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 	if (puerto==ZESARUX_ZXI_PORT_DATA)     return zesarux_zxi_read_register_value();
 
 
-
+  //Puertos paginacion chrome se pueden leer
+	//TODO: solo los puertos exactos o tambien vale mascara?
+	/*
+	Port 1FFDh (read/write)
+Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading from port 7FFDh, i2c interface. This downgrade Chrome to a simple 128K spectrum clone)
+*/
+	if (MACHINE_IS_CHROME) {
+		if (puerto==32765 && si_chrome_features_enabled()) return puerto_32765;
+		if (puerto==8189) return puerto_8189;
+	}
 
 
 //Final. Puertos de paginacion y puerto no asignado. No agregar nada despues de aqui
