@@ -35,6 +35,7 @@
 #include "ula.h"
 #include "tbblue.h"
 #include "superupgrade.h"
+#include "chrome.h"
 
 //Direcciones donde estan cada pagina de ram
 //Antes habian 8 solo (8 paginas de 16kb cada una)
@@ -204,6 +205,16 @@ z80_byte *get_base_mem_pantalla_continue(void)
                 }
                 else return chloe_home_ram_mem_table[5];
         }
+
+
+      if (MACHINE_IS_CHROME) {
+
+                if (puerto_32765 & 8) {
+                        return chrome_ram_mem_table[7];
+                }
+                else return chrome_ram_mem_table[5];
+        }
+
 
         if (MACHINE_IS_TBBLUE) {
 

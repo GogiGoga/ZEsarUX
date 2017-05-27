@@ -56,6 +56,11 @@ z80_byte contend_pages_p2a[] = {  0,0,0,0,1,1,1,1 };
 z80_byte contend_pages_chloe[]={  0,0,0,0,0,1,0,1 };
 
 
+//Para Chloe, contend solo en 2,5
+//				  0,1,2,3,4,5,6,7,8,9
+z80_byte contend_pages_chrome[]={  0,0,1,0,0,1,0,0,0,0 };
+
+
 //Indica si las paginas actuales mapeadas tienen contend o no (a 0 o a 1)
 z80_byte contend_pages_actual[4];
 
@@ -669,6 +674,110 @@ z80_int segmento;
 #endif
 
 }
+
+
+//chrome
+
+void contend_read_chrome(z80_int direccion,int time)
+{
+
+#ifdef EMULATE_CONTEND
+
+		z80_int segmento;
+                segmento=direccion / 16384;
+		if (contend_pages_actual[segmento]) {
+			t_estados += contend_table[ t_estados ];
+		}
+#endif
+
+        //Y sumamos estados normales
+        t_estados += time;
+
+}
+
+void contend_read_no_mreq_chrome(z80_int direccion,int time)
+{
+
+#ifdef EMULATE_CONTEND
+
+		z80_int segmento;
+                segmento=direccion / 16384;
+		if (contend_pages_actual[segmento]) {
+			t_estados += contend_table[ t_estados ];
+		}
+#endif
+
+
+        //Y sumamos estados normales
+        t_estados += time;
+
+}
+
+void contend_write_no_mreq_chrome(z80_int direccion,int time)
+{
+
+#ifdef EMULATE_CONTEND
+
+		z80_int segmento;
+                segmento=direccion / 16384;
+
+		//printf ("direccion: %d segmento: %d contend: %d\n",direccion,segmento,contend_pages_actual[segmento]);
+		if (contend_pages_actual[segmento]) {
+			t_estados += contend_table[ t_estados ];
+		}
+#endif
+
+
+        //Y sumamos estados normales
+        t_estados += time;
+
+}
+
+
+void ula_contend_port_early_chrome( z80_int port )
+{
+#ifdef EMULATE_CONTEND
+z80_int segmento;
+                segmento=port / 16384;
+                if (contend_pages_actual[segmento]) {
+                	t_estados += contend_table_no_mreq[ t_estados ];
+
+
+	        }
+#endif
+
+  t_estados++;
+}
+
+void ula_contend_port_late_chrome( z80_int port )
+{
+#ifdef EMULATE_CONTEND
+  if( port_from_ula( port ) ) {
+    t_estados += contend_table_no_mreq[ t_estados ];
+    t_estados += 2;
+
+  }
+  else {
+
+
+z80_int segmento;
+     segmento=port / 16384;
+    if (contend_pages_actual[segmento]) {
+                t_estados += contend_table_no_mreq[ t_estados ]; t_estados++;
+                t_estados += contend_table_no_mreq[ t_estados ]; t_estados++;
+                t_estados += contend_table_no_mreq[ t_estados ];
+
+        }
+        else {
+              t_estados += 2;
+        }
+  }
+#else
+        t_estados += 2;
+#endif
+
+}
+
 
 
 //prism. No tiene memoria contended

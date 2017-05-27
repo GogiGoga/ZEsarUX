@@ -271,6 +271,11 @@ extern z80_byte peek_byte_no_time_sam(z80_int dir);
 extern z80_byte peek_byte_no_time_tbblue(z80_int dir);
 
 
+extern void poke_byte_chrome(z80_int dir,z80_byte valor);
+extern void poke_byte_no_time_chrome(z80_int dir,z80_byte valor);
+extern z80_byte peek_byte_chrome(z80_int dir);
+extern z80_byte peek_byte_no_time_chrome(z80_int dir);
+
 
 extern void poke_word(z80_int dir,z80_int valor);
 extern z80_int peek_word(z80_int dir);

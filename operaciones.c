@@ -63,6 +63,7 @@
 #include "snap_rzx.h"
 #include "multiface.h"
 #include "ql.h"
+#include "chrome.h"
 
 
 void (*poke_byte)(z80_int dir,z80_byte valor);
@@ -1800,6 +1801,84 @@ z80_byte peek_byte_tbblue(z80_int dir)
 
 
 
+
+z80_byte *chrome_return_segment_memory(z80_int dir)
+{
+	int segmento;
+
+	segmento=dir/16384;
+
+	return chrome_memory_paged[segmento];
+
+}
+
+
+void poke_byte_no_time_chrome(z80_int dir,z80_byte valor)
+{
+
+#ifdef EMULATE_VISUALMEM
+
+set_visualmembuffer(dir);
+
+#endif
+
+		z80_byte *puntero;
+		puntero=chrome_return_segment_memory(dir);
+
+		dir = dir & 16383;
+		puntero=puntero+dir;
+
+		*puntero=valor;
+
+}
+
+void poke_byte_chrome(z80_int dir,z80_byte valor)
+{
+int segmento;
+                segmento=dir / 16384;
+
+#ifdef EMULATE_CONTEND
+                if (contend_pages_actual[segmento]) {
+                        t_estados += contend_table[ t_estados ];
+                }
+#endif
+
+
+                t_estados += 3;
+
+        poke_byte_no_time_chrome(dir,valor);
+}
+
+
+
+z80_byte peek_byte_no_time_chrome(z80_int dir)
+{
+		z80_byte *puntero;
+		puntero=chrome_return_segment_memory(dir);
+
+		dir = dir & 16383;
+		puntero=puntero+dir;
+
+		return *puntero;
+}
+
+
+z80_byte peek_byte_chrome(z80_int dir)
+{
+        int segmento;
+        segmento=dir / 16384;
+
+#ifdef EMULATE_CONTEND
+                if (contend_pages_actual[segmento]) {
+                        t_estados += contend_table[ t_estados ];
+                }
+#endif
+
+                t_estados += 3;
+
+        return peek_byte_no_time_chrome(dir);
+
+}
 
 
 
@@ -5984,6 +6063,9 @@ Port: 10-- ---- ---- --0-
 
 	}
 
+
+
+
 	//Puertos paginacion para superupgrade
  if (superupgrade_enabled.v)
         {
@@ -6127,6 +6209,28 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 
         }
+
+
+				//Puerto paginacion 32765 para Chrome
+				if (MACHINE_IS_CHROME) {
+						//Puerto tipicamente 32765
+															// the hardware will respond only to those port addresses with bit 1 reset, bit 14 set and bit 15 reset (as opposed to just bits 1 and 15 reset on the 128K/+2).
+						if ( (puerto & 49154) == 16384 ) {
+							puerto_32765=value;
+							chrome_set_memory_pages();
+						}
+
+						//Puerto tipicamente 8189
+						 // the hardware will respond to all port addresses with bit 1 reset, bit 12 set and bits 13, 14 and 15 reset).
+						if ( (puerto & 61442 )== 4096) {
+//printf ("TBBLUE changing port 8189 value=0x%02XH\n",value);
+										puerto_8189=value;
+
+
+										chrome_set_memory_pages();
+						}
+
+				}
 
 	//Puertos especiales de TBBLUE y de paginacion 128kb
 	if (MACHINE_IS_TBBLUE) {

@@ -449,9 +449,10 @@ Chloe Corportation
 Jeff Braine
 Miles Gordon Tech
 Pentagon
+Mario Prato
 */
 
-#define TOTAL_FABRICANTES 13
+#define TOTAL_FABRICANTES 14
 #define FABRICANTE_SINCLAIR 0
 #define FABRICANTE_AMSTRAD 1
 #define FABRICANTE_TIMEX_SINCLAIR 2
@@ -465,6 +466,7 @@ Pentagon
 #define FABRICANTE_JUPITER_CANTAB 10
 #define FABRICANTE_MILES_GORDON 11
 #define FABRICANTE_PENTAGON 12
+#define FABRICANTE_MARIOPRATO 13
 
 extern char *array_fabricantes[];
 extern char *array_fabricantes_hotkey[];

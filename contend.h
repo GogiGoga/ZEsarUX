@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -113,6 +113,14 @@ extern void contend_read_no_mreq_timex(z80_int direccion,int time);
 extern void contend_write_no_mreq_timex(z80_int direccion,int time);
 extern void ula_contend_port_early_timex( z80_int port );
 extern void ula_contend_port_late_timex( z80_int port );
+
+
+extern void contend_read_chrome(z80_int direccion,int time);
+extern void contend_read_no_mreq_chrome(z80_int direccion,int time);
+extern void contend_write_no_mreq_chrome(z80_int direccion,int time);
+extern void ula_contend_port_early_chrome( z80_int port );
+extern void ula_contend_port_late_chrome( z80_int port );
+extern z80_byte contend_pages_chrome[];
 
 
 extern int port_from_ula_48k (z80_int puerto);

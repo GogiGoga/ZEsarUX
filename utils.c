@@ -363,7 +363,8 @@ char *array_fabricantes[]={
 	"Cambridge Computers",
 	"Jupiter Cantab",
 	"Miles Gordon Technology",
-	"Pentagon"
+	"Pentagon",
+  "Mario Prato"
 };
 
 char *array_fabricantes_hotkey[]={
@@ -379,10 +380,11 @@ char *array_fabricantes_hotkey[]={
         "Cam~~bridge Computers",
         "J~~upiter Cantab",
         "Mi~~les Gordon Technology",
-	"~~Pentagon"
+	       "~~Pentagon",
+        "Ma~~rio Prato"
 };
 
-char array_fabricantes_hotkey_letra[]="satimzcjvbulp";
+char array_fabricantes_hotkey_letra[]="satimzcjvbulpr";
 
 
 /*
@@ -408,6 +410,7 @@ char array_fabricantes_hotkey_letra[]="satimzcjvbulp";
 19=TBBlue
 20=Spectrum + Spanish
 21=Pentagon
+22=Chrome
 120=zx80
 121=zx81
 122=jupiter ace
@@ -471,6 +474,10 @@ int array_maquinas_pentagon[]={
 	21,255
 };
 
+int array_maquinas_marioprato[]={
+	22,255
+};
+
 //Retorna array a maquinas segun fabricante
 int *return_maquinas_fabricante(int fabricante)
 {
@@ -526,6 +533,10 @@ int *return_maquinas_fabricante(int fabricante)
 		case FABRICANTE_PENTAGON:
 			return array_maquinas_pentagon;
 		break;
+
+    case FABRICANTE_MARIOPRATO:
+      return array_maquinas_marioprato;
+    break;
 
 		default:
 			cpu_panic("Unknown machines made by manufacturer");
@@ -608,6 +619,10 @@ int return_fabricante_maquina(int maquina)
 		case 21:
 			return FABRICANTE_PENTAGON;
 		break;
+
+    case MACHINE_ID_CHROME:
+      return FABRICANTE_MARIOPRATO;
+    break;
 
 		default:
 			cpu_panic ("Unknown manufacturer for machine id");
@@ -2953,7 +2968,7 @@ int util_write_configfile(void)
   if (!MACHINE_IS_TBBLUE) {
   if (divmmc_mmc_ports_enabled.v && divmmc_diviface_enabled.v)
                                               ADD_STRING_CONFIG,"--enable-divmmc");
-  }                                          
+  }
 
 
 

@@ -94,6 +94,7 @@
 #include "remote.h"
 #include "snap_rzx.h"
 #include "multiface.h"
+#include "chrome.h"
 
 #ifdef COMPILE_STDOUT
 #include "scrstdout.h"
@@ -851,6 +852,10 @@ util_stats_init();
 		prism_set_memory_pages();
 	}
 
+	if (MACHINE_IS_CHROME) {
+		chrome_set_memory_pages();
+	}
+
 	if (MACHINE_IS_TBBLUE) {
 		tbblue_set_memory_pages();
 		//tbblue_read_port_24d5_index=0;
@@ -924,6 +929,7 @@ char *string_machines_list_description=
 							" ZXUNO    ZX-Uno\n"
 							" Prism    Prism\n"
 							" TBBlue   TBBlue/ZX Spectrum Next\n"
+							" Chrome   Chrome\n"
 					    " ACE      Jupiter Ace\n"
 					    " CPC464   Amstrad CPC 464\n"
 							;
@@ -1831,6 +1837,7 @@ struct s_machine_names machine_names[]={
 					    {"TBBLue",   			19},
 					    {"Spectrum 48k (Spanish)",		20},
 					    {"Pentagon",		21},
+							{"Chrome", MACHINE_ID_CHROME},
                                             {"ZX-80",  				120},
                                             {"ZX-81",  				121},
 					    {"Jupiter Ace",  			122},
@@ -2114,6 +2121,17 @@ void malloc_mem_machine(void) {
 
         }
 
+				else if (MACHINE_IS_CHROME) {
+
+				//Necesita 64 kb rom, 160 kb ram
+				malloc_machine((64+160)*1024);
+				random_ram(memoria_spectrum+65536,160*1024);
+
+				chrome_init_memory_tables();
+				chrome_set_memory_pages();
+
+						}
+
 
           else if (MACHINE_IS_TIMEX_TS2068) {
 
@@ -2202,7 +2220,8 @@ void set_machine_params(void)
 19=TBBlue
 20=Spectrum + Spanish
 21=Pentagon
-22-29 Reservado (Spectrum)
+22=Chrome
+23-29 Reservado (Spectrum)
 120=zx80 (old 20)
 121=zx81 (old 21)
 122=jupiter ace (old 22)
@@ -2481,6 +2500,18 @@ void set_machine_params(void)
 
                 }
 
+
+								else if (MACHINE_IS_CHROME) {
+															 contend_read=contend_read_chrome;
+															 contend_read_no_mreq=contend_read_no_mreq_chrome;
+															 contend_write_no_mreq=contend_write_no_mreq_chrome;
+
+															 ula_contend_port_early=ula_contend_port_early_chrome;
+															 ula_contend_port_late=ula_contend_port_late_chrome;
+
+
+											 }
+
                else if (MACHINE_IS_TIMEX_TS2068) {
                         contend_read=contend_read_timex;
                         contend_read_no_mreq=contend_read_no_mreq_timex;
@@ -2742,7 +2773,14 @@ void set_machine_params(void)
                 break;
 
 
-
+								case MACHINE_ID_CHROME:
+														poke_byte=poke_byte_chrome;
+														peek_byte=peek_byte_chrome;
+														peek_byte_no_time=peek_byte_no_time_chrome;
+														poke_byte_no_time=poke_byte_no_time_chrome;
+														lee_puerto=lee_puerto_spectrum;
+														ay_chip_present.v=1;
+								break;
 
 
 
@@ -3375,6 +3413,15 @@ Total 20 pages=320 Kb
 
 
                 }
+
+								else if (MACHINE_IS_CHROME) {
+									//160 K RAM, 64 K ROM
+									leidos=fread(chrome_rom_mem_table[0],1,65336,ptr_romfile);
+									if (leidos!=65536) {
+									     cpu_panic("Error loading ROM");
+									}
+
+								}
 
 
 
