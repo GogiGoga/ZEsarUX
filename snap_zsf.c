@@ -128,6 +128,31 @@ int zsf_write_block(FILE *ptr_zsf_file, z80_byte *source,z80_int block_id, unsig
 
 }
 
+void load_zsf_snapshot_block_data(z80_byte *block_data)
+{
+  /*
+  ramblock[0]=0;
+  ramblock[1]=value_16_to_8l(16384);
+  ramblock[2]=value_16_to_8h(16384);
+  ramblock[3]=value_16_to_8l(49152);
+  ramblock[4]=value_16_to_8h(49152);
+  */
+
+  int i=0;
+  z80_byte block_flags=block_data[i];
+  i++;
+  z80_int block_start=value_8_to_16(block_data[i+1],block_data[i]);
+  i +=2;
+  z80_int block_lenght=value_8_to_16(block_data[i+1],block_data[i]);
+  i+=2;
+
+  debug_printf (VERBOSE_DEBUG,"Block start: %d Lenght: %d",block_start,block_lenght);
+  while (block_lenght) {
+    poke_byte_no_time(block_start++,block_data[i++]);
+    block_lenght--;
+  }
+}
+
 
 void load_zsf_snapshot(char *filename)
 {
@@ -146,8 +171,10 @@ void load_zsf_snapshot(char *filename)
   while (!feof(ptr_zsf_file)) {
     //Read header block
     unsigned int leidos=fread(block_header,1,6,ptr_zsf_file);
+    if (leidos==0) break; //End while
+
     if (leidos!=6) {
-      debug_printf(VERBOSE_ERR,"Error reading snapshot file");
+      debug_printf(VERBOSE_ERR,"Error reading snapshot file. Read: %u Expected: 6",leidos);
       return;
     }
 
@@ -167,13 +194,17 @@ void load_zsf_snapshot(char *filename)
     //Read block data
     leidos=fread(block_data,1,block_lenght,ptr_zsf_file);
     if (leidos!=block_lenght) {
-      debug_printf(VERBOSE_ERR,"Error reading snapshot file");
+      debug_printf(VERBOSE_ERR,"Error reading snapshot file. Read: %u Expected: %u",leidos,block_lenght);
       return;
     }
 
     //switch for everu possible block id
     switch(block_id)
     {
+      case ZSF_RAMBLOCK:
+        load_zsf_snapshot_block_data(block_data);
+      break;
+
       default:
         debug_printf(VERBOSE_ERR,"Unknown ZSF Block ID: %u. Continue anyway",block_id);
       break;

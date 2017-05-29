@@ -13411,7 +13411,7 @@ int menu_avisa_si_extension_no_habitual(char *filtros[],char *archivo)
 void menu_quickload(MENU_ITEM_PARAMETERS)
 {
 
-        char *filtros[25];
+        char *filtros[26];
 
         filtros[0]="zx";
         filtros[1]="sp";
@@ -13448,7 +13448,9 @@ void menu_quickload(MENU_ITEM_PARAMETERS)
 
 	filtros[23]="rzx";
 
-	filtros[24]=0;
+	filtros[24]="zsf";
+
+	filtros[25]=0;
 
 
         //guardamos directorio actual

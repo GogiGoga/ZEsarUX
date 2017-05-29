@@ -3462,6 +3462,7 @@ int quickload_valid_extension(char *nombre) {
 	if (
                    !util_compare_file_extension(nombre,"zx")
                 || !util_compare_file_extension(nombre,"sp")
+                || !util_compare_file_extension(nombre,"zsf")
                 || !util_compare_file_extension(nombre,"z80")
                 || !util_compare_file_extension(nombre,"tzx")
                 || !util_compare_file_extension(nombre,"sna")
@@ -3628,6 +3629,7 @@ int quickload_continue(char *nombre) {
         if (
                            !util_compare_file_extension(nombre,"zx")
                         || !util_compare_file_extension(nombre,"sp")
+                        || !util_compare_file_extension(nombre,"zsf")
                         || !util_compare_file_extension(nombre,"z80")
                         || !util_compare_file_extension(nombre,"sna")
                         || !util_compare_file_extension(nombre,"ace")
