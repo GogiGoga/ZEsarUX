@@ -132,6 +132,62 @@ int zsf_write_block(FILE *ptr_zsf_file, z80_byte *source,z80_int block_id, unsig
 void load_zsf_snapshot(char *filename)
 {
 
+  FILE *ptr_zsf_file;
+
+  ptr_zsf_file=fopen(filename,"rb");
+  if (!ptr_zsf_file) {
+          debug_printf (VERBOSE_ERR,"Error reading snapshot file %s",filename);
+          return;
+  }
+
+  z80_byte block_header[6];
+
+  //Read blocks
+  while (!feof(ptr_zsf_file)) {
+    //Read header block
+    unsigned int leidos=fread(block_header,1,6,ptr_zsf_file);
+    if (leidos!=6) {
+      debug_printf(VERBOSE_ERR,"Error reading snapshot file");
+      return;
+    }
+
+    z80_int block_id;
+    block_id=value_8_to_16(block_header[1],block_header[0]);
+    unsigned int block_lenght=block_header[2]+(block_header[3]*256)+(block_header[4]*65536)+(block_header[5]*16777216);
+
+    debug_printf (VERBOSE_INFO,"Block id: %u Lenght: %u",block_id,block_lenght);
+
+    z80_byte *block_data=malloc(block_lenght);
+
+    if (block_data==NULL) {
+      debug_printf(VERBOSE_ERR,"Error allocation memory reading ZSF file");
+      return;
+    }
+
+    //Read block data
+    leidos=fread(block_data,1,block_lenght,ptr_zsf_file);
+    if (leidos!=block_lenght) {
+      debug_printf(VERBOSE_ERR,"Error reading snapshot file");
+      return;
+    }
+
+    //switch for everu possible block id
+    switch(block_id)
+    {
+      default:
+        debug_printf(VERBOSE_ERR,"Unknown ZSF Block ID: %u. Continue anyway",block_id);
+      break;
+
+    }
+
+
+    free(block_data);
+
+  }
+
+  fclose(ptr_zsf_file);
+
+
 }
 
 
@@ -174,6 +230,8 @@ void save_zsf_snapshot(char *filename)
 
   //Store block to file
   zsf_write_block(ptr_zsf_file, ramblock,ZSF_RAMBLOCK, 49152+5);
+
+  free(ramblock);
 
 
   fclose(ptr_zsf_file);
