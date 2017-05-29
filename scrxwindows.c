@@ -1374,6 +1374,17 @@ void deal_with_keys(XEvent *event,int pressrelease)
                                 util_set_reset_key(UTIL_KEY_F5,pressrelease);
                         break;
 
+
+                        //F6 pulsado
+                        case XK_F6:
+                                util_set_reset_key(UTIL_KEY_F6,pressrelease);
+                        break;
+
+                        //F7 pulsado
+                        case XK_F7:
+                                util_set_reset_key(UTIL_KEY_F7,pressrelease);
+                        break;
+
 /*
 
 
@@ -1404,6 +1415,31 @@ void deal_with_keys(XEvent *event,int pressrelease)
                         break;
 
 
+                        //F11 pulsado
+                        case XK_F11:
+                                util_set_reset_key(UTIL_KEY_F11,pressrelease);
+                        break;
+
+                        //F12 pulsado
+                        case XK_F12:
+                                util_set_reset_key(UTIL_KEY_F12,pressrelease);
+                        break;
+
+                        //F13 pulsado
+                        case XK_F13:
+                                util_set_reset_key(UTIL_KEY_F13,pressrelease);
+                        break;
+
+                        //F14 pulsado
+                        case XK_F14:
+                                util_set_reset_key(UTIL_KEY_F14,pressrelease);
+                        break;
+
+                        //F15 pulsado
+                        case XK_F15:
+                                util_set_reset_key(UTIL_KEY_F15,pressrelease);
+                        break;
+                        
 			//ESC pulsado
 			case XK_Escape:
 				util_set_reset_key(UTIL_KEY_ESC,pressrelease);

@@ -5991,7 +5991,7 @@ G  G   R   R   B   B
 
 												//trama de grises para rgb8
 												//z80_byte color;
-												
+
 									for (i=0;i<256;i++) {
 																			int r,g,b;
 																			int valorgris=i;
@@ -6111,7 +6111,7 @@ Bit 6 GRN1 most  significant bit of green.
 
 				//Colores RGB8
 				for (i=0;i<256;i++) {
-					debug_printf (VERBOSE_DEBUG,"RGB8 color: %02XH 32 bit: %06XH",get_rgb8_color(i));
+					debug_printf (VERBOSE_DEBUG,"RGB8 color: %02XH 32 bit: %06XH",i,get_rgb8_color(i));
 					screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i,get_rgb8_color(i));
 				}
 
