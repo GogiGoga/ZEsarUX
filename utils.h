@@ -148,6 +148,9 @@ extern z80_bit debug_parse_config_file;
 #define RAWKEY_F3 0x3d
 #define RAWKEY_F4 0x3e
 #define RAWKEY_F5 0x3f
+#define RAWKEY_F6 0x40
+#define RAWKEY_F7 0x41
+
 #define RAWKEY_F8 0x42
 #define RAWKEY_F9 0x43
 #define RAWKEY_F10 0x44

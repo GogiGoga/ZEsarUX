@@ -976,6 +976,16 @@ void scrfbdev_actualiza_tablas_teclado_rawmode(void){
 				util_set_reset_key(UTIL_KEY_F5,pressrelease);
 				break;
 
+        //F6 pulsado
+			case RAWKEY_F6:
+				util_set_reset_key(UTIL_KEY_F6,pressrelease);
+				break;
+
+        //F7 pulsado
+			case RAWKEY_F7:
+				util_set_reset_key(UTIL_KEY_F7,pressrelease);
+				break;
+
 
 				//F8 pulsado
 			case RAWKEY_F8:
