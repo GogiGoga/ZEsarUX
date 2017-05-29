@@ -751,7 +751,15 @@ void scrsdl_deal_keys(int pressrelease,int tecla)
                                 util_set_reset_key(UTIL_KEY_F5,pressrelease);
                         break;
 
+                        //F6 pulsado
+                        case SDLK_F6:
+                                util_set_reset_key(UTIL_KEY_F6,pressrelease);
+                        break;
 
+                        //F7 pulsado
+                        case SDLK_F7:
+                                util_set_reset_key(UTIL_KEY_F7,pressrelease);
+                        break;
 
 
                         //F8 pulsado. osdkeyboard
@@ -769,6 +777,33 @@ void scrsdl_deal_keys(int pressrelease,int tecla)
                         case SDLK_F10:
                                 util_set_reset_key(UTIL_KEY_F10,pressrelease);
                         break;
+
+
+                                                //F11 pulsado
+                                                case SDLK_F11:
+                                                        util_set_reset_key(UTIL_KEY_F11,pressrelease);
+                                                break;
+
+                                                //F12 pulsado
+                                                case SDLK_F12:
+                                                        util_set_reset_key(UTIL_KEY_F12,pressrelease);
+                                                break;
+
+                                                //F13 pulsado
+                                                case SDLK_F13:
+                                                        util_set_reset_key(UTIL_KEY_F13,pressrelease);
+                                                break;
+
+                                                //F14 pulsado
+                                                case SDLK_F14:
+                                                        util_set_reset_key(UTIL_KEY_F14,pressrelease);
+                                                break;
+
+                                                //F15 pulsado
+                                                case SDLK_F15:
+                                                        util_set_reset_key(UTIL_KEY_F15,pressrelease);
+                                                break;
+
 
 
                         //ESC pulsado
