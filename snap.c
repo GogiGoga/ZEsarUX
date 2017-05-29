@@ -4748,6 +4748,12 @@ void snapshot_save(char *filename)
                 save_sp_snapshot(filename);
         }
 
+        else if (!util_compare_file_extension(filename,"zsf") ) {
+                      debug_printf(VERBOSE_INFO,"Saving ZSF snapshot %s",filename);
+                      save_zsf_snapshot(filename);
+              }
+
+
 	else if (!util_compare_file_extension(filename,"z80") ) {
                 debug_printf(VERBOSE_INFO,"Saving Z80 snapshot %s",filename);
                 save_z80_snapshot(filename);
@@ -4835,6 +4841,12 @@ void snapshot_load_name(char *nombre)
 			set_snap_file_options(nombre);
                         load_sp_snapshot(nombre);
                 }
+
+                else if (!util_compare_file_extension(nombre,"zsf") ) {
+			set_snap_file_options(nombre);
+                        load_zsf_snapshot(nombre);
+                }
+
 
                 else if (!util_compare_file_extension(nombre,"rzx") ) {
       set_snap_file_options(nombre);

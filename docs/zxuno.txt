@@ -13,6 +13,6 @@ dd if=zxuno.flash of=pflash2 bs=1k skip=48 count=99999
 
 #juntar todo
 cat pflash1 > nuevaflash
-cat nuevaflash
+cat FIRMWARE.ZX1 >> nuevaflash
 cat pflash2 >> nuevaflash 
 
