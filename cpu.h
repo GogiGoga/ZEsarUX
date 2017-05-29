@@ -30,9 +30,9 @@
 #define EMULATOR_VERSION "5.1-SN"
 #define SNAPSHOT_VERSION
 
-#define EMULATOR_DATE "24 April 2017"
-#define EMULATOR_SHORT_DATE "24/04/2017"
-#define EMULATOR_EDITION_NAME "xxx edition"
+#define EMULATOR_DATE "29 May 2017"
+#define EMULATOR_SHORT_DATE "29/05/2017"
+#define EMULATOR_EDITION_NAME "RunZX edition"
 
 //8 bits
 typedef unsigned char z80_byte;
