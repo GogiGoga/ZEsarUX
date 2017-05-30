@@ -6107,6 +6107,8 @@ z80_int view_sprites_ancho_sprite=1;
 //alto en pixeles
 z80_int view_sprites_alto_sprite=8*6;
 
+int view_sprites_tbblue=0;
+
 void menu_debug_draw_sprites(void)
 {
 
@@ -6124,18 +6126,36 @@ void menu_debug_draw_sprites(void)
 	menu_z80_moto_int puntero=view_sprites_direccion;
 	z80_byte color;
 
-	for (y=0;y<view_sprites_alto_sprite;y++) {
-		for (x=0;x<view_sprites_ancho_sprite;x++) {
-			byte_leido=peek_byte_z80_moto(puntero++);
+	if (view_sprites_tbblue==0) {
+		for (y=0;y<view_sprites_alto_sprite;y++) {
+			for (x=0;x<view_sprites_ancho_sprite;x++) {
+				byte_leido=peek_byte_z80_moto(puntero++);
 
-			for (bit=0;bit<8;bit++) {
-				if ( (byte_leido & 128)==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
-				else color=ESTILO_GUI_TINTA_NORMAL;
+				for (bit=0;bit<8;bit++) {
+					if ( (byte_leido & 128)==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
+					else color=ESTILO_GUI_TINTA_NORMAL;
 
-				byte_leido <<=1;
+					byte_leido <<=1;
 
-                		//dibujamos valor actual
-		                scr_putpixel_zoom(xorigen+x*8+bit,yorigen+y,color);
+              		//dibujamos valor actual
+		            scr_putpixel_zoom(xorigen+x*8+bit,yorigen+y,color);
+							}
+						}
+		}
+	}
+
+	else {
+		//Ancho 16 de sprites
+		int sprite_ancho=16;
+		int sprite_alto=16;
+		z80_byte index_color;
+		for (y=0;y<view_sprites_alto_sprite;y++) {
+			int numero_pattern=(puntero+(y/sprite_alto))&63;
+			for (x=0;x<sprite_ancho;x++) {
+				int offset_sprite=(y%16)*16+x;
+				index_color=tbsprite_patterns[numero_pattern][offset_sprite];
+				color=tbsprite_palette[index_color];
+				scr_putpixel_zoom(xorigen+x,yorigen+y,RGB8_INDEX_FIRST_COLOR+color);
 			}
 		}
 	}
@@ -6154,10 +6174,18 @@ menu_z80_moto_int menu_debug_view_sprites_change_pointer(menu_z80_moto_int p)
 
         char string_address[8];
 
-				util_sprintf_address_hex(p,string_address);
+
 
         //menu_ventana_scanf("Address? (in hex)",string_address,6);
-        menu_ventana_scanf("Address?",string_address,8);
+
+				if (view_sprites_tbblue) {
+					sprintf(string_address,"%d",p&63);
+					menu_ventana_scanf("Pattern?",string_address,3);
+				}
+				else {
+					util_sprintf_address_hex(p,string_address);
+        	menu_ventana_scanf("Address?",string_address,8);
+				}
 
         //p=strtol(string_address, NULL, 16);
 
@@ -6188,6 +6216,9 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
         z80_bit copia_video_interlaced_mode;
         copia_video_interlaced_mode.v=video_interlaced_mode.v;
 
+				//Si no es maquina tbblue, por defecto va a salir sprites normales
+				if (!MACHINE_IS_TBBLUE) view_sprites_tbblue=0;
+
         disable_interlace();
 
 
@@ -6201,29 +6232,55 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 
         //Cambiamos funcion overlay de texto de menu
-        //Se establece a la de funcion de onda + texto
+        //Se establece a la de funcion de ver sprites
         set_menu_overlay_function(menu_debug_draw_sprites);
 
 
 
         do {
 
-		int bytes_por_linea=view_sprites_ancho_sprite;
-		int bytes_por_ventana=view_sprites_ancho_sprite*view_sprites_alto_sprite;
+					int linea=0;
+					char buffer_texto[32];
 
-		int linea=0;
-		char buffer_texto[32];
+					int bytes_por_linea;
+					int bytes_por_ventana;
 
 
-		view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
-		if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Address: %05X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
-		else sprintf (buffer_texto,"Address: %04X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
+
+
+
+
+
+		if (view_sprites_tbblue) {
+			bytes_por_linea=1;
+			bytes_por_ventana=view_sprites_alto_sprite/16;
+			sprintf (buffer_texto,"Pattern: %02d Size: 16X%d",view_sprites_direccion&63,view_sprites_alto_sprite);
+		}
+		else {
+			bytes_por_linea=view_sprites_ancho_sprite;
+			bytes_por_ventana=view_sprites_ancho_sprite*view_sprites_alto_sprite;
+			view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
+			if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Address: %05X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
+			else sprintf (buffer_texto,"Address: %04X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
+		}
+
+
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_texto);
 
 		linea=SPRITES_ALTO-3;
 
-		menu_escribe_linea_opcion(linea++,-1,1,"M: pointer    OPQA: Size");
+		if (MACHINE_IS_TBBLUE) {
+			if (view_sprites_tbblue) {
+				menu_escribe_linea_opcion(linea++,-1,1,"M: ptr H: hard   QA: Size");
+			}
+			else {
+				menu_escribe_linea_opcion(linea++,-1,1,"M: ptr H: hard OPQA: Size");
+			}
+		}
+		else {
+			menu_escribe_linea_opcion(linea++,-1,1,"M: ptr         OPQA: Size");
+		}
 
 		if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
@@ -6258,8 +6315,12 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
                                         case 'm':
                                                 view_sprites_direccion=menu_debug_view_sprites_change_pointer(view_sprites_direccion);
-						menu_debug_view_sprites_ventana();
+																								menu_debug_view_sprites_ventana();
                                         break;
+
+																				case 'h':
+																								view_sprites_tbblue ^=1;
+																				break;
 
 					case 'o':
 						if (view_sprites_ancho_sprite>1) view_sprites_ancho_sprite--;
