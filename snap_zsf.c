@@ -71,9 +71,12 @@
 #endif
 
 #define ZSF_NOOP_ID 0
-#define ZSF_Z80_REGS_ID 1
-#define ZSF_MOTO_REGS_ID 2
-#define ZSF_RAMBLOCK 3
+#define ZSF_MACHINEID 1
+#define ZSF_Z80_REGS_ID 2
+#define ZSF_MOTO_REGS_ID 3
+#define ZSF_RAMBLOCK 4
+
+
 
 /*
 Format ZSF:
@@ -90,19 +93,28 @@ After these 6 bytes, the data for the block comes.
 -Block ID 0: ZSF_NOOP
 No operation. Block lenght 0
 
--Block ID 1: ZSF_Z80_REGS
+-Block ID 1: ZSF_MACHINEID
+Defines which machine is this snapshot. Normally it should come after any other block, but can appear later
+Even it could be absent, so the snapshot will be loaded according to the current machine
+
+Byte fields:
+0: Machine ID. Same ID  defined on function set_machine_params from cpu.c
+
+-Block ID 2: ZSF_Z80_REGS
 Z80 CPU Registers
 
--Block ID 2: ZSF_MOTO_REGS
+-Block ID 3: ZSF_MOTO_REGS
 Motorola CPU Registers
 
--Block ID 3: ZSF_RAMBLOCK
+-Block ID 4: ZSF_RAMBLOCK
 A ram binary block
 Byte Fields:
 0: Flags. Currently: bit 0: if compressed
 1,2: Block start
 3,4: Block lenght
 5 and next bytes: data bytes
+
+
 
 */
 
@@ -128,6 +140,46 @@ int zsf_write_block(FILE *ptr_zsf_file, z80_byte *source,z80_int block_id, unsig
 
 }
 
+void load_zsf_snapshot_z80_regs(z80_byte *header)
+{
+  reg_c=header[0];
+  reg_b=header[1];
+  reg_e=header[2];
+  reg_d=header[3];
+  reg_l=header[4];
+  reg_h=header[5];
+
+        store_flags(header[6]);
+        reg_a=header[7];
+
+        reg_ix=value_8_to_16(header[9],header[8]);
+        reg_iy=value_8_to_16(header[11],header[10]);
+
+        reg_c_shadow=header[12];
+        reg_b_shadow=header[13];
+        reg_e_shadow=header[14];
+        reg_d_shadow=header[15];
+        reg_l_shadow=header[16];
+        reg_h_shadow=header[17];
+
+        store_flags_shadow(header[18]);
+        reg_a_shadow=header[19];
+
+        reg_r=header[20];
+        reg_r_bit7=reg_r&128;
+
+        reg_i=header[21];
+
+        reg_sp=value_8_to_16(header[23],header[22]);
+
+        reg_pc=value_8_to_16(header[25],header[24]);
+
+        im_mode=header[26] & 2;
+        if (im_mode==1) im_mode=2;
+
+        iff1.v=iff2.v=header[26] &1;
+}
+
 void load_zsf_snapshot_block_data(z80_byte *block_data)
 {
   /*
@@ -140,6 +192,11 @@ void load_zsf_snapshot_block_data(z80_byte *block_data)
 
   int i=0;
   z80_byte block_flags=block_data[i];
+
+  if (block_flags&1) {
+    debug_printf(VERBOSE_ERR,"Error. Compressed block not supported yet");
+  }
+
   i++;
   z80_int block_start=value_8_to_16(block_data[i+1],block_data[i]);
   i +=2;
@@ -184,23 +241,42 @@ void load_zsf_snapshot(char *filename)
 
     debug_printf (VERBOSE_INFO,"Block id: %u Lenght: %u",block_id,block_lenght);
 
-    z80_byte *block_data=malloc(block_lenght);
+    z80_byte *block_data;
 
-    if (block_data==NULL) {
-      debug_printf(VERBOSE_ERR,"Error allocation memory reading ZSF file");
-      return;
+    //Evitar bloques de longitud cero
+    //Por si acaso inicializar a algo
+    z80_byte buffer_nothing;
+    block_data=&buffer_nothing;
+
+    if (block_lenght) {
+      block_data=malloc(block_lenght);
+
+      if (block_data==NULL) {
+        debug_printf(VERBOSE_ERR,"Error allocation memory reading ZSF file");
+        return;
+      }
+
+      //Read block data
+      leidos=fread(block_data,1,block_lenght,ptr_zsf_file);
+      if (leidos!=block_lenght) {
+        debug_printf(VERBOSE_ERR,"Error reading snapshot file. Read: %u Expected: %u",leidos,block_lenght);
+        return;
+      }
     }
 
-    //Read block data
-    leidos=fread(block_data,1,block_lenght,ptr_zsf_file);
-    if (leidos!=block_lenght) {
-      debug_printf(VERBOSE_ERR,"Error reading snapshot file. Read: %u Expected: %u",leidos,block_lenght);
-      return;
-    }
-
-    //switch for everu possible block id
+    //switch for every possible block id
     switch(block_id)
     {
+      case ZSF_MACHINEID:
+        current_machine_type=*block_data;
+        set_machine(NULL);
+        reset_cpu();
+      break;
+
+      case ZSF_Z80_REGS_ID:
+        load_zsf_snapshot_z80_regs(block_data);
+      break;
+
       case ZSF_RAMBLOCK:
         load_zsf_snapshot_block_data(block_data);
       break;
@@ -221,6 +297,56 @@ void load_zsf_snapshot(char *filename)
 
 }
 
+void save_zsf_snapshot_cpuregs(FILE *ptr)
+{
+
+  z80_byte header[27];
+
+  header[0]=reg_c;
+  header[1]=reg_b;
+  header[2]=reg_e;
+  header[3]=reg_d;
+  header[4]=reg_l;
+  header[5]=reg_h;
+
+  header[6]=get_flags();
+  header[7]=reg_a;
+
+
+
+  header[8]=value_16_to_8l(reg_ix);
+  header[9]=value_16_to_8h(reg_ix);
+  header[10]=value_16_to_8l(reg_iy);
+  header[11]=value_16_to_8h(reg_iy);
+
+  header[12]=reg_c_shadow;
+  header[13]=reg_b_shadow;
+  header[14]=reg_e_shadow;
+  header[15]=reg_d_shadow;
+  header[16]=reg_l_shadow;
+  header[17]=reg_h_shadow;
+
+
+
+  header[18]=get_flags_shadow();
+  header[19]=reg_a_shadow;
+
+  header[20]=(reg_r&127) | (reg_r_bit7&128);
+
+  header[21]=reg_i;
+
+  header[22]=value_16_to_8l(reg_sp);
+  header[23]=value_16_to_8h(reg_sp);
+  header[24]=value_16_to_8l(reg_pc);
+  header[25]=value_16_to_8h(reg_pc);
+
+
+  z80_byte bits_estado=(iff1.v) | (im_mode==2 ? 2 : 0);
+  header[26]=bits_estado;
+
+  zsf_write_block(ptr, header,ZSF_Z80_REGS_ID, 27);
+
+}
 
 void save_zsf_snapshot(char *filename)
 {
@@ -233,6 +359,22 @@ void save_zsf_snapshot(char *filename)
           debug_printf (VERBOSE_ERR,"Error writing snapshot file %s",filename);
           return;
   }
+
+  //First save machine ID
+  z80_byte save_machine_id=current_machine_type;
+  zsf_write_block(ptr_zsf_file, &save_machine_id,ZSF_MACHINEID, 1);
+
+
+
+  //Save cpu registers. Z80 or Moto
+  if (CPU_IS_MOTOROLA) {
+
+  }
+  else {
+    save_zsf_snapshot_cpuregs(ptr_zsf_file);
+  }
+
+    //TODO: estado ula: puerto 254, etc
 
   //Test. Save 48kb block
   //Allocate 5+48kb bytes

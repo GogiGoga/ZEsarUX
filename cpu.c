@@ -5326,7 +5326,7 @@ void print_funny_message(void)
 		"Detected 4 MB expanded memory (EMS)",
 		"64K High Memory Area is available",								//4
 		"Detected Hercules Video Card 720x350",
-		"Detected Enhanced Graphics Adapter (EGA) 640×350",	//6
+		"Detected Enhanced Graphics Adapter (EGA) 640X350",	//6
 		"Uncompressing Linux... done, booting the kernel",
 		"PhoenixBIOS 4.0 Release 6.0",											//8
 		"301-Keyboard not detected. Press F1 to continue",
@@ -5910,18 +5910,18 @@ struct sched_param sparam;
 	//Esto deberia estar disponible en todos menos en Windows. Logicamente si USE_PTHREADS esta habilitado
 	ver_si_enable_thread_main_loop();
 
-	
+
 	if (si_thread_main_loop) {
 		debug_printf (VERBOSE_INFO,"Calling main loop emulator on a thread");
                 if (pthread_create( &thread_main_loop, NULL, &thread_main_loop_function, NULL) ) {
                         cpu_panic("Can not create main loop pthread");
-                }	
+                }
 	}
 
 	else {
 		debug_printf (VERBOSE_INFO,"Calling main loop emulator without threads (although pthreads are available)");
 		emulator_main_loop();
-		//De aqui hacia abajo no se deberia llegar nunca... ya que esto es para pthreads y windows 
+		//De aqui hacia abajo no se deberia llegar nunca... ya que esto es para pthreads y windows
 		//(y lo de abajo es para cocoa y mas abajo para sistemas sin pthreads)
 	}
 

@@ -61,8 +61,6 @@ https://zx.itch.io/derbyplus
 
 -Probar a cambiar paleta interna del next mediante Basic 
 
--Visor de sprite de next en menú emulador 
-
 -Opción en stdout para simular tecla edit o delete 
 
 -Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense

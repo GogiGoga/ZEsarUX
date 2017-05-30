@@ -113,7 +113,7 @@ void tbblue_reset_sprites(void)
 }
 
 
-void tbblue_out_port_sprite_index(value)
+void tbblue_out_port_sprite_index(z80_byte value)
 {
 	//printf ("Out tbblue_out_port_sprite_index %02XH\n",value);
 	tbsprite_index_palette=tbsprite_index_pattern=tbsprite_index_sprite=value;
@@ -121,7 +121,7 @@ void tbblue_out_port_sprite_index(value)
 	tbsprite_index_pattern_subindex=tbsprite_index_sprite_subindex=0;
 }
 
-void tbblue_out_sprite_palette(value)
+void tbblue_out_sprite_palette(z80_byte value)
 {
 	//printf ("Out tbblue_out_sprite_palette %02XH\n",value);
 
@@ -130,7 +130,7 @@ void tbblue_out_sprite_palette(value)
 	else tbsprite_index_palette++;
 }
 
-void tbblue_out_sprite_pattern(value)
+void tbblue_out_sprite_pattern(z80_byte value)
 {
 
 
@@ -152,7 +152,7 @@ void tbblue_out_sprite_pattern(value)
 
 }
 
-void tbblue_out_sprite_sprite(value)
+void tbblue_out_sprite_sprite(z80_byte value)
 {
 	//printf ("Out tbblue_out_sprite_sprite. Index: %d subindex: %d %02XH\n",tbsprite_index_sprite,tbsprite_index_sprite_subindex,value);
 

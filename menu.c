@@ -14080,7 +14080,7 @@ void menu_tape_settings(MENU_ITEM_PARAMETERS)
 void menu_snapshot_load(MENU_ITEM_PARAMETERS)
 {
 
-        char *filtros[12];
+        char *filtros[13];
 
         filtros[0]="zx";
         filtros[1]="sp";
@@ -14094,7 +14094,8 @@ void menu_snapshot_load(MENU_ITEM_PARAMETERS)
         filtros[8]="z81";
         filtros[9]="ace";
 				filtros[10]="rzx";
-        filtros[11]=0;
+				filtros[11]="zsf";
+        filtros[12]=0;
 
 
 
@@ -14148,45 +14149,51 @@ void menu_snapshot_load(MENU_ITEM_PARAMETERS)
 void menu_snapshot_save(MENU_ITEM_PARAMETERS)
 {
 
-        char *filtros[4];
+        char *filtros[5];
 
-        if (MACHINE_IS_ZX8081) {
+  if (MACHINE_IS_ZX8081) {
         	filtros[0]="zx";
 
-		if (MACHINE_IS_ZX80) filtros[1]="o";
-		else filtros[1]="p";
+					if (MACHINE_IS_ZX80) filtros[1]="o";
+					else filtros[1]="p";
 
-	        filtros[2]=0;
+					filtros[2]="zsf";
+	        filtros[3]=0;
 	}
 
 	else if (MACHINE_IS_Z88) {
 		filtros[0]="zx";
-		filtros[1]=0;
+		filtros[1]="zsf";
+		filtros[2]=0;
 	}
 
 	else if (MACHINE_IS_SPECTRUM_16_48) {
         	filtros[0]="zx";
 	        filtros[1]="z80";
         	filtros[2]="sp";
-	        filtros[3]=0;
+					filtros[3]="zsf";
+	        filtros[4]=0;
 	}
 
 	else if (MACHINE_IS_ACE) {
 		filtros[0]="zx";
 		filtros[1]="ace";
-		filtros[2]=0;
+		filtros[2]="zsf";
+		filtros[3]=0;
 	}
 
 	else if (MACHINE_IS_CPC) {
                 filtros[0]="zx";
-                filtros[1]=0;
+								filtros[1]="zsf";
+                filtros[2]=0;
         }
 
 
 	else {
         	filtros[0]="zx";
 	        filtros[1]="z80";
-	        filtros[2]=0;
+					filtros[2]="zsf";
+	        filtros[3]=0;
 	}
 
 

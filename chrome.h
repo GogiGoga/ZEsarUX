@@ -36,5 +36,6 @@ extern z80_byte *chrome_memory_paged[];
 
 extern int si_chrome_features_enabled(void);
 
+extern int chrome_ram89_at_00(void);
 
 #endif

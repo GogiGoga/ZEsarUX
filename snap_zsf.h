@@ -22,5 +22,7 @@
 #ifndef SNAP_ZSF_H
 #define SNAP_ZSF_H
 
+extern void load_zsf_snapshot(char *filename);
+extern void save_zsf_snapshot(char *filename);
 
 #endif

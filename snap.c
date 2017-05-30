@@ -62,6 +62,7 @@
 #include "prism.h"
 #include "diviface.h"
 #include "snap_rzx.h"
+#include "snap_zsf.h"
 
 
 #include "autoselectoptions.h"
