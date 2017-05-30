@@ -33,6 +33,63 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+
+-Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
+Como variable de ejecucion
+
+-Actualizar sprites bits tbblue visible
+Y rotación:
+First rotate clockwise, after apply mirrors
+Quizá mejor directamente se hace rotación y mirror en buffer aparte y luego ya se vuelca a pantalla desde ese buffer. Así no hay que moverse de derecha a izquierda o leer desde la línea inferior
+Quizá modificar la demo de jim para que use nuevos bits visible
+
+-teclas F11-F15 para fbdev
+teclas F en general en fbdev driver no raw
+
+-Código konami para Easter egg
+
+-Que al moverse ratón no detecte como tecla... pero solo en algunos casos. Si que debe hacerlo para mover el cursor por la ventana 
+
+-seguir formato zsf
+
+-Convertir cintas paws
+
+-128ke parecido a +2B
+http://scratchpad.wikia.com/wiki/ZX_Spectrum_128Ke
+Rom derby 
+https://zx.itch.io/derbyplus
+
+-Probar a cambiar paleta interna del next mediante Basic 
+
+-Visor de sprite de next en menú emulador 
+
+-Opción en stdout para simular tecla edit o delete 
+
+-Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense
+
+-Soft QL
+
+http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Computer&lang=en
+
+-Probar diferencia de sonido speech ay en versión actual y anteriores
+Chase hq
+Robocop 1
+Dizzy 3
+Demo covox
+Etc...
+
+-Quizá inicializacion de ruido de cada chip debe ser diferente 
+
+-Mirar uqlx a ver cómo hace el load 
+
+-util z80 moto poke pokea en motorola pero sin protección de escritura en rom
+
+-reducir fifo por defecto de pulse? de 10 a 2?
+reducir fifo por defecto de alsa? de 4 a 2?
+
+-UnoDOS text mode sale de ram últimas direcciones . util para drivers solo texto
+
+-No leer ratón en menú si driver no lee ratón (como en fbdev)
 -revisar mezclado ay+beeper . posiblemente set_value_beeper acaba sacando algun valor beeper 50*2 y se sale todo de rango?
 o bien el mezclado de chip ay
 
@@ -1145,7 +1202,7 @@ ahora sale por consola del sistema operativo, quiza se podria tener una ventana 
 
 -salida a html
 
--salida a gif animado (con video out)
+-salida a gif animado (con video out), png
 
 -archivo de video de salida en formato alternativo a raw, alguno mas compatible: mpg, mov, ogg, mkv, etc
 

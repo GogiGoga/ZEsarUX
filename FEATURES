@@ -25,6 +25,8 @@
 
 -Supports idle bus port, contended memory, ULA early/late timings
 
+-Supports Motorola CPU 68008
+
 -Supports Pentagon timing
 
 -Supports ULAplus: Standard 64 colour palette, linear modes with 16 colours per pixel: Radastan Mode: 128x96, ZEsarUX modes: 256x96, 128x192, 256x192

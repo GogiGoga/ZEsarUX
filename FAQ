@@ -364,6 +364,21 @@ Or you can select it from the command line with:
 ./zesarux --mmc-file tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
 
 
+Q: What is the difference between TBBlue and Spectrum Next?
+A: In a nut shell: TBBlue is the very same firmware that runs on all boards. Some boards have less space, so runs less features. 
+In order, most complete do less complete:
+
+1 - Next
+2 - Multicore
+3 - WXEDA and DE2
+4 - DE1
+5 - VTrucco and FBLabs
+
+Next and Multicore have HDMI output, others dont. Next have FM sound, others don´t. 1,2 and 3 group have 256 colors and sprites, others dont.
+But still, EXACT THE SAME TBBlue
+
+
+
 ----------------------------------------------------------------------------
 
 
