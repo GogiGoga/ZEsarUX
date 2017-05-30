@@ -17,6 +17,7 @@ Improved TBBlue emulation: 1 MB RAM
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15
+Fixed Windows pthreads version
 Some other minor bugfixes and improvements
 
 
