@@ -5902,13 +5902,13 @@ struct sched_param sparam;
 
 #ifdef USE_PTHREADS
 
-	debug_printf (VERBOSE_INFO,"Calling main loop emulator on a thread");
 
 	//Esto deberia estar disponible en todos menos en Windows. Logicamente si USE_PTHREADS esta habilitado
 	ver_si_enable_thread_main_loop();
 
 	
 	if (si_thread_main_loop) {
+		debug_printf (VERBOSE_INFO,"Calling main loop emulator on a thread");
                 if (pthread_create( &thread_main_loop, NULL, &thread_main_loop_function, NULL) ) {
                         cpu_panic("Can not create main loop pthread");
                 }	
