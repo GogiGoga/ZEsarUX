@@ -32,7 +32,7 @@
 
 #define EMULATOR_DATE "29 May 2017"
 #define EMULATOR_SHORT_DATE "29/05/2017"
-#define EMULATOR_EDITION_NAME "RunZX edition"
+#define EMULATOR_EDITION_NAME "Gunfright edition"
 
 //8 bits
 typedef unsigned char z80_byte;

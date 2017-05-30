@@ -1825,6 +1825,10 @@ set_visualmembuffer(dir);
 		z80_byte *puntero;
 		puntero=chrome_return_segment_memory(dir);
 
+		if (dir<16384) {
+			if (!chrome_ram89_at_00()) return; //No esta ram 8 o 9 en zona 0000-3fff. volver 
+		}
+
 		dir = dir & 16383;
 		puntero=puntero+dir;
 

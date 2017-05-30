@@ -1,4 +1,4 @@
-Version 5.1. 24 April 2017 - xxx edition
+Version 5.1. 24 April 2017 - Gunfright edition
 
 Added machine Chrome (Italian ZX Spectrum Clone)
 Added menu movement with mouse
@@ -14,6 +14,7 @@ Added setting to set 256kb or 512kb on Spectrum 128k machines
 Added setting to set F keys (F1, F2, etc) to run different actions: reset, nmi, exit emulator, etc
 Added TBBlue Sprite chip emulation
 Improved TBBlue emulation: 1 MB RAM
+Improved QL emulation: experimental support of LBYTES command
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15

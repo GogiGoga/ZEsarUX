@@ -150,6 +150,19 @@ Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading fr
 	return 0;
 }
 
+//Retorna 0 si no esta ram 8 o 9 mapeados en 0-3fffh
+//Retorna 8 o 9 segun ram mapeada ahi
+int chrome_ram89_at_00(void)
+{
+  if (puerto_8189&1  && si_chrome_features_enabled()) {
+
+    if (puerto_8189&1) return 9;
+    else return 8;
+  }
+
+  return 0;
+}
+
 void chrome_set_memory_pages(void)
 {
 	z80_byte rom_page=chrome_get_rom_bank();
@@ -162,15 +175,12 @@ void chrome_set_memory_pages(void)
 	Bit 0 If 1 maps banks 8 or 9 at 0000h (switch off rom).
 	Bit 1 High bit of ROM selection and bank 8 (0) or 9 (1) if bit0 = 1.
 	*/
-	//TODO: Banco 8 o 9 se pueden escribir?
-	if (puerto_8189&1  && si_chrome_features_enabled()) {
-		z80_byte r;
-
-		if (puerto_8189&1) r=9;
-		else r=8;
-
-		chrome_memory_paged[0]=chrome_ram_mem_table[r];
-		debug_paginas_memoria_mapeadas[0]=r;
+	
+  z80_byte r0;
+  r0=chrome_ram89_at_00();
+	if (r0) {
+		chrome_memory_paged[0]=chrome_ram_mem_table[r0];
+		debug_paginas_memoria_mapeadas[0]=r0;
 	}
 
 	else {
