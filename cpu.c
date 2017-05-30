@@ -3531,6 +3531,25 @@ Total 20 pages=320 Kb
 }
 
 
+//Para Windows con pthreads. En todos los sistemas, se permite main loop en pthread, excepto en Windows
+#ifdef USE_PTHREADS
+int si_thread_main_loop;
+
+
+void ver_si_enable_thread_main_loop(void)
+{
+
+#ifdef MINGW
+        si_thread_main_loop=0;
+#else
+        si_thread_main_loop=1;
+#endif
+
+}
+
+#endif
+
+
 
 void segint_signal_handler(int sig)
 {
@@ -3544,7 +3563,7 @@ void segint_signal_handler(int sig)
 //se ejecuta el end_emulator
 #ifdef USE_PTHREADS
         debug_printf (VERBOSE_INFO,"Ending main loop thread");
-        pthread_cancel(thread_main_loop);
+        if (si_thread_main_loop) pthread_cancel(thread_main_loop);
 #endif
 
 
@@ -3565,7 +3584,7 @@ void segterm_signal_handler(int sig)
 //se ejecuta el end_emulator
 #ifdef USE_PTHREADS
         debug_printf (VERBOSE_INFO,"Ending main loop thread");
-        pthread_cancel(thread_main_loop);
+        if (si_thread_main_loop) pthread_cancel(thread_main_loop);
 #endif
 
 
@@ -5320,6 +5339,9 @@ void print_funny_message(void)
 }
 
 
+
+
+
 //Proceso inicial
 int zesarux_main (int main_argc,char *main_argv[]) {
 
@@ -5882,9 +5904,25 @@ struct sched_param sparam;
 
 	debug_printf (VERBOSE_INFO,"Calling main loop emulator on a thread");
 
+	//Esto deberia estar disponible en todos menos en Windows. Logicamente si USE_PTHREADS esta habilitado
+	ver_si_enable_thread_main_loop();
+
+	
+	if (si_thread_main_loop) {
                 if (pthread_create( &thread_main_loop, NULL, &thread_main_loop_function, NULL) ) {
                         cpu_panic("Can not create main loop pthread");
-                }
+                }	
+	}
+
+	else {
+		debug_printf (VERBOSE_INFO,"Calling main loop emulator without threads (although pthreads are available)");
+		emulator_main_loop();
+		//De aqui hacia abajo no se deberia llegar nunca... ya que esto es para pthreads y windows 
+		//(y lo de abajo es para cocoa y mas abajo para sistemas sin pthreads)
+	}
+
+
+
 	#ifdef USE_COCOA
 
 		//Si hay soporte COCOA, dejar solo el thread con el main loop y volver a main (de scrcocoa)
