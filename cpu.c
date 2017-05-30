@@ -3562,8 +3562,10 @@ void segint_signal_handler(int sig)
 //Primero de todo detener el pthread del emulador, que no queremos que siga activo el emulador con el pthread de fondo mientras
 //se ejecuta el end_emulator
 #ifdef USE_PTHREADS
-        debug_printf (VERBOSE_INFO,"Ending main loop thread");
-        if (si_thread_main_loop) pthread_cancel(thread_main_loop);
+        if (si_thread_main_loop) {
+        	debug_printf (VERBOSE_INFO,"Ending main loop thread");
+		pthread_cancel(thread_main_loop);
+	}
 #endif
 
 
@@ -3583,8 +3585,10 @@ void segterm_signal_handler(int sig)
 //Primero de todo detener el pthread del emulador, que no queremos que siga activo el emulador con el pthread de fondo mientras
 //se ejecuta el end_emulator
 #ifdef USE_PTHREADS
-        debug_printf (VERBOSE_INFO,"Ending main loop thread");
-        if (si_thread_main_loop) pthread_cancel(thread_main_loop);
+        if (si_thread_main_loop) {
+        	debug_printf (VERBOSE_INFO,"Ending main loop thread");
+		pthread_cancel(thread_main_loop);
+	}
 #endif
 
 
@@ -5958,8 +5962,10 @@ void end_emulator(void)
 
 //Si se ha llamado aqui desde otro sitio que no sea el pthread del main_loop_emulator, hay que destruir antes el pthread con:
 //#ifdef USE_PTHREADS
+// if (si_thread_main_loop) {
 //        debug_printf (VERBOSE_INFO,"Ending main loop thread");
 //        pthread_cancel(thread_main_loop);
+// }
 //#endif
 
 	menu_abierto=0;
