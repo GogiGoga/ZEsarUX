@@ -40,6 +40,7 @@
 #include "diviface.h"
 #include "ula.h"
 #include "superupgrade.h"
+#include "tbblue.h"
 
 
 int remote_protocol_port=DEFAULT_REMOTE_PROTOCOL_PORT;
@@ -757,6 +758,11 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
 	{"set-window-zoom",NULL,"zoom","Sets window zoom"},
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
+
+ {"tbblue-get-palette",NULL,"index","Get palette colour at index"},
+ {"tbblue-get-pattern",NULL,"index","Get pattern at index"},
+ {"tbblue-get-sprite",NULL,"index","Get sprite at index"},
+
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a byte at desired address on mapped memory"},
 
@@ -3136,6 +3142,53 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
     remote_send_esc_close_menu();
 
 	}
+
+
+/*
+ {"tbblue-get-palette",NULL,"index","Get palette colour at index"},
+ {"tbblue-get-pattern",NULL,"index","Get pattern at index"},
+ {"tbblue-get-sprite",NULL,"index","Get sprite at index"},
+*/
+
+        else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {
+
+		if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
+			else {
+        	        if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+                	else {
+
+				int index=parse_string_to_number(parametros);
+				if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
+				else {
+					z80_byte color=tbsprite_palette[index];
+					escribir_socket_format(misocket,"%02XH",color);
+				}
+	                }
+		}
+
+        }
+
+        else if (!strcmp(comando_sin_parametros,"tbblue-get-pattern") ) {
+
+                if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
+                        else {
+                        if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+                        else {
+
+                                int index=parse_string_to_number(parametros);
+                                if (index<0 || index>63) escribir_socket(misocket,"ERROR. Out of range");
+                                else {
+					int i;
+					for (i=0;i<256;i++) {
+                                        	z80_byte index_color=tbsprite_patterns[index][i];
+	                                        escribir_socket_format(misocket,"%02XH ",index_color);
+					}
+                                }
+                        }
+                }
+
+        }
+
 
         else if (!strcmp(comando_sin_parametros,"quit") || !strcmp(comando_sin_parametros,"exit") || !strcmp(comando_sin_parametros,"logout")) {
           if (menu_event_remote_protocol_enterstep.v) remote_cpu_exit_step(misocket);
