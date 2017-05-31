@@ -370,11 +370,11 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								//Sumar palette offset. Logicamente si es >256 el resultado, dará la vuelta el contador
 								index_color +=palette_offset;
 
-								if (mirror_x) offset_pattern--;
-								else offset_pattern++;
-
 								//printf ("index color: %d\n",index_color);
 								z80_byte color=tbsprite_palette[index_color];
+
+								if (mirror_x) offset_pattern--;
+								else offset_pattern++;
 
 								tbsprite_put_color_line(sprite_x++,color);
 

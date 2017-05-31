@@ -42,6 +42,8 @@ Y rotación:
 First rotate clockwise, after apply mirrors
 Quizá mejor directamente se hace rotación y mirror en buffer aparte y luego ya se vuelca a pantalla desde ese buffer. Así no hay que moverse de derecha a izquierda o leer desde la línea inferior
 Quizá modificar la demo de jim para que use nuevos bits visible
+Y mover bit visible
+
 
 -teclas F11-F15 para fbdev
 teclas F en general en fbdev driver no raw
