@@ -386,7 +386,20 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								incx=-1;
 							}
 
+							z80_byte sprite_rotate;
+							//TODO get sprite_rotate bit
+							sprite_rotate=0;
+							//temp
+							//sprite_rotate=1;
 
+							if (sprite_rotate) {
+								z80_byte sy_old=sy;
+								sy=15-sx;
+								sx=sy_old;
+
+								incy=-incx;
+								incx=0;
+							}
 
 
 							for (i=0;i<ancho_sprite;i++) {
