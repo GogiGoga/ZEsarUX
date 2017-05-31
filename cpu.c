@@ -858,6 +858,7 @@ util_stats_init();
 
 	if (MACHINE_IS_TBBLUE) {
 		tbblue_set_memory_pages();
+		tbblue_reset();
 		//tbblue_read_port_24d5_index=0;
 	}
 

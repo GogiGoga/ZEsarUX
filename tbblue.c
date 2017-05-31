@@ -945,6 +945,68 @@ void tbblue_set_emulator_setting_turbo(void)
 	cpu_set_turbo_speed();
 }
 
+void tbblue_reset(void)
+{
+
+	//Los bits reservados los metemos a 0 también
+
+	/*
+	(R/W) 02 => Reset:
+  bits 7-3 = Reserved, must be 0
+  bit 2 = (R) Power-on reset (PoR)
+  bit 1 = (R/W) Reading 1 indicates a Hard-reset. If written 1 causes a Hard Reset.
+  bit 0 = (R/W) Reading 1 indicates a Soft-reset. If written 1 causes a Soft Reset.
+	*/
+	tbblue_registers[2]=1;
+	/*
+	(R/W) 20 => Layer 2 transparency color
+  bits 7-4 = Reserved, must be 0
+  bits 3-0 = ULA transparency color (IGRB)(Reset to 0 after a reset)
+	*/
+	tbblue_registers[20] &=(255-1-2-4-8);
+
+	tbblue_registers[21]=0;
+	tbblue_registers[22]=0;
+	tbblue_registers[23]=0;
+
+	tbblue_registers[30]=0;
+	tbblue_registers[31]=0;
+	tbblue_registers[34]=0;
+	tbblue_registers[35]=0;
+
+	/*
+	(R/W) 21 => Sprite system
+  bits 7-2 = Reserved, must be 0
+  bit 1 = Over border (1 = yes)(Reset to 0 after a reset)
+  bit 0 = Sprites visible (1 = visible)(Reset to 0 after a reset)
+
+(R/W) 22 => Layer2 Offset X
+  bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
+
+(R/W) 23 => Layer2 Offset Y
+  bist 7-6 = Reserved, must be 0
+  bits 5-0 = Y Offset (0-63)(Reset to 0 after a reset)
+
+(R) 30 => Raster video line (MSB)
+  bits 7-1 = Reserved, always 0
+  bit 0 = Raster line MSB (Reset to 0 after a reset)
+
+(R) 31 = Raster video line (LSB)
+  bits 7-0 = Raster line LSB (0-255)(Reset to 0 after a reset)
+
+(R/W) 34 => Raster line interrupt control
+  bit 7 = (R) INT flag, 1=During INT (even if the processor has interrupt disabled)
+  bits 6-3 = Reserved, must be 0
+  bit 2 = If 1 disables original ULA interrupt (Reset to 0 after a reset)
+  bit 1 = If 1 enables Raster line interrupt (Reset to 0 after a reset)
+  bit 0 = MSB of Raster line interrupt value (Reset to 0 after a reset)
+(R/W) 35 => Raster line interrupt value LSB
+  bits 7-0 = Raster line value LSB (0-255)(Reset to 0 after a reset)
+	*/
+
+
+}
+
 void tbblue_hard_reset(void)
 {
 	//tbblue_config1=0;
@@ -953,17 +1015,25 @@ void tbblue_hard_reset(void)
 	//tbblue_hardsoftreset=0;
 
 	/*
-	(R/W)	02 => Reset:
-				bits 7-3 = Reserved, must be 0
-				bit 2 = (R) Power-on reset
-				bit 1 = (R/W) if 1 Hard Reset
-				bit 0 = (R/W) if 1 Soft Reset
+	(R/W) 02 => Reset:
+	  bits 7-3 = Reserved, must be 0
+	  bit 2 = (R) Power-on reset (PoR)
+	  bit 1 = (R/W) Reading 1 indicates a Hard-reset. If written 1 causes a Hard Reset.
+	  bit 0 = (R/W) Reading 1 indicates a Soft-reset. If written 1 causes a Soft Reset.
 	*/
 
 	//Aqui no estoy distinguiendo entre hard reset y power-on reset, dado que al iniciar maquina siempre llama a hard reset
-	tbblue_registers[2]=2;
+	tbblue_registers[2]=4+2;
+
+
 	tbblue_registers[3]=0;
 	tbblue_registers[4]=0;
+	tbblue_registers[5]=0;
+	tbblue_registers[6]=0;
+	tbblue_registers[7]=0;
+	tbblue_registers[8]=0;
+
+
 
 	tbblue_bootrom.v=1;
 	tbblue_set_memory_pages();

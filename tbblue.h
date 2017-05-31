@@ -42,6 +42,8 @@ extern void tbblue_init_memory_tables(void);
 
 extern void tbblue_hard_reset(void);
 
+extern void tbblue_reset(void);
+
 extern z80_byte *tbblue_fpga_rom;
 
 extern z80_bit tbblue_low_segment_writable;
