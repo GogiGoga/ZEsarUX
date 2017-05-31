@@ -759,9 +759,9 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-window-zoom",NULL,"zoom","Sets window zoom"},
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
 
- {"tbblue-get-palette",NULL,"index","Get palette colour at index"},
- {"tbblue-get-pattern",NULL,"index","Get pattern at index"},
- {"tbblue-get-sprite",NULL,"index","Get sprite at index"},
+ {"tbblue-get-palette",NULL,"index","Get palette colour at index. Only allowed on machine TBBlue"},
+ {"tbblue-get-pattern",NULL,"index","Get pattern at index. Only allowed on machine TBBlue"},
+ {"tbblue-get-sprite",NULL,"index","Get sprite at index. Only allowed on machine TBBlue"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a byte at desired address on mapped memory"},
@@ -3144,12 +3144,6 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 	}
 
 
-/*
- {"tbblue-get-palette",NULL,"index","Get palette colour at index"},
- {"tbblue-get-pattern",NULL,"index","Get pattern at index"},
- {"tbblue-get-sprite",NULL,"index","Get sprite at index"},
-*/
-
         else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {
 
 		if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
@@ -3176,7 +3170,7 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
                         else {
 
                                 int index=parse_string_to_number(parametros);
-                                if (index<0 || index>63) escribir_socket(misocket,"ERROR. Out of range");
+                                if (index<0 || index>=TBBLUE_MAX_PATTERNS) escribir_socket(misocket,"ERROR. Out of range");
                                 else {
 					int i;
 					for (i=0;i<256;i++) {
@@ -3188,6 +3182,30 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
                 }
 
         }
+
+
+        else if (!strcmp(comando_sin_parametros,"tbblue-get-sprite") ) {
+
+                if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
+                        else {
+                        if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+                        else {
+
+                                int index=parse_string_to_number(parametros);
+                                if (index<0 || index>=TBBLUE_MAX_SPRITES) escribir_socket(misocket,"ERROR. Out of range");
+                                else {
+                                        int i;
+                                        for (i=0;i<4;i++) {
+                                                z80_byte index_color=tbsprite_sprites[index][i];
+                                                escribir_socket_format(misocket,"%02XH ",index_color);
+                                        }
+                                }
+                        }
+                }
+
+        }
+
+
 
 
         else if (!strcmp(comando_sin_parametros,"quit") || !strcmp(comando_sin_parametros,"exit") || !strcmp(comando_sin_parametros,"logout")) {
