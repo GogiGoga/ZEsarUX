@@ -400,6 +400,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								z80_byte color=tbsprite_palette[index_color];
 
 								sx=sx+incx;
+								sy=sy+incy;
 
 								/*
 								if (mirror_x) {
