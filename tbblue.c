@@ -357,6 +357,10 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 							z80_byte sx=0,sy=0; //Coordenadas x,y dentro del pattern
 							//offset_pattern=0;
 
+							//Incrementos de x e y
+							int incx=+1;
+							int incy=0;
+
 							//Aplicar mirror si conviene y situarnos en la ultima linea
 							if (mirror_y) {
 								//offset_pattern=offset_pattern+ancho_sprite*(alto_sprite-1);
@@ -379,7 +383,10 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 							if (mirror_x) {
 								//offset_pattern=offset_pattern+ancho_sprite-1;
 								sx=ancho_sprite-1;
+								incx=-1;
 							}
+
+
 
 
 							for (i=0;i<ancho_sprite;i++) {
@@ -392,6 +399,9 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								//printf ("index color: %d\n",index_color);
 								z80_byte color=tbsprite_palette[index_color];
 
+								sx=sx+incx;
+
+								/*
 								if (mirror_x) {
 									//offset_pattern--;
 									sx--;
@@ -399,7 +409,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								else {
 									//offset_pattern++;
 									sx++;
-								}
+								}*/
 
 								tbsprite_put_color_line(sprite_x++,color);
 
