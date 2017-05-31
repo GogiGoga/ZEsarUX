@@ -214,6 +214,16 @@ void tbsprite_put_color_line(int x,z80_byte color)
 
 }
 
+z80_byte tbsprite_do_overlay_get_pattern_xy(z80_byte index_pattern,z80_byte sx,z80_byte sy)
+{
+	//int alto_sprite=16;
+	int ancho_sprite=16;
+
+	return tbsprite_patterns[index_pattern][sy*ancho_sprite+sx];
+}
+
+
+
 void tbsprite_do_overlay(void)
 {
 
@@ -262,7 +272,7 @@ void tbsprite_do_overlay(void)
 				z80_byte index_pattern;
 
 		int i;
-		int offset_pattern;
+		//int offset_pattern;
 
 		z80_byte sprites_over_border=tbblue_registers[21]&2;
 
@@ -344,15 +354,20 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						if (diferencia>=0 && diferencia<alto_sprite && y>=rangoymin && y<=rangoymax) {
 
 							//printf ("y: %d t_scanline_draw: %d rainbowy:%d sprite_y: %d\n",y,t_scanline_draw,rainbowy,sprite_y);
-
-							offset_pattern=0;
+							z80_byte sx=0,sy=0; //Coordenadas x,y dentro del pattern
+							//offset_pattern=0;
 
 							//Aplicar mirror si conviene y situarnos en la ultima linea
-							if (mirror_y) offset_pattern=offset_pattern+ancho_sprite*(alto_sprite-1);
+							if (mirror_y) {
+								//offset_pattern=offset_pattern+ancho_sprite*(alto_sprite-1);
+								sy=alto_sprite-1-diferencia;
+								//offset_pattern -=ancho_sprite*diferencia;
+							}
+							else {
+								//offset_pattern +=ancho_sprite*diferencia;
+								sy=diferencia;
+							}
 
-							//saltar coordenada y
-							if (mirror_y) offset_pattern -=ancho_sprite*diferencia;
-							else offset_pattern +=ancho_sprite*diferencia;
 
 							//index_pattern ya apunta a pattern a pintar en pantalla
 							//z80_int *puntero_buf_rainbow_sprite;
@@ -361,11 +376,15 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 							//Dibujar linea x
 
 							//Cambiar offset si mirror x, ubicarlo a la derecha del todo
-							if (mirror_x) offset_pattern=offset_pattern+ancho_sprite-1;
+							if (mirror_x) {
+								//offset_pattern=offset_pattern+ancho_sprite-1;
+								sx=ancho_sprite-1;
+							}
 
 
 							for (i=0;i<ancho_sprite;i++) {
-								z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern];
+								//z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern];
+								z80_byte index_color=tbsprite_do_overlay_get_pattern_xy(index_pattern,sx,sy);
 
 								//Sumar palette offset. Logicamente si es >256 el resultado, dará la vuelta el contador
 								index_color +=palette_offset;
@@ -373,8 +392,14 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								//printf ("index color: %d\n",index_color);
 								z80_byte color=tbsprite_palette[index_color];
 
-								if (mirror_x) offset_pattern--;
-								else offset_pattern++;
+								if (mirror_x) {
+									//offset_pattern--;
+									sx--;
+								}
+								else {
+									//offset_pattern++;
+									sx++;
+								}
 
 								tbsprite_put_color_line(sprite_x++,color);
 
