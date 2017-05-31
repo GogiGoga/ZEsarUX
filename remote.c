@@ -759,9 +759,9 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-window-zoom",NULL,"zoom","Sets window zoom"},
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
 
- {"tbblue-get-palette",NULL,"index","Get palette colour at index. Only allowed on machine TBBlue"},
- {"tbblue-get-pattern",NULL,"index","Get pattern at index. Only allowed on machine TBBlue"},
- {"tbblue-get-sprite",NULL,"index","Get sprite at index. Only allowed on machine TBBlue"},
+ {"tbblue-get-palette",NULL,"index","Get palette colour at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tbblue-get-pattern",NULL,"index","Get pattern at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tbblue-get-sprite",NULL,"index","Get sprite at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a byte at desired address on mapped memory"},
@@ -3155,7 +3155,7 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 				if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
 				else {
 					z80_byte color=tbsprite_palette[index];
-					escribir_socket_format(misocket,"%02XH",color);
+					escribir_socket_format(misocket,"%02X",color);
 				}
 	                }
 		}
@@ -3175,7 +3175,7 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 					int i;
 					for (i=0;i<256;i++) {
                                         	z80_byte index_color=tbsprite_patterns[index][i];
-	                                        escribir_socket_format(misocket,"%02XH ",index_color);
+	                                        escribir_socket_format(misocket,"%02X ",index_color);
 					}
                                 }
                         }
@@ -3197,7 +3197,7 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
                                         int i;
                                         for (i=0;i<4;i++) {
                                                 z80_byte index_color=tbsprite_sprites[index][i];
-                                                escribir_socket_format(misocket,"%02XH ",index_color);
+                                                escribir_socket_format(misocket,"%02X ",index_color);
                                         }
                                 }
                         }
