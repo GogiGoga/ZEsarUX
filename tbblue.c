@@ -293,10 +293,17 @@ void tbsprite_do_overlay(void)
 
 					/*
 
+					OLD
 					[0] 1st: X position (bits 7-0).
 					[1] 2nd: Y position (0-255).
 					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror, bit 1 is visible flag and bit 0 is X MSB.
 					[3] 4th: bits 7-6 is reserved, bits 5-0 is Name (pattern index, 0-63).
+
+					NEW
+					[0] 1st: X position (bits 7-0).
+					[1] 2nd: Y position (0-255).
+					[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror, bit 1 is rotate flag and bit 0 is X MSB.
+					[3] 4th: bit 7 is visible flag, bit 6 is reserved, bits 5-0 is Name (pattern index, 0-63).
 
 
 					*/
@@ -310,7 +317,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 */
 
 					//Si sprite visible
-					if (tbsprite_sprites[conta_sprites][2]&2) {
+					if (tbsprite_sprites[conta_sprites][3]&128) {
 						sprite_x=tbsprite_sprites[conta_sprites][0] | ((tbsprite_sprites[conta_sprites][2]&1)<<8);
 
 						//printf ("sprite %d x: %d \n",conta_sprites,sprite_x);
@@ -388,7 +395,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 							z80_byte sprite_rotate;
 							//TODO get sprite_rotate bit
-							sprite_rotate=0;
+							sprite_rotate=tbsprite_sprites[conta_sprites][2]&2;
 							//temp
 							//sprite_rotate=1;
 
