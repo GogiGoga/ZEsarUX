@@ -332,7 +332,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//Si y==0 -> y=48-32=16
 
 						z80_byte mirror_x=tbsprite_sprites[conta_sprites][2]&8;
-						//[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror and bit 1 is visible flag and bit 0 is X MSB
+						//[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror, bit 1 is rotate flag and bit 0 is X MSB.
 						z80_byte mirror_y=tbsprite_sprites[conta_sprites][2]&4;
 
 						z80_byte palette_offset=(tbsprite_sprites[conta_sprites][2]>>4)&15;
