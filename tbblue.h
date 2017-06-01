@@ -87,6 +87,9 @@ extern void tbsprite_do_overlay(void);
 #define TBBLUE_MAX_SPRITES 64
 #define TBBLUE_TRANSPARENT_COLOR 0xE3
 
+#define TBBLUE_SPRITE_HEIGHT 16
+#define TBBLUE_SPRITE_WIDTH 16
+
 extern z80_byte tbsprite_patterns[TBBLUE_MAX_PATTERNS][256];
 extern z80_byte tbsprite_palette[];
 extern z80_byte tbsprite_sprites[TBBLUE_MAX_SPRITES][4];

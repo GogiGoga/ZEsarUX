@@ -216,10 +216,8 @@ void tbsprite_put_color_line(int x,z80_byte color)
 
 z80_byte tbsprite_do_overlay_get_pattern_xy(z80_byte index_pattern,z80_byte sx,z80_byte sy)
 {
-	//int alto_sprite=16;
-	int ancho_sprite=16;
 
-	return tbsprite_patterns[index_pattern][sy*ancho_sprite+sx];
+	return tbsprite_patterns[index_pattern][sy*TBBLUE_SPRITE_WIDTH+sx];
 }
 
 
@@ -341,8 +339,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//Si coordenada y esta en margen y sprite activo
 
 						int diferencia=y-sprite_y;
-						int alto_sprite=16;
-						int ancho_sprite=16;
+
 
 						int rangoymin, rangoymax;
 
@@ -358,7 +355,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 
 						//Pintar el sprite si esta en rango de coordenada y
-						if (diferencia>=0 && diferencia<alto_sprite && y>=rangoymin && y<=rangoymax) {
+						if (diferencia>=0 && diferencia<TBBLUE_SPRITE_HEIGHT && y>=rangoymin && y<=rangoymax) {
 
 							//printf ("y: %d t_scanline_draw: %d rainbowy:%d sprite_y: %d\n",y,t_scanline_draw,rainbowy,sprite_y);
 							z80_byte sx=0,sy=0; //Coordenadas x,y dentro del pattern
@@ -370,12 +367,12 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 							//Aplicar mirror si conviene y situarnos en la ultima linea
 							if (mirror_y) {
-								//offset_pattern=offset_pattern+ancho_sprite*(alto_sprite-1);
-								sy=alto_sprite-1-diferencia;
-								//offset_pattern -=ancho_sprite*diferencia;
+								//offset_pattern=offset_pattern+TBBLUE_SPRITE_WIDTH*(TBBLUE_SPRITE_HEIGHT-1);
+								sy=TBBLUE_SPRITE_HEIGHT-1-diferencia;
+								//offset_pattern -=TBBLUE_SPRITE_WIDTH*diferencia;
 							}
 							else {
-								//offset_pattern +=ancho_sprite*diferencia;
+								//offset_pattern +=TBBLUE_SPRITE_WIDTH*diferencia;
 								sy=diferencia;
 							}
 
@@ -388,20 +385,65 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 
 							//Cambiar offset si mirror x, ubicarlo a la derecha del todo
 							if (mirror_x) {
-								//offset_pattern=offset_pattern+ancho_sprite-1;
-								sx=ancho_sprite-1;
+								//offset_pattern=offset_pattern+TBBLUE_SPRITE_WIDTH-1;
+								sx=TBBLUE_SPRITE_WIDTH-1;
 								incx=-1;
 							}
 
 							z80_byte sprite_rotate;
-							//TODO get sprite_rotate bit
+
 							sprite_rotate=tbsprite_sprites[conta_sprites][2]&2;
-							//temp
-							//sprite_rotate=1;
+
+							/*
+							Comparar bits rotacion con ejemplo en media/spectrum/tbblue/sprites/rotate_example.png
+							*/
+							/*
+							Basicamente sin rotar un sprite, se tiene (reduzco el tamaño a la mitad aqui para que ocupe menos)
+
+
+							El sentido normal de dibujado viene por ->, aumentando coordenada X
+
+
+					->  ---X----
+							---XX---
+							---XXX--
+							---XXXX-
+							---X----
+							---X----
+							---X----
+							---X----
+
+							Luego cuando se rota 90 grados, en vez de empezar de arriba a la izquierda, se empieza desde abajo y reduciendo coordenada Y:
+
+							    ---X----
+									---XX---
+									---XXX--
+									---XXXX-
+									---X----
+									---X----
+							^ 	---X----
+							|		---X----
+
+							Entonces, al dibujar empezando asi, la imagen queda rotada:
+
+							--------
+							--------
+							XXXXXXXX
+							----XXX-
+							----XX--
+							----X---
+							--------
+
+							De ahi que el incremento y sea -incremento x , incremento x sera 0
+
+							Aplicando tambien el comportamiento para mirror, se tiene el resto de combinaciones
+
+							*/
+
 
 							if (sprite_rotate) {
 								z80_byte sy_old=sy;
-								sy=15-sx;
+								sy=(TBBLUE_SPRITE_HEIGHT-1)-sx;
 								sx=sy_old;
 
 								incy=-incx;
@@ -409,7 +451,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 							}
 
 
-							for (i=0;i<ancho_sprite;i++) {
+							for (i=0;i<TBBLUE_SPRITE_WIDTH;i++) {
 								//z80_byte index_color=tbsprite_patterns[index_pattern][offset_pattern];
 								z80_byte index_color=tbsprite_do_overlay_get_pattern_xy(index_pattern,sx,sy);
 
