@@ -2656,7 +2656,7 @@ void interpreta_comando(char *comando,int misocket)
 
 char buffer_retorno[2048];
 
-	debug_printf (VERBOSE_DEBUG,"Remote command: %s",comando);
+	debug_printf (VERBOSE_DEBUG,"Remote command: lenght: %d [%s]",strlen(comando),comando);
 
 	//printf ("%d %d %d %d",comando[0],comando[1],comando[2],comando[3]);
 
@@ -2698,13 +2698,12 @@ char buffer_retorno[2048];
 		i++;
 		parametros++;
 		for (;comando[i] && comando[i]!='\n' && comando[i]!='\r';i++,pindex++) {
-			printf ("searching for end command index: %d\n",i);
+			//printf ("searching for end command index: %d\n",i);
 			//parametros[pindex]=comando[i];
 		}
 	}
 
 	parametros[pindex]=0;
-
 
 	debug_printf (VERBOSE_DEBUG,"Remote command without parameters: lenght: %d [%s]",strlen(comando_sin_parametros),comando_sin_parametros);
 	debug_printf (VERBOSE_DEBUG,"Remote command parameters: lenght: %d [%s]",strlen(parametros),parametros);
@@ -3380,29 +3379,56 @@ void *thread_remote_protocol_function(void *nada)
 						else sprintf (prompt,"%s","\ncommand> ");
 						if (escribir_socket(sock_conectat,prompt)<0) remote_salir_conexion=1;
 
+						int indice_destino=0;
+
 						if (!remote_salir_conexion) {
 
 							//Leer socket
 
 							//int leidos = read(sock_conectat, buffer_lectura_socket, 1023);
-							int leidos=leer_socket(sock_conectat, buffer_lectura_socket, MAX_LENGTH_PROTOCOL_COMMAND-1);
-							//printf ("%d\n",leidos);
+							int leidos;
+							int salir_bucle=0;
+							do {
+								leidos=leer_socket(sock_conectat, &buffer_lectura_socket[indice_destino], MAX_LENGTH_PROTOCOL_COMMAND-1);
+								debug_printf (VERBOSE_DEBUG,"Read block %d bytes index: %d",leidos,indice_destino);
+								if (leidos>0) {
+									indice_destino +=leidos;
+									//Si acaba con final de string, salir
 
-							if (leidos) {
-								buffer_lectura_socket[leidos]=0;
+									//printf ("%d %d %d %d\n",buffer_lectura_socket[0],buffer_lectura_socket[1],buffer_lectura_socket[2],buffer_lectura_socket[3]);
 
-								debug_printf (VERBOSE_DEBUG,"Remote command. Read text: %s",buffer_lectura_socket);
+									if (buffer_lectura_socket[indice_destino-1]=='\r' || buffer_lectura_socket[indice_destino-1]=='\n' || buffer_lectura_socket[indice_destino-1]==0) {
+										//printf ("salir\n");
+										salir_bucle=1;
+									}
+								}
+
+
+							} while (leidos>0 && salir_bucle==0);
+
+
+							//if (leidos) {
+								buffer_lectura_socket[indice_destino]=0;
+								debug_printf (VERBOSE_DEBUG,"Remote command. Lenght Read text: %d",indice_destino);
+
+								//int j;
+								//for (j=0;buffer_lectura_socket[j];j++) printf ("%d %c\n",j,buffer_lectura_socket[j]);
+
+								//temp
+								//if (indice_destino> DEBUG_MAX_MESSAGE_LENGTH-100)verbose_level=0;
+
+								debug_printf (VERBOSE_DEBUG,"Remote command. Read text: [%s]",buffer_lectura_socket);
 
 								interpreta_comando(buffer_lectura_socket,sock_conectat);
-							}
+							//}
 
 						}
 
 					}
 			  	}
+					//printf ("remote_salir_conexion: %d\n",remote_salir_conexion);
 					debug_printf (VERBOSE_DEBUG,"Remote command. Exiting connection");
 				}
-
 
 				//printf ("despues de bucle aqui no se llega nunca\n");
 
