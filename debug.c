@@ -2176,7 +2176,7 @@ char buffer[1024];
 	//printf ("Recorriendo list adelante\n");
         int contador=0;
         do {
-                sprintf (buffer,"Elemento: %p (%d) id: %d name: %s puntero_funcion: %p previous: %p next: %p\n",e,contador,e->id,e->function_name,e->funcion, e->previous,e->next);
+                sprintf (buffer,"Element: %p (%d) id: %d name: %s pointer function: %p previous: %p next: %p\n",e,contador,e->id,e->function_name,e->funcion, e->previous,e->next);
                 debug_dump_nested_print(result,buffer);
 
                 contador++;
