@@ -3237,7 +3237,10 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 				escribir_socket(misocket,results_buffer);
 	}
 
-
+/*
+como generar volcado hexadecimal de archivo binario:
+hexdump -v -e '16/1 "%02xH " " "'
+*/
 else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comando_sin_parametros,"wmm")) {
 	unsigned int direccion;
 	z80_byte valor;
@@ -3417,6 +3420,9 @@ void *thread_remote_protocol_function(void *nada)
 								//temp
 								//if (indice_destino> DEBUG_MAX_MESSAGE_LENGTH-100)verbose_level=0;
 
+								//Esto probablemente petara el emulador si el verbose level esta al menos 3 y el comando recibido excede 1024... esto es
+								//porque el buffer de texto en la funcion debug_printf es precisamente de 1024
+								//Entonces por ejemplo el comando write-mapped-memory si se le envia una secuencia de mas de 1024 caracteres, petara en este caso
 								debug_printf (VERBOSE_DEBUG,"Remote command. Read text: [%s]",buffer_lectura_socket);
 
 								interpreta_comando(buffer_lectura_socket,sock_conectat);
