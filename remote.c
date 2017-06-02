@@ -188,7 +188,7 @@ int smsg=send(socket,buffer,strlen(buffer),0);
 
 }
 
-//int leidos = read(sock_conectat, buffer_leido, 1023);
+//int leidos = read(sock_conectat, buffer_lectura_socket, 1023);
 int leer_socket(int s, char *buffer, int longitud)
 {
 #ifdef MINGW
@@ -764,7 +764,7 @@ struct s_items_ayuda items_ayuda[]={
  {"tbblue-get-sprite",NULL,"index","Get sprite at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
-	{"write-mapped-memory","|wmm","address value","Writes a byte at desired address on mapped memory"},
+	{"write-mapped-memory","|wmm","address value","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be separed by one space"},
 
 
   {NULL,NULL,NULL,NULL}
@@ -2640,6 +2640,17 @@ int return_internal_pointer(char *s,z80_byte **puntero)
 	return retorno;
 }
 
+
+//Leer todos los parametros en un solo array de char
+//Maximo es 65536*4, para permitir comando largo write-mapped-memory que pueda escribir en 64kb de memoria,
+//teniendo en cuenta que un numero como maximo ocupa 3 caracteres + 1 espacio
+//Damos 10 bytes de mas de margen por si acaso
+//char parametros[MAX_LENGTH_PROTOCOL_COMMAND];
+
+
+char buffer_lectura_socket[MAX_LENGTH_PROTOCOL_COMMAND];
+char *parametros;
+
 void interpreta_comando(char *comando,int misocket)
 {
 
@@ -2670,31 +2681,33 @@ char buffer_retorno[2048];
 	}
 
 
-                                                                //Interpretar comando hasta espacio o final de linea
-                                                                char comando_sin_parametros[1024];
+    //Interpretar comando hasta espacio o final de linea, o sea sin tener en cuenta parametros
+    char comando_sin_parametros[1024];
 
-                                                                for (i=0;comando[i] && comando[i]!=' ' && comando[i]!='\n' && comando[i]!='\r';i++) {
-                                                                        comando_sin_parametros[i]=comando[i];
-                                                                }
+    for (i=0;comando[i] && comando[i]!=' ' && comando[i]!='\n' && comando[i]!='\r';i++) {
+      comando_sin_parametros[i]=comando[i];
+    }
 
-                                                                comando_sin_parametros[i]=0;
+    comando_sin_parametros[i]=0;
 
+	parametros=&comando[i];
 
-	char parametros[1024];
-	parametros[0]=0;
+	//parametros[0]=0;
 	int pindex=0;
 	if (comando[i]==' ') {
 		i++;
+		parametros++;
 		for (;comando[i] && comando[i]!='\n' && comando[i]!='\r';i++,pindex++) {
-			parametros[pindex]=comando[i];
+			printf ("searching for end command index: %d\n",i);
+			//parametros[pindex]=comando[i];
 		}
 	}
 
 	parametros[pindex]=0;
 
 
-	debug_printf (VERBOSE_DEBUG,"Remote command without parameters: [%s]",comando_sin_parametros);
-	debug_printf (VERBOSE_DEBUG,"Remote command parameters: [%s]",parametros);
+	debug_printf (VERBOSE_DEBUG,"Remote command without parameters: lenght: %d [%s]",strlen(comando_sin_parametros),comando_sin_parametros);
+	debug_printf (VERBOSE_DEBUG,"Remote command parameters: lenght: %d [%s]",strlen(parametros),parametros);
 
 
 	//Ver cada comando
@@ -3238,13 +3251,14 @@ else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comand
 		direccion=parse_string_to_number(parametros);
 		//Ver si hay espacio
 		char *s=find_space_or_end(parametros);
-		if (*s) {
+		while (*s) {
 			valor=parse_string_to_number(s);
-			poke_byte_z80_moto(direccion,valor);
+			poke_byte_z80_moto(direccion++,valor);
+			s=find_space_or_end(s);
 		}
-		else {
+		/*else {
 			escribir_socket(misocket,"ERROR. No value set");
-		}
+		}*/
 
 	}
 
@@ -3368,17 +3382,18 @@ void *thread_remote_protocol_function(void *nada)
 
 						if (!remote_salir_conexion) {
 
-							//Prueba leer
-							char buffer_leido[1024];
-							//int leidos = read(sock_conectat, buffer_leido, 1023);
-							int leidos=leer_socket(sock_conectat, buffer_leido, 1023);
+							//Leer socket
+
+							//int leidos = read(sock_conectat, buffer_lectura_socket, 1023);
+							int leidos=leer_socket(sock_conectat, buffer_lectura_socket, MAX_LENGTH_PROTOCOL_COMMAND-1);
+							//printf ("%d\n",leidos);
 
 							if (leidos) {
-								buffer_leido[leidos]=0;
+								buffer_lectura_socket[leidos]=0;
 
-								debug_printf (VERBOSE_DEBUG,"Remote command. Read text: %s",buffer_leido);
+								debug_printf (VERBOSE_DEBUG,"Remote command. Read text: %s",buffer_lectura_socket);
 
-								interpreta_comando(buffer_leido,sock_conectat);
+								interpreta_comando(buffer_lectura_socket,sock_conectat);
 							}
 
 						}

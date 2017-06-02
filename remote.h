@@ -32,4 +32,9 @@ extern int remote_salir_conexion;
 
 #define DEFAULT_REMOTE_PROTOCOL_PORT 10000
 
+#define MAX_LENGTH_PROTOCOL_COMMAND (65536*4+100)
+  //Maximo es 65536*4, para permitir comando largo write-mapped-memory que pueda escribir en 64kb de memoria,
+	//teniendo en cuenta que un numero como maximo ocupa 3 caracteres + 1 espacio
+	//Damos algunos bytes de mas de margen por si acaso
+
 #endif
