@@ -27,6 +27,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <string.h>
 
 
 #include "cpu.h"
@@ -59,7 +60,10 @@ extern unsigned char ql_pc_intr;
 int refresca=0;
 
 
-char ql_nombre_archivo_load[255];
+//char ql_nombre_archivo_load[255];
+
+//Archivo que se est abiendo, cargando, etc. TODO: no soporta abrir mas de un archivo a ala vez
+char ql_full_path_load[PATH_MAX];
 
 void ql_debug_force_breakpoint(char *message)
 {
@@ -314,6 +318,83 @@ void core_ql_trap_three(void)
   }
 }
 
+//Dado una ruta de QL tipo mdv1_programa , retorna mdv1 y programa por separados
+void ql_split_path_device_name(char *ql_path, char *ql_device, char *ql_file)
+{
+  //Buscar hasta _
+  int i;
+  for (i=0;ql_path[i] && ql_path[i]!='_';i++);
+  if (ql_path[i]==0) {
+    //No encontrado
+    ql_device[0]=0;
+    ql_file[0]=0;
+  }
+
+  //Copiar desde inicio hasta aqui en ql_device
+  int iorig=i;
+  //Vamos del final hacia atras
+  ql_device[i]=0;
+  i--;
+  char c;
+  for (;i>=0;i--) {
+    c=letra_minuscula(ql_path[i]);
+    ql_device[i]=c;
+  }
+
+  //Restauramos indice y vamos de ahi+1 al final. Si nombre de archivo contiene un _, sustituir por .
+  //Y pasar a minusculas todo
+  i=iorig+1;
+  int destino=0;
+
+  for (;ql_path[i];i++,destino++) {
+    c=letra_minuscula(ql_path[i]);
+    if (c=='_') c='.';
+    ql_file[destino]=c;
+  }
+
+  ql_file[destino]=0;
+
+  debug_printf(VERBOSE_DEBUG,"Source path: %s Device: %s File: %s",ql_path,ql_device,ql_file);
+}
+
+//Dado un device y un nombre de archivo, retorna ruta a archivo en filesystem final
+//Retorna 1 si error
+int ql_return_full_path(char *device, char *file, char *fullpath)
+{
+  char *sourcepath;
+
+  if (!strcasecmp(device,"mdv1")) sourcepath=ql_mdv1_root_dir;
+  else if (!strcasecmp(device,"mdv2")) sourcepath=ql_mdv2_root_dir;
+  else if (!strcasecmp(device,"flp1")) sourcepath=ql_flp1_root_dir;
+  else return 1;
+
+  if (sourcepath[0])  sprintf(fullpath,"%s/%s",sourcepath,file);
+  else sprintf(fullpath,"%s",file); //Ruta definida como vacia
+
+
+  return 0;
+}
+
+//Dice si la ruta que se le ha pasado corresponde a un mdv1_, o mdv2_, o flp1_
+int ql_si_ruta_mdv_flp(char *texto)
+{
+  char *encontrado;
+
+  char *buscar_mdv1="mdv1_";
+  encontrado=util_strcasestr(texto, buscar_mdv1);
+  if (encontrado) return 1;
+
+  char *buscar_mdv2="mdv2_";
+  encontrado=util_strcasestr(texto, buscar_mdv2);
+  if (encontrado) return 1;
+
+  char *buscar_flp1="flp1_";
+  encontrado=util_strcasestr(texto, buscar_flp1);
+  if (encontrado) return 1;
+
+  return 0;
+}
+
 //bucle principal de ejecucion de la cpu de jupiter ace
 void cpu_core_loop_ql(void)
 {
@@ -453,9 +534,14 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
 032B4 subq.b  #1, D0
 
 */
+
+  //Nota: lo normal seria que no hagamos este trap a no ser que se habilite emulacion de ql_microdrive_floppy_emulation.
+  //Pero, si lo hacemos asi, si no habilitamos emulacion de micro&floppy, al pasar del menu de inicio (F1,F2) buscara el archivo BOOT, y como no salta el
+  //trap, se queda bloqueado
+
     if (get_pc_register()==0x032B4 && m68k_get_reg(NULL,M68K_REG_D0)==1) {
       //en A0
-      //char ql_nombre_archivo_load[255];
+      char ql_nombre_archivo_load[255];
       int reg_a0=m68k_get_reg(NULL,M68K_REG_A0);
       int longitud_nombre=peek_byte_z80_moto(reg_a0)*256+peek_byte_z80_moto(reg_a0+1);
       reg_a0 +=2;
@@ -479,11 +565,12 @@ PC: 032B4 SP: 2846E USP: 3FFC0 SR: 2000 :  S         A0: 0003FDEE A1: 0003EE00 A
       //A7=0002847AH
       //Incrementar A7 en 12
       //set-register pc=5eh. apunta a un rte
-      char *buscar="mdv";
-      char *encontrado;
-      encontrado=util_strcasestr(ql_nombre_archivo_load, buscar);
-      if (encontrado) {
-        debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything because file is mdv*");
+      if (ql_si_ruta_mdv_flp(ql_nombre_archivo_load)) {
+      //char *buscar="mdv";
+      //char *encontrado;
+      //encontrado=util_strcasestr(ql_nombre_archivo_load, buscar);
+      //if (encontrado) {
+        debug_printf (VERBOSE_PARANOID,"Returning from trap without opening anything because file is mdv1, mdv2 or flp1");
 
         //ql_debug_force_breakpoint("En IO.OPEN");
 
@@ -545,8 +632,15 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
         //No error.
         m68k_set_reg(M68K_REG_D0,0);
 
-        if (!si_existe_archivo(ql_nombre_archivo_load)) {
-          debug_printf(VERBOSE_PARANOID,"File %s not found",ql_nombre_archivo_load);
+        char ql_io_open_device[PATH_MAX];
+        char ql_io_open_file[PATH_MAX];
+
+        ql_split_path_device_name(ql_nombre_archivo_load,ql_io_open_device,ql_io_open_file);
+
+        ql_return_full_path(ql_io_open_device,ql_io_open_file,ql_full_path_load);
+
+        if (!si_existe_archivo(ql_full_path_load)) {
+          debug_printf(VERBOSE_PARANOID,"File %s not found",ql_full_path_load);
           //Retornar Not found (NF)
           m68k_set_reg(M68K_REG_D0,-7);
         }
@@ -572,14 +666,14 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
     }
 
     //Quiza Trap 3 FS.HEADR acaba saltando a 0337C move.l  A0, D7
-    if (get_pc_register()==0x0337C && m68k_get_reg(NULL,M68K_REG_D0)==0x47) {
+    if (get_pc_register()==0x0337C && m68k_get_reg(NULL,M68K_REG_D0)==0x47 && ql_microdrive_floppy_emulation) {
         debug_printf (VERBOSE_PARANOID,"FS.HEADR. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
 
         //Si canal es el mio ficticio 100
         if (m68k_get_reg(NULL,M68K_REG_A0)==QL_ID_CANAL_INVENTADO_MICRODRIVE) {
           //Devolver cabecera. Se supone que el sistema operativo debe asignar espacio para la cabecera? Posiblemente si.
           //Forzamos meter cabecera en espacio de memoria de pantalla a ver que pasa
-          ql_get_file_header(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1));
+          ql_get_file_header(ql_full_path_load,m68k_get_reg(NULL,M68K_REG_A1));
           //ql_get_file_header(ql_nombre_archivo_load,131072); //131072=pantalla
 
           ql_restore_d_registers(pre_fs_headr_d,7);
@@ -612,7 +706,7 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 
 
     //FS.LOAD
-    if (get_pc_register()==0x0337C && m68k_get_reg(NULL,M68K_REG_D0)==0x48) {
+    if (get_pc_register()==0x0337C && m68k_get_reg(NULL,M68K_REG_D0)==0x48 && ql_microdrive_floppy_emulation) {
         debug_printf (VERBOSE_PARANOID,"FS.LOAD. Channel ID=%d",m68k_get_reg(NULL,M68K_REG_A0) );
 
         //Si canal es el mio ficticio 100
@@ -624,12 +718,12 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
           unsigned int longitud=m68k_get_reg(NULL,M68K_REG_D2);
 
 
-            debug_printf (VERBOSE_PARANOID,"Loading file %s at address %05XH with lenght: %d",ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
+            debug_printf (VERBOSE_PARANOID,"Loading file %s at address %05XH with lenght: %d",ql_full_path_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
             //void load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
 
             //longitud la saco del propio archivo, ya que no me llega bien de momento pues no retornaba bien fs.headr
             //int longitud=get_file_size(ql_nombre_archivo_load);
-            load_binary_file(ql_nombre_archivo_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
+            load_binary_file(ql_full_path_load,m68k_get_reg(NULL,M68K_REG_A1),longitud);
 
 
 

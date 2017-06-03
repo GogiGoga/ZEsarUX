@@ -11946,8 +11946,65 @@ void menu_ide_divide(MENU_ITEM_PARAMETERS)
 
 }
 
+void menu_storage_string_root_dir(char *string_root_dir)
+{
+
+        char *filtros[2];
+
+        filtros[0]="";
+        filtros[1]=0;
 
 
+        //guardamos directorio actual
+        char directorio_actual[PATH_MAX];
+        getcwd(directorio_actual,PATH_MAX);
+
+        int ret;
+
+
+	char nada[PATH_MAX];
+
+        //Obtenemos ultimo directorio visitado
+	menu_filesel_chdir(string_root_dir);
+
+
+        ret=menu_filesel("Enter dir and press ESC",filtros,nada);
+
+
+	//Si sale con ESC
+	if (ret==0) {
+		//Directorio root
+		sprintf (string_root_dir,"%s",menu_filesel_last_directory_seen);
+		debug_printf (VERBOSE_DEBUG,"Selected directory: %s",string_root_dir);
+
+	}
+
+        //volvemos a directorio inicial
+        menu_filesel_chdir(directorio_actual);
+
+
+}
+
+
+void menu_ql_microdrive_floppy(MENU_ITEM_PARAMETERS)
+{
+	ql_microdrive_floppy_emulation ^=1;
+}
+
+void menu_ql_mdv1(MENU_ITEM_PARAMETERS)
+{
+	menu_storage_string_root_dir(ql_mdv1_root_dir);
+}
+
+void menu_ql_mdv2(MENU_ITEM_PARAMETERS)
+{
+	menu_storage_string_root_dir(ql_mdv2_root_dir);
+}
+
+void menu_ql_flp1(MENU_ITEM_PARAMETERS)
+{
+	menu_storage_string_root_dir(ql_flp1_root_dir);
+}
 
 //menu storage settings
 void menu_storage_settings(MENU_ITEM_PARAMETERS)
@@ -11960,7 +12017,7 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
                 //char string_spi_flash_file_shown[13]; //,string_mmc_file_shown[13];
 
 
-		//Primer menu sera Z88 memory slots (si Z88) o Tape settings en cualquier otro
+		//Primer menu sera Z88 memory slots (si Z88) o microdrive QL o Tape settings en cualquier otro
 
 		if (MACHINE_IS_Z88) {
 			menu_add_item_menu_inicial_format(&array_menu_storage_settings,MENU_OPCION_NORMAL,menu_z88_slots,NULL,"Z88 Memory ~~Slots");
@@ -11968,6 +12025,25 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 
                         menu_add_item_menu_tooltip(array_menu_storage_settings,"Z88 Memory Slots");
                         menu_add_item_menu_ayuda(array_menu_storage_settings,"Selects Memory Slots to use on Z88");
+
+		}
+
+		else if (MACHINE_IS_QL) {
+			menu_add_item_menu_inicial_format(&array_menu_storage_settings,MENU_OPCION_NORMAL,menu_ql_microdrive_floppy,NULL,"Microdrive&Floppy: %s",
+				(ql_microdrive_floppy_emulation ? "Yes" : "No") );
+
+				if (ql_microdrive_floppy_emulation) {
+					char string_ql_mdv1_root_dir_shown[13];
+					char string_ql_mdv2_root_dir_shown[13];
+					char string_ql_flp1_root_dir_shown[13];
+					menu_tape_settings_trunc_name(ql_mdv1_root_dir,string_ql_mdv1_root_dir_shown,13);
+					menu_tape_settings_trunc_name(ql_mdv2_root_dir,string_ql_mdv2_root_dir_shown,13);
+					menu_tape_settings_trunc_name(ql_flp1_root_dir,string_ql_flp1_root_dir_shown,13);
+
+					menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_ql_mdv1,NULL,"Mdv1 root dir: %s",string_ql_mdv1_root_dir_shown);
+					menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_ql_mdv2,NULL,"Mdv2 root dir: %s",string_ql_mdv2_root_dir_shown);
+					menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_ql_flp1,NULL,"Flp1 root dir: %s",string_ql_flp1_root_dir_shown);
+				}
 
 		}
 

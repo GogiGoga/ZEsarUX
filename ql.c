@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <sys/types.h>
 
 #include "ql.h"
 #include "m68k.h"
@@ -8,12 +11,24 @@
 #include "operaciones.h"
 
 
-extern unsigned char puerto_49150;
+#if defined(__APPLE__)
+        #include <sys/syslimits.h>
+#endif
+
+//extern unsigned char puerto_49150;
+
+
+char ql_mdv1_root_dir[PATH_MAX]="";
+char ql_mdv2_root_dir[PATH_MAX]="";
+char ql_flp1_root_dir[PATH_MAX]="";
+
 
 unsigned char *memoria_ql;
 unsigned char ql_mc_stat;
 
 unsigned char ql_pc_intr;
+
+int ql_microdrive_floppy_emulation=0;
 
 
 #define QL_STATUS_IPC_IDLE 0

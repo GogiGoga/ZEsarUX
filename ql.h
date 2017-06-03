@@ -32,6 +32,13 @@ typedef unsigned short z80_int;
 
 extern  unsigned char *memoria_ql;
 
+extern int ql_microdrive_floppy_emulation;
+
+
+extern char ql_mdv1_root_dir[];
+extern char ql_mdv2_root_dir[];
+extern char ql_flp1_root_dir[];
+
 
 //En principio no hay border. ponemos solo de ejemplo
 #define QL_LEFT_BORDER_NO_ZOOM 8
