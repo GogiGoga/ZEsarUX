@@ -1401,6 +1401,11 @@ printf (
 		"--superupgrade-flash f     Set Superupgrade flash file\n"
 		"--enable-superupgrade      Enable Superupgrade emulation. Requires --superupgrade-flash\n"
 
+		"--enable-ql-mdv-flp        Enable QL Microdrive & Floppy emulation\n"
+		"--ql-mdv1-root-dir p       Set QL mdv1 root directory\n"
+		"--ql-mdv2-root-dir p       Set QL mdv2 root directory\n"
+		"--ql-flp1-root-dir p       Set QL flp1 root directory\n"
+
 
 
 
@@ -4657,22 +4662,75 @@ void parse_cmdline_options(void) {
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--zxpand-root-dir")) {
-                                siguiente_parametro_argumento();
+      	siguiente_parametro_argumento();
 
-                                //Si es ruta relativa, poner ruta absoluta
-                                if (!si_ruta_absoluta(argv[puntero_parametro])) {
-                                        //printf ("es ruta relativa\n");
+        //Si es ruta relativa, poner ruta absoluta
+        if (!si_ruta_absoluta(argv[puntero_parametro])) {
+        	//printf ("es ruta relativa\n");
 					convert_relative_to_absolute(argv[puntero_parametro],zxpand_root_dir);
-                                }
-
+        }
 
 				else {
-	                                sprintf (zxpand_root_dir,"%s",argv[puntero_parametro]);
+          sprintf (zxpand_root_dir,"%s",argv[puntero_parametro]);
 				}
+			}
+
+/*
+				"--enable-ql-mdv-flp        Enable QL Microdrive & Floppy emulation\n"
+				"--ql-mdv1-root-dir p       Set QL mdv1 root directory\n"
+				"--ql-mdv2-root-dir p       Set QL mdv2 root directory\n"
+				"--ql-flp1-root-dir p       Set QL flp1 root directory\n"
+				*/
+			else if (!strcmp(argv[puntero_parametro],"--enable-ql-mdv-flp")) {
+				ql_microdrive_floppy_emulation=1;
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--ql-mdv1-root-dir")) {
+			  siguiente_parametro_argumento();
+
+			  //Si es ruta relativa, poner ruta absoluta
+			  if (!si_ruta_absoluta(argv[puntero_parametro])) {
+			    //printf ("es ruta relativa\n");
+			    convert_relative_to_absolute(argv[puntero_parametro],ql_mdv1_root_dir);
+			  }
+
+			  else {
+			    sprintf (ql_mdv1_root_dir,"%s",argv[puntero_parametro]);
+				}
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--ql-mdv2-root-dir")) {
+			  siguiente_parametro_argumento();
+
+			  //Si es ruta relativa, poner ruta absoluta
+			  if (!si_ruta_absoluta(argv[puntero_parametro])) {
+			    //printf ("es ruta relativa\n");
+			    convert_relative_to_absolute(argv[puntero_parametro],ql_mdv2_root_dir);
+			  }
+
+			  else {
+			    sprintf (ql_mdv2_root_dir,"%s",argv[puntero_parametro]);
+				}
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--ql-flp1-root-dir")) {
+			  siguiente_parametro_argumento();
+
+			  //Si es ruta relativa, poner ruta absoluta
+			  if (!si_ruta_absoluta(argv[puntero_parametro])) {
+			    //printf ("es ruta relativa\n");
+			    convert_relative_to_absolute(argv[puntero_parametro],ql_flp1_root_dir);
+			  }
+
+			  else {
+			    sprintf (ql_flp1_root_dir,"%s",argv[puntero_parametro]);
+				}
+			}
 
 
 
-                        }
+
+
 
                         else if (!strcmp(argv[puntero_parametro],"--ide-file")) {
                                 siguiente_parametro_argumento();
