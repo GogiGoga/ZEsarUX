@@ -6109,6 +6109,8 @@ z80_int view_sprites_alto_sprite=8*6;
 
 int view_sprites_tbblue=0;
 
+z80_bit view_sprites_inverse={0};
+
 void menu_debug_draw_sprites(void)
 {
 
@@ -6132,6 +6134,10 @@ void menu_debug_draw_sprites(void)
 				byte_leido=peek_byte_z80_moto(puntero++);
 
 				for (bit=0;bit<8;bit++) {
+					if (view_sprites_inverse.v) {
+						byte_leido ^=128;
+					}
+
 					if ( (byte_leido & 128)==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
 					else color=ESTILO_GUI_TINTA_NORMAL;
 
@@ -6155,6 +6161,7 @@ void menu_debug_draw_sprites(void)
 				int offset_sprite=(y%16)*16+x;
 				index_color=tbsprite_patterns[numero_pattern][offset_sprite];
 				color=tbsprite_palette[index_color];
+				if (view_sprites_inverse.v) color ^=255;
 				scr_putpixel_zoom(xorigen+x,yorigen+y,RGB8_INDEX_FIRST_COLOR+color);
 			}
 		}
@@ -6272,14 +6279,14 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 		if (MACHINE_IS_TBBLUE) {
 			if (view_sprites_tbblue) {
-				menu_escribe_linea_opcion(linea++,-1,1,"M: ptr H: hard   QA: Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"M:ptr I:Inv H:hard   QA:Size");
 			}
 			else {
-				menu_escribe_linea_opcion(linea++,-1,1,"M: ptr H: hard OPQA: Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"M:ptr I:Inv H:hard OPQA:Size");
 			}
 		}
 		else {
-			menu_escribe_linea_opcion(linea++,-1,1,"M: ptr         OPQA: Size");
+			menu_escribe_linea_opcion(linea++,-1,1,  "M:ptr I:Inv        OPQA:Size");
 		}
 
 		if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
@@ -6320,6 +6327,10 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 																				case 'h':
 																								view_sprites_tbblue ^=1;
+																				break;
+
+																				case 'i':
+																							view_sprites_inverse.v ^=1;
 																				break;
 
 					case 'o':
