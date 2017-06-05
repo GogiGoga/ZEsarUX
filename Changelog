@@ -15,6 +15,7 @@ Added setting to set F keys (F1, F2, etc) to run different actions: reset, nmi, 
 Added TBBlue Sprite chip emulation
 Improved TBBlue emulation: 1 MB RAM
 Improved QL emulation: experimental support of LBYTES command
+Improved Sprite Viewer: Save sprite, TBBlue sprite viewer
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15

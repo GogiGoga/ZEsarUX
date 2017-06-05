@@ -899,6 +899,8 @@ void textspeech_enviar_speech_pantalla(void)
 	textspeech_print_speech(buffer_pantalla_speech);
 }
 
+
+
 //Para funciones OCR que guardan en string final. Derivado de textspeech pero usando otro buffer y sin sacar nada por pantalla
 char *ocr_text_buffer;
 int ocr_index_position;

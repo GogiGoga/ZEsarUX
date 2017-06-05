@@ -8266,3 +8266,38 @@ int util_parse_commands_argvc(char *texto, char *parm_argv[], int maximo)
 
         return args;
 }
+
+//Retorna 0 si ok. No 0 si error. Ancho expresado en bytes (o sea, ancho en pixeles/8). Alto expresado en pixeles
+//Source es en crudo bytes monocromos
+int util_write_pbm_file(char *archivo, int ancho, int alto, z80_byte *source)
+{
+
+  FILE *ptr_destino;
+  ptr_destino=fopen(archivo,"wb");
+
+  if (ptr_destino==NULL) {
+    debug_printf (VERBOSE_ERR,"Error writing pbm file");
+    return 1;
+  }
+
+
+    //Escribir cabecera pbm
+  	char pbm_header[20]; //Suficiente
+
+  	sprintf (pbm_header,"P4\n%d %0d\n",ancho*8,alto);
+
+  	fwrite(pbm_header,1,strlen(pbm_header),ptr_destino);
+
+
+  int x,y;
+  for (y=0;y<alto;y++) {
+    for (x=0;x<ancho;x++) {
+      fwrite(source,1,1,ptr_destino);
+      source++;
+    }
+  }
+
+  fclose(ptr_destino);
+
+  return 0;
+}

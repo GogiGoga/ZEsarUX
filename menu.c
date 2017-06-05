@@ -6216,6 +6216,58 @@ void menu_debug_view_sprites_ventana(void)
 
 }
 
+
+
+void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alto)
+{
+
+	char file_save[PATH_MAX];
+
+	char *filtros[2];
+
+						 filtros[0]="pbm";
+						 filtros[1]=0;
+
+		int ret;
+
+		 ret=menu_filesel("Select PBM File",filtros,file_save);
+
+		 if (ret==1) {
+
+ 		 		//Ver si archivo existe y preguntar
+			 if (si_existe_archivo(file_save)) {
+
+	 				if (menu_confirm_yesno_texto("File exists","Overwrite?")==0) return;
+
+ 				}
+
+
+				char string_height[4];
+				sprintf(string_height,"%d",alto);
+				menu_ventana_scanf("Height?",string_height,4);
+				alto=parse_string_to_number(string_height);
+
+
+				//Asignar buffer temporal
+				int longitud=ancho*alto;
+				z80_byte *buf_temp=malloc(longitud);
+				if (buf_temp==NULL) {
+					debug_printf(VERBOSE_ERR,"Error allocating temporary buffer");
+				}
+
+				//Copiar de memoria emulador ahi
+				int i;
+				for (i=0;i<longitud;i++) buf_temp[i]=peek_byte_z80_moto(direccion+i);
+
+				util_write_pbm_file(file_save,ancho,alto,buf_temp);
+
+				free(buf_temp);
+		}
+
+
+
+}
+
 void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 {
 
@@ -6230,7 +6282,7 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 
         menu_espera_no_tecla();
-	menu_debug_view_sprites_ventana();
+				menu_debug_view_sprites_ventana();
 
         z80_byte tecla=0;
 
@@ -6286,7 +6338,7 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 			}
 		}
 		else {
-			menu_escribe_linea_opcion(linea++,-1,1,  "M:ptr I:Inv        OPQA:Size");
+			menu_escribe_linea_opcion(linea++,-1,1,  "M:ptr I:Inv S:save OPQA:Size");
 		}
 
 		if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
@@ -6331,6 +6383,26 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 																				case 'i':
 																							view_sprites_inverse.v ^=1;
+																				break;
+
+																				case 's':
+																							if (MACHINE_IS_TBBLUE && view_sprites_tbblue) {
+
+																							}
+
+																							else {
+																								//restauramos modo normal de texto de menu, sino, el selector de archivos se vera
+																								//con el sprite encima
+																								set_menu_overlay_function(normal_overlay_texto_menu);
+
+																								 cls_menu_overlay();
+
+																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite);
+
+																								menu_debug_view_sprites_ventana();
+																								set_menu_overlay_function(menu_debug_draw_sprites);
+
+																							}
 																				break;
 
 					case 'o':
@@ -14745,16 +14817,16 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
 
         ret=menu_filesel("Select Binary File",filtros,binary_file_save);
 
-        if (ret==1) {
+    if (ret==1) {
 
 		//Ver si archivo existe y preguntar
 	        struct stat buf_stat;
 
-                if (stat(binary_file_save, &buf_stat)==0) {
+      if (stat(binary_file_save, &buf_stat)==0) {
 
-			if (menu_confirm_yesno_texto("File exists","Overwrite?")==0) return;
+				if (menu_confirm_yesno_texto("File exists","Overwrite?")==0) return;
 
-		}
+			}
 
                 cls_menu_overlay();
 
