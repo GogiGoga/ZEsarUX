@@ -6212,7 +6212,7 @@ menu_z80_moto_int menu_debug_view_sprites_change_pointer(menu_z80_moto_int p)
 void menu_debug_view_sprites_ventana(void)
 {
 
-	menu_dibuja_ventana(SPRITES_X,SPRITES_Y,SPRITES_ANCHO,SPRITES_ALTO,"Sprites");
+	menu_dibuja_ventana(SPRITES_X,SPRITES_Y,SPRITES_ANCHO,SPRITES_ALTO+1,"Sprites");
 
 }
 
@@ -6331,14 +6331,17 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 		if (MACHINE_IS_TBBLUE) {
 			if (view_sprites_tbblue) {
-				menu_escribe_linea_opcion(linea++,-1,1,"M:ptr I:Inv H:hard   QA:Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"M:Memory pointer     QA:Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"I:Inverse S:Save H:Hardware");
 			}
 			else {
-				menu_escribe_linea_opcion(linea++,-1,1,"M:ptr I:Inv H:hard OPQA:Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"M:Memory pointer   OPQA:Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"I:Inverse S:Save H:Hardware");
 			}
 		}
 		else {
-			menu_escribe_linea_opcion(linea++,-1,1,  "M:ptr I:Inv S:save OPQA:Size");
+			menu_escribe_linea_opcion(linea++,-1,1,  "M:Memory pointer  OPQA:Size");
+			menu_escribe_linea_opcion(linea++,-1,1,  "I:Inverse     S:Save sprite");
 		}
 
 		if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
@@ -6395,9 +6398,11 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 																								//con el sprite encima
 																								set_menu_overlay_function(normal_overlay_texto_menu);
 
-																								 cls_menu_overlay();
+
 
 																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite);
+
+																								cls_menu_overlay();
 
 																								menu_debug_view_sprites_ventana();
 																								set_menu_overlay_function(menu_debug_draw_sprites);
