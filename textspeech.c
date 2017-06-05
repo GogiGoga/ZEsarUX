@@ -898,3 +898,138 @@ void textspeech_enviar_speech_pantalla(void)
 	buffer_pantalla_speech[index_buffer_pantalla_speech]=0;
 	textspeech_print_speech(buffer_pantalla_speech);
 }
+
+//Para funciones OCR que guardan en string final. Derivado de textspeech pero usando otro buffer y sin sacar nada por pantalla
+char *ocr_text_buffer;
+int ocr_index_position;
+
+void ocr_enviar_printf (z80_byte c)
+{
+        ocr_text_buffer[ocr_index_position++]=c;
+}
+
+
+
+
+void ocr_z88_printf(struct s_z88_return_character_atributes *z88_caracter)
+{
+
+                      //Si caracter no es nulo
+                        if (z88_caracter->null_caracter==0) {
+				ocr_enviar_printf(z88_caracter->ascii_caracter);
+                        }
+}
+
+void ocr_z88_printf_newline(struct s_z88_return_character_atributes *z88_caracter GCC_UNUSED)
+{
+        ocr_enviar_printf('\n');
+}
+
+void ocr_pantalla_sam_modo_013_fun_color(z80_byte color GCC_UNUSED, int *brillo GCC_UNUSED, int *parpadeo GCC_UNUSED)
+{
+	//no hacer nada
+}
+
+
+//Para saber cuando hay salto de linea
+int ocr_pantalla_sam_modo_013_last_y=-1;
+void ocr_pantalla_sam_modo_013_fun_caracter(int x GCC_UNUSED,int y,int brillo GCC_UNUSED, unsigned char inv GCC_UNUSED,z80_byte caracter )
+{
+
+  if (y!=ocr_pantalla_sam_modo_013_last_y) ocr_enviar_printf ('\n');
+
+  ocr_enviar_printf(caracter);
+
+	ocr_pantalla_sam_modo_013_last_y=y;
+
+}
+
+void ocr_pantalla_sam_modo_2(void)
+{
+        scr_refresca_pantalla_sam_modo_2(ocr_pantalla_sam_modo_013_fun_color,ocr_pantalla_sam_modo_013_fun_caracter);
+}
+
+void ocr_pantalla_sam_modo_013(int modo)
+{
+        scr_refresca_pantalla_sam_modo_013(modo,ocr_pantalla_sam_modo_013_fun_color,ocr_pantalla_sam_modo_013_fun_caracter);
+}
+
+
+void ocr_enviar_speech_pantalla_sam(void)
+{
+	z80_byte modo_video=(sam_vmpr>>5)&3;
+
+	switch (modo_video) {
+                case 0:
+                        ocr_pantalla_sam_modo_013(0);
+                break;
+
+                case 1:
+                        ocr_pantalla_sam_modo_013(1);
+                break;
+
+                case 2:
+                        ocr_pantalla_sam_modo_2();
+                break;
+
+                case 3:
+                        ocr_pantalla_sam_modo_013(3);
+                break;
+        }
+
+}
+
+
+void ocr_pantalla_cpc_fun_color(z80_byte color GCC_UNUSED, int *brillo GCC_UNUSED, int *parpadeo GCC_UNUSED)
+{
+
+/* No hacer nada
+
+*/
+
+}
+
+
+void ocr_pantalla_cpc_fun_saltolinea(void)
+{
+
+	ocr_enviar_printf ('\n');
+
+}
+
+void ocr_pantalla_cpc_fun_caracter(int x GCC_UNUSED,int y GCC_UNUSED,int brillo GCC_UNUSED, unsigned char inv GCC_UNUSED,z80_byte caracter )
+{
+	ocr_enviar_printf(caracter);
+}
+
+
+void ocr_enviar_speech_pantalla_cpc(void)
+{
+	scr_refresca_pantalla_cpc_text(ocr_pantalla_cpc_fun_color,ocr_pantalla_cpc_fun_caracter,ocr_pantalla_cpc_fun_saltolinea);
+}
+
+
+
+void ocr_get_text(char *s)
+{
+    ocr_text_buffer=s;
+    ocr_index_position=0;
+    if (MACHINE_IS_SPECTRUM) screen_text_repinta_pantalla_spectrum_comun(0,ocr_enviar_printf,1);
+    else if (MACHINE_IS_ZX8081) screen_text_repinta_pantalla_zx81_comun(0,ocr_enviar_printf,1);
+    else if (MACHINE_IS_Z88) {
+			struct s_z88_return_character_atributes z88_caracter;
+
+			z88_caracter.f_new_line=ocr_z88_printf_newline;
+			z88_caracter.f_print_char=ocr_z88_printf;
+
+			screen_repinta_pantalla_z88(&z88_caracter);
+
+		}
+    else if (MACHINE_IS_SAM) {
+			ocr_enviar_speech_pantalla_sam();
+		}
+
+    else if (MACHINE_IS_CPC) ocr_enviar_speech_pantalla_cpc();
+
+    ocr_text_buffer[ocr_index_position++]=0;
+}

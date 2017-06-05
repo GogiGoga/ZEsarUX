@@ -715,6 +715,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
 
 	{"get-machines",NULL,NULL,"Returns list of emulated machines"},
+	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
   {"get-registers","|gr",NULL,"Get CPU registers"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
@@ -2895,6 +2896,14 @@ char buffer_retorno[2048];
 	else if (!strcmp(comando_sin_parametros,"get-machines")) {
 		escribir_socket (misocket,string_machines_list_description);
 	}
+
+	else if (!strcmp(comando_sin_parametros,"get-ocr")) {
+		char buffer_ocr[4096];
+		ocr_get_text(buffer_ocr);
+		escribir_socket (misocket,buffer_ocr);
+	}
+
+
 
 	else if (!strcmp(comando_sin_parametros,"get-os")) {
 		escribir_socket (misocket,COMPILATION_SYSTEM);
