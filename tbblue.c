@@ -207,7 +207,7 @@ void tbsprite_put_color_line(int x,z80_byte color)
 	if (color_antes!=TBBLUE_TRANSPARENT_COLOR) {
 		//colision
 		tbblue_port_303b |=1;
-		//printf ("set colision flag\n");
+		//printf ("set colision flag. result value: %d\n",tbblue_port_303b);
 	}
 
 	sprite_line[x]=color;
@@ -586,6 +586,7 @@ Bit 0: Collision flag.
 */
 	z80_byte value=tbblue_port_303b;
 	//Cuando se lee, se resetean bits 0 y 1
+	//printf ("-----Reading port 303b. result value: %d\n",value);
 	tbblue_port_303b &=(255-1-2);
 
 	return value;
