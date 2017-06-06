@@ -5674,6 +5674,9 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
                                         menu_debug_registers_ventana();
 																}
 
+																//Si tecla no es ESC, no salir
+																if (tecla!=2) acumulado=MENU_PUERTO_TECLADO_NINGUNA;
+
 
 			}
 
@@ -6667,9 +6670,12 @@ void menu_debug_disassemble(MENU_ITEM_PARAMETERS)
                                                 menu_debug_disassemble_ventana();
                                         break;
 
-                                        default:
-                                                salir=1;
-                                        break;
+																				//Salir con ESC
+																				case 2:
+																					salir=1;
+																				break;
+
+
                                 }
 
 
@@ -7288,26 +7294,36 @@ void menu_audio_espectro_sonido(MENU_ITEM_PARAMETERS)
                 menu_cpu_core_loop();
                 acumulado=menu_da_todas_teclas();
 
+								//si no hay multitarea, esperar tecla y salir
+								if (menu_multitarea==0) {
+												menu_espera_tecla();
+
+												acumulado=0;
+								}
+
 
                         //Hay tecla pulsada
                         if ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) !=MENU_PUERTO_TECLADO_NINGUNA ) {
                                 int tecla=menu_get_pressed_key();
-				//printf ("tecla: %c\n",tecla);
-				if (tecla=='s') {
-					menu_sound_wave_llena ^=1;
-					menu_espera_no_tecla();
-					acumulado=MENU_PUERTO_TECLADO_NINGUNA;
-				}
-			}
+																//printf ("tecla: %c\n",tecla);
+																if (tecla=='s') {
+																	menu_sound_wave_llena ^=1;
+																	menu_espera_no_tecla();
+																	acumulado=MENU_PUERTO_TECLADO_NINGUNA;
+																}
+
+																//Si tecla no es ESC, no salir
+																if (tecla!=2) {
+																	acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+																}
+
+												}
 
 
 
-                //si no hay multitarea, esperar tecla y salir
-                if (menu_multitarea==0) {
-                        menu_espera_tecla();
 
-                        acumulado=0;
-                }
+
+
 
         } while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) ==MENU_PUERTO_TECLADO_NINGUNA);
 
@@ -7491,6 +7507,15 @@ void menu_ay_registers(MENU_ITEM_PARAMETERS)
 
                         acumulado=0;
                 }
+
+								z80_byte tecla;
+								tecla=menu_get_pressed_key();
+
+								//Si tecla no es ESC, no salir
+								if (tecla!=2) {
+									acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+								}
+
 
         } while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) ==MENU_PUERTO_TECLADO_NINGUNA);
 
@@ -8069,6 +8094,16 @@ valor_contador_segundo_anterior=contador_segundo;
                         acumulado=0;
                 }
 
+
+								z80_byte tecla;
+								tecla=menu_get_pressed_key();
+
+								//Si tecla no es ESC, no salir
+								if (tecla!=2) {
+									acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+								}
+
+
         } while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) ==MENU_PUERTO_TECLADO_NINGUNA);
 
 
@@ -8496,6 +8531,13 @@ menu_escribe_linea_opcion(linea++,-1,1,"~~Load");
                 menu_cpu_core_loop();
                 acumulado=menu_da_todas_teclas();
 
+								//si no hay multitarea, esperar tecla y salir
+								if (menu_multitarea==0) {
+												menu_espera_tecla();
+
+												acumulado=0;
+								}
+
 
 								//Hay tecla pulsada
 								if ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) !=MENU_PUERTO_TECLADO_NINGUNA ) {
@@ -8606,15 +8648,16 @@ menu_escribe_linea_opcion(linea++,-1,1,"~~Load");
 												menu_ay_player_player_dibuja_ventana();
 											}
 
+											//Si tecla no es ESC, no salir
+											if (tecla!=2) {
+ 												acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+											}
+
+
 								}
 
 
-                //si no hay multitarea, esperar tecla y salir
-                if (menu_multitarea==0) {
-                        menu_espera_tecla();
 
-                        acumulado=0;
-                }
 
         } while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) ==MENU_PUERTO_TECLADO_NINGUNA);
 
