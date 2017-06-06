@@ -761,7 +761,7 @@ struct s_items_ayuda items_ayuda[]={
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
 
  {"tbblue-get-palette",NULL,"index","Get palette colour at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
- {"tbblue-get-pattern",NULL,"index","Get pattern at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-sprite",NULL,"index","Get sprite at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
@@ -3187,19 +3187,34 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 
                 if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
                         else {
-                        if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
-                        else {
 
-                                int index=parse_string_to_number(parametros);
-                                if (index<0 || index>=TBBLUE_MAX_PATTERNS) escribir_socket(misocket,"ERROR. Out of range");
+				remote_parse_commands_argvc(parametros);
+
+		                if (remote_command_argc<1) {
+                		        escribir_socket(misocket,"ERROR. Needs one parameter minimum");
+		                        return;
+                		}
+
+
+                                int index_int=parse_string_to_number(remote_command_argv[0]);
+
+				int totalitems=1;
+
+				if (remote_command_argc>1) totalitems=parse_string_to_number(remote_command_argv[1]);
+
+                                if (index_int<0 || index_int>=TBBLUE_MAX_PATTERNS) escribir_socket(misocket,"ERROR. Out of range");
                                 else {
-					int i;
-					for (i=0;i<256;i++) {
-                                        	z80_byte index_color=tbsprite_patterns[index][i];
-	                                        escribir_socket_format(misocket,"%02X ",index_color);
+					for (;totalitems;totalitems--) {
+						int i;
+						for (i=0;i<256;i++) {
+                	                        	z80_byte index_color=tbsprite_patterns[index_int][i];
+	                	                        escribir_socket_format(misocket,"%02X ",index_color);
+						}
+						escribir_socket(misocket,"\n");
+						index_int++;
+						if (index_int==TBBLUE_MAX_PATTERNS) index_int=0;
 					}
                                 }
-                        }
                 }
 
         }
