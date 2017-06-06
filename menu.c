@@ -6080,7 +6080,8 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 						menu_debug_hex_shows_inves_low_ram.v ^=1;
 					break;
 
-					default:
+					//Salir con ESC
+					case 2:
 						salir=1;
 					break;
 				}
@@ -6350,6 +6351,7 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 
                                 tecla=menu_get_pressed_key();
+																//printf ("tecla: %d\n",tecla);
 
                                 menu_espera_no_tecla_con_repeticion();
 
@@ -6427,9 +6429,15 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
                                         break;
 
 
-                                        default:
+                                        /*default:
                                                 salir=1;
-                                        break;
+                                        break;*/
+
+																				//Salir con ESC
+
+																				case 2:
+																						salir=1;
+																				break;
                                 }
 
 
@@ -15205,6 +15213,11 @@ void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
                         //decir que no hay tecla pulsada
                         acumulado = MENU_PUERTO_TECLADO_NINGUNA;
                 }
+
+								//Si tecla no es ESC, no salir
+								if (tecla!=2) {
+									acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+								}
 
 
         } while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) ==MENU_PUERTO_TECLADO_NINGUNA);
