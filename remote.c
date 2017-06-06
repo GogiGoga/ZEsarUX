@@ -41,6 +41,7 @@
 #include "ula.h"
 #include "superupgrade.h"
 #include "tbblue.h"
+#include "textspeech.h"
 
 
 int remote_protocol_port=DEFAULT_REMOTE_PROTOCOL_PORT;
@@ -762,7 +763,7 @@ struct s_items_ayuda items_ayuda[]={
 
  {"tbblue-get-palette",NULL,"index","Get palette colour at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
- {"tbblue-get-sprite",NULL,"index","Get sprite at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be separed by one space"},
@@ -3186,35 +3187,34 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
         else if (!strcmp(comando_sin_parametros,"tbblue-get-pattern") ) {
 
                 if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
-                        else {
+                else {
 
-				remote_parse_commands_argvc(parametros);
+										remote_parse_commands_argvc(parametros);
 
 		                if (remote_command_argc<1) {
                 		        escribir_socket(misocket,"ERROR. Needs one parameter minimum");
 		                        return;
                 		}
 
+                    int index_int=parse_string_to_number(remote_command_argv[0]);
 
-                                int index_int=parse_string_to_number(remote_command_argv[0]);
+										int totalitems=1;
 
-				int totalitems=1;
+										if (remote_command_argc>1) totalitems=parse_string_to_number(remote_command_argv[1]);
 
-				if (remote_command_argc>1) totalitems=parse_string_to_number(remote_command_argv[1]);
-
-                                if (index_int<0 || index_int>=TBBLUE_MAX_PATTERNS) escribir_socket(misocket,"ERROR. Out of range");
-                                else {
-					for (;totalitems;totalitems--) {
-						int i;
-						for (i=0;i<256;i++) {
-                	                        	z80_byte index_color=tbsprite_patterns[index_int][i];
-	                	                        escribir_socket_format(misocket,"%02X ",index_color);
-						}
-						escribir_socket(misocket,"\n");
-						index_int++;
-						if (index_int==TBBLUE_MAX_PATTERNS) index_int=0;
-					}
-                                }
+                    if (index_int<0 || index_int>=TBBLUE_MAX_PATTERNS) escribir_socket(misocket,"ERROR. Out of range");
+                    else {
+											for (;totalitems;totalitems--) {
+												int i;
+												for (i=0;i<256;i++) {
+                	         	z80_byte index_color=tbsprite_patterns[index_int][i];
+	                	        escribir_socket_format(misocket,"%02X ",index_color);
+												}
+												escribir_socket(misocket,"\n");
+												index_int++;
+												if (index_int==TBBLUE_MAX_PATTERNS) index_int=0;
+											}
+                    }
                 }
 
         }
@@ -3222,24 +3222,39 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 
         else if (!strcmp(comando_sin_parametros,"tbblue-get-sprite") ) {
 
-                if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
-                        else {
-                        if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
-                        else {
+					if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
+					else {
 
-                                int index=parse_string_to_number(parametros);
-                                if (index<0 || index>=TBBLUE_MAX_SPRITES) escribir_socket(misocket,"ERROR. Out of range");
-                                else {
-                                        int i;
-                                        for (i=0;i<4;i++) {
-                                                z80_byte index_color=tbsprite_sprites[index][i];
-                                                escribir_socket_format(misocket,"%02X ",index_color);
-                                        }
-                                }
-                        }
-                }
+							remote_parse_commands_argvc(parametros);
 
-        }
+							if (remote_command_argc<1) {
+											escribir_socket(misocket,"ERROR. Needs one parameter minimum");
+											return;
+							}
+
+							int index_int=parse_string_to_number(remote_command_argv[0]);
+
+							int totalitems=1;
+
+							if (remote_command_argc>1) totalitems=parse_string_to_number(remote_command_argv[1]);
+
+							if (index_int<0 || index_int>=TBBLUE_MAX_SPRITES) escribir_socket(misocket,"ERROR. Out of range");
+							else {
+								for (;totalitems;totalitems--) {
+									int i;
+									for (i=0;i<4;i++) {
+											z80_byte value_sprite=tbsprite_sprites[index_int][i];
+											escribir_socket_format(misocket,"%02X ",value_sprite);
+									}
+									escribir_socket(misocket,"\n");
+									index_int++;
+									if (index_int==TBBLUE_MAX_SPRITES) index_int=0;
+								}
+							}
+					}
+
+				}
+
 
 
 

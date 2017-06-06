@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -75,5 +75,7 @@ extern void textspeech_filter_program_check_spaces(void);
 extern void textspeech_stop_filter_program_check_spaces(void);
 
 extern char *textspeech_stop_filter_program;
+
+extern void ocr_get_text(char *s);
 
 #endif
