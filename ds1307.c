@@ -75,12 +75,15 @@ z80_byte ds1307_get_port_data(void)
 	z80_byte return_value;
 
 	if (ds1307_registers[ds_1307_received_register_number&0x3f] & ds13072_bitnumber_read) return_value=1;
-	return_value=0;
+	else return_value=0;
 
 	ds13072_bitnumber_read=ds13072_bitnumber_read>>1;
-	if (ds13072_bitnumber_read==0) ds13072_bitnumber_read=128;
+	if (ds13072_bitnumber_read==0) {
+		ds13072_bitnumber_read=128;
+		ds_1307_received_register_number++;
+	}
 
-	printf ("---Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
+	printf ("-----Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
 	return return_value;
 }
 
@@ -151,7 +154,11 @@ void ds1307_write_port_data(z80_byte value)
 						printf ("---Filling registers array\n");
 
 						//temp. ds1307_registers
+						ds1307_registers[0]=0x33; //33 segundos
 						ds1307_registers[1]=0x56; //56 minutos
+						ds1307_registers[2]=0x13; //13 horas
+
+						
 					//}
                         	}
 
@@ -179,7 +186,7 @@ void ds1307_write_port_clock(z80_byte value)
 
 	else {
 		if (ds1307_start_sequence_index==3) {
-			ds1307_start_sequence_index=4;
+			ds1307_start_sequence_index=0;
 			printf ("Recibida secuencia inicializacion");
 			ds1307_initialized.v=1;
 			ds1307_received_data_bits=0;
