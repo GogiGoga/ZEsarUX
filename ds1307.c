@@ -22,7 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
-
+#include <time.h>
+#include <sys/time.h>
 
 #include "ds1307.h"
 #include "cpu.h"
@@ -30,6 +31,8 @@
 #include "utils.h"
 #include "operaciones.h"
 #include "menu.h"
+
+
 
 z80_bit ds1307_last_clock_bit={0};
 z80_bit ds1307_last_data_bit={0};
@@ -57,14 +60,61 @@ z80_byte ds1307_last_register_received; //Normalmente entre 0 y 63
 
 z80_byte ds1307_last_command_read_mask=128;
 
+z80_byte ds1307_decimal_to_bcd(z80_byte valor_decimal)
+{
+	z80_byte nibble_bajo=(valor_decimal%10)&15;
+	z80_byte nibble_alto=(valor_decimal/10)&15;
+
+	z80_byte resultado=( (nibble_alto<<4) | nibble_bajo );
+
+	printf ("decimal a bcd. decimal: %d bcd: %02XH nibble_bajo %d nibble_alto %d\n",valor_decimal,resultado,nibble_bajo,nibble_alto);
+
+	return resultado;
+}
+
 z80_byte ds1307_get_register(z80_byte index)
 {
 	index=index&63;
 
 	if (index<8) {
+
+/*
+obtener fecha
+*/
+
+//fecha grabacion
+time_t tiempo = time(NULL);
+struct tm tm = *localtime(&tiempo);
+
+//printf("now: %d-%d-%d %d:%d:%d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+/*header[75]=tm.tm_mday;
+header[76]=tm.tm_mon+1;
+
+z80_int year;
+year=tm.tm_year + 1900;
+
+header[77]=value_16_to_8l(year);
+header[78]=value_16_to_8h(year);
+
+header[79]=tm.tm_hour;
+header[80]=tm.tm_min;*/
+
+ds1307_registers[0]=ds1307_decimal_to_bcd(tm.tm_sec); // segundos
+ds1307_registers[1]=ds1307_decimal_to_bcd(tm.tm_min); //56 minutos
+ds1307_registers[2]=ds1307_decimal_to_bcd(tm.tm_hour); //09 horas
+
+//dia semana, dia, mes, anyo
+//Prueba 18/09/2017
+ds1307_registers[3]=0x01; //temp dia de la semana 1
+ds1307_registers[4]=ds1307_decimal_to_bcd(tm.tm_mday); //dia
+ds1307_registers[5]=ds1307_decimal_to_bcd(tm.tm_mon+1); //mes
+ds1307_registers[6]=ds1307_decimal_to_bcd(tm.tm_year+1900-2000); //año
+
+
 							//temp. ds1307_registers.
 							//Prueba 09:56:33
-							ds1307_registers[0]=0x33; //33 segundos
+							/*ds1307_registers[0]=0x33; //33 segundos
 							ds1307_registers[1]=0x56; //56 minutos
 							ds1307_registers[2]=0x09; //09 horas
 
@@ -73,7 +123,7 @@ z80_byte ds1307_get_register(z80_byte index)
 							ds1307_registers[3]=0x03;
 							ds1307_registers[4]=0x18;
 							ds1307_registers[5]=0x09;
-							ds1307_registers[6]=0x17;
+							ds1307_registers[6]=0x17;*/
 
 	}
 
@@ -204,3 +254,104 @@ void ds1307_write_port_clock(z80_byte value)
 	ds1307_last_clock_bit.v=value&1;
 
 }
+
+
+/*
+
+Ejemplo con time.asm . Secuencia bytes:
+
+TIME
+
+READ_TIME:
+	;---------------------------------------------------
+	; Talk to DS1307 and request the first reg
+	call START_SEQUENCE
+
+
+START_SEQUENCE:
+
+C=1
+D=1
+D=0
+C=0
+
+
+	ld l,0xD0
+	call SEND_DATA
+
+Enviar 8 bits de D0, a cada bit, C=1, C=0
+ACK: Enviar D=1. C=1, C=0
+28 Write ds1307 data port value:  1 bit 0: 1
+29 Write ds1307 clock port value: 1 bit 0: 1
+30 Write ds1307 clock port value: 0 bit 0: 0
+
+
+
+
+
+	ld l,0x00
+	call SEND_DATA
+
+
+Enviar 8 bits de 00, a cada bit, C=1, C=0
+ACK: Enviar D=1. C=1, C=0
+55 Write ds1307 data port value:  1 bit 0: 1
+56 Write ds1307 clock port value: 1 bit 0: 1
+57 Write ds1307 clock port value: 0 bit 0: 0
+
+
+
+	call START_SEQUENCE
+
+C=1
+D=1
+D=0
+C=0
+
+
+
+	ld l,0xD1
+	call SEND_DATA
+
+Enviar 8 bits de D1, a cada bit, C=1, C=0
+ACK: Enviar D=1. C=1, C=0
+
+86 Write ds1307 data port value:  1 bit 0: 1
+87 Write ds1307 clock port value: 1 bit 0: 1
+88 Write ds1307 clock port value: 0 bit 0: 0
+
+
+Lectura 7 registros del RTC.
+Para cada uno:
+
+READ:
+D=1 (free the data line). Al principio
+bucle: C=1
+Leer bit
+C=0
+ir a bucle:
+
+Enviar ACK, siempre que no sea ultimo byte. D=0, C=1, C=0, D=1
+114 Write ds1307 data port value:  0 bit 0: 0
+115 Write ds1307 clock port value: 1 bit 0: 1
+116 Write ds1307 clock port value: 0 bit 0: 0
+117 Write ds1307 data port value:  1 bit 0: 1   (Este es para el primer byte, segundo etc excepto para el ultimo)
+Enviar NACK  para el ultimo byte
+D=1, C=1, C=0, D=1
+
+Y asi hasta los 7 registros
+
+
+		;STOP_SEQUENCE:
+
+D=0
+C=1
+D=1
+
+	CALL SDA0
+	CALL SCL1
+	CALL SDA1
+
+
+
+*/
