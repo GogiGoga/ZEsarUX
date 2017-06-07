@@ -62,12 +62,14 @@ z80_byte ds1307_get_register(z80_byte index)
 	index=index&63;
 
 	if (index<8) {
-							//temp. ds1307_registers
+							//temp. ds1307_registers.
+							//Prueba 09:56:33
 							ds1307_registers[0]=0x33; //33 segundos
 							ds1307_registers[1]=0x56; //56 minutos
 							ds1307_registers[2]=0x09; //09 horas
 
 							//dia semana, dia, mes, anyo
+							//Prueba 18/09/2017
 							ds1307_registers[3]=0x03;
 							ds1307_registers[4]=0x18;
 							ds1307_registers[5]=0x09;
