@@ -49,13 +49,39 @@ z80_bit ds1307_initialized={0};
 z80_byte ds1307_received_data_bits=0;
 
 
+//Estado de recepcion de comandos.
+//0 no recibido comando
+//1 recibido comando (D0H o D1H)
+//2 recibido numero registro (0..3f)
+int ds_1307_received_command_state=0;
+
+z80_byte ds_1307_received_command=0; //Ultimo comando recibido, probablemente D0 o D1
+z80_byte ds_1307_received_register_number=0; //Ultimo registro recibido, probablemente entre 0 y 3f
+
+//numero de bit enviando a una operacion de lectura
+z80_byte ds13072_bitnumber_read=128;
+
+
+z80_byte ds1307_registers[64];
+
+
 z80_byte ds1307_get_port_clock(void)
 {
 	return 0;
 }
+
 z80_byte ds1307_get_port_data(void)
 {
-	return 0;
+	z80_byte return_value;
+
+	if (ds1307_registers[ds_1307_received_register_number]&ds13072_bitnumber_read) return_value=1;
+	return_value=0;
+
+	ds13072_bitnumber_read=ds13072_bitnumber_read>>1;
+	if (ds13072_bitnumber_read==0) ds13072_bitnumber_read=128;
+
+	printf ("Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
+	return return_value;
 }
 
 void ds1307_write_port_data(z80_byte value)
@@ -84,7 +110,44 @@ void ds1307_write_port_data(z80_byte value)
 
 		ds1307_received_data_bits++;
 
-		if (ds1307_received_data_bits==8) printf ("Received byte: %02XH\n",ds1307_last_data_byte);
+		if (ds1307_received_data_bits==8) {
+			printf ("---Received byte: %02XH\n",ds1307_last_data_byte);
+
+			if (ds_1307_received_command_state==0) {
+				ds_1307_received_command_state=1;
+				printf ("---Received command: %02XH\n",ds1307_last_data_byte);
+				ds_1307_received_command=ds1307_last_data_byte;
+
+				if (ds1307_last_data_byte==0xD0) {
+					printf ("Command D0. Read data\n");
+				}
+
+	                        if (ds1307_last_data_byte==0xD1) {
+        	                        printf ("Command D1. Write data\n");
+                	        }
+			}
+
+			else if (ds_1307_received_command_state==0) {
+				ds_1307_received_command_state=0;
+				printf ("---Received register number: %02XH\n",ds1307_last_data_byte);
+				ds_1307_received_register_number=ds1307_last_data_byte;
+
+				if (ds_1307_received_command==0xD0) {
+					//Llenar array registros
+
+					//temp. ds1307_registers
+					ds1307_registers[1]=0x56; //56 minutos
+				}
+                        }
+
+		}
+
+//
+//int ds_1307_received_command_state=0;
+//z80_byte ds_1307_received_command=0; //Ultimo comando recibido, probablemente D0 o D1
+//z80_byte ds_1307_received_register_number=0; //Ultimo registro recibido, probablemente entre 0 y 3f
+
+			
 	}
 
 }
