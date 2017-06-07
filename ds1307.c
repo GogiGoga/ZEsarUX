@@ -74,13 +74,13 @@ z80_byte ds1307_get_port_data(void)
 {
 	z80_byte return_value;
 
-	if (ds1307_registers[ds_1307_received_register_number]&ds13072_bitnumber_read) return_value=1;
+	if (ds1307_registers[ds_1307_received_register_number&0x3f] & ds13072_bitnumber_read) return_value=1;
 	return_value=0;
 
 	ds13072_bitnumber_read=ds13072_bitnumber_read>>1;
 	if (ds13072_bitnumber_read==0) ds13072_bitnumber_read=128;
 
-	printf ("Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
+	printf ("---Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
 	return return_value;
 }
 
@@ -104,42 +104,58 @@ void ds1307_write_port_data(z80_byte value)
 
 	//Si esta inicializado, guardar valores
 	if (ds1307_initialized.v) {
-		ds1307_last_data_byte = ds1307_last_data_byte << 1;
-		ds1307_last_data_byte &=(255-1);
-		ds1307_last_data_byte |= (value&1);
-
-		ds1307_received_data_bits++;
-
 		if (ds1307_received_data_bits==8) {
-			printf ("---Received byte: %02XH\n",ds1307_last_data_byte);
+			//Al final de cada 8 bits se envia un bit a 1
+			//Ignorar ese bit
+			ds1307_received_data_bits=0;
+			printf ("---Received final ignored bit\n");
+		}
 
-			if (ds_1307_received_command_state==0) {
-				ds_1307_received_command_state=1;
-				printf ("---Received command: %02XH\n",ds1307_last_data_byte);
-				ds_1307_received_command=ds1307_last_data_byte;
+		else {
 
-				if (ds1307_last_data_byte==0xD0) {
-					printf ("Command D0. Read data\n");
+
+			ds1307_last_data_byte = ds1307_last_data_byte << 1;
+			ds1307_last_data_byte &=(255-1);
+			ds1307_last_data_byte |= (value&1);
+
+			ds1307_received_data_bits++;
+
+		
+
+			if (ds1307_received_data_bits==8) {
+				printf ("---Received byte: %02XH\n",ds1307_last_data_byte);
+
+
+				if (ds_1307_received_command_state==0) {
+					ds_1307_received_command_state=1;
+					printf ("---Received command: %02XH\n",ds1307_last_data_byte);
+					ds_1307_received_command=ds1307_last_data_byte;
+
+					if (ds1307_last_data_byte==0xD0) {
+						printf ("Command D0. Read data\n");
+					}
+
+	                	        if (ds1307_last_data_byte==0xD1) {
+        	                	        printf ("Command D1. Write data\n");
+	                	        }
 				}
 
-	                        if (ds1307_last_data_byte==0xD1) {
-        	                        printf ("Command D1. Write data\n");
-                	        }
+				else if (ds_1307_received_command_state==1) {
+					ds_1307_received_command_state=0;
+					printf ("---Received register number: %02XH\n",ds1307_last_data_byte);
+					ds_1307_received_register_number=ds1307_last_data_byte;
+
+					//if (ds_1307_received_command==0xD0) {
+						//Llenar array registros
+						//printf ("---Received command D0 and register number\n");
+						printf ("---Filling registers array\n");
+
+						//temp. ds1307_registers
+						ds1307_registers[1]=0x56; //56 minutos
+					//}
+                        	}
+
 			}
-
-			else if (ds_1307_received_command_state==0) {
-				ds_1307_received_command_state=0;
-				printf ("---Received register number: %02XH\n",ds1307_last_data_byte);
-				ds_1307_received_register_number=ds1307_last_data_byte;
-
-				if (ds_1307_received_command==0xD0) {
-					//Llenar array registros
-
-					//temp. ds1307_registers
-					ds1307_registers[1]=0x56; //56 minutos
-				}
-                        }
-
 		}
 
 //
