@@ -73,6 +73,15 @@ A change in the state of the data line, from LOW to HIGH, while the clock line i
 defines the STOP condition.
 */
 
+//Master: speccy
+//Slave: este chip
+
+//Pendiente recibir ack desde speccy
+z80_bit ds13072_pending_ack_master_to_slave={0};
+
+//Pendiente enviar ack hacia speccy
+z80_bit ds13072_pending_ack_slave_to_master={0};
+
 
 z80_byte ds1307_get_port_clock(void)
 {
@@ -83,6 +92,17 @@ z80_byte ds1307_get_port_data(void)
 {
 	z80_byte return_value;
 
+	if (ds13072_pending_ack_slave_to_master.v) {
+		printf ("Sending ACK\n");
+		ds13072_pending_ack_slave_to_master.v=0;
+		return 1;
+	}
+
+
+	if (ds13072_bitnumber_read==128) printf ("Sending first data bit of register %d value %d\n",ds_1307_received_register_number&0x3f,
+		ds1307_registers[ds_1307_received_register_number&0x3f]);
+
+
 	if (ds1307_registers[ds_1307_received_register_number&0x3f] & ds13072_bitnumber_read) return_value=1;
 	else return_value=0;
 
@@ -90,6 +110,7 @@ z80_byte ds1307_get_port_data(void)
 	if (ds13072_bitnumber_read==0) {
 		ds13072_bitnumber_read=128;
 		ds_1307_received_register_number++;
+		ds13072_pending_ack_master_to_slave.v=1;
 	}
 
 	printf ("-----Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
@@ -130,6 +151,12 @@ defines the STOP condition.
 		return;
 	}
 
+	if (ds13072_pending_ack_master_to_slave.v) {
+		printf ("Received ACK\n");
+		ds13072_pending_ack_master_to_slave.v=0;
+		return;
+	}
+
 	ds1307_last_data_bit.v=value&1;
 
 
@@ -137,11 +164,11 @@ defines the STOP condition.
 
 	//Si esta inicializado, guardar valores
 	if (ds1307_initialized.v) {
-		if (ds1307_received_data_bits==8) {
+		if (1==0) {
 			//Al final de cada 8 bits se envia un bit a 1
 			//Ignorar ese bit
-			ds1307_received_data_bits=0;
-			printf ("---Received final ignored bit\n");
+			//ds1307_received_data_bits=0;
+			//printf ("---Received final ignored bit\n");
 		}
 
 		else {
@@ -157,6 +184,7 @@ defines the STOP condition.
 
 			if (ds1307_received_data_bits==8) {
 				printf ("---Received byte: %02XH\n",ds1307_last_data_byte);
+				ds13072_pending_ack_slave_to_master.v=1;
 
 
 				if (ds_1307_received_command_state==0) {
@@ -174,7 +202,7 @@ defines the STOP condition.
 				}
 
 				else if (ds_1307_received_command_state==1) {
-					ds_1307_received_command_state=0;
+					ds_1307_received_command_state=2;
 					printf ("---Received register number: %02XH\n",ds1307_last_data_byte);
 					ds_1307_received_register_number=ds1307_last_data_byte;
 
