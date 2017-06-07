@@ -69,7 +69,7 @@ z80_byte ds1307_get_register(z80_byte index)
 
 							//dia semana, dia, mes, anyo
 							ds1307_registers[3]=0x03;
-							ds1307_registers[4]=0x06;
+							ds1307_registers[4]=0x18;
 							ds1307_registers[5]=0x09;
 							ds1307_registers[6]=0x17;
 
@@ -167,7 +167,7 @@ void ds1307_write_port_data(z80_byte value)
 		}
 
 		//Recibiendo registro
-		if (ds1307_sending_data_status==1) {
+		else if (ds1307_sending_data_status==1) {
 			printf ("Receiving data register\n");
 			ds1307_sending_data_num_bits++;
 			if (ds1307_sending_data_num_bits<=8) {
