@@ -43,10 +43,12 @@ z80_byte ds1307_get_port_data(void)
 
 void ds1307_write_port_data(z80_byte value)
 {
+	printf ("Write ds1307 data port value: %d bit 0: %d\n",value,value&1);
 }
 
 void ds1307_write_port_clock(z80_byte value)
 {
+	printf ("Write ds1307 clock port value: %d\n",value);
 }
 
 
