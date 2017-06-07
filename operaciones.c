@@ -64,6 +64,7 @@
 #include "multiface.h"
 #include "ql.h"
 #include "chrome.h"
+#include "ds1307.h"
 
 
 void (*poke_byte)(z80_int dir,z80_byte valor);
@@ -5202,6 +5203,8 @@ z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 		//if (puerto==0x24DF) return tbblue_port_24df;
 		if (puerto==TBBLUE_VALUE_PORT) return tbblue_get_value_port();
 		if (puerto==TBBLUE_SPRITE_INDEX_PORT)	return tbblue_get_port_sprite_index();
+		if (puerto==DS1307_PORT_CLOCK) return ds1307_get_port_clock();
+		if (puerto==DS1307_PORT_DATA) return ds1307_get_port_data();
 	}
 
 
@@ -6275,6 +6278,9 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 		if (puerto==TBBLUE_SPRITE_PALETTE_PORT)	tbblue_out_sprite_palette(value);
 		if (puerto==TBBLUE_SPRITE_PATTERN_PORT) tbblue_out_sprite_pattern(value);
 		if (puerto==TBBLUE_SPRITE_SPRITE_PORT) tbblue_out_sprite_sprite(value);
+
+                if (puerto==DS1307_PORT_CLOCK) ds1307_write_port_clock(value);
+                if (puerto==DS1307_PORT_DATA) ds1307_write_port_data(value);
 
 
 
