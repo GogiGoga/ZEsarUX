@@ -184,8 +184,9 @@ defines the STOP condition.
 
 			if (ds1307_received_data_bits==8) {
 				printf ("---Received byte: %02XH\n",ds1307_last_data_byte);
-				ds13072_pending_ack_slave_to_master.v=1;
+				ds1307_received_data_bits=0;
 
+				ds13072_pending_ack_slave_to_master.v=1;
 
 				if (ds_1307_received_command_state==0) {
 					ds_1307_received_command_state=1;
