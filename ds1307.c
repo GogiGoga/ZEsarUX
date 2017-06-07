@@ -69,7 +69,7 @@ z80_byte ds1307_get_register(z80_byte index)
 
 							//dia semana, dia, mes, anyo
 							ds1307_registers[3]=0x03;
-							ds1307_registers[4]=0x18;
+							ds1307_registers[4]=0x06;
 							ds1307_registers[5]=0x09;
 							ds1307_registers[6]=0x17;
 
@@ -89,9 +89,13 @@ z80_byte ds1307_get_port_clock(void)
 z80_byte ds1307_get_port_data(void)
 {
 
-
-
 		z80_byte value=ds1307_get_register(ds1307_last_register_received) & ds1307_last_command_read_mask;
+		if (value) value=1;
+		else value=0;
+
+		if (ds1307_last_command_read_mask==128) printf ("Returning first bit of register %d value %02XH",
+			ds1307_last_register_received&63,ds1307_registers[ds1307_last_register_received&63]);
+
 		ds1307_last_command_read_mask=ds1307_last_command_read_mask>>1;
 
 		//Siguiente byte
@@ -143,16 +147,21 @@ void ds1307_write_port_data(z80_byte value)
 			ds1307_sending_data_num_bits++;
 			if (ds1307_sending_data_num_bits<=8) {
 				ds1307_last_command_received=ds1307_last_command_received<<1;
+				ds1307_last_command_received &=(255-1);
 				ds1307_last_command_received|=value&1;
 			}
 
 			//Es ack. ignorar y cambiar estado
 			if (ds1307_sending_data_num_bits==9) {
+				printf ("Received ACK\n");
+				printf ("Command received: %02XH\n",ds1307_last_command_received);
 				ds1307_sending_data_status++;
 
 				//Si el comando es D0, envia datos. Si es D1, solo recibe y por tanto ignoramos escrituras en D
 				if (ds1307_last_command_received==0xD0) ds1307_sending_data_from_speccy=1;
 				else ds1307_sending_data_from_speccy=0;
+
+				ds1307_sending_data_num_bits=0;
 			}
 
 		}
@@ -163,16 +172,23 @@ void ds1307_write_port_data(z80_byte value)
 			ds1307_sending_data_num_bits++;
 			if (ds1307_sending_data_num_bits<=8) {
 				ds1307_last_register_received=ds1307_last_register_received<<1;
+				ds1307_last_register_received &=(255-1);
 				ds1307_last_register_received|=value&1;
 			}
 
 			//Es ack. ignorar y cambiar estado
 			if (ds1307_sending_data_num_bits==9) {
+				printf ("Received ACK\n");
+				printf ("Register received: %02XH\n",ds1307_last_register_received);
 				ds1307_sending_data_status++;
-
+				ds1307_sending_data_num_bits=0;
 			}
 
 		}
+	}
+
+	else {
+		printf ("Ignoring write on data\n");
 	}
 
 
