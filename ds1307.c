@@ -187,7 +187,7 @@ void ds1307_write_port_clock(z80_byte value)
 	else {
 		if (ds1307_start_sequence_index==3) {
 			ds1307_start_sequence_index=0;
-			printf ("Recibida secuencia inicializacion");
+			printf ("#########Recibida secuencia inicializacion\n");
 			ds1307_initialized.v=1;
 			ds1307_received_data_bits=0;
 		}
