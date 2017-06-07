@@ -82,6 +82,9 @@ int ds13072_pending_ack_master_to_slave=0;
 //Pendiente enviar ack hacia speccy
 z80_bit ds13072_pending_ack_slave_to_master={0};
 
+//temp
+int enviando_registros=0;
+
 /*
 Ack y NACK
 SEND_ACK:	
@@ -158,12 +161,14 @@ defines the STOP condition.
                         ds1307_initialized.v=1;
                         ds1307_received_data_bits=0;	
 			ds_1307_received_command_state=0;
+			enviando_registros=0;
 		}
 
 		if (ds1307_last_data_bit.v==0 && (value&1)==1) {
 			printf ("#########Recibida secuencia stop\n");
 			//ds1307_initialized.v=0;
 			//ds1307_received_data_bits=0;
+			enviando_registros=0;
                 }
 
 		ds1307_last_data_bit.v=value&1;
@@ -174,7 +179,7 @@ defines the STOP condition.
 		if (ds13072_pending_ack_master_to_slave==1) printf ("Received ACK 1\n");
 		if (ds13072_pending_ack_master_to_slave==2) printf ("Received ACK 2\n");
 		ds13072_pending_ack_master_to_slave++;
-		if (ds13072_pending_ack_master_to_slave==2) ds13072_pending_ack_master_to_slave=0;
+		if (ds13072_pending_ack_master_to_slave==3) ds13072_pending_ack_master_to_slave=0;
 		return;
 	}
 
@@ -193,6 +198,8 @@ defines the STOP condition.
 		}
 
 		else {
+
+			if (enviando_registros) return;
 
 
 			ds1307_last_data_byte = ds1307_last_data_byte << 1;
@@ -222,13 +229,15 @@ acknowledge bit
 					ds_1307_received_command_state=1;
 					printf ("---Received command: %02XH\n",ds1307_last_data_byte);
 					ds_1307_received_command=ds1307_last_data_byte;
+					ds13072_pending_ack_master_to_slave=2; //Solo 1 bit de ack
 
 					if (ds1307_last_data_byte==0xD0) {
-						printf ("Command D0. Read data\n");
+						printf ("Command D0. Write data\n");
 					}
 
 	                	        if (ds1307_last_data_byte==0xD1) {
-        	                	        printf ("Command D1. Write data\n");
+        	                	        printf ("Command D1. Read data\n");
+						enviando_registros=1;
 	                	        }
 				}
 
@@ -236,6 +245,7 @@ acknowledge bit
 					ds_1307_received_command_state=2;
 					printf ("---Received register number: %02XH\n",ds1307_last_data_byte);
 					ds_1307_received_register_number=ds1307_last_data_byte;
+					ds13072_pending_ack_master_to_slave=2; //Solo 1 bit de ack
 
 					//if (ds_1307_received_command==0xD0) {
 						//Llenar array registros
