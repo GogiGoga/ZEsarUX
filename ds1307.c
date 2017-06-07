@@ -77,10 +77,29 @@ defines the STOP condition.
 //Slave: este chip
 
 //Pendiente recibir ack desde speccy
-z80_bit ds13072_pending_ack_master_to_slave={0};
+int ds13072_pending_ack_master_to_slave=0;
 
 //Pendiente enviar ack hacia speccy
 z80_bit ds13072_pending_ack_slave_to_master={0};
+
+/*
+Ack y NACK
+SEND_ACK:	
+	xor a  ;a=0	
+	
+SEND_ACK_NACK:
+	
+	CALL SDA
+	
+	call PULSE_CLOCK
+	
+;	free the data line
+	CALL SDA1
+
+	ret
+
+
+*/
 
 
 z80_byte ds1307_get_port_clock(void)
@@ -110,7 +129,7 @@ z80_byte ds1307_get_port_data(void)
 	if (ds13072_bitnumber_read==0) {
 		ds13072_bitnumber_read=128;
 		ds_1307_received_register_number++;
-		ds13072_pending_ack_master_to_slave.v=1;
+		ds13072_pending_ack_master_to_slave=1;
 	}
 
 	printf ("-----Returning value %d register %d final_mask %d\n",return_value,ds_1307_received_register_number,ds13072_bitnumber_read);
@@ -151,9 +170,11 @@ defines the STOP condition.
 		return;
 	}
 
-	if (ds13072_pending_ack_master_to_slave.v) {
-		printf ("Received ACK\n");
-		ds13072_pending_ack_master_to_slave.v=0;
+	if (ds13072_pending_ack_master_to_slave) {
+		if (ds13072_pending_ack_master_to_slave==1) printf ("Received ACK 1\n");
+		if (ds13072_pending_ack_master_to_slave==2) printf ("Received ACK 2\n");
+		ds13072_pending_ack_master_to_slave++;
+		if (ds13072_pending_ack_master_to_slave==2) ds13072_pending_ack_master_to_slave=0;
 		return;
 	}
 
@@ -187,6 +208,15 @@ defines the STOP condition.
 				ds1307_received_data_bits=0;
 
 				ds13072_pending_ack_slave_to_master.v=1;
+
+				//Parece que se envia un bit a 1 al final de cada secuencia de 8 bits
+				ds13072_pending_ack_master_to_slave=1; 
+/*
+Acknowledge: 
+Each  receiving  device,  when  addressed,  is  obliged  to  generate  an  acknowledge  after  the  
+reception  of  each  byte.  The  master  device  must  generate  an  extra  clock  pulse  which  is  associated  with  this  
+acknowledge bit
+*/
 
 				if (ds_1307_received_command_state==0) {
 					ds_1307_received_command_state=1;
