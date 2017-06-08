@@ -2477,6 +2477,29 @@ void scrcocoa_refresca_pantalla_solo_driver(void)
 
 }
 
+void temp_refresca_pentevo_text(void)
+{
+
+	extern z80_byte (*peek_byte_no_time)(z80_int dir);
+	//temp pentevo
+	//if c000h-de00h
+	z80_int puntero;
+	int ancho_linea=128;
+	int x=0;
+	for (puntero=0xc000;puntero<0xde00;puntero++) {
+		z80_byte caracter=peek_byte_no_time(puntero);
+		if (caracter<32 || caracter>127) caracter='.';
+		printf ("%c",caracter);
+		x++;
+		if (x==ancho_linea) {
+			printf ("\n");
+			x=0;
+			puntero+=ancho_linea; //saltar atributos
+		}
+	}
+	//fin temp pentevo
+}
+
 void scrcocoa_refresca_pantalla(void)
 {
 
@@ -2517,6 +2540,7 @@ void scrcocoa_refresca_pantalla(void)
 
         else if (MACHINE_IS_SPECTRUM) {
 
+					//temp_refresca_pentevo_text();
 
                 //modo clasico. sin rainbow
                 if (rainbow_enabled.v==0) {
