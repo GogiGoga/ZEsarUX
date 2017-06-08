@@ -72,6 +72,15 @@ extern void tbblue_set_timing_48k(void);
 #define TBBLUE_SPRITE_SPRITE_PORT 0x57
 
 
+
+
+#define MAX_SPRITES_PER_LINE 12
+
+#define TBBLUE_SPRITE_BORDER 32
+
+#define MAX_X_SPRITE_LINE (TBBLUE_SPRITE_BORDER+256+TBBLUE_SPRITE_BORDER)
+
+
 extern z80_byte tbblue_registers[];
 
 extern z80_byte tbblue_last_register;

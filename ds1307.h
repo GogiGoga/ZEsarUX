@@ -27,5 +27,10 @@
 #define DS1307_PORT_CLOCK 0x103b
 #define DS1307_PORT_DATA  0x113b
 
+extern z80_byte ds1307_get_port_clock(void);
+extern z80_byte ds1307_get_port_data(void);
+extern void ds1307_write_port_data(z80_byte value);
+extern void ds1307_write_port_clock(z80_byte value);
+
 
 #endif

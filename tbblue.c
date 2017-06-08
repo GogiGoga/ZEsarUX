@@ -173,12 +173,10 @@ void tbblue_out_sprite_sprite(z80_byte value)
 }
 
 
-#define MAX_X_SPRITE_LINE 320
+
 z80_byte sprite_line[MAX_X_SPRITE_LINE];
 
-#define MAX_SPRITES_PER_LINE 12
 
-#define TBBLUE_SPRITE_BORDER 32
 
 
 /*
@@ -192,14 +190,18 @@ Register:
  bit 1 = Over border (1 = yes)
  bit 0 = Sprites visible (1 = visible)
 */
-void tbsprite_put_color_line(int x,z80_byte color)
+void tbsprite_put_color_line(int x,z80_byte color,int rangoxmin,int rangoxmax)
 {
 
 	//Si coordenadas invalidas, volver
-	if (x<0 || x>=MAX_X_SPRITE_LINE) return;
+	//if (x<0 || x>=MAX_X_SPRITE_LINE) return;
+
+	//Si coordenadas fuera de la parte visible (border si o no), volver
+	if (x<rangoxmin || x>rangoxmax) return;
 
 	//Si color transparente, no hacer nada
 	if (color==TBBLUE_TRANSPARENT_COLOR) return;
+
 
 	//Ver si habia un color y activar bit colision
 	z80_byte color_antes=sprite_line[x];
@@ -279,6 +281,19 @@ void tbsprite_do_overlay(void)
 				for (i=0;i<MAX_X_SPRITE_LINE;i++) {
 					sprite_line[i]=TBBLUE_TRANSPARENT_COLOR;
 				}
+
+				int rangoxmin, rangoxmax;
+
+				if (sprites_over_border) {
+					rangoxmin=0;
+					rangoxmax=TBBLUE_SPRITE_BORDER+256+TBBLUE_SPRITE_BORDER-1;
+				}
+
+				else {
+					rangoxmin=TBBLUE_SPRITE_BORDER;
+					rangoxmax=TBBLUE_SPRITE_BORDER+255;
+				}
+
 
 				int total_sprites=0;
 
@@ -474,7 +489,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 									sx++;
 								}*/
 
-								tbsprite_put_color_line(sprite_x++,color);
+								tbsprite_put_color_line(sprite_x++,color,rangoxmin,rangoxmax);
 
 
 							}
@@ -527,17 +542,7 @@ Register:
 			#define TBBLUE_SPRITE_BORDER 32
 			*/
 
-			int rangoxmin, rangoxmax;
 
-			if (sprites_over_border) {
-				rangoxmin=0;
-				rangoxmax=TBBLUE_SPRITE_BORDER+256+TBBLUE_SPRITE_BORDER-1;
-			}
-
-			else {
-				rangoxmin=TBBLUE_SPRITE_BORDER;
-				rangoxmax=TBBLUE_SPRITE_BORDER+255;
-			}
 
 			for (i=0;i<MAX_X_SPRITE_LINE;i++) {
 				z80_byte color=sprite_line[i];

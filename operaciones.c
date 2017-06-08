@@ -1827,7 +1827,7 @@ set_visualmembuffer(dir);
 		puntero=chrome_return_segment_memory(dir);
 
 		if (dir<16384) {
-			if (!chrome_ram89_at_00()) return; //No esta ram 8 o 9 en zona 0000-3fff. volver 
+			if (!chrome_ram89_at_00()) return; //No esta ram 8 o 9 en zona 0000-3fff. volver
 		}
 
 		dir = dir & 16383;
@@ -5334,6 +5334,12 @@ z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 		if (puerto==0x9E3B) return 0;
 	}
 
+	//Prueba pentevo
+	if (puerto_l==0xAF) {
+		//printf ("In port Pentevo %04XH\n",puerto);
+	}
+
+
 
 	z80_byte valor_idle_bus_port=idle_bus_port(puerto_l+256*puerto_h);
 
@@ -6526,7 +6532,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 	if (puerto==ZESARUX_ZXI_PORT_DATA)     zesarux_zxi_write_register_value(value);
 
 
-
+	//Prueba pentevo
+	if (puerto_l==0xAF) {
+		//printf ("Out port Pentevo %04XH value %02XH\n",puerto,value);
+	}
 
 
 	//debug_printf (VERBOSE_DEBUG,"Out Port %x unknown written with value %x, PC after=0x%x",puerto,value,reg_pc);
