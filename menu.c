@@ -5727,7 +5727,7 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 
 				menu_debug_registers_ventana();
 
-        	                if (tecla=='s') {
+        if (tecla=='s') {
 					cpu_step_mode.v=0;
 
 					//Decimos que no hay tecla pulsada
@@ -5818,6 +5818,14 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 					si_ejecuta_una_instruccion=0;
 				}
 
+				//Aqui suele llegar al mover raton-> se produce un evento pero no se pulsa tecla
+				if (tecla==0) {
+					//printf ("tecla: %d\n",tecla);
+					acumulado=MENU_PUERTO_TECLADO_NINGUNA;
+					//decirle que despues de pulsar esta tecla no tiene que ejecutar siguiente instruccion
+					si_ejecuta_una_instruccion=0;
+				}
+
 			}
 
 			else {
@@ -5825,13 +5833,20 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 				//printf ("continuos loop\n");
 				acumulado=menu_da_todas_teclas();
 				if ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) != MENU_PUERTO_TECLADO_NINGUNA) {
-					continuous_step=0;
-					//printf ("cont step: %d\n",continuous_step);
 
-                                        //Decimos que no hay tecla pulsada
-                                        acumulado=MENU_PUERTO_TECLADO_NINGUNA;
+					tecla=menu_get_pressed_key();
 
-					menu_espera_no_tecla_no_cpu_loop();
+					//Si tecla no es 0->0 se suele producir al mover el raton.
+					if (tecla!=0) {
+
+						continuous_step=0;
+						//printf ("cont step: %d\n",continuous_step);
+
+            //Decimos que no hay tecla pulsada
+            acumulado=MENU_PUERTO_TECLADO_NINGUNA;
+
+						menu_espera_no_tecla_no_cpu_loop();
+					}
 
 				}
 
