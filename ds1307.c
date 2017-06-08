@@ -67,7 +67,7 @@ z80_byte ds1307_decimal_to_bcd(z80_byte valor_decimal)
 
 	z80_byte resultado=( (nibble_alto<<4) | nibble_bajo );
 
-	printf ("decimal a bcd. decimal: %d bcd: %02XH nibble_bajo %d nibble_alto %d\n",valor_decimal,resultado,nibble_bajo,nibble_alto);
+	//printf ("decimal a bcd. decimal: %d bcd: %02XH nibble_bajo %d nibble_alto %d\n",valor_decimal,resultado,nibble_bajo,nibble_alto);
 
 	return resultado;
 }
@@ -145,8 +145,7 @@ z80_byte ds1307_get_port_data(void)
 		if (value) value=1;
 		else value=0;
 
-		if (ds1307_last_command_read_mask==128) printf ("Returning first bit of register %d value %02XH",
-			ds1307_last_register_received&63,ds1307_registers[ds1307_last_register_received&63]);
+		//if (ds1307_last_command_read_mask==128) printf ("Returning first bit of register %d value %02XH",ds1307_last_register_received&63,ds1307_registers[ds1307_last_register_received&63]);
 
 		ds1307_last_command_read_mask=ds1307_last_command_read_mask>>1;
 
@@ -156,18 +155,18 @@ z80_byte ds1307_get_port_data(void)
 			ds1307_last_register_received++;
 		}
 
-	printf ("%d Returning value %d register %d final_mask %d\n",temp_conta++,value,ds1307_last_register_received,ds1307_last_command_read_mask);
+	//printf ("%d Returning value %d register %d final_mask %d\n",temp_conta++,value,ds1307_last_register_received,ds1307_last_command_read_mask);
 	return value;
 }
 
 void ds1307_write_port_data(z80_byte value)
 {
-	printf ("%d Write ds1307 data port value:  %d bit 0: %d\n",temp_conta++,value,value&1);
+	//printf ("%d Write ds1307 data port value:  %d bit 0: %d\n",temp_conta++,value,value&1);
 
 
 	if (ds1307_last_clock_bit.v) {
 		if (ds1307_last_data_bit.v==1 && (value&1)==0) {
-      printf ("#########Recibida secuencia inicializacion\n");
+      debug_printf (VERBOSE_DEBUG,"DS1307 RTC. Received START sequence");
 			ds1307_sending_data_from_speccy=1;
 			ds1307_sending_data_status=0;
 			ds1307_sending_data_num_bits=0;
@@ -176,7 +175,7 @@ void ds1307_write_port_data(z80_byte value)
 		}
 
 		if (ds1307_last_data_bit.v==0 && (value&1)==1) {
-			printf ("#########Recibida secuencia stop\n");
+			debug_printf (VERBOSE_DEBUG,"DS1307 RTC. Received STOP sequence");
 			ds1307_sending_data_from_speccy=1;
 			ds1307_sending_data_status=0;
 			ds1307_sending_data_num_bits=0;
@@ -195,7 +194,7 @@ void ds1307_write_port_data(z80_byte value)
 
 		//Recibiendo comando
 		if (ds1307_sending_data_status==0) {
-			printf ("Receiving data command\n");
+			//printf ("Receiving data command\n");
 			ds1307_sending_data_num_bits++;
 			if (ds1307_sending_data_num_bits<=8) {
 				ds1307_last_command_received=ds1307_last_command_received<<1;
@@ -205,8 +204,8 @@ void ds1307_write_port_data(z80_byte value)
 
 			//Es ack. ignorar y cambiar estado
 			if (ds1307_sending_data_num_bits==9) {
-				printf ("Received ACK\n");
-				printf ("Command received: %02XH\n",ds1307_last_command_received);
+				//printf ("Received ACK\n");
+				//printf ("Command received: %02XH\n",ds1307_last_command_received);
 				ds1307_sending_data_status++;
 
 				//Si el comando es D0, envia datos. Si es D1, solo recibe y por tanto ignoramos escrituras en D
@@ -220,7 +219,7 @@ void ds1307_write_port_data(z80_byte value)
 
 		//Recibiendo registro
 		else if (ds1307_sending_data_status==1) {
-			printf ("Receiving data register\n");
+			//printf ("Receiving data register\n");
 			ds1307_sending_data_num_bits++;
 			if (ds1307_sending_data_num_bits<=8) {
 				ds1307_last_register_received=ds1307_last_register_received<<1;
@@ -230,8 +229,8 @@ void ds1307_write_port_data(z80_byte value)
 
 			//Es ack. ignorar y cambiar estado
 			if (ds1307_sending_data_num_bits==9) {
-				printf ("Received ACK\n");
-				printf ("Register received: %02XH\n",ds1307_last_register_received);
+				//printf ("Received ACK\n");
+				//printf ("Register received: %02XH\n",ds1307_last_register_received);
 				ds1307_sending_data_status++;
 				ds1307_sending_data_num_bits=0;
 			}
@@ -239,9 +238,9 @@ void ds1307_write_port_data(z80_byte value)
 		}
 	}
 
-	else {
-		printf ("Ignoring write on data\n");
-	}
+	//else {
+		//printf ("Ignoring write on data\n");
+	//}
 
 
 
@@ -250,7 +249,7 @@ void ds1307_write_port_data(z80_byte value)
 
 void ds1307_write_port_clock(z80_byte value)
 {
-	printf ("%d Write ds1307 clock port value: %d bit 0: %d\n",temp_conta++,value,value&1);
+	//printf ("%d Write ds1307 clock port value: %d bit 0: %d\n",temp_conta++,value,value&1);
 	ds1307_last_clock_bit.v=value&1;
 
 }
