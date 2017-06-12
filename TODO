@@ -33,16 +33,16 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
--registros offset pantalla zxuno
+-registros offset pantalla zxuno. docs/zxuno_registros_desplazamientos.txt 
 
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
 -Nombre emulador en footer de rpi o quizá una barra de título??
 
--sprites en border no coliden si no se ven sprites en border
-
 -Raster tbblue
+
+-Poner pantalla en blanco y negro cuando se abra el menú y no haya multitarea 
 
 -Visor de Sprites que entienda formato con máscara... es sprite, máscara, sprite, etc??
 
@@ -1874,3 +1874,5 @@ https://en.m.wikipedia.org/wiki/ATM_(computer)
 
 http://nedopc.com/zxevo/zxevo_eng.php
 http://svn.zxevo.ru/listing.php?repname=pentevo&
+
+Sinclair MK14

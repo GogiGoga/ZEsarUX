@@ -23,7 +23,6 @@ Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15
 Fixed Windows pthreads version
 Fixed tbblue reset i/o ports when reset and hard reset
-
 Updated tbblue boot loader
 Some other minor bugfixes and improvements
 

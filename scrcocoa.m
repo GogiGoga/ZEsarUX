@@ -2503,6 +2503,9 @@ void temp_refresca_pentevo_text(void)
 void scrcocoa_refresca_pantalla(void)
 {
 
+//Temporal. Modo blanco y negro cuando se abre menu y multitarea esta a off
+int screen_gray_mode_anterior;
+
 	if (pendiente_z88_draw_lower) {
 		screen_z88_draw_lower_screen();
 		pendiente_z88_draw_lower=0;
@@ -2523,6 +2526,14 @@ void scrcocoa_refresca_pantalla(void)
 
                 //esto invalida la cache y por tanto ralentizando el refresco de pantalla
                 //clear_putpixel_cache();
+
+								//Temporal. Modo blanco y negro cuando se abre menu y multitarea esta a off
+								//Poner blanco y negro
+								if (menu_multitarea==0 && menu_abierto) {
+									screen_gray_mode_anterior=screen_gray_mode;
+									screen_gray_mode=7;
+									screen_init_colour_table();
+								}
         }
 
 
@@ -2584,6 +2595,15 @@ void scrcocoa_refresca_pantalla(void)
 	}
 
 
+//Temporal. Modo blanco y negro cuando se abre menu y multitarea esta a off
+//Restaurar color
+	if (scr_si_color_oscuro() ) {
+					//temp
+					if (menu_multitarea==0 && menu_abierto) {
+						screen_gray_mode=screen_gray_mode_anterior;
+						screen_init_colour_table();
+					}
+	}
 
 
         //printf ("%d\n",spectrum_colortable[1]);
@@ -2601,6 +2621,8 @@ void scrcocoa_refresca_pantalla(void)
 
 
 	scrcocoa_refresca_pantalla_solo_driver();
+
+
 
 
 
