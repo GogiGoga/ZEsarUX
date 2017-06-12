@@ -6130,6 +6130,8 @@ int view_sprites_tbblue=0;
 
 z80_bit view_sprites_inverse={0};
 
+int view_sprite_incremento=1;
+
 void menu_debug_draw_sprites(void)
 {
 
@@ -6150,7 +6152,9 @@ void menu_debug_draw_sprites(void)
 	if (view_sprites_tbblue==0) {
 		for (y=0;y<view_sprites_alto_sprite;y++) {
 			for (x=0;x<view_sprites_ancho_sprite;x++) {
-				byte_leido=peek_byte_z80_moto(puntero++);
+				byte_leido=peek_byte_z80_moto(puntero);
+
+				puntero +=view_sprite_incremento;
 
 				for (bit=0;bit<8;bit++) {
 					if (view_sprites_inverse.v) {
@@ -6350,16 +6354,16 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 		if (MACHINE_IS_TBBLUE) {
 			if (view_sprites_tbblue) {
-				menu_escribe_linea_opcion(linea++,-1,1,"M:Memory pointer     QA:Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"M:Memptr             QA:Size");
 				menu_escribe_linea_opcion(linea++,-1,1,"I:Inverse S:Save H:Hardware");
 			}
 			else {
-				menu_escribe_linea_opcion(linea++,-1,1,"M:Memory pointer   OPQA:Size");
+				menu_escribe_linea_opcion(linea++,-1,1,"M:Memptr C:Inc     OPQA:Size");
 				menu_escribe_linea_opcion(linea++,-1,1,"I:Inverse S:Save H:Hardware");
 			}
 		}
 		else {
-			menu_escribe_linea_opcion(linea++,-1,1,  "M:Memory pointer  OPQA:Size");
+			menu_escribe_linea_opcion(linea++,-1,1,  "M:Memptr C:Inc     OPQA:Size");
 			menu_escribe_linea_opcion(linea++,-1,1,  "I:Inverse     S:Save sprite");
 		}
 
@@ -6401,7 +6405,7 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
                                         break;
 
 																				case 'h':
-																								view_sprites_tbblue ^=1;
+																								if (MACHINE_IS_TBBLUE) view_sprites_tbblue ^=1;
 																				break;
 
 																				case 'i':
@@ -6445,6 +6449,11 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
                                         case 'a':
                                                 if (view_sprites_alto_sprite<(SPRITES_ALTO-6)*8)  view_sprites_alto_sprite++;
                                         break;
+
+																				case 'c':
+																						if (view_sprite_incremento==1) view_sprite_incremento=2;
+																						else view_sprite_incremento=1;
+																				break;
 
 
                                         /*default:
