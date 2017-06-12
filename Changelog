@@ -1,10 +1,10 @@
-Version 5.1. 24 April 2017 - Gunfright edition
+Version 5.1. 12 June 2017 - Gunfright edition
 
 Added machine Chrome (Italian ZX Spectrum Clone)
 Added menu movement with mouse
 Added Visualmem, Poke, Find, Save binary menus also for Sinclair QL
 Added setting to test configuration
-Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom
+Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom, get-ocr, tbblue-get-sprite, tbblue-get-pattern, tbblue-get-palette
 Added QL GUI Style
 Added menu to find and set lives in games
 Added actions commands to breakpoints, so you can run some actions when a breakpoint is fired
@@ -13,13 +13,18 @@ Added emulation of other DAC chips appart from Specdrum: Covox, etc
 Added setting to set 256kb or 512kb on Spectrum 128k machines
 Added setting to set F keys (F1, F2, etc) to run different actions: reset, nmi, exit emulator, etc
 Added TBBlue Sprite chip emulation
+Added RTC clock TBBlue/Spectrum Next support for esxdos
 Improved TBBlue emulation: 1 MB RAM
-Improved QL emulation: experimental support of LBYTES command
-Improved Sprite Viewer: Save sprite, TBBlue sprite viewer
+Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
+Improved Sprite Viewer: Save sprite, TBBlue sprite viewer, inverse sprite
+Improved write-mapped-memory remote command to allow up to 64kb
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15
 Fixed Windows pthreads version
+Fixed tbblue reset i/o ports when reset and hard reset
+
+Updated tbblue boot loader
 Some other minor bugfixes and improvements
 
 
