@@ -3519,9 +3519,8 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
 	//etc...
 
 
-	//Offsets de pantalla
+	//Offset de pantalla
 	z80_int radasoffset=0;
-	z80_byte radaspadding=0;
 
 
 
@@ -3581,7 +3580,7 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
 
         for (x=0;x<128;x+=incremento_x) {
 
-					direccion=direccion % 16384; //Evitar que se salga de vram. 
+					direccion=direccion % 16384; //Evitar que se salga de vram.
 
 			//temp controlar esto
 			//if (direccion>22527) printf ("direccion: %d scanline_copia: %d\n",direccion,scanline_copia);
