@@ -3518,6 +3518,13 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
         //pixel y=4->direccion de pantalla linea 2
 	//etc...
 
+
+	//Offsets de pantalla
+	z80_int radasoffset=0;
+	z80_byte radaspadding=0;
+
+
+
 	int bytes_por_linea=0;
 	int incremento_x=0;
 
@@ -3526,13 +3533,16 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
 		case 3:
 			//dividimos y/2
 			scanline_copia/=2;
-			bytes_por_linea=64;
+			//bytes_por_linea=64;
 			incremento_x=2;
-			//Si modo timex, y pantalla shadow
-			/*if (timex_video_emulation.v) {
-				z80_byte timex_video_mode=timex_port_ff&7;
-				if (timex_video_mode==1) direccion=8192;
-			}*/
+
+			//Obtener radasoffset. Es de 14 bits
+			radasoffset=zxuno_radasoffset&16383;
+
+			//Obtener radaspadding
+			bytes_por_linea=64+zxuno_ports[0x42];
+
+
 		break;
 
 		//256x96
@@ -3561,12 +3571,17 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
 
 
 
-	direccion=direccion-resta_offset+bytes_por_linea*scanline_copia;
+	//direccion=direccion-resta_offset+bytes_por_linea*scanline_copia;
+
+	//temp
+	direccion=direccion-resta_offset+radasoffset+bytes_por_linea*scanline_copia;
 
 	//printf ("y: %d pun: %ld\n",y,&screen[direccion]);
 
 
         for (x=0;x<128;x+=incremento_x) {
+
+					direccion=direccion % 16384; //Evitar que se salga de vram. TODO. validar modos zesarux 5,7,9
 
 			//temp controlar esto
 			//if (direccion>22527) printf ("direccion: %d scanline_copia: %d\n",direccion,scanline_copia);

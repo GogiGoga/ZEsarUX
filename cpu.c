@@ -658,6 +658,12 @@ void cold_start_cpu_registers(void)
 
 		//quitamos write enable de la spi flash zxuno
 		zxuno_spi_clear_write_enable();
+
+		zxuno_radasoffset_high_byte.v=0;
+		zxuno_radasoffset=0;
+
+		zxuno_ports[0x42]=0;
+
 	}
 
 	if (MACHINE_IS_PRISM) {

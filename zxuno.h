@@ -109,4 +109,8 @@ extern void zxuno_set_emulator_setting_diulaplus(void);
 
 extern z80_bit zxuno_deny_turbo_bios_boot;
 
+extern z80_int zxuno_radasoffset;
+
+extern z80_bit zxuno_radasoffset_high_byte;
+
 #endif

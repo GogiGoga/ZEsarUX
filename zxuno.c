@@ -72,6 +72,13 @@ z80_byte zxuno_spi_status_register=0;
 z80_bit zxuno_deny_turbo_bios_boot={0};
 
 
+//Para radas offset registro 41h. Indica a 1 que se va a escribir byte alto de registro 41
+z80_bit zxuno_radasoffset_high_byte={0};
+
+//Este es el registro 41 h pero realmente es de 14 bits,
+//cuando escribes en ese registro, lo primero que se escribe son los 8 bits menos significativos
+//y luego, los 6 más significativos (en la segunda escritura, los dos bits más significativos se descartan)
+z80_int zxuno_radasoffset=0;
 
 
 //Direcciones donde estan cada pagina de ram. 512kb ram. 32 paginas
@@ -222,6 +229,11 @@ void hard_reset_cpu_zxuno(void)
 	zxuno_ports[0x0E]=0;
 	zxuno_ports[0x0F]=0;
 	zxuno_ports[0x40]=0;
+
+	zxuno_radasoffset_high_byte.v=0;
+	zxuno_radasoffset=0;
+
+	zxuno_ports[0x42]=0;
 
 	//Y sincronizar parametros
         zxuno_set_emulator_setting_diven();
@@ -687,6 +699,21 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 
 			case 0x40:
                                 ulaplus_set_extended_mode(value);
+
+			break;
+
+			case 0x41:
+				//radasoffset
+				if (zxuno_radasoffset_high_byte.v) {
+						zxuno_radasoffset &=255;
+						zxuno_radasoffset |=(value<<8);
+					}
+				else {
+					zxuno_radasoffset &= 0xFF00;
+					zxuno_radasoffset |=value;
+				}
+
+				zxuno_radasoffset_high_byte.v ^=1;
 
 			break;
 
