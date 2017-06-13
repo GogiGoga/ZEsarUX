@@ -3573,7 +3573,7 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
 
 	//direccion=direccion-resta_offset+bytes_por_linea*scanline_copia;
 
-	//temp
+	//Teniendo en cuenta registros radasoffset, radaspadding
 	direccion=direccion-resta_offset+radasoffset+bytes_por_linea*scanline_copia;
 
 	//printf ("y: %d pun: %ld\n",y,&screen[direccion]);
@@ -3581,7 +3581,7 @@ void screen_store_scanline_rainbow_solo_display_ulaplus_lineal(void)
 
         for (x=0;x<128;x+=incremento_x) {
 
-					direccion=direccion % 16384; //Evitar que se salga de vram. TODO. validar modos zesarux 5,7,9
+					direccion=direccion % 16384; //Evitar que se salga de vram. 
 
 			//temp controlar esto
 			//if (direccion>22527) printf ("direccion: %d scanline_copia: %d\n",direccion,scanline_copia);
