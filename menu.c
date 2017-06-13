@@ -6130,6 +6130,10 @@ int view_sprites_tbblue=0;
 
 z80_bit view_sprites_inverse={0};
 
+//Incremento al moverse al siguiente byte
+//Normalmente 1 , pero quiza poner a 2 para sprites que se guardan como:
+//byte sprite, byte mascara, byte sprite, byte mascara
+//Asi podemos saltar el byte de mascara
 int view_sprite_incremento=1;
 
 void menu_debug_draw_sprites(void)
@@ -6241,7 +6245,7 @@ void menu_debug_view_sprites_ventana(void)
 
 
 
-void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alto)
+void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alto, int incremento)
 {
 
 	char file_save[PATH_MAX];
@@ -6280,7 +6284,10 @@ void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alt
 
 				//Copiar de memoria emulador ahi
 				int i;
-				for (i=0;i<longitud;i++) buf_temp[i]=peek_byte_z80_moto(direccion+i);
+				for (i=0;i<longitud;i++) {
+					buf_temp[i]=peek_byte_z80_moto(direccion);
+					direccion +=incremento;
+				}
 
 				util_write_pbm_file(file_save,ancho,alto,buf_temp);
 
@@ -6352,20 +6359,26 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 		linea=SPRITES_ALTO-3;
 
+		char buffer_primera_linea[33];
+		char buffer_segunda_linea[33];
+
 		if (MACHINE_IS_TBBLUE) {
 			if (view_sprites_tbblue) {
-				menu_escribe_linea_opcion(linea++,-1,1,"M:Memptr             QA:Size");
-				menu_escribe_linea_opcion(linea++,-1,1,"I:Inverse S:Save H:Hardware");
+				strcpy(buffer_primera_linea, "M:Memptr             QA:Size");
+				strcpy(buffer_segunda_linea, "I:Inverse        H:Hardware");
 			}
 			else {
-				menu_escribe_linea_opcion(linea++,-1,1,"M:Memptr C:Inc     OPQA:Size");
-				menu_escribe_linea_opcion(linea++,-1,1,"I:Inverse S:Save H:Hardware");
+				sprintf(buffer_primera_linea,"M:Memptr C:Inc+%d   OPQA:Size",view_sprite_incremento);
+				strcpy(buffer_segunda_linea, "I:Inverse S:Save H:Hardware");
 			}
 		}
 		else {
-			menu_escribe_linea_opcion(linea++,-1,1,  "M:Memptr C:Inc     OPQA:Size");
-			menu_escribe_linea_opcion(linea++,-1,1,  "I:Inverse     S:Save sprite");
+			  sprintf(buffer_primera_linea,"M:Memptr C:Inc+%d   OPQA:Size",view_sprite_incremento);
+			  strcpy(buffer_segunda_linea, "I:Inverse     S:Save sprite");
 		}
+
+		menu_escribe_linea_opcion(linea++,-1,1,buffer_primera_linea);
+		menu_escribe_linea_opcion(linea++,-1,1,buffer_segunda_linea);
 
 		if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
@@ -6424,7 +6437,7 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 
 
-																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite);
+																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprite_incremento);
 
 																								cls_menu_overlay();
 
