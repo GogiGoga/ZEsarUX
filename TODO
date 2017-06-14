@@ -53,7 +53,7 @@ Enviar tecla ascii. Tener en cuenta los releases
 -Error aparente al saltar breakpoint en menu. Probado con pwa=puerto del tbblue sprites. luego salta breakpoint y no se puede hacer exit step para poder hacer disassemble 
 
 
--Set debug settings bit para mostrar o no secuencia hexadecimal del opcode
+ok -Set debug settings bit para mostrar o no secuencia hexadecimal del opcode
 
 
 -Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
