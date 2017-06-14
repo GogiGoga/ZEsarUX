@@ -175,6 +175,9 @@ int *spectrum_colortable;
 //int *spectrum_colortable_normal;
 int spectrum_colortable_normal[EMULATOR_TOTAL_PALETTE_COLOURS];
 
+//Colores solo en blanco y negro para cuando se abre el menu y el emulador esta con multitask off
+int spectrum_colortable_blanco_y_negro[EMULATOR_TOTAL_PALETTE_COLOURS];
+
 //Tabla con los colores reales del Spectrum. Formato RGB
 const int spectrum_colortable_original[16] =
 {
@@ -5856,7 +5859,7 @@ z80_byte spectra_return_intensity(int c)
 	return v;
 }
 
-void screen_init_colour_table(void)
+void screen_init_colour_table_siguiente(void)
 {
 
                 	int i,j,r,g,b,r2,g2,b2,valorgris;
@@ -6226,6 +6229,33 @@ Bit 6 GRN1 most  significant bit of green.
 
 
 
+}
+
+void screen_init_colour_table(void)
+{
+	/*
+	Primero generamos tabla de colores grises. Esa tabla se usa cuando se abre el menu con multitask off, donde los colores se ponen en gris
+	TODO: hacerlos en gris y tambien oscuros
+	Para ello, se genera tabla con forzado a gris, lo copio a tabla de grises, y luego se genera colores normales
+	*/
+	int antes_screen_gray_mode=screen_gray_mode;
+	screen_gray_mode=7;
+	screen_init_colour_table_siguiente();
+
+/*
+int spectrum_colortable_blanco_y_negro[EMULATOR_TOTAL_PALETTE_COLOURS];
+_normal
+*/
+
+	//Copiamos de tabla normal, que seran grises, a tabla grises
+	int i;
+	for (i=0;i<EMULATOR_TOTAL_PALETTE_COLOURS;i++) {
+		spectrum_colortable_blanco_y_negro[i]=spectrum_colortable_normal[i];
+	}
+
+
+	screen_gray_mode=antes_screen_gray_mode;
+	screen_init_colour_table_siguiente();
 }
 
 

@@ -2504,7 +2504,7 @@ void scrcocoa_refresca_pantalla(void)
 {
 
 //Temporal. Modo blanco y negro cuando se abre menu y multitarea esta a off
-int screen_gray_mode_anterior;
+//int screen_gray_mode_anterior;
 
 	if (pendiente_z88_draw_lower) {
 		screen_z88_draw_lower_screen();
@@ -2530,9 +2530,10 @@ int screen_gray_mode_anterior;
 								//Temporal. Modo blanco y negro cuando se abre menu y multitarea esta a off
 								//Poner blanco y negro
 								if (menu_multitarea==0 && menu_abierto) {
-									screen_gray_mode_anterior=screen_gray_mode;
-									screen_gray_mode=7;
-									screen_init_colour_table();
+									spectrum_colortable=spectrum_colortable_blanco_y_negro;
+									//screen_gray_mode_anterior=screen_gray_mode;
+									//screen_gray_mode=7;
+									//screen_init_colour_table();
 								}
         }
 
@@ -2600,8 +2601,8 @@ int screen_gray_mode_anterior;
 	if (scr_si_color_oscuro() ) {
 					//temp
 					if (menu_multitarea==0 && menu_abierto) {
-						screen_gray_mode=screen_gray_mode_anterior;
-						screen_init_colour_table();
+						//screen_gray_mode=screen_gray_mode_anterior;
+						//screen_init_colour_table();
 					}
 	}
 

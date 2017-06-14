@@ -38,6 +38,7 @@ extern int spectrum_colortable_oscuro[];
 extern int *spectrum_colortable;
 extern int spectrum_colortable_normal[];
 extern const int spectrum_colortable_original[16];
+extern int spectrum_colortable_blanco_y_negro[];
 
 extern int screen_gray_mode;
 
