@@ -754,7 +754,8 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
 				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 8 next opcodes on cpu stepping. "
-				"Bit 2: Do not add a L preffix when searching source code labels"},
+				"Bit 2: Do not add a L preffix when searching source code labels. "
+				"Bit 3: Show bytes when debugging opcodes"},
 	{"set-machine","|sm","machine_name","Set machine"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
@@ -1064,11 +1065,47 @@ void remote_disassemble(int misocket,unsigned int direccion,int lineas,int mostr
 			}
 
 			//Quitar 0 del final
-			buffer_retorno[pos]=' ';
+			//buffer_retorno[pos]=' ';
   	}
 
+		escribir_socket_format(misocket,"%s",buffer_retorno);
+		pos=0;
+
   	debugger_disassemble(&buffer_retorno[pos],100,&longitud_opcode,direccion);
+
+		//Mostrar bytes del opcode si conviene. Tenemos buffer para 4 bytes en spectrum y para 16 en QL
+		if (remote_debug_settings & 8) {
+			char buffer_bytes_opcode[16*2+1]; //33
+															//  12345678901234567890123456789012
+			strcpy(buffer_bytes_opcode,"                                ");
+
+			if (CPU_IS_MOTOROLA) buffer_bytes_opcode[32]=0;
+			else buffer_bytes_opcode[8]=0;
+
+			//fijamos maximo
+			int buffer_longitud=longitud_opcode;
+			if (buffer_longitud>16) buffer_longitud=16;
+
+			//printf ("longitud :%d fijo: %d\n",longitud_opcode,buffer_longitud);
+
+			//Copiamos bytes
+			int indice;
+			for (indice=0;buffer_longitud>0;buffer_longitud--,indice++) {
+				char buffer_temp[3];
+				sprintf (buffer_temp,"%02X",peek_byte_z80_moto(direccion+indice));
+				buffer_bytes_opcode[indice*2]=buffer_temp[0];
+				buffer_bytes_opcode[indice*2+1]=buffer_temp[1];
+			}
+
+			escribir_socket_format(misocket,"%s ",buffer_bytes_opcode);
+
+		}
+
+
+
   	direccion +=longitud_opcode;
+
+
 
 		if (remote_tamanyo_archivo_raw_source_code) {
 
