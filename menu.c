@@ -6359,26 +6359,34 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 		linea=SPRITES_ALTO-3;
 
-		char buffer_primera_linea[33];
-		char buffer_segunda_linea[33];
+		char buffer_primera_linea[64]; //dar espacio de mas para poder alojar el ~de los atajos
+		char buffer_segunda_linea[64];
+
+//Forzar a mostrar atajos
+z80_bit antes_menu_writing_inverse_color;
+antes_menu_writing_inverse_color.v=menu_writing_inverse_color.v;
+menu_writing_inverse_color.v=1;
 
 		if (MACHINE_IS_TBBLUE) {
 			if (view_sprites_tbblue) {
-				strcpy(buffer_primera_linea, "M:Memptr             QA:Size");
-				strcpy(buffer_segunda_linea, "I:Inverse        H:Hardware");
+				strcpy(buffer_primera_linea, "~~Memptr ~~Q~~A:Size");
+				strcpy(buffer_segunda_linea, "~~Inverse ~~Hardware");
 			}
 			else {
-				sprintf(buffer_primera_linea,"M:Memptr C:Inc+%d   OPQA:Size",view_sprite_incremento);
-				strcpy(buffer_segunda_linea, "I:Inverse S:Save H:Hardware");
+				sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size",view_sprite_incremento);
+				strcpy(buffer_segunda_linea, "~~Inverse ~~Save ~~Hardware");
 			}
 		}
 		else {
-			  sprintf(buffer_primera_linea,"M:Memptr C:Inc+%d   OPQA:Size",view_sprite_incremento);
-			  strcpy(buffer_segunda_linea, "I:Inverse     S:Save sprite");
+			  sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size",view_sprite_incremento);
+			  strcpy(buffer_segunda_linea, "~~Inverse ~~Save");
 		}
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_primera_linea);
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_segunda_linea);
+
+//Restaurar comportamiento atajos
+menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 
 		if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
