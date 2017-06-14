@@ -6247,10 +6247,21 @@ int spectrum_colortable_blanco_y_negro[EMULATOR_TOTAL_PALETTE_COLOURS];
 _normal
 */
 
-	//Copiamos de tabla normal, que seran grises, a tabla grises
-	int i;
+	//Copiamos de tabla normal, que seran grises, a tabla grises y ademas oscuros
+	int i,r,g,b;
 	for (i=0;i<EMULATOR_TOTAL_PALETTE_COLOURS;i++) {
-		spectrum_colortable_blanco_y_negro[i]=spectrum_colortable_normal[i];
+
+                        b=spectrum_colortable_normal[i] & 0xFF;
+                        g=(spectrum_colortable_normal[i] >> 8 ) & 0xFF;
+                        r=(spectrum_colortable_normal[i] >> 16 ) & 0xFF;
+
+                        r=r/2;
+                        g=g/2;
+                        b=b/2;
+
+                        spectrum_colortable_blanco_y_negro[i]=(r<<16)|(g<<8)|b;
+
+		//spectrum_colortable_blanco_y_negro[i]=spectrum_colortable_normal[i];
 	}
 
 
