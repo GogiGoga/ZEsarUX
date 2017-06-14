@@ -45,9 +45,6 @@ en testeo para cocoa -Poner pantalla en blanco y negro cuando se abra el menú y
 *es poco optimo porque cada vez que refresca reinicializa la tabla : quiza tener una tabla aparte ya con los colores en gris y no tener
 que recalcularla cada vez
 
--Visor de Sprites que entienda formato con máscara... es sprite, máscara, sprite, etc??
-->en testeo, incrementos de +1 o +2. pendiente poder grabar sprite con +2
-
 -Para remote:   
 Enviar tecla ascii. Tener en cuenta los releases 
 

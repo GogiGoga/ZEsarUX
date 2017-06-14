@@ -23,6 +23,11 @@ toi acid, sabre wulf, turbo esprit, great escape, target renegade, cliff hanger,
 
 --------------
 
+Establecer username y mail en repo descargado:
+git config --global user.name "chernandezba" ; git config --global user.email chernandezba@hotmail.com
+
+--------------
+
 
 * source a generar
 
