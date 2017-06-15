@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -216,6 +216,20 @@ void scrcaca_refresca_pantalla_solo_driver(void)
 void scrcaca_refresca_pantalla(void)
 {
 
+  if (scr_si_color_oscuro() ) {
+          //printf ("color oscuro\n");
+          spectrum_colortable=spectrum_colortable_oscuro;
+
+          //esto invalida la cache y por tanto ralentizando el refresco de pantalla
+          //clear_putpixel_cache();
+
+          //Modo blanco y negro cuando se abre menu y multitarea esta a off
+          //Poner blanco y negro
+          if (menu_multitarea==0 && menu_abierto) {
+            spectrum_colortable=spectrum_colortable_blanco_y_negro;
+          }
+  }
+
 
         if (MACHINE_IS_ZX8081) {
                 scrcaca_refresca_pantalla_zx81();
@@ -235,7 +249,7 @@ void scrcaca_refresca_pantalla(void)
         		        }
 
 	        	}
-	
+
 
 			scr_refresca_pantalla_comun();
 		}
@@ -282,7 +296,15 @@ if (caca_last_message_shown_timer) {
 
 
 
-	if (menu_overlay_activo) menu_overlay_function();
+	//if (menu_overlay_activo) menu_overlay_function();
+
+  if (scr_si_color_oscuro() ) {
+        //if (menu_overlay_activo) {
+                //printf ("color claro\n");
+                spectrum_colortable=spectrum_colortable_normal;
+                //clear_putpixel_cache();
+                menu_overlay_function();
+        }
 
 
         //Escribir footer
@@ -300,7 +322,7 @@ if (caca_last_message_shown_timer) {
 void scrcaca_deal_with_keys(int tecla,int pressrelease)
 {
 
-	//printf ("Tecla: %d\n",tecla); 
+	//printf ("Tecla: %d\n",tecla);
 
 
         switch (tecla) {
@@ -404,7 +426,7 @@ void scrcaca_deal_with_keys(int tecla,int pressrelease)
                         //PgDn
                         case CACA_KEY_PAGEDOWN:
 				util_set_reset_key(UTIL_KEY_PAGE_DOWN,pressrelease);
-                        break;  
+                        break;
 
 
                         default:
@@ -471,7 +493,7 @@ int pressrelease=1;
 		    kempston_mouse_x=gunstick_x;
 		    kempston_mouse_y=255-gunstick_y;
 
-			
+
 		debug_printf(VERBOSE_PARANOID,"CACA_EVENT_MOUSE_MOTION X=%d Y=%d kempston mouse: x: %d y: %d",mouse_x,mouse_y,kempston_mouse_x,kempston_mouse_y);
 	break;
 
@@ -496,7 +518,7 @@ int pressrelease=1;
 
 
         case CACA_EVENT_KEY_PRESS:
-        
+
             tecla = cev.data.key.ch;
   	    //printf ("Tecla press: %d\n",tecla);
 	    //temp if (tecla=='r') scrcaca_resize();
@@ -631,7 +653,7 @@ void scrcaca_detectedchar_print(z80_byte caracter)
 }
 
 
-int scrcaca_init (void) 
+int scrcaca_init (void)
 {
 
 debug_printf (VERBOSE_INFO,"Init cacalib Video Driver");
