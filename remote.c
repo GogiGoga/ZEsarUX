@@ -2588,7 +2588,7 @@ void remote_hexdump_internal(int misocket,z80_byte *inicio,int longitud,int offs
 
 		//Volcar 16 bytes ascii
 		for (;longitud_parcial>0;longitud_parcial--) {
-			char c=*puntero_linea;
+			unsigned char c=*puntero_linea;
 			if (c<32 || c>127) c='.';
 			escribir_socket_format(misocket,"%c",c);
 			puntero_linea++;
@@ -2648,7 +2648,7 @@ void remote_hexdump(int misocket,int inicio,int longitud)
 
 		//Volcar 16 bytes ascii
 		for (;longitud_parcial>0;longitud_parcial--) {
-			char c=peek_byte_z80_moto(puntero_linea);
+			unsigned char c=peek_byte_z80_moto(puntero_linea);
 			if (c<32 || c>127) c='.';
 			escribir_socket_format(misocket,"%c",c);
 			puntero_linea++;
