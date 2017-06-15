@@ -212,7 +212,7 @@ int get=recv(s,buffer,longitud,0);
 void escribir_socket_format (int misocket, const char * format , ...)
 {
 
-    char buffer_final[1024];
+    char buffer_final[4096];
 
     va_list args;
     va_start (args, format);
@@ -1075,16 +1075,19 @@ void remote_disassemble(int misocket,unsigned int direccion,int lineas,int mostr
 
 		//Mostrar bytes del opcode si conviene. Tenemos buffer para 4 bytes en spectrum y para 16 en QL
 		if (remote_debug_settings & 8) {
-			char buffer_bytes_opcode[16*2+1]; //33
-															//  12345678901234567890123456789012
-			strcpy(buffer_bytes_opcode,"                                ");
+#define MAX_OPCODE_LENGHT_MOTO 12
+#define MAX_OPCODE_LENGHT_Z80 4
 
-			if (CPU_IS_MOTOROLA) buffer_bytes_opcode[32]=0;
-			else buffer_bytes_opcode[8]=0;
+			char buffer_bytes_opcode[MAX_OPCODE_LENGHT_MOTO*2+1]; //24+1
+															//  123456789012345678901234
+			strcpy(buffer_bytes_opcode,"                        ");
+
+			if (CPU_IS_MOTOROLA) buffer_bytes_opcode[MAX_OPCODE_LENGHT_MOTO*2]=0;
+			else buffer_bytes_opcode[MAX_OPCODE_LENGHT_Z80*2]=0;
 
 			//fijamos maximo
 			int buffer_longitud=longitud_opcode;
-			if (buffer_longitud>16) buffer_longitud=16;
+			if (buffer_longitud>MAX_OPCODE_LENGHT_MOTO) buffer_longitud=MAX_OPCODE_LENGHT_MOTO;
 
 			//printf ("longitud :%d fijo: %d\n",longitud_opcode,buffer_longitud);
 
