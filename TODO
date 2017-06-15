@@ -59,6 +59,8 @@ ok -Set debug settings bit para mostrar o no secuencia hexadecimal del opcode
 -Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
 Como variable de ejecucion
 
+-blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... aalib y cacalib?
+
 
 -teclas F11-F15 para fbdev
 teclas F en general en fbdev driver no raw
