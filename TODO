@@ -40,10 +40,7 @@ Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
 -Raster tbblue
 
-en testeo para cocoa -Poner pantalla en blanco y negro cuando se abra el menú y no haya multitarea 
-*quiza hacer una funcion comun para esto o incluso una macro
-*es poco optimo porque cada vez que refresca reinicializa la tabla : quiza tener una tabla aparte ya con los colores en gris y no tener
-que recalcularla cada vez
+-aalib parece que al salir tarda mucho en hacer fadeout
 
 -Para remote:   
 Enviar tecla ascii. Tener en cuenta los releases 
@@ -51,7 +48,6 @@ Enviar tecla ascii. Tener en cuenta los releases
 -emulacion keypad spectrum 128
 
 -Error aparente al saltar breakpoint en menu. Probado con pwa=puerto del tbblue sprites. luego salta breakpoint y no se puede hacer exit step para poder hacer disassemble 
-
 
 
 -Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
