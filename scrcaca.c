@@ -216,20 +216,6 @@ void scrcaca_refresca_pantalla_solo_driver(void)
 void scrcaca_refresca_pantalla(void)
 {
 
-  if (scr_si_color_oscuro() ) {
-          //printf ("color oscuro\n");
-          spectrum_colortable=spectrum_colortable_oscuro;
-
-          //esto invalida la cache y por tanto ralentizando el refresco de pantalla
-          //clear_putpixel_cache();
-
-          //Modo blanco y negro cuando se abre menu y multitarea esta a off
-          //Poner blanco y negro
-          if (menu_multitarea==0 && menu_abierto) {
-            spectrum_colortable=spectrum_colortable_blanco_y_negro;
-          }
-  }
-
 
         if (MACHINE_IS_ZX8081) {
                 scrcaca_refresca_pantalla_zx81();
@@ -296,16 +282,7 @@ if (caca_last_message_shown_timer) {
 
 
 
-	//if (menu_overlay_activo) menu_overlay_function();
-
-  if (scr_si_color_oscuro() ) {
-        //if (menu_overlay_activo) {
-                //printf ("color claro\n");
-                spectrum_colortable=spectrum_colortable_normal;
-                //clear_putpixel_cache();
-                menu_overlay_function();
-        }
-
+	if (menu_overlay_activo) menu_overlay_function();
 
         //Escribir footer
         draw_footer();
