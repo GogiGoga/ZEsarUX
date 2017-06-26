@@ -14826,6 +14826,9 @@ void menu_run_mantransfer(MENU_ITEM_PARAMETERS)
 
 
 menu_z80_moto_int load_binary_last_address=16384;
+menu_z80_moto_int load_binary_last_length=0;
+menu_z80_moto_int save_binary_last_address=16384;
+menu_z80_moto_int save_binary_last_length=1;
 
 void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
 {
@@ -14886,11 +14889,13 @@ void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
 
                 char string_longitud[6];
 
-		sprintf (string_longitud,"0");
+		sprintf (string_longitud,"%d",load_binary_last_length);
 
                 menu_ventana_scanf("Length: 0 - all",string_longitud,6);
 
                 int valor_leido_longitud=parse_string_to_number(string_longitud);
+
+		load_binary_last_length=valor_leido_longitud;
 
 		load_binary_file(binary_file_load,valor_leido_direccion,valor_leido_longitud);
 
@@ -14933,7 +14938,7 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
 
                 char string_direccion[8];
 
-                sprintf (string_direccion,"16384");
+                sprintf (string_direccion,"%d",save_binary_last_address);
 
                 menu_ventana_scanf("Address: ",string_direccion,8);
 
@@ -14945,20 +14950,25 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
                         return;
                 }
 
+		save_binary_last_address=valor_leido_direccion;
+
                 cls_menu_overlay();
 
                 char string_longitud[6];
 
-                sprintf (string_longitud,"1");
+                sprintf (string_longitud,"%d",save_binary_last_length);
 
                 menu_ventana_scanf("Length: ",string_longitud,6);
 
                 int valor_leido_longitud=parse_string_to_number(string_longitud);
 
                                         //maximo 64kb
-																			if (MACHINE_IS_SPECTRUM) {
+		if (MACHINE_IS_SPECTRUM) {
                                         if (valor_leido_longitud==0 || valor_leido_longitud>65536) valor_leido_longitud=65536;
-																			}
+		}
+
+		save_binary_last_length=valor_leido_longitud;
+
 		debug_printf(VERBOSE_INFO,"Saving %s file at %d address with %d bytes",binary_file_save,valor_leido_direccion,valor_leido_longitud);
 
                                 FILE *ptr_binaryfile_save;
