@@ -5807,7 +5807,7 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 				}
 
 				//ESC para Spectrum es BREAK
-				//if (MACHINE_IS_ZXUNO) {
+				if (MACHINE_IS_SPECTRUM) {
 					if (pressrelease) {
 						//Shift
                                                 puerto_65278 &=255-1;
@@ -5817,7 +5817,7 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 						puerto_65278 |=1;
 						puerto_32766 |=1;
 					}
-				//}
+				}
 
 			break;
 
