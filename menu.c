@@ -132,6 +132,8 @@ defined_f_function defined_f_functions_array[MAX_F_FUNCTIONS]={
 	{"OpenMenu",F_FUNCION_OPENMENU},
 	{"OCR",F_FUNCION_OCR},
 	{"SmartLoad",F_FUNCION_SMARTLOAD},
+	{"LoadBinary",F_FUNCION_LOADBINARY},
+	{"SaveBinary",F_FUNCION_SAVEBINARY},
 	{"OSDKeyboard",F_FUNCION_OSDKEYBOARD},
 	{"ReloadMMC",F_FUNCION_RELOADMMC},
 	{"DebugCPU",F_FUNCION_DEBUGCPU},
@@ -14858,7 +14860,7 @@ void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
                 }
         }
 
-        ret=menu_filesel("Select Binary File",filtros,binary_file_load);
+        ret=menu_filesel("Select File to Load",filtros,binary_file_load);
 
         //volvemos a directorio inicial
         menu_filesel_chdir(directorio_actual);
@@ -14921,7 +14923,7 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
 
        int ret;
 
-        ret=menu_filesel("Select Binary File",filtros,binary_file_save);
+        ret=menu_filesel("Select File to Save",filtros,binary_file_save);
 
     if (ret==1) {
 
@@ -20793,6 +20795,7 @@ void menu_about_help(MENU_ITEM_PARAMETERS)
 			"ctrl(symbol shift)+r on Spectrum, shift+n on ZX80/81 or shift+, on Z88.\n\n"
 
 			"Inside a machine, the keys are mapped this way:\n"
+			"ESC: Shift+Space (break) on Spectrum\n"
 			"CTRL/ALT: Symbol shift\n"
 			"TAB: Extended mode (symbol shift + caps shift)\n"
 			"\n"
@@ -22293,6 +22296,14 @@ void menu_process_f_functions(void)
 
 		case F_FUNCION_SMARTLOAD:
 			menu_quickload(0);
+		break;
+
+		case F_FUNCION_LOADBINARY:
+			menu_debug_load_binary(0);
+		break;
+
+		case F_FUNCION_SAVEBINARY:
+			menu_debug_save_binary(0);
 		break;
 
 		case F_FUNCION_OSDKEYBOARD:
