@@ -99,7 +99,7 @@ int remote_debug_settings=1;
 int remote_find_label_source_code(char *label_to_find);
 
 
-//Crea un socket TCP per la connexi<F3> en xarxa
+//Crea un socket TCP per la connexio en xarxa
 int crear_socket_TCP(void)
 {
 	#ifdef MINGW
@@ -194,16 +194,18 @@ int leer_socket(int s, char *buffer, int longitud)
 {
 #ifdef MINGW
 
-int get=recv(s,buffer,longitud,0);
- if(get==SOCKET_ERROR){
+int leidos=recv(s,buffer,longitud,0);
+ if(leidos==SOCKET_ERROR){
 	 	debug_printf(VERBOSE_ERR,"Error reading from socket");
 		return -1;
  }
- return get;
+ return leidos;
 
 #else
-
-	return read(s, buffer, longitud);
+	//int leidos=read(s, buffer, longitud);
+	int leidos=recv(s,buffer,longitud,0);
+	printf ("leidos en leer_socket: %d\n",leidos);
+	return leidos;
 
 #endif
 }
@@ -3476,12 +3478,12 @@ void *thread_remote_protocol_function(void *nada)
 								if (leidos>0) {
 
 									//temp debug
-									/*int j;
+									int j;
 									for (j=0;j<leidos;j++) {
 										unsigned char letra=buffer_lectura_socket[indice_destino+j];
-										if (letra<32 || letra>127) letra='.';
-										printf ("%c\n",letra);
-									}*/
+										if (letra<32 || letra>127) printf ("%02XH\n",letra);
+										else printf ("%c\n",letra);
+									}
 
 									indice_destino +=leidos;
 									//Si acaba con final de string, salir
