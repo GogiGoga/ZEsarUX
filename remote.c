@@ -204,7 +204,7 @@ int leidos=recv(s,buffer,longitud,0);
 #else
 	//int leidos=read(s, buffer, longitud);
 	int leidos=recv(s,buffer,longitud,0);
-	printf ("leidos en leer_socket: %d\n",leidos);
+	//printf ("leidos en leer_socket: %d\n",leidos);
 	return leidos;
 
 #endif
@@ -1288,15 +1288,20 @@ void remote_get_regs_disassemble(int misocket)
 }
 
 
+void remote_cpu_exit_step_continue(void)
+{
+  menu_event_remote_protocol_enterstep.v=0;
+  remote_send_esc_close_menu();
+	remote_footer_cpu_step_clear();
+}
+
 void remote_cpu_exit_step(int misocket)
 {
   if (menu_event_remote_protocol_enterstep.v==0) {
     escribir_socket(misocket,"Error. You are not in step to step mode");
     return;
   }
-  menu_event_remote_protocol_enterstep.v=0;
-  remote_send_esc_close_menu();
-	remote_footer_cpu_step_clear();
+	remote_cpu_exit_step_continue();
 }
 
 void remote_cpu_after_core_loop(void)
@@ -1365,7 +1370,7 @@ void remote_cpu_run(int misocket,int verbose)
   //Parar cuando se produzca algun evento de apertura de menu, como un breakpoint
   menu_abierto=0;
   int salir=0;
-  while (!salir) {
+  while (!salir && !remote_salir_conexion) {
     if (verbose) {
       remote_get_regs_disassemble(misocket);
       escribir_socket(misocket,"\n");
@@ -1374,7 +1379,14 @@ void remote_cpu_run(int misocket,int verbose)
     if (menu_abierto) salir=1;
   }
 
+
+
   remote_cpu_after_core_loop();
+
+	if (remote_salir_conexion) {
+		debug_printf(VERBOSE_DEBUG,"Stopping run command because socket has been closed");
+		return;
+	}
 
   remote_get_regs_disassemble(misocket);
 
@@ -3475,15 +3487,25 @@ void *thread_remote_protocol_function(void *nada)
 							do {
 								leidos=leer_socket(sock_conectat, &buffer_lectura_socket[indice_destino], MAX_LENGTH_PROTOCOL_COMMAND-1);
 								debug_printf (VERBOSE_DEBUG,"Read block %d bytes index: %d",leidos,indice_destino);
+
+								/*
+								RETURN VALUES
+     These calls return the number of bytes received, or -1 if an error occurred.
+
+     For TCP sockets, the return value 0 means the peer has closed its half side of the connection.
+		 						*/
+
+								if (leidos==0) remote_salir_conexion=1;
+
 								if (leidos>0) {
 
 									//temp debug
-									int j;
+									/*int j;
 									for (j=0;j<leidos;j++) {
 										unsigned char letra=buffer_lectura_socket[indice_destino+j];
 										if (letra<32 || letra>127) printf ("%02XH\n",letra);
 										else printf ("%c\n",letra);
-									}
+									}*/
 
 									indice_destino +=leidos;
 									//Si acaba con final de string, salir
@@ -3526,6 +3548,9 @@ void *thread_remote_protocol_function(void *nada)
 			  	}
 					//printf ("remote_salir_conexion: %d\n",remote_salir_conexion);
 					debug_printf (VERBOSE_DEBUG,"Remote command. Exiting connection");
+
+					//Salir del modo step si estaba activado
+					if (menu_event_remote_protocol_enterstep.v) remote_cpu_exit_step_continue();
 				}
 
 				//printf ("despues de bucle aqui no se llega nunca\n");
