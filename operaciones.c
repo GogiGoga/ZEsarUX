@@ -6281,9 +6281,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
                         }
 
 		if (puerto==TBBLUE_SPRITE_INDEX_PORT)	tbblue_out_port_sprite_index(value);
-		if (puerto==TBBLUE_SPRITE_PALETTE_PORT)	tbblue_out_sprite_palette(value);
-		if (puerto==TBBLUE_SPRITE_PATTERN_PORT) tbblue_out_sprite_pattern(value);
-		if (puerto==TBBLUE_SPRITE_SPRITE_PORT) tbblue_out_sprite_sprite(value);
+
+		if (puerto_l==TBBLUE_SPRITE_PALETTE_PORT)	tbblue_out_sprite_palette(value);
+		if (puerto_l==TBBLUE_SPRITE_PATTERN_PORT) tbblue_out_sprite_pattern(value);
+		if (puerto_l==TBBLUE_SPRITE_SPRITE_PORT) tbblue_out_sprite_sprite(value);
 
                 if (puerto==DS1307_PORT_CLOCK) ds1307_write_port_clock(value);
                 if (puerto==DS1307_PORT_DATA) ds1307_write_port_data(value);

@@ -50,11 +50,7 @@ Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
 -modos turbo next 14 y 28 mhz
 
--puertos tbblue 53h y 55h son xx53h y xx55h
-
 -sped52 que use 256 y 512 mb ram
-
--ay3demo se ve bien en modo pentagon?
 
 -poder salir de telnet cerrando la conexion cuando este en modo cpu-step y no se cierre el emulador
 
