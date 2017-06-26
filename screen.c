@@ -6482,45 +6482,7 @@ void screen_set_parameters_slow_machines(void)
 #endif
 
 
-	//Parametros por defecto para Cocoa
-	//Desactivado esto ya
-	/*
-	if (!strcmp(scr_driver_name,"cocoa")) {
-		//En Z88, frameskip 3
-		if (MACHINE_IS_Z88) {
-		        if (frameskip<3) {
-                	        frameskip=3;
-                        	debug_printf (VERBOSE_INFO,"It is a Mac OS X system with cocoa driver. With Z88, setting frameskip to: %d",frameskip);
-				return;
-			}
-			return;
-		}
 
-
-		//Sin realvideo, forzar a frameskip 0, aunque este frameskip >0. Esto se hace porque si se entra en Z88, y se vuelve a ZX spectrum por ejemplo,
-		//que vuelva el frameskip 0 y no deje frameskip 3 (el de z88)
-		if (rainbow_enabled.v==0) {
-		        if (frameskip>0) {
-                	        frameskip=0;
-                        	debug_printf (VERBOSE_INFO,"It is a Mac OS X system with cocoa driver. Without realvideo, setting frameskip to: %d",frameskip);
-				return;
-	                }
-		}
-
-
-		//Con realvideo, frameskip 2 minimo
-		if (rainbow_enabled.v==1) {
-		        if (frameskip<2) {
-                	        frameskip=2;
-                        	debug_printf (VERBOSE_INFO,"It is a Mac OS X system with cocoa driver. With realvideo, setting frameskip to: %d",frameskip);
-	                }
-		}
-
-
-		return;
-	}
-
-	*/
 }
 
 

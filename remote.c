@@ -3474,8 +3474,19 @@ void *thread_remote_protocol_function(void *nada)
 								leidos=leer_socket(sock_conectat, &buffer_lectura_socket[indice_destino], MAX_LENGTH_PROTOCOL_COMMAND-1);
 								debug_printf (VERBOSE_DEBUG,"Read block %d bytes index: %d",leidos,indice_destino);
 								if (leidos>0) {
+
+									//temp debug
+									/*int j;
+									for (j=0;j<leidos;j++) {
+										unsigned char letra=buffer_lectura_socket[indice_destino+j];
+										if (letra<32 || letra>127) letra='.';
+										printf ("%c\n",letra);
+									}*/
+
 									indice_destino +=leidos;
 									//Si acaba con final de string, salir
+
+
 
 									//printf ("%d %d %d %d\n",buffer_lectura_socket[0],buffer_lectura_socket[1],buffer_lectura_socket[2],buffer_lectura_socket[3]);
 
