@@ -748,6 +748,9 @@ struct s_items_ayuda items_ayuda[]={
 	{"save-binary-internal",NULL,"pointer lenght file [offset]","Dumps internal memory to file for a given memory pointer. "
 				"Pointer can be any of the hexdump-internal command\n"
 				"Use with care, pointer address is a memory address on the emulator program (not the emulated memory)"},
+	{"send-keys-ascii",NULL,"time asciichar1 [asciichar2] [asciichar3] ... ","Simulates sending some ascii keys on parameters asciichar, separated by spaces. Every key is separated in time by a non-press time. Time is in miliseconds, a normal value for Basic writing is 100 miliseconds"},
+
+	{"send-keys-string",NULL,"time string","Simulates sending some keys on parameter string. Every key is separated in time by a non-press time. Time is in miliseconds, a normal value for Basic writing is 100 miliseconds"},
 	{"set-breakpoint","|sb","index [condition]","Sets a breakpoint at desired index entry with condition. If no condition set, breakpoint will be handled as disabled\n"
 	HELP_MESSAGE_CONDITION_BREAKPOINT
 	},
@@ -3110,6 +3113,61 @@ char buffer_retorno[2048];
 
 						 fclose(ptr_binaryfile);
 			}
+
+
+	}
+
+	else if (!strcmp(comando_sin_parametros,"send-keys-string")) {
+		//remote_parse_commands_argvc(parametros);
+
+		/*if (remote_command_argc<2) {
+			escribir_socket(misocket,"ERROR. Needs two parameters minimum");
+			return;
+		}*/
+
+		z80_byte tecla;
+
+		//No separamos en argv porque interesa tener toda la string a enviar, con sus espacios y todo
+		int pausa=parse_string_to_number(parametros);
+
+		char *s=find_space_or_end(parametros);
+		if ( (*s)==0) {
+			escribir_socket(misocket,"ERROR. Needs two parameters minimum");
+			return;
+		}
+
+		for (;*s;s++) {
+			tecla=*s;
+			ascii_to_keyboard_port(tecla);
+			usleep(pausa*1000);
+			reset_keyboard_ports();
+			usleep(pausa*1000);
+		}
+
+
+	}
+
+	else if (!strcmp(comando_sin_parametros,"send-keys-ascii")) {
+		remote_parse_commands_argvc(parametros);
+
+		if (remote_command_argc<2) {
+			escribir_socket(misocket,"ERROR. Needs two parameters minimum");
+			return;
+		}
+
+		z80_byte tecla;
+
+		int pausa=parse_string_to_number(remote_command_argv[0]);
+
+		int i;
+		for (i=1;i<remote_command_argc;i++) {
+			tecla=parse_string_to_number(remote_command_argv[i]);
+			//printf ("Enviando tecla %d\n",tecla);
+			ascii_to_keyboard_port(tecla);
+			usleep(pausa*1000);
+			reset_keyboard_ports();
+			usleep(pausa*1000);
+		}
 
 
 	}
