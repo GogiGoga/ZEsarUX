@@ -63,7 +63,7 @@ else if (menu_event_remote_protocol_enterstep.v) {
 No sale de ese bucle while y se cierra todo emulador
 
 
--ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cf
+-ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cfconsultar http://www.zxuno.com/forum/viewtopic.php?f=39&t=358&hilit=rst+8
 
 
 -emulacion keypad spectrum 128
