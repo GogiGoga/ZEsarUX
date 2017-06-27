@@ -44,6 +44,7 @@ tbblue:
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *sid commodore para tbbue. ver ReSID
 *modos turbo next 14 y 28 mhz
+*Probar a cambiar paleta interna del next mediante Basic 
 
 -traps de cinta de bios zxuno deberia considerar solo opcodes y no registro pc
 
@@ -64,7 +65,6 @@ No sale de ese bucle while y se cierra todo emulador
 
 -ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cf
 
--aalib parece que al salir tarda mucho en hacer fadeout
 
 -emulacion keypad spectrum 128
 
@@ -89,7 +89,6 @@ http://scratchpad.wikia.com/wiki/ZX_Spectrum_128Ke
 Rom derby 
 https://zx.itch.io/derbyplus
 
--Probar a cambiar paleta interna del next mediante Basic 
 
 -Opción en stdout para simular tecla edit o delete 
 
@@ -170,7 +169,8 @@ pruebas_z88_core_topspeed 	-> solo en fuente
 speech_filters 			-> incluido en binario
 
 
--Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros
+-Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros,
+como descubrir rutinas de pintado de sprites
 
 
 ---Fin cosas para version 5.1
@@ -257,7 +257,7 @@ browser para flash. primer archivo es de “truco”
 
 -blue display en aalib no se ve nada
 
--fadeout en aalib muy lento
+-fadeout en aalib muy lento 
 
 -mac os x: tecla borrar en curses no va. Parece que es codigo 127 pero solo en mac...hay que probarlo mas para saber que no haya otra tecla que tambien genere 127
 
