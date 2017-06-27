@@ -54,6 +54,19 @@ Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
 -poder salir de telnet cerrando la conexion cuando este en modo cpu-step y no se cierre el emulador
 
+-cuando en remote command, se hace run, si cerramos telnet, luego al hacer F5 sale del emulador entero. Parece que el hilo que esta en espera en el menu:
+else if (menu_event_remote_protocol_enterstep.v) {
+		//Entrada
+		menu_espera_no_tecla();
+
+		remote_ack_enter_cpu_step.v=1; //Avisar que nos hemos enterado
+		//Mientras no se salga del modo step to step del remote protocol
+		while (menu_event_remote_protocol_enterstep.v) {
+			sleep(1);
+		}
+
+No sale de ese bucle while y se cierra todo emulador
+
 -ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cf
 
 -aalib parece que al salir tarda mucho en hacer fadeout

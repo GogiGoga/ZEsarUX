@@ -743,7 +743,8 @@ struct s_items_ayuda items_ayuda[]={
 																				"If specify address but not lenght, only 1 byte is read"
 	},
   {"reset-cpu",NULL,NULL,"Resets CPU"},
-  {"run","|r","[verbose]","Run cpu when on cpu step mode. Returns when a breakpoint is fired or any other event which opens the menu. Set verbose parameter to get verbose output"},
+  {"run","|r","[verbose]","Run cpu when on cpu step mode. Returns when a breakpoint is fired or any other event which opens the menu. Set verbose parameter to get verbose output. "
+   "Notice this command does not run the usual cpu loop, instead it is controlled from ZRCP. If you close the connection, the run loop will die"},
 	{"save-binary-internal",NULL,"pointer lenght file [offset]","Dumps internal memory to file for a given memory pointer. "
 				"Pointer can be any of the hexdump-internal command\n"
 				"Use with care, pointer address is a memory address on the emulator program (not the emulated memory)"},
@@ -1370,7 +1371,7 @@ void remote_cpu_run(int misocket,int verbose)
   //Parar cuando se produzca algun evento de apertura de menu, como un breakpoint
   menu_abierto=0;
   int salir=0;
-  while (!salir && !remote_salir_conexion) {
+  while (!salir) {
     if (verbose) {
       remote_get_regs_disassemble(misocket);
       escribir_socket(misocket,"\n");
@@ -1379,15 +1380,9 @@ void remote_cpu_run(int misocket,int verbose)
     if (menu_abierto) salir=1;
   }
 
-
+	debug_printf(VERBOSE_DEBUG,"Exiting run command");
 
   remote_cpu_after_core_loop();
-
-	if (remote_salir_conexion) {
-		debug_printf(VERBOSE_DEBUG,"Stopping run command because socket has been closed");
-		return;
-	}
-
   remote_get_regs_disassemble(misocket);
 
 }

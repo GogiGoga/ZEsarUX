@@ -22063,7 +22063,7 @@ int menu_tape_settings_cond(void)
 void menu_inicio_bucle(void)
 {
 
-			int retorno_menu;
+		int retorno_menu;
 
 		menu_item *array_menu_principal;
 		menu_item item_seleccionado;
@@ -22508,6 +22508,8 @@ void menu_inicio(void)
 		while (menu_event_remote_protocol_enterstep.v) {
 			sleep(1);
 		}
+
+		debug_printf (VERBOSE_DEBUG,"Exiting remote enter step from menu");
 
 		//Salida
 		cls_menu_overlay();
