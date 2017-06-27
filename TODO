@@ -68,8 +68,6 @@ No sale de ese bucle while y se cierra todo emulador
 
 -emulacion keypad spectrum 128
 
--Error aparente al saltar breakpoint en menu. Probado con pwa=puerto del tbblue sprites. luego salta breakpoint y no se puede hacer exit step para poder hacer disassemble 
-
 -Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
 Como variable de ejecucion
 

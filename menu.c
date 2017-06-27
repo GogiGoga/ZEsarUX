@@ -5361,10 +5361,17 @@ z80_bit menu_breakpoint_exception_pending_show={0};
 
 void menu_debug_registers_ventana(void)
 {
-	if (menu_breakpoint_exception_pending_show.v==1 || menu_breakpoint_exception.v) menu_dibuja_ventana(0,0,32,23,"Debug CPU & ULA (brk cond)");
-	else menu_dibuja_ventana(0,0,32,23,"Debug CPU & ULA");
+	char titulo[33];
 
+	//Por defecto
+	sprintf (titulo,"%s","Debug CPU & ULA");
 
+	if (menu_breakpoint_exception_pending_show.v==1 || menu_breakpoint_exception.v) sprintf (titulo,"%s","Debug CPU & ULA (brk cond)");
+	else {
+		if (cpu_step_mode.v) sprintf (titulo,"%s","Debug CPU & ULA (step)");
+	}
+
+	menu_dibuja_ventana(0,0,32,23,titulo);
 	menu_breakpoint_exception_pending_show.v=0;
 }
 
@@ -5710,16 +5717,26 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 
 
 			//Esperamos tecla
-			if (continuous_step==0) {
+			if (continuous_step==0)
+			{
 				menu_espera_tecla_no_cpu_loop();
-                        	tecla=menu_get_pressed_key();
+        tecla=menu_get_pressed_key();
 
+				//Aqui suele llegar al mover raton-> se produce un evento pero no se pulsa tecla
+				if (tecla==0) {
+														//printf ("tecla: %d\n",tecla);
+														acumulado=MENU_PUERTO_TECLADO_NINGUNA;
+														//decirle que despues de pulsar esta tecla no tiene que ejecutar siguiente instruccion
+														si_ejecuta_una_instruccion=0;
+				}
 
+				else {
 				//A cada pulsacion de tecla, mostramos la pantalla del ordenador emulado
 				cls_menu_overlay();
 				all_interlace_scr_refresca_pantalla();
 
 				menu_espera_no_tecla_no_cpu_loop();
+				}
 
 
 				//y mostramos ventana de nuevo
@@ -5735,8 +5752,12 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 					//Decimos que no hay tecla pulsada
 					acumulado=MENU_PUERTO_TECLADO_NINGUNA;
 
+					menu_debug_registers_ventana();
+
 					//decirle que despues de pulsar esta tecla no tiene que ejecutar siguiente instruccion
 					si_ejecuta_una_instruccion=0;
+
+
 				}
 
 				if (tecla=='c') {
@@ -5820,13 +5841,7 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 					si_ejecuta_una_instruccion=0;
 				}
 
-				//Aqui suele llegar al mover raton-> se produce un evento pero no se pulsa tecla
-				if (tecla==0) {
-					//printf ("tecla: %d\n",tecla);
-					acumulado=MENU_PUERTO_TECLADO_NINGUNA;
-					//decirle que despues de pulsar esta tecla no tiene que ejecutar siguiente instruccion
-					si_ejecuta_una_instruccion=0;
-				}
+
 
 			}
 
