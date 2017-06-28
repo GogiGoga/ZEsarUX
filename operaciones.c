@@ -6254,6 +6254,41 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 				}
 
+
+				//Puertos de Paginacion
+				if (MACHINE_IS_TSCONF)
+				{
+					//Para 128k
+					//Puerto tipicamente 32765
+					//The additional memory features of the 128K/+2 are controlled to by writes to port 0x7ffd. As normal on Sinclair hardware, the port address is in fact only partially decoded and the hardware will respond to any port address with bits 1 and 15 reset. However, 0x7ffd should be used if at all possible to avoid conflicts with other hardware.
+
+					if ( (puerto & 32770) == 0 ) {
+
+						//printf ("paginacion pc: %d\n",reg_pc);
+						//printf ("puerto_32765: %d enviando valor: %d\n",puerto_32765,value);
+
+						//ver si paginacion desactivada
+						//if (puerto_32765 & 32) return;
+
+						if ((puerto_32765 & 32)==0) {
+
+							puerto_32765=value;
+							//Paginar RAM y ROM
+			                	        //32 kb rom, 128 ram
+
+				                        //asignar ram
+			        	                mem_page_ram_128k();
+
+			                	        //asignar rom
+			                        	mem_page_rom_128k();
+
+						}
+
+
+
+			                }
+				}
+
 	//Puertos especiales de TBBLUE y de paginacion 128kb
 	if (MACHINE_IS_TBBLUE) {
 		//if (puerto==0x24D9 || puerto==0x24DB || puerto==0x24DD || puerto==0x24DF) tbblue_out_port(puerto,value);

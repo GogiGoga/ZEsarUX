@@ -2546,7 +2546,7 @@ void scrcocoa_refresca_pantalla(void)
 
         else if (MACHINE_IS_SPECTRUM) {
 
-					//temp_refresca_pentevo_text();
+					if (MACHINE_IS_TSCONF) temp_refresca_pentevo_text();
 
                 //modo clasico. sin rainbow
                 if (rainbow_enabled.v==0) {

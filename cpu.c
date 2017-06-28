@@ -773,6 +773,10 @@ void reset_cpu(void)
 		mem_set_normal_pages_128k();
 	}
 
+	if (MACHINE_IS_TSCONF) {
+		mem_set_normal_pages_128k();
+	}
+
 	if (MACHINE_IS_SPECTRUM_P2A) {
 		mem_set_normal_pages_p2a();
 	}
@@ -937,6 +941,7 @@ char *string_machines_list_description=
 							" Prism    Prism\n"
 							" TBBlue   TBBlue/ZX Spectrum Next\n"
 							" Chrome   Chrome\n"
+							" TSConf   Pentevo TSConf\n"
 					    " ACE      Jupiter Ace\n"
 					    " CPC464   Amstrad CPC 464\n"
 							;
@@ -1850,6 +1855,7 @@ struct s_machine_names machine_names[]={
 					    {"Spectrum 48k (Spanish)",		20},
 					    {"Pentagon",		21},
 							{"Chrome", MACHINE_ID_CHROME},
+							{"TSConf", MACHINE_ID_TSCONF},
                                             {"ZX-80",  				120},
                                             {"ZX-81",  				121},
 					    {"Jupiter Ace",  			122},
@@ -2144,6 +2150,17 @@ void malloc_mem_machine(void) {
 
 						}
 
+						else if (MACHINE_IS_TSCONF) {
+
+		                //32 kb rom, 128-512 ram
+		                malloc_machine((32+512)*1024);
+		                random_ram(memoria_spectrum+32768,512*1024);
+
+				mem_init_memory_tables_128k();
+		                mem_set_normal_pages_128k();
+
+		        }
+
 
           else if (MACHINE_IS_TIMEX_TS2068) {
 
@@ -2233,7 +2250,9 @@ void set_machine_params(void)
 20=Spectrum + Spanish
 21=Pentagon
 22=Chrome
-23-29 Reservado (Spectrum)
+23=TSConf: Pentagon + Evo = PentEvo
+24=BaseConf: ATM + Evo = ZX Evolution (no implementado aun)
+25-29 Reservado (Spectrum)
 120=zx80 (old 20)
 121=zx81 (old 21)
 122=jupiter ace (old 22)
@@ -2529,6 +2548,22 @@ void set_machine_params(void)
 
 											 }
 
+						else if (MACHINE_IS_TSCONF) {
+									                         contend_read=contend_read_128k;
+									                         contend_read_no_mreq=contend_read_no_mreq_128k;
+									                         contend_write_no_mreq=contend_write_no_mreq_128k;
+
+									 			ula_contend_port_early=ula_contend_port_early_128k;
+									 			ula_contend_port_late=ula_contend_port_late_128k;
+
+
+									 	                screen_testados_linea=228;
+									         	        screen_invisible_borde_superior=7;
+									                 	screen_invisible_borde_derecho=104;
+
+									 			contend_pages_128k_p2a=contend_pages_128k;
+						}
+
                else if (MACHINE_IS_TIMEX_TS2068) {
                         contend_read=contend_read_timex;
                         contend_read_no_mreq=contend_read_no_mreq_timex;
@@ -2797,6 +2832,16 @@ void set_machine_params(void)
 														poke_byte_no_time=poke_byte_no_time_chrome;
 														lee_puerto=lee_puerto_spectrum;
 														ay_chip_present.v=1;
+								break;
+
+
+								case MACHINE_ID_TSCONF:
+								poke_byte=poke_byte_spectrum_128k;
+								peek_byte=peek_byte_spectrum_128k;
+		peek_byte_no_time=peek_byte_no_time_spectrum_128k;
+		poke_byte_no_time=poke_byte_no_time_spectrum_128k;
+								lee_puerto=lee_puerto_spectrum;
+								ay_chip_present.v=1;
 								break;
 
 
@@ -3266,6 +3311,9 @@ void rom_load(char *romfilename)
 								romfilename="chrome.rom";
 								break;
 
+								case MACHINE_ID_TSCONF:
+								romfilename="ts-bios.rom";
+								break;
 
                 case 120:
                 romfilename="zx80.rom";
@@ -3441,6 +3489,16 @@ Total 20 pages=320 Kb
 									if (leidos!=65536) {
 									     cpu_panic("Error loading ROM");
 									}
+
+								}
+
+								else if (MACHINE_IS_TSCONF) {
+									//De momento temporal solo 32kb rom hasta que sepa bien como funciona
+
+																						leidos=fread(rom_mem_table[0],1,32768,ptr_romfile);
+																						if (leidos!=32768) {
+											cpu_panic("Error loading ROM");
+																			 }
 
 								}
 

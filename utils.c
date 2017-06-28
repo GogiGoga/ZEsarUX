@@ -364,7 +364,8 @@ char *array_fabricantes[]={
 	"Jupiter Cantab",
 	"Miles Gordon Technology",
 	"Pentagon",
-  "Mario Prato"
+  "Mario Prato",
+  "TS Labs"
 };
 
 char *array_fabricantes_hotkey[]={
@@ -381,10 +382,12 @@ char *array_fabricantes_hotkey[]={
         "J~~upiter Cantab",
         "Mi~~les Gordon Technology",
 	       "~~Pentagon",
-        "Ma~~rio Prato"
+        "Ma~~rio Prato",
+        "TS Labs"
 };
 
-char array_fabricantes_hotkey_letra[]="satimzcjvbulpr";
+//Si letra es espacio->no hay letra
+char array_fabricantes_hotkey_letra[]="satimzcjvbulpr ";
 
 
 /*
@@ -411,6 +414,7 @@ char array_fabricantes_hotkey_letra[]="satimzcjvbulpr";
 20=Spectrum + Spanish
 21=Pentagon
 22=Chrome
+23=TSConf
 120=zx80
 121=zx81
 122=jupiter ace
@@ -478,6 +482,10 @@ int array_maquinas_marioprato[]={
 	22,255
 };
 
+int array_maquinas_tslabs[]={
+	MACHINE_ID_TSCONF,255
+};
+
 //Retorna array a maquinas segun fabricante
 int *return_maquinas_fabricante(int fabricante)
 {
@@ -536,6 +544,10 @@ int *return_maquinas_fabricante(int fabricante)
 
     case FABRICANTE_MARIOPRATO:
       return array_maquinas_marioprato;
+    break;
+
+    case FABRICANTE_TSLABS:
+      return array_maquinas_tslabs;
     break;
 
 		default:
@@ -622,6 +634,10 @@ int return_fabricante_maquina(int maquina)
 
     case MACHINE_ID_CHROME:
       return FABRICANTE_MARIOPRATO;
+    break;
+
+    case MACHINE_ID_TSCONF:
+      return FABRICANTE_TSLABS;
     break;
 
 		default:
@@ -7128,6 +7144,7 @@ int get_machine_id_by_name(char *machine_name)
                                 else if (!strcasecmp(machine_name,"TBBlue")) return_machine=19;
                                 else if (!strcasecmp(machine_name,"Pentagon")) return_machine=21;
                                 else if (!strcasecmp(machine_name,"Chrome")) return_machine=MACHINE_ID_CHROME;
+                                else if (!strcasecmp(machine_name,"TSConf")) return_machine=MACHINE_ID_TSCONF;
                                 else if (!strcasecmp(machine_name,"ZX80")) return_machine=120;
                                 else if (!strcasecmp(machine_name,"ZX81")) return_machine=121;
                                 else if (!strcasecmp(machine_name,"ACE")) return_machine=122;
@@ -7254,6 +7271,10 @@ break;
 
 case MACHINE_ID_CHROME:
 strcpy(machine_name,"Chrome");
+break;
+
+case MACHINE_ID_TSCONF:
+strcpy(machine_name,"TSConf");
 break;
 
 case 120:

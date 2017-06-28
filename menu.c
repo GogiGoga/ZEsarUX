@@ -5059,7 +5059,7 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                         menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
     //Paginas memoria
-    if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME) {
+    if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
                                 int pagina;
                                 //4 paginas, texto 5 caracteres max
                                 char texto_paginas[4][5];
@@ -19795,7 +19795,8 @@ void menu_machine_selection(MENU_ITEM_PARAMETERS)
 			int i;
 			for (i=1;i<TOTAL_FABRICANTES;i++) {
 				menu_add_item_menu_format(array_menu_machine_selection,MENU_OPCION_NORMAL,NULL,NULL,"%s",array_fabricantes_hotkey[i]);
-				menu_add_item_menu_shortcut(array_menu_machine_selection,array_fabricantes_hotkey_letra[i]);
+				z80_byte letra=array_fabricantes_hotkey_letra[i];
+				if (letra!=' ') menu_add_item_menu_shortcut(array_menu_machine_selection,letra);
 			}
 
 

@@ -215,6 +215,14 @@ z80_byte *get_base_mem_pantalla_continue(void)
                 else return chrome_ram_mem_table[5];
         }
 
+				if (MACHINE_IS_TSCONF) {
+
+					if (puerto_32765 & 8) {
+						return ram_mem_table[7];
+					}
+					else return ram_mem_table[5];
+				}
+
 
         if (MACHINE_IS_TBBLUE) {
 

@@ -282,6 +282,9 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 #define MACHINE_ID_PENTAGON 21
 #define MACHINE_ID_CHROME 22
 
+#define MACHINE_ID_TSCONF 23
+#define MACHINE_ID_BASECONF 24
+
 
 //Condiciones de maquinas activas
 #define MACHINE_IS_SPECTRUM (current_machine_type<30)
@@ -303,6 +306,12 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 #define MACHINE_IS_SPECTRUM_PLUS_SPA (current_machine_type==20)
 #define MACHINE_IS_PENTAGON (current_machine_type==MACHINE_ID_PENTAGON)
 #define MACHINE_IS_CHROME (current_machine_type==MACHINE_ID_CHROME)
+
+
+#define MACHINE_IS_TSCONF (current_machine_type==MACHINE_ID_TSCONF)
+#define MACHINE_IS_BASECONF (current_machine_type==MACHINE_ID_BASECONF)
+
+#define MACHINE_IS_EVO (MACHINE_IS_TSCONF || MACHINE_IS_BASECONF)
 
 #define MACHINE_IS_ZX80 (current_machine_type==120)
 #define MACHINE_IS_ZX81 (current_machine_type==121)
