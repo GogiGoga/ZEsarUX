@@ -4552,8 +4552,9 @@ z80_byte idle_bus_port(z80_int puerto)
 	//Caso Inves, siempre 255
 	if (MACHINE_IS_INVES) return 255;
 
-	//Caso 48k, 128k, zxuno. Retornar atributo de pantalla
-	if (MACHINE_IS_SPECTRUM_16_48 || MACHINE_IS_SPECTRUM_128_P2 || MACHINE_IS_ZXUNO || MACHINE_IS_PRISM) {
+	//Caso 48k, 128k, zxuno, tsconf. Retornar atributo de pantalla
+	//Parece que si en tsconf no retornamos esto, no acaba de arrancar la bios
+	if (MACHINE_IS_SPECTRUM_16_48 || MACHINE_IS_SPECTRUM_128_P2 || MACHINE_IS_ZXUNO || MACHINE_IS_PRISM || MACHINE_IS_TSCONF) {
 		z80_byte valor_idle=idle_bus_port_atribute();
 
 		//int t_estados_en_linea=(t_estados % screen_testados_linea);
