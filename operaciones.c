@@ -5360,6 +5360,18 @@ Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading fr
 		if (puerto==8189) return puerto_8189;
 	}
 
+	if (MACHINE_IS_TSCONF) {
+		//Posible puerto rtc y lectura teclado ps2
+		if (puerto==0xbff7 || puerto==0xbef7) {
+			printf ("Leyendo puerto TSConf rtc %04XH\n",puerto);
+		}
+
+		else {
+			//Otros puertos
+			printf ("Leyendo puerto %04XH\n",puerto);
+		}
+	}
+
 
 //Final. Puertos de paginacion y puerto no asignado. No agregar nada despues de aqui
 //Puertos de Paginacion. En caso de 128k y +2, acaba escribiendo el valor leido del bus idle en el puerto de paginacion
