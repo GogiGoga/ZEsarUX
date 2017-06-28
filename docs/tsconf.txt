@@ -1,0 +1,13 @@
+ZX-Evolution, as you probably know, is an FPGA clone. It has certain peripheral hardware on its board, but majority of chipset logic is packed into FPGA.
+Currently there are two popular FPGA configurations for ZX-Evo: Baseconf and TS-Conf. I'm the author of the latter. So I will talk mostly about it.
+These configs are quite different and compatible on the level of ZX-128 only. Each has own set of extended features.
+
+There are bad news and good news.
+Bad #1 - there's no documentation for TS-Conf in English besides that Excel and less probable that I'll write it in a near future.
+Bad #2 - the emulation for TS-Conf will require 28MHz granularity for virtual system clock (i.e. emulator should be aware of DRAM timestamps with this accuracy to emulate the system properly). Generally, the complexity of emulation is more or less of Amiga level.
+Good #1 - there is accurate emulation available in Unreal Speccy. The code is written in C++ and is not quite easy, but it can give an idea and can be used for reference.
+
+I can answer questions related to TS-Conf. But do not ask me about Baseconf, I know less about its details. Emulation for Baseconf is much easier and is also available in Unreal Speccy.
+
+Feel free to ask.
+Best regards.
