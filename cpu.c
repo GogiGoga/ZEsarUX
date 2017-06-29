@@ -702,6 +702,14 @@ void hard_reset_cpu(void)
 		reset_cpu();
 	}
 
+	else if (MACHINE_IS_TSCONF) {
+		//temporal. hacer que al hard reset de tsconf se vuelva a mapear la rom de la bios
+		reset_cpu();
+		temp_tsconf_in_system_rom_flag=1;
+		tsconf_af_ports[0x21]=0;
+		tsconf_set_memory_pages();
+	}
+
 }
 
 void reset_cpu(void)
@@ -726,9 +734,9 @@ void reset_cpu(void)
 
 	interrupcion_maskable_generada.v=0;
 	interrupcion_non_maskable_generada.v=0;
-        interrupcion_timer_generada.v=0;
+  interrupcion_timer_generada.v=0;
 	iff1.v=iff2.v=0;
-        im_mode=0;
+  im_mode=0;
 
 	if1_rom_paged.v=0;
 
@@ -864,8 +872,19 @@ util_stats_init();
 	}
 
 	if (MACHINE_IS_TSCONF) {
+		//Bit 4 de 32765 es bit 0 de #21AF. Por tanto poner ese bit 0 a 0
+		tsconf_af_ports[0x21] &=(255-1);
+
+		//TODO. Que otros puertos de tsconf se ponen a 0 en el reset?
+
+
+
 		tsconf_set_memory_pages();
+
+		//De momento hacemos que cuando se haga un reset, no se vuelve a la system rom
 		temp_tsconf_in_system_rom_flag=0;
+
+
 	}
 
 	if (MACHINE_IS_TBBLUE) {

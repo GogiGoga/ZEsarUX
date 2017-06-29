@@ -6389,7 +6389,13 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 					//Puertos NVRAM
 					if (puerto==0xeff7) tsconf_last_port_eff7=value;
 					if (puerto==0xdff7) tsconf_last_port_dff7=value;
-					if (puerto==0xbff7) tsconf_nvram[tsconf_last_port_dff7]=value;
+
+
+					if (puerto==0xbff7) {
+						//Si esta permitida la escritura
+						if (tsconf_last_port_eff7&128) tsconf_nvram[tsconf_last_port_dff7]=value;
+					}
+
 					if (puerto_l==0xaf) tsconf_write_af_port(puerto_h,value);
 
 

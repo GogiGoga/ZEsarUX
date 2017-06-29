@@ -16568,7 +16568,7 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 
 		}
 
-		if (MACHINE_IS_Z88 || MACHINE_IS_ZXUNO || MACHINE_IS_PRISM || MACHINE_IS_TBBLUE || superupgrade_enabled.v) {
+		if (MACHINE_IS_Z88 || MACHINE_IS_ZXUNO || MACHINE_IS_PRISM || MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_TSCONF) {
 	                menu_add_item_menu(array_menu_debug_settings,"~~Hard Reset",MENU_OPCION_NORMAL,menu_debug_hard_reset,NULL);
 			menu_add_item_menu_shortcut(array_menu_debug_settings,'h');
 	                menu_add_item_menu_tooltip(array_menu_debug_settings,"Hard resets the machine");
