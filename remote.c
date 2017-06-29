@@ -42,6 +42,7 @@
 #include "superupgrade.h"
 #include "tbblue.h"
 #include "textspeech.h"
+#include "tsconf.h"
 
 
 int remote_protocol_port=DEFAULT_REMOTE_PROTOCOL_PORT;
@@ -771,6 +772,7 @@ struct s_items_ayuda items_ayuda[]={
  {"tbblue-get-palette",NULL,"index","Get palette colour at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tsconf-get-vram",NULL,"index","Get NVRAM value at index"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be separed by one space"},
@@ -3272,8 +3274,7 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 
 	}
 
-
-        else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {
+    else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {			
 
 		if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
 			else {
@@ -3364,6 +3365,23 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 
 
 
+				else if (!strcmp(comando_sin_parametros,"tsconf-get-vram") ) {
+
+			  	if (!MACHINE_IS_TSCONF) escribir_socket(misocket,"ERROR. Machine is not TSConf");
+					else {
+						if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+						else {
+
+							 int index=parse_string_to_number(parametros);
+							 if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
+							 else {
+								 z80_byte value=tsconf_nvram[index];
+								 escribir_socket_format(misocket,"%02X",value);
+							 }
+						}
+					}
+
+				}
 
 
         else if (!strcmp(comando_sin_parametros,"quit") || !strcmp(comando_sin_parametros,"exit") || !strcmp(comando_sin_parametros,"logout")) {

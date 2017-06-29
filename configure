@@ -1146,8 +1146,8 @@ INSTALLPREFIX=$INSTALLPREFIX
 all: zesarux
 
 
-zesarux: charset.o $OPTIONOBJSTDOUT $OPTIONOBJSIMPLETEXT $OPTIONOBJCURSES $OPTIONOBJAA $OPTIONOBJCACA $OPTIONOBJXWINDOWS $OPTIONOBJSDL $OPTIONOBJFBDEV autoselectoptions.o chardetect.o textspeech.o scrnull.o $OPTIONOBJDSP $OPTIONOBJALSA $OPTIONOBJPULSE $OPTIONOBJCOREAUDIO audionull.o ay38912.o cpu.o codsinpr.o codprddfd.o codpred.o operaciones.o debug.o tape.o tape_tap.o tape_tzx.o tape_smp.o audio.o screen.o mem128.o chloe.o prism.o tbblue.o timex.o zx8081.o jupiterace.o z88.o cpc.o sam.o atomlite.o zxuno.o snap.o snap_zsf.o snap_z81.o snap_zx8081.o snap_rzx.o menu.o core_spectrum.o core_zx8081.o core_z88.o core_cpc.o core_ace.o core_sam.o core_ql.o timer.o contend.o disassemble.o utils.o playtzx.o joystick.o ula.o mmc.o ide.o pd765.o divmmc.o divide.o diviface.o zxpand.o superupgrade.o dandanator.o multiface.o spectra.o spritechip.o printers.o realjoystick.o ulaplus.o if1.o ds1307.o ql.o m68kcpu.o m68kdasm.o m68kops.o  m68kopac.o m68kopdm.o m68kopnz.o chrome.o remote.o $MAINSOURCE.o 
-	\$(CC) \$(CFLAGS) cpu.o $MAINSOURCE.o charset.o $OPTIONOBJSTDOUT $OPTIONOBJSIMPLETEXT $OPTIONOBJCURSES $OPTIONOBJAA $OPTIONOBJCACA $OPTIONOBJXWINDOWS $OPTIONOBJSDL $OPTIONOBJFBDEV autoselectoptions.o chardetect.o textspeech.o scrnull.o screen.o mem128.o chloe.o prism.o tbblue.o timex.o $OPTIONOBJDSP $OPTIONOBJALSA $OPTIONOBJPULSE $OPTIONOBJCOREAUDIO audionull.o ay38912.o codsinpr.o codprddfd.o codpred.o operaciones.o debug.o tape.o tape_tap.o tape_tzx.o tape_smp.o audio.o zx8081.o jupiterace.o z88.o cpc.o sam.o atomlite.o zxuno.o snap.o snap_zsf.o snap_z81.o snap_zx8081.o snap_rzx.o menu.o core_spectrum.o core_zx8081.o core_z88.o core_cpc.o core_ace.o core_sam.o core_ql.o timer.o contend.o disassemble.o utils.o playtzx.o joystick.o ula.o mmc.o ide.o pd765.o divmmc.o divide.o diviface.o zxpand.o superupgrade.o dandanator.o multiface.o spectra.o spritechip.o printers.o realjoystick.o ulaplus.o ds1307.o if1.o ql.o m68kcpu.o m68kdasm.o m68kops.o  m68kopac.o m68kopdm.o m68kopnz.o chrome.o remote.o -o zesarux \$(LDFLAGS)
+zesarux: charset.o $OPTIONOBJSTDOUT $OPTIONOBJSIMPLETEXT $OPTIONOBJCURSES $OPTIONOBJAA $OPTIONOBJCACA $OPTIONOBJXWINDOWS $OPTIONOBJSDL $OPTIONOBJFBDEV autoselectoptions.o chardetect.o textspeech.o scrnull.o $OPTIONOBJDSP $OPTIONOBJALSA $OPTIONOBJPULSE $OPTIONOBJCOREAUDIO audionull.o ay38912.o cpu.o codsinpr.o codprddfd.o codpred.o operaciones.o debug.o tape.o tape_tap.o tape_tzx.o tape_smp.o audio.o screen.o mem128.o chloe.o prism.o tbblue.o timex.o zx8081.o jupiterace.o z88.o cpc.o sam.o atomlite.o zxuno.o snap.o snap_zsf.o snap_z81.o snap_zx8081.o snap_rzx.o menu.o core_spectrum.o core_zx8081.o core_z88.o core_cpc.o core_ace.o core_sam.o core_ql.o timer.o contend.o disassemble.o utils.o playtzx.o joystick.o ula.o mmc.o ide.o pd765.o divmmc.o divide.o diviface.o zxpand.o superupgrade.o dandanator.o multiface.o spectra.o spritechip.o printers.o realjoystick.o ulaplus.o if1.o ds1307.o ql.o m68kcpu.o m68kdasm.o m68kops.o  m68kopac.o m68kopdm.o m68kopnz.o chrome.o tsconf.o remote.o $MAINSOURCE.o 
+	\$(CC) \$(CFLAGS) cpu.o $MAINSOURCE.o charset.o $OPTIONOBJSTDOUT $OPTIONOBJSIMPLETEXT $OPTIONOBJCURSES $OPTIONOBJAA $OPTIONOBJCACA $OPTIONOBJXWINDOWS $OPTIONOBJSDL $OPTIONOBJFBDEV autoselectoptions.o chardetect.o textspeech.o scrnull.o screen.o mem128.o chloe.o prism.o tbblue.o timex.o $OPTIONOBJDSP $OPTIONOBJALSA $OPTIONOBJPULSE $OPTIONOBJCOREAUDIO audionull.o ay38912.o codsinpr.o codprddfd.o codpred.o operaciones.o debug.o tape.o tape_tap.o tape_tzx.o tape_smp.o audio.o zx8081.o jupiterace.o z88.o cpc.o sam.o atomlite.o zxuno.o snap.o snap_zsf.o snap_z81.o snap_zx8081.o snap_rzx.o menu.o core_spectrum.o core_zx8081.o core_z88.o core_cpc.o core_ace.o core_sam.o core_ql.o timer.o contend.o disassemble.o utils.o playtzx.o joystick.o ula.o mmc.o ide.o pd765.o divmmc.o divide.o diviface.o zxpand.o superupgrade.o dandanator.o multiface.o spectra.o spritechip.o printers.o realjoystick.o ulaplus.o ds1307.o if1.o ql.o m68kcpu.o m68kdasm.o m68kops.o  m68kopac.o m68kopdm.o m68kopnz.o chrome.o tsconf.o remote.o -o zesarux \$(LDFLAGS)
 
 charset.o: charset.c
 	\$(CC) \$(CFLAGS) -c charset.c
@@ -1164,10 +1164,10 @@ codpred.o: codpred.c cpu.h operaciones.h debug.h contend.h
 codsinpr.o: codsinpr.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h z88.h snap_rzx.h
 	\$(CC) \$(CFLAGS) -c codsinpr.c
 
-operaciones.o: operaciones.c cpu.h operaciones.h debug.h audio.h tape.h ay38912.h mem128.h chloe.h prism.h tbblue.h timex.h zx8081.h menu.h screen.h compileoptions.h contend.h joystick.h ula.h utils.h printers.h disassemble.h z88.h ulaplus.h zxuno.h chardetect.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h timer.h pd765.h superupgrade.h snap_rzx.h multiface.h chrome.h ds1307.h
+operaciones.o: operaciones.c cpu.h operaciones.h debug.h audio.h tape.h ay38912.h mem128.h chloe.h prism.h tbblue.h timex.h zx8081.h menu.h screen.h compileoptions.h contend.h joystick.h ula.h utils.h printers.h disassemble.h z88.h ulaplus.h zxuno.h chardetect.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h timer.h pd765.h superupgrade.h snap_rzx.h multiface.h chrome.h tsconf.h ds1307.h
 	\$(CC) \$(CFLAGS) -c operaciones.c
 
-cpu.o: cpu.c cpu.h scrnull.h scrstdout.h scrsimpletext.h operaciones.h debug.h compileoptions.h tape.h tape_tap.h tape_tzx.h audio.h screen.h ay38912.h chloe.h prism.h tbblue.h mem128.h timex.h scrcurses.h scraa.h scrxwindows.h scrsdl.h scrnull.h scrfbdev.h audiodsp.h audiosdl.h audionull.h audioalsa.h audiopulse.h zx8081.h snap.h menu.h core_spectrum.h core_zx8081.h core_z88.h tape_smp.h contend.h utils.h ula.h printers.h joystick.h realjoystick.h z88.h ulaplus.h autoselectoptions.h zxuno.h chardetect.h textspeech.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h atomlite.h dandanator.h superupgrade.h ql.h remote.h snap_rzx.h multiface.h chrome.h
+cpu.o: cpu.c cpu.h scrnull.h scrstdout.h scrsimpletext.h operaciones.h debug.h compileoptions.h tape.h tape_tap.h tape_tzx.h audio.h screen.h ay38912.h chloe.h prism.h tbblue.h mem128.h timex.h scrcurses.h scraa.h scrxwindows.h scrsdl.h scrnull.h scrfbdev.h audiodsp.h audiosdl.h audionull.h audioalsa.h audiopulse.h zx8081.h snap.h menu.h core_spectrum.h core_zx8081.h core_z88.h tape_smp.h contend.h utils.h ula.h printers.h joystick.h realjoystick.h z88.h ulaplus.h autoselectoptions.h zxuno.h chardetect.h textspeech.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h atomlite.h dandanator.h superupgrade.h ql.h remote.h snap_rzx.h multiface.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c cpu.c
 
 core_spectrum.o: core_spectrum.c core_spectrum.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h realjoystick.h divmmc.h divide.h diviface.h timex.h zxuno.h prism.h snap_rzx.h superupgrade.h
@@ -1200,7 +1200,7 @@ timer.o: timer.c timer.h cpu.h audio.h debug.h menu.h tape.h screen.h compileopt
 debug.o: debug.c cpu.h debug.h mem128.h timex.h screen.h menu.h zx8081.h operaciones.h core_spectrum.h core_zx8081.h core_z88.h core_ace.h core_cpc.h disassemble.h utils.h prism.h core_sam.h core_ql.h spectra.h tbblue.h zxuno.h ulaplus.h timex.h ay38912.h ula.h ql.h m68k.h superupgrade.h
 	\$(CC) \$(CFLAGS) -c debug.c
 
-tape.o: tape.c tape.h cpu.h operaciones.h debug.h tape_tap.h tape_tzx.h tape_smp.h chloe.h prism.h mem128.h timex.h snap.h compileoptions.h screen.h zx8081.h menu.h snap_z81.h utils.h audio.h screen.h autoselectoptions.h zxuno.h timer.h superupgrade.h multiface.h chrome.h
+tape.o: tape.c tape.h cpu.h operaciones.h debug.h tape_tap.h tape_tzx.h tape_smp.h chloe.h prism.h mem128.h timex.h snap.h compileoptions.h screen.h zx8081.h menu.h snap_z81.h utils.h audio.h screen.h autoselectoptions.h zxuno.h timer.h superupgrade.h multiface.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c tape.c
 
 tape_tap.o: tape_tap.c tape_tap.h tape.h cpu.h operaciones.h debug.h
@@ -1221,10 +1221,10 @@ audionull.o: audionull.c audionull.h cpu.h debug.h audio.h
 ay38912.o: ay38912.c ay38912.h cpu.h audio.h joystick.h
 	\$(CC) \$(CFLAGS) -c ay38912.c
 
-screen.o: screen.c screen.h debug.h mem128.h chloe.h prism.h timex.h cpc.h prism.h operaciones.h zx8081.h charset.h menu.h audio.h contend.h ula.h tape_smp.h z88.h ulaplus.h zxuno.h spectra.h spritechip.h timer.h sam.h ql.h chrome.h
+screen.o: screen.c screen.h debug.h mem128.h chloe.h prism.h timex.h cpc.h prism.h operaciones.h zx8081.h charset.h menu.h audio.h contend.h ula.h tape_smp.h z88.h ulaplus.h zxuno.h spectra.h spritechip.h timer.h sam.h ql.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c screen.c
 
-mem128.o: mem128.c cpu.h mem128.h debug.h contend.h zxuno.h chloe.h prism.h timex.h sam.h ula.h tbblue.h superupgrade.h chrome.h
+mem128.o: mem128.c cpu.h mem128.h debug.h contend.h zxuno.h chloe.h prism.h timex.h sam.h ula.h tbblue.h superupgrade.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c mem128.c
 
 timex.o: timex.c timex.h cpu.h debug.h contend.h tape.h mem128.h menu.h
@@ -1236,10 +1236,13 @@ chloe.o: chloe.c chloe.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.
 chrome.o: chrome.c chrome.h cpu.h mem128.h debug.h contend.h  
 	\$(CC) \$(CFLAGS) -c chrome.c
 
+tsconf.o: tsconf.c tsconf.h cpu.h mem128.h debug.h contend.h  
+	\$(CC) \$(CFLAGS) -c tsconf.c
+
 prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h utils.h menu.h
 	\$(CC) \$(CFLAGS) -c prism.c
 
-remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h superupgrade.h tbblue.h
+remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h superupgrade.h tbblue.h tsconf.h
 	\$(CC) \$(CFLAGS) -c remote.c
 
 tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h
@@ -1293,10 +1296,10 @@ m68kopnz.o: m68kopnz.c
 
 
 
-snap.o: snap.c snap.h cpu.h debug.h operaciones.h zx8081.h mem128.h ay38912.h compileoptions.h autoselectoptions.h ay38912.h tape_smp.h audio.h screen.h menu.h tape.h snap_z81.h snap_zx8081.h snap_rzx.h utils.h ula.h joystick.h realjoystick.h z88.h chardetect.h jupiterace.h cpc.h timex.h zxuno.h ulaplus.h chloe.h prism.h diviface.h snap_rzx.h chrome.h
+snap.o: snap.c snap.h cpu.h debug.h operaciones.h zx8081.h mem128.h ay38912.h compileoptions.h autoselectoptions.h ay38912.h tape_smp.h audio.h screen.h menu.h tape.h snap_z81.h snap_zx8081.h snap_rzx.h utils.h ula.h joystick.h realjoystick.h z88.h chardetect.h jupiterace.h cpc.h timex.h zxuno.h ulaplus.h chloe.h prism.h diviface.h snap_rzx.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c snap.c
 
-snap_zsf.o: snap_zsf.c snap_zsf.h cpu.h debug.h operaciones.h zx8081.h mem128.h ay38912.h compileoptions.h autoselectoptions.h ay38912.h tape_smp.h audio.h screen.h menu.h tape.h snap_z81.h snap_zx8081.h snap_rzx.h utils.h ula.h joystick.h realjoystick.h z88.h chardetect.h jupiterace.h cpc.h timex.h zxuno.h ulaplus.h chloe.h prism.h diviface.h snap_rzx.h chrome.h
+snap_zsf.o: snap_zsf.c snap_zsf.h cpu.h debug.h operaciones.h zx8081.h mem128.h ay38912.h compileoptions.h autoselectoptions.h ay38912.h tape_smp.h audio.h screen.h menu.h tape.h snap_z81.h snap_zx8081.h snap_rzx.h utils.h ula.h joystick.h realjoystick.h z88.h chardetect.h jupiterace.h cpc.h timex.h zxuno.h ulaplus.h chloe.h prism.h diviface.h snap_rzx.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c snap_zsf.c
 
 snap_z81.o: snap_z81.c snap_z81.h cpu.h debug.h operaciones.h snap.h
@@ -1308,7 +1311,7 @@ snap_zx8081.o: snap_zx8081.c snap_zx8081.h cpu.h debug.h operaciones.h zx8081.h 
 snap_rzx.o: snap_rzx.c snap_rzx.h snap.h cpu.h debug.h operaciones.h utils.h menu.h screen.h
 	\$(CC) \$(CFLAGS) -c snap_rzx.c
 
-menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h tape.h audio.h timer.h snap.h operaciones.h disassemble.h utils.h contend.h joystick.h ula.h printers.h realjoystick.h scrstdout.h z88.h ulaplus.h autoselectoptions.h zxuno.h charset.h chardetect.h textspeech.h  mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h timex.h chloe.h cpc.h prism.h sam.h if1.h pd765.h atomlite.h tbblue.h dandanator.h multiface.h superupgrade.h m68k.h remote.h snap_rzx.h chrome.h
+menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h tape.h audio.h timer.h snap.h operaciones.h disassemble.h utils.h contend.h joystick.h ula.h printers.h realjoystick.h scrstdout.h z88.h ulaplus.h autoselectoptions.h zxuno.h charset.h chardetect.h textspeech.h  mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h timex.h chloe.h cpc.h prism.h sam.h if1.h pd765.h atomlite.h tbblue.h dandanator.h multiface.h superupgrade.h m68k.h remote.h snap_rzx.h chrome.h tsconf.h
 	\$(CC) \$(CFLAGS) -c menu.c
 
 disassemble.o: disassemble.c disassemble.h cpu.h operaciones.h debug.h ql.h utils.h

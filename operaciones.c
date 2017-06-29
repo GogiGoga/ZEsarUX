@@ -65,6 +65,7 @@
 #include "ql.h"
 #include "chrome.h"
 #include "ds1307.h"
+#include "tsconf.h"
 
 
 void (*poke_byte)(z80_int dir,z80_byte valor);
@@ -4930,6 +4931,9 @@ z80_byte lee_puerto_spectrum_ula(z80_byte puerto_h)
 
 }
 
+
+
+
 //Devuelve valor puerto para maquinas Spectrum
 z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 {
@@ -5361,15 +5365,15 @@ Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading fr
 	}
 
 	if (MACHINE_IS_TSCONF) {
-		//Posible puerto rtc y lectura teclado ps2
-		if (puerto==0xbff7 || puerto==0xbef7) {
-			printf ("Leyendo puerto TSConf rtc %04XH\n",puerto);
-		}
 
-		else {
-			//Otros puertos
-			printf ("Leyendo puerto %04XH\n",puerto);
-		}
+		//Puertos nvram
+		if (puerto==0xeff7) return tsconf_last_port_eff7;
+		if (puerto==0xdff7) return tsconf_last_port_dff7;
+		if (puerto==0xbff7) return tsconf_nvram[tsconf_last_port_dff7];
+
+		//Otros puertos
+		printf ("Leyendo puerto %04XH\n",puerto);
+
 	}
 
 
@@ -5779,6 +5783,7 @@ z80_byte color_border;
 
 	return color_border;
 }
+
 
 
 
@@ -6296,10 +6301,18 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 			                        	mem_page_rom_128k();
 
 						}
+			    }
+
+					//Puertos NVRAM
+					if (puerto==0xeff7) tsconf_last_port_eff7=value;
+					if (puerto==0xdff7) tsconf_last_port_dff7=value;
+					if (puerto==0xbff7) tsconf_nvram[tsconf_last_port_dff7]=value;
 
 
-
-			                }
+					//Otros puertos en escritura, hacer debug
+					if ( (puerto & 32770) != 0 && puerto_l!=0xFE ) {
+						printf ("Writing TSConf port %04XH value %02XH\n",puerto,value);
+					}
 				}
 
 	//Puertos especiales de TBBLUE y de paginacion 128kb
