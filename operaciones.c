@@ -6374,6 +6374,15 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 							//Paginar RAM y ROM
 							tsconf_set_memory_pages();
 
+							//Bit 4 de 32765 es bit 0 de #21AF
+							z80_byte memconfig=tsconf_af_ports[0x21];
+							memconfig &=(255-1); //Reset del bit 0
+
+							//Y ponemos a 1 si conviene
+							if (value&16) memconfig|=1;
+
+							tsconf_af_ports[0x21]=memconfig;
+
 						}
 			    }
 

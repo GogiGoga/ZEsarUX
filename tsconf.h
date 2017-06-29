@@ -35,6 +35,9 @@ extern void tsconf_set_memory_pages(void);
 extern z80_byte *tsconf_memory_paged[];
 extern z80_byte *tsconf_rom_mem_table[];
 extern z80_byte *tsconf_ram_mem_table[];
+extern z80_byte tsconf_af_ports[];
+
+extern int temp_tsconf_in_system_rom_flag;
 
 
 #endif

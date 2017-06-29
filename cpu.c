@@ -865,6 +865,7 @@ util_stats_init();
 
 	if (MACHINE_IS_TSCONF) {
 		tsconf_set_memory_pages();
+		temp_tsconf_in_system_rom_flag=0;
 	}
 
 	if (MACHINE_IS_TBBLUE) {

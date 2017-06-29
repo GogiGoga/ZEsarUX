@@ -53,6 +53,16 @@ z80_bit tsconf_dos_signal={0};
 void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
 {
   tsconf_af_ports[puerto_h]=value;
+
+  //Bit 4 de 32765 es bit 0 de #21AF
+  if (puerto_h==0x21) {
+    puerto_32765 &=(255-16); //Reset bit 4
+    //Si bit 0 de 21af, poner bit 4
+    if (value&1) puerto_32765|=16;
+  }
+
+  //Si cambia registro #21AF (memconfig) o #10af (page0)
+  if (puerto_h==0x21 || puerto_h==0x10) tsconf_set_memory_pages();
 }
 
 z80_byte tsconf_get_af_port(z80_byte index)
@@ -89,18 +99,72 @@ void tsconf_init_memory_tables(void)
 
 }
 
+int temp_tsconf_in_system_rom_flag=1;
 
 
+int tsconf_in_system_rom(void)
+{
+  if (temp_tsconf_in_system_rom_flag) return 1;
+  return 0;
+  //TODO. No entiendo bien cuando entra aqui: 00 - after reset, only in "no map" mode, System ROM, suponemos que solo al encender la maquina,
+            //cosa que no es cierta
+}
 
 z80_byte tsconf_get_rom_bank(void)
 {
+/*
+Mapeo ROM
+The following ports/signals are in play:
+- #7FFD bit4,
+- DOS signal,
+- #21AF (Memconfig),
+- #10AF (Page0).
+
+Memconfig:
+- bit0 is an alias of bit4 #7FFD,
+- bit2 selects mapping mode (0 - map, 1 - no map),
+- bit3 selects what is in #0000..#3FFF (0 - ROM, 1 - RAM).
+
+In "no map" the page in the win0 (#0000..#3FFF) is set in Page0 directly. 8 bits are used if RAM, 5 lower bits - if ROM (ROM has 32 pages i.e. 512kB).
+In "map" mode Page0 selects ROM page bits 4..2 (which are set to 0 at reset) and bits 1..0 are taken from other sources, selecting one of four ROM pages, see table.
+
+bit1/0
+00 - after reset, only in "no map" mode, System ROM,
+01 - when DOS signal active, TR-DOS,
+10 - when no DOS and #7FFD.4 = 0 (or Memconfig.0 = 0), Basic 128,
+11 - when no DOS and #7FFD.4 = 1 (or Memconfig.0 = 1), Basic 48.
+*/
 
 
-        z80_byte banco;
 
-        banco=((puerto_32765>>4)&1);
+        z80_byte memconfig=tsconf_af_ports[0x21];
+        if (memconfig & 4) {
+          //Modo no map
+          cpu_panic("No map mode not emulated yet");
+          //solo para que no se queje el compilador
+          return 0;
+        }
+        else {
+          z80_byte banco;
+          //Modo map
+          z80_byte page0=tsconf_af_ports[0x10];
+          page0 = page0 << 2;  //In "map" mode Page0 selects ROM page bits 4..2
 
-	      return banco;
+          //TODO. No entiendo bien cuando entra aqui: 00 - after reset, only in "no map" mode, System ROM, suponemos que solo al encender la maquina,
+          //cosa que no es cierta
+          if (tsconf_in_system_rom() ) banco=0;
+          else {
+            //Evitamos modo DOS
+            banco=((puerto_32765>>4)&1) | 2;
+          }
+
+          return page0 | banco;
+
+        }
+
+
+
+
 }
 
 z80_byte tsconf_get_ram_bank_c0(void)
