@@ -1889,6 +1889,90 @@ z80_byte peek_byte_chrome(z80_int dir)
 
 
 
+z80_byte *tsconf_return_segment_memory(z80_int dir)
+{
+	int segmento;
+
+	segmento=dir/16384;
+
+	return tsconf_memory_paged[segmento];
+
+}
+
+
+void poke_byte_no_time_tsconf(z80_int dir,z80_byte valor)
+{
+
+#ifdef EMULATE_VISUALMEM
+
+set_visualmembuffer(dir);
+
+#endif
+
+		z80_byte *puntero;
+		puntero=tsconf_return_segment_memory(dir);
+
+		if (dir<16384) {
+			return; //TODO si ram en rom
+		}
+
+		dir = dir & 16383;
+		puntero=puntero+dir;
+
+		*puntero=valor;
+
+}
+
+void poke_byte_tsconf(z80_int dir,z80_byte valor)
+{
+int segmento;
+                segmento=dir / 16384;
+
+#ifdef EMULATE_CONTEND
+                if (contend_pages_actual[segmento]) {
+                        t_estados += contend_table[ t_estados ];
+                }
+#endif
+
+
+                t_estados += 3;
+
+        poke_byte_no_time_tsconf(dir,valor);
+}
+
+
+
+z80_byte peek_byte_no_time_tsconf(z80_int dir)
+{
+		z80_byte *puntero;
+		puntero=tsconf_return_segment_memory(dir);
+
+		dir = dir & 16383;
+		puntero=puntero+dir;
+
+		return *puntero;
+}
+
+
+z80_byte peek_byte_tsconf(z80_int dir)
+{
+        int segmento;
+        segmento=dir / 16384;
+
+#ifdef EMULATE_CONTEND
+                if (contend_pages_actual[segmento]) {
+                        t_estados += contend_table[ t_estados ];
+                }
+#endif
+
+                t_estados += 3;
+
+        return peek_byte_no_time_tsconf(dir);
+
+}
+
+
+
 
 
 z80_byte *timex_return_segment_memory(z80_int dir)
@@ -5339,12 +5423,6 @@ z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 		if (puerto==0x9E3B) return 0;
 	}
 
-	//Prueba pentevo
-	if (puerto_l==0xAF) {
-		//printf ("In port Pentevo %04XH\n",puerto);
-	}
-
-
 
 	z80_byte valor_idle_bus_port=idle_bus_port(puerto_l+256*puerto_h);
 
@@ -5370,6 +5448,7 @@ Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading fr
 		if (puerto==0xeff7) return tsconf_last_port_eff7;
 		if (puerto==0xdff7) return tsconf_last_port_dff7;
 		if (puerto==0xbff7) return tsconf_nvram[tsconf_last_port_dff7];
+		if (puerto_l==0xaf) return tsconf_get_af_port(puerto_h);
 
 		//Otros puertos
 		printf ("Leyendo puerto %04XH\n",puerto);
@@ -5912,6 +5991,7 @@ void out_port_spectrum_no_time(z80_int puerto,z80_byte value)
         //Los OUTS los capturan los diferentes interfaces que haya conectados, por tanto no hacer return en ninguno, para que se vayan comprobando
         //uno despues de otro
 	z80_byte puerto_l=puerto&255;
+	z80_byte puerto_h=(puerto>>8)&0xFF;
 
         //super wonder boy usa puerto 1fe
         //paperboy usa puertos xxfe
@@ -6292,13 +6372,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 							puerto_32765=value;
 							//Paginar RAM y ROM
-			                	        //32 kb rom, 128 ram
-
-				                        //asignar ram
-			        	                mem_page_ram_128k();
-
-			                	        //asignar rom
-			                        	mem_page_rom_128k();
+							tsconf_set_memory_pages();
 
 						}
 			    }
@@ -6307,6 +6381,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 					if (puerto==0xeff7) tsconf_last_port_eff7=value;
 					if (puerto==0xdff7) tsconf_last_port_dff7=value;
 					if (puerto==0xbff7) tsconf_nvram[tsconf_last_port_dff7]=value;
+					if (puerto_l==0xaf) tsconf_write_af_port(puerto_h,value);
 
 
 					//Otros puertos en escritura, hacer debug

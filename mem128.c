@@ -36,6 +36,7 @@
 #include "tbblue.h"
 #include "superupgrade.h"
 #include "chrome.h"
+#include "tsconf.h"
 
 //Direcciones donde estan cada pagina de ram
 //Antes habian 8 solo (8 paginas de 16kb cada una)
@@ -218,9 +219,9 @@ z80_byte *get_base_mem_pantalla_continue(void)
 				if (MACHINE_IS_TSCONF) {
 
 					if (puerto_32765 & 8) {
-						return ram_mem_table[7];
+						return tsconf_ram_mem_table[7];
 					}
-					else return ram_mem_table[5];
+					else return tsconf_ram_mem_table[5];
 				}
 
 

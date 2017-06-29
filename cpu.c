@@ -95,6 +95,7 @@
 #include "snap_rzx.h"
 #include "multiface.h"
 #include "chrome.h"
+#include "tsconf.h"
 
 #ifdef COMPILE_STDOUT
 #include "scrstdout.h"
@@ -773,10 +774,6 @@ void reset_cpu(void)
 		mem_set_normal_pages_128k();
 	}
 
-	if (MACHINE_IS_TSCONF) {
-		mem_set_normal_pages_128k();
-	}
-
 	if (MACHINE_IS_SPECTRUM_P2A) {
 		mem_set_normal_pages_p2a();
 	}
@@ -864,6 +861,10 @@ util_stats_init();
 
 	if (MACHINE_IS_CHROME) {
 		chrome_set_memory_pages();
+	}
+
+	if (MACHINE_IS_TSCONF) {
+		tsconf_set_memory_pages();
 	}
 
 	if (MACHINE_IS_TBBLUE) {
@@ -2152,12 +2153,13 @@ void malloc_mem_machine(void) {
 
 						else if (MACHINE_IS_TSCONF) {
 
-		                //32 kb rom, 128-512 ram
-		                malloc_machine((32+512)*1024);
-		                random_ram(memoria_spectrum+32768,512*1024);
+		                //512 kb rom, 4096 ram
+		                malloc_machine((512+4096)*1024);
+		                random_ram(memoria_spectrum+512*1024,4096*1024);
 
-				mem_init_memory_tables_128k();
-		                mem_set_normal_pages_128k();
+				tsconf_init_memory_tables();
+				tsconf_set_memory_pages();
+
 
 		        }
 
@@ -2549,19 +2551,19 @@ void set_machine_params(void)
 											 }
 
 						else if (MACHINE_IS_TSCONF) {
-									                         contend_read=contend_read_128k;
-									                         contend_read_no_mreq=contend_read_no_mreq_128k;
-									                         contend_write_no_mreq=contend_write_no_mreq_128k;
+									                         contend_read=contend_read_tsconf;
+									                         contend_read_no_mreq=contend_read_no_mreq_tsconf;
+									                         contend_write_no_mreq=contend_write_no_mreq_tsconf;
 
-									 			ula_contend_port_early=ula_contend_port_early_128k;
-									 			ula_contend_port_late=ula_contend_port_late_128k;
+									 			ula_contend_port_early=ula_contend_port_early_tsconf;
+									 			ula_contend_port_late=ula_contend_port_late_tsconf;
 
 
 									 	                screen_testados_linea=228;
 									         	        screen_invisible_borde_superior=7;
 									                 	screen_invisible_borde_derecho=104;
 
-									 			contend_pages_128k_p2a=contend_pages_128k;
+
 						}
 
                else if (MACHINE_IS_TIMEX_TS2068) {
@@ -2836,10 +2838,10 @@ void set_machine_params(void)
 
 
 								case MACHINE_ID_TSCONF:
-								poke_byte=poke_byte_spectrum_128k;
-								peek_byte=peek_byte_spectrum_128k;
-		peek_byte_no_time=peek_byte_no_time_spectrum_128k;
-		poke_byte_no_time=poke_byte_no_time_spectrum_128k;
+								poke_byte=poke_byte_tsconf;
+								peek_byte=peek_byte_tsconf;
+								peek_byte_no_time=peek_byte_no_time_tsconf;
+								poke_byte_no_time=poke_byte_no_time_tsconf;
 								lee_puerto=lee_puerto_spectrum;
 								ay_chip_present.v=1;
 								break;
@@ -3493,12 +3495,10 @@ Total 20 pages=320 Kb
 								}
 
 								else if (MACHINE_IS_TSCONF) {
-									//De momento temporal solo 32kb rom hasta que sepa bien como funciona
-
-																						leidos=fread(rom_mem_table[0],1,32768,ptr_romfile);
-																						if (leidos!=32768) {
+									leidos=fread(tsconf_rom_mem_table[0],1,65536,ptr_romfile);
+									if (leidos!=65536) {
 											cpu_panic("Error loading ROM");
-																			 }
+									}
 
 								}
 
@@ -5874,11 +5874,11 @@ struct sched_param sparam;
 
 	//Capturar segmentation fault
 	//desactivado normalmente en versiones snapshot
-	signal(SIGSEGV, segfault_signal_handler);
+	//signal(SIGSEGV, segfault_signal_handler);
 
 	//Capturar floating point exception
 	//desactivado normalmente en versiones snapshot
-	signal(SIGFPE, floatingpoint_signal_handler);
+	//signal(SIGFPE, floatingpoint_signal_handler);
 
   //Capturar sigbus. TODO probar en que casos salta
   //desactivado normalmente en versiones snapshot
