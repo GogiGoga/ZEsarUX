@@ -5,7 +5,7 @@ Added machine ZX-Evolution TS-Conf
 Added menu movement with mouse
 Added Visualmem, Poke, Find, Save binary menus also for Sinclair QL
 Added setting to test configuration
-Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom, get-ocr, tbblue-get-sprite, tbblue-get-pattern, tbblue-get-palette, send-keys-ascii, send-keys-string
+Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom, get-ocr, tbblue-get-sprite, tbblue-get-pattern, tbblue-get-palette, send-keys-ascii, send-keys-string, tsconf-get-af-port, tsconf-get-vram 
 Added QL GUI Style
 Added menu to find and set lives in games
 Added actions commands to breakpoints, so you can run some actions when a breakpoint is fired
