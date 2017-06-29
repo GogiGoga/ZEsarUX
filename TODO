@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
+
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
