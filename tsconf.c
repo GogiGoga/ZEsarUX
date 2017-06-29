@@ -153,9 +153,11 @@ bit1/0
           //TODO. No entiendo bien cuando entra aqui: 00 - after reset, only in "no map" mode, System ROM, suponemos que solo al encender la maquina,
           //cosa que no es cierta
           if (tsconf_in_system_rom() ) banco=0;
+
+
           else {
-            //Evitamos modo DOS
-            banco=((puerto_32765>>4)&1) | 2;
+            if (tsconf_dos_signal.v) banco=1;
+            else banco=((puerto_32765>>4)&1) | 2;
           }
 
           return page0 | banco;
