@@ -938,7 +938,7 @@ util_stats_init();
 char *string_machines_list_description=
 //Ordenados por fabricante y año. Misma ordenacion en menu machine selection
 
-							//Sinclair
+
 							" ZX80     ZX-80\n"
 							" ZX81     ZX-81\n"
               " 16k      Spectrum 16k\n"
@@ -946,7 +946,6 @@ char *string_machines_list_description=
 							" 128k     Spectrum 128k\n"
 							" QL       QL\n"
 
-							//Amstrad
 							" P2       Spectrum +2\n"
 							" P2F      Spectrum +2 (French)\n"
 							" P2S      Spectrum +2 (Spanish)\n"
@@ -955,20 +954,16 @@ char *string_machines_list_description=
 							" P2AS     Spectrum +2A (Spanish)\n"
 							" CPC464   Amstrad CPC 464\n"
 
-							//Timex
 							" TS2068   Timex TS 2068\n"
 
-							//Investronica
 							" Inves    Inves Spectrum+\n"
               " 48ks     Spectrum 48k (Spanish)\n"
 							" 128ks    Spectrum 128k (Spanish)\n"
 
-							//Microdigital
 					    " TK90X    Microdigital TK90X\n"
 					    " TK90XS   Microdigital TK90X (Spanish)\n"
 					    " TK95     Microdigital TK95\n"
 
-              //Cambridge Computers
 							" Z88      Cambridge Z88\n"
 
 							" Sam      Sam Coupe\n"
@@ -987,7 +982,7 @@ char *string_machines_list_description=
 							" TSConf   Pentevo TSConf\n"
 
 							" TBBlue   TBBlue/ZX Spectrum Next\n"
-							
+
 					    " ACE      Jupiter Ace\n"
 
 							;
