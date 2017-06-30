@@ -38,7 +38,6 @@ The format of each table entry is as follows:
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
--Nombre emulador en footer de rpi o quizá una barra de título??
 
 tbblue:
 *Raster tbblue. 
@@ -71,11 +70,6 @@ No sale de ese bucle while y se cierra todo emulador
 -ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cfconsultar http://www.zxuno.com/forum/viewtopic.php?f=39&t=358&hilit=rst+8
 
 
--emulacion keypad spectrum 128
-
--Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
-Como variable de ejecucion
-
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
 
 
@@ -94,7 +88,6 @@ Rom derby
 https://zx.itch.io/derbyplus
 
 
--Opción en stdout para simular tecla edit o delete 
 
 -Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense
 
@@ -352,6 +345,8 @@ no cierra la ventana sdl. si en cambio el driver audio no es sdl, al cambiar de 
 -al activar pentagon timing no deberia desplazarse texto footer hacia abajo
 
 -stdout. opciones que se activan con espacio  (como activar/desactivar breakpoints), poderlas activar en stdout tambien
+
+-Opción en stdout para simular tecla edit o delete 
 
 -------------
 
@@ -643,14 +638,6 @@ Ver si la simulación de pulsado de escape desde smartload de remote protocol no
 
 -al salir de socket en remote, ver si sock_conectat estaba asociado a algo
 
--Lanzar un echo vacío a telnet puerto remote protocol cierra el emulador
-
--enviando sentencia siguiente se cierra el emulador:
-command> ^C^C^C
-^]
-telnet> quit
-Parece que esto solo pasa con el cliente telnet de mac
-
 -en hexdump y hexdump internal, compara c>127 en caso de char? warning al compilar en linux
 
 -Mejorar load source code. Poder saber líneas siguientes a un label empezando en siguientes líneas a label. Cache? Indices?
@@ -890,6 +877,9 @@ en pruebas: -timer audio en raspberry, quiza pausa deberia ser menor en el caso 
 
 
 --- Genericos - mejoras ---
+
+-Quizá componentes threads que se pueda decidir cuál se activa como threads y cual no 
+Como variable de ejecucion
 
 -remote command: Hexdump internal y de mapped memory debería ser misma función
 Luego flags para ver ascii o ver hexa o quitar espacios en hexa, etc 
@@ -1690,6 +1680,8 @@ Si es botón está también mapeado a un evento, entonces esa letra no se ve
 
 
 *** Otros ***
+
+-emulacion keypad spectrum 128
 
 -Código konami para Easter egg
 

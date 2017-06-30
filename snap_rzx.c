@@ -629,8 +629,10 @@ int rzx_lee_puerto(z80_byte *valor_puerto)
 
 
 void rzx_delete_footer(void)
-{                          //01234567890123456789012345678901
+{
+                           //01234567890123456789012345678901
   menu_putstring_footer(0,2,"                                ",WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
+  menu_footer_bottom_line();
 }
 
 void rzx_retorna_minutos_segundos(int segundos, int *m, int *s)

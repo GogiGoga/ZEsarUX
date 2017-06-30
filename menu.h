@@ -140,6 +140,8 @@ extern int menu_generic_message_aux_filter(char *texto,int inicio, int final);
 #define WINDOW_FOOTER_ELEMENT_Y_CPU_TEMP 1
 #define WINDOW_FOOTER_ELEMENT_Y_FPS 1
 
+#define WINDOW_FOOTER_ELEMENT_Y_F5MENU 2
+#define WINDOW_FOOTER_ELEMENT_Y_ZESARUX_EMULATOR 2
 
 /*
 
@@ -166,6 +168,8 @@ extern int menu_abierto;
 
 extern int if_pending_error_message;
 extern char pending_error_message[];
+
+extern void menu_footer_bottom_line(void);
 
 
 extern void menu_inicio(void);

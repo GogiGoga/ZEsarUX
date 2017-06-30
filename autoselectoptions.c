@@ -1263,7 +1263,7 @@ f09b92fc3fa4e58aa21f0a029a73e308  tapes/spectrum/mouse/The OCP Art Studio (Datel
 		mostrar_footer=0;
 		//Si habia algun texto en footer, borrarlo
 		menu_putstring_footer(0,2,"                                ",WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
-		menu_footer_z88();
+		menu_footer_bottom_line();
 	}
 
 
@@ -1412,7 +1412,7 @@ void delete_tape_options_set_first_message(void)
 
 		//Aunque para Z88 no se llama a funcion de set_snaptape_fileoptions, y no haria falta repintar zona footer Z88,
 		//lo hacemos por si en un futuro para alguna eprom de Z88 se llama aqui
-		menu_footer_z88();
+		menu_footer_bottom_line();
 	}
 }
 
@@ -1444,5 +1444,5 @@ void delete_tape_options_set_second_message(void)
 
 	//Aunque para Z88 no se llama a funcion de set_snaptape_fileoptions, y no haria falta repintar zona footer Z88,
         //lo hacemos por si en un futuro para alguna eprom de Z88 se llama aqui
-        menu_footer_z88();
+        menu_footer_bottom_line();
 }

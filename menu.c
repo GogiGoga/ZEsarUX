@@ -1457,19 +1457,38 @@ void menu_footer_z88(void)
 	}
 }
 
+int menu_si_mostrar_footer_f5_menu(void)
+{
+	if (!MACHINE_IS_Z88)  {
+					//Y si no hay texto por encima de cinta autodetectada
+					if (tape_options_set_first_message_counter==0 && tape_options_set_second_message_counter==0) {
+							return 1;
+					}
+	}
+
+	return 0;
+}
 
 void menu_footer_f5_menu(void)
 {
 
         //Decir F5 menu en linea de tarjetas de memoria de z88
         //Y si es la primera vez
-        if (!MACHINE_IS_Z88)  {
-                //Y si no hay texto por encima de cinta autodetectada
-                if (tape_options_set_first_message_counter==0 && tape_options_set_second_message_counter==0) {
+        if (menu_si_mostrar_footer_f5_menu() ) {
                         char texto_f_menu[32];
                         sprintf(texto_f_menu,"%s Menu",openmenu_key_message);
-                        menu_putstring_footer(0,2,texto_f_menu,WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
-		}
+                        menu_putstring_footer(0,WINDOW_FOOTER_ELEMENT_Y_F5MENU,texto_f_menu,WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
+				}
+
+
+}
+
+void menu_footer_zesarux_emulator(void)
+{
+
+	if (menu_si_mostrar_footer_f5_menu() ) {
+		debug_printf (VERBOSE_DEBUG,"Showing ZEsarUX footer message");
+		menu_putstring_footer(0,WINDOW_FOOTER_ELEMENT_Y_ZESARUX_EMULATOR,"ZEsarUX emulator v."EMULATOR_VERSION,WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
 	}
 
 }
@@ -1478,7 +1497,7 @@ void menu_clear_footer(void)
 {
 	if (!menu_footer) return;
 
-	//printf ("clear footer\n");
+	debug_printf (VERBOSE_DEBUG,"Clearing Footer");
 
         //Borrar footer
         if (si_complete_video_driver() ) {
@@ -1507,8 +1526,15 @@ void menu_clear_footer(void)
                         }
                 }
 
+
         }
 
+}
+
+void menu_footer_bottom_line(void)
+{
+	menu_footer_z88();
+	menu_footer_zesarux_emulator();
 }
 
 
@@ -1546,7 +1572,7 @@ void menu_init_footer(void)
 
 	autoselect_options_put_footer();
 
-	menu_footer_z88();
+	menu_footer_bottom_line();
 
 	//Si hay lectura de flash activa en ZX-Uno
 	//Esto lo hago asi porque al iniciar ZX-Uno, se ha activado el contador de texto "FLASH",
@@ -22613,6 +22639,8 @@ void set_splash_text(void)
 
 }
 
+int first_time_menu_footer_f5_menu=1;
+
 void reset_splash_text(void)
 {
 	if (menu_splash_text_active.v==1) {
@@ -22626,7 +22654,10 @@ void reset_splash_text(void)
 
 			//Quitamos el splash text pero dejamos el F5 menu abajo en el footer, hasta que algo borre ese mensaje
 			//(por ejemplo que cargamos una cinta/snap con configuracion y genera mensaje en texto inverso en el footer)
-			menu_footer_f5_menu();
+			if (first_time_menu_footer_f5_menu) {
+				menu_footer_f5_menu();
+				first_time_menu_footer_f5_menu=0; //Solo mostrarlo una sola vez
+			}
 
 		}
 	}
