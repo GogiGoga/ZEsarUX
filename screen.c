@@ -48,6 +48,7 @@
 #include "ql.h"
 #include "timer.h"
 #include "tbblue.h"
+#include "tsconf.h"
 
 
 //Incluimos estos dos para la funcion de fade out
@@ -11210,4 +11211,30 @@ int get_rgb8_color (z80_byte color)
 		return color32;
 
 
+}
+
+
+
+void temp_refresca_pentevo_text(void)
+{
+
+	if ((tsconf_af_ports[0]&3)!=3) return;
+
+	//temp pentevo
+	//if c000h-de00h
+	z80_int puntero;
+	int ancho_linea=128;
+	int x=0;
+	for (puntero=0xc000;puntero<0xde00;puntero++) {
+		z80_byte caracter=peek_byte_no_time(puntero);
+		if (caracter<32 || caracter>127) caracter='.';
+		printf ("%c",caracter);
+		x++;
+		if (x==ancho_linea) {
+			printf ("\n");
+			x=0;
+			puntero+=ancho_linea; //saltar atributos
+		}
+	}
+	//fin temp pentevo
 }

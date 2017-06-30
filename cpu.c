@@ -885,6 +885,8 @@ util_stats_init();
 		temp_tsconf_in_system_rom_flag=0;
 
 
+		tsconf_reset_cpu();
+
 	}
 
 	if (MACHINE_IS_TBBLUE) {
@@ -958,11 +960,11 @@ char *string_machines_list_description=
 					    " Pentagon Pentagon\n"
 							" Chloe140 Chloe 140 SE\n"
 							" Chloe280 Chloe 280 SE\n"
+							" Chrome   Chrome\n"
 							" ZXUNO    ZX-Uno\n"
 							" Prism    Prism\n"
-							" TBBlue   TBBlue/ZX Spectrum Next\n"
-							" Chrome   Chrome\n"
 							" TSConf   Pentevo TSConf\n"
+							" TBBlue   TBBlue/ZX Spectrum Next\n"
 					    " ACE      Jupiter Ace\n"
 					    " CPC464   Amstrad CPC 464\n"
 							;

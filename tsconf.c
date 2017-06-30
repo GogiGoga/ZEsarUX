@@ -70,7 +70,10 @@ z80_byte tsconf_get_af_port(z80_byte index)
   return tsconf_af_ports[index];
 }
 
-
+void tsconf_reset_cpu(void)
+{
+  tsconf_af_ports[0]=0;
+}
 
 void tsconf_init_memory_tables(void)
 {
