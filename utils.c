@@ -409,39 +409,6 @@ char *array_fabricantes_hotkey[]={
 char array_fabricantes_hotkey_letra[]="satimbgpcrjzlvu";
 
 
-/*
-0=Sinclair 16k
-1=Sinclair 48k
-2=Inves Spectrum+
-3=tk90x
-4=tk90xs
-5=tk95
-6=Sinclair 128k
-7=Sinclair 128k Español
-8=Amstrad +2
-9=Amstrad +2 - Frances
-10=Amstrad +2 - Espa�ol
-11=Amstrad +2A (ROM v4.0)
-12=Amstrad +2A (ROM v4.1)
-13=Amstrad +2A - Espa�ol
-14=ZX-Uno
-15=Chloe 140SE
-16=Chloe 280SE
-17=Timex TS2068
-18=Prism
-19=TBBlue
-20=Spectrum + Spanish
-21=Pentagon
-22=Chrome
-23=TSConf
-120=zx80
-121=zx81
-122=jupiter ace
-130=z88
-140=cpc 464
-150=sam coupe
-160=Sinclair QL standard
-*/
 
 
 //Array de maquinas por fabricante, acabado en 255
