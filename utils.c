@@ -349,23 +349,40 @@ Cambridge computers
 Jupiter cantab
 Miles Gordon Tech
 Pentagon
+
+Nueva:
+#define FABRICANTE_SINCLAIR 0
+#define FABRICANTE_AMSTRAD 1
+#define FABRICANTE_TIMEX_SINCLAIR 2
+#define FABRICANTE_INVESTRONICA 3
+#define FABRICANTE_MICRODIGITAL_ELECTRONICA 4
+#define FABRICANTE_CAMBRIDGE_COMPUTERS 5
+#define FABRICANTE_MILES_GORDON 6
+#define FABRICANTE_PENTAGON 7
+#define FABRICANTE_CHLOE_CORPORATION 8
+#define FABRICANTE_MARIOPRATO 9
+#define FABRICANTE_JEFF_BRAINE 10
+#define FABRICANTE_ZXUNO_TEAM 11
+#define FABRICANTE_TSLABS 12
+#define FABRICANTE_TBBLUE 13
+#define FABRICANTE_JUPITER_CANTAB 14
 */
 char *array_fabricantes[]={
 	"Sinclair Research",
-	"Amstrad",
+  "Amstrad",
 	"Timex Sinclair",
 	"Investronica",
 	"Microdigital Eletronica",
-	"ZXUno Team",
-	"Chloe Corporation",
-	"Jeff Braine",
-	"VTrucco/FB Labs",
-	"Cambridge Computers",
-	"Jupiter Cantab",
-	"Miles Gordon Technology",
-	"Pentagon",
+  "Cambridge Computers",
+  "Miles Gordon Technology",
+  "Pentagon",
+  "Chloe Corporation",
   "Mario Prato",
-  "TS Labs"
+  "Jeff Braine",
+	"ZXUno Team",
+  "TS Labs",
+	"VTrucco/FB Labs",
+	"Jupiter Cantab"
 };
 
 char *array_fabricantes_hotkey[]={
@@ -374,20 +391,22 @@ char *array_fabricantes_hotkey[]={
         "~~Timex Sinclair",
         "~~Investronica",
         "~~Microdigital Eletronica",
-        "~~ZXUno Team",
-        "~~Chloe Corporation",
-        "~~Jeff Braine",
-        "~~VTrucco/FB Labs",
         "Cam~~bridge Computers",
-        "J~~upiter Cantab",
-        "Mi~~les Gordon Technology",
-	       "~~Pentagon",
+        "Miles ~~Gordon Technology",
+        "~~Pentagon",
+        "~~Chloe Corporation",
         "Ma~~rio Prato",
-        "TS Labs"
+        "~~Jeff Braine",
+        "~~ZXUno Team",
+        "TS ~~Labs",
+        "~~VTrucco/FB Labs",
+        "J~~upiter Cantab"
+
+
 };
 
 //Si letra es espacio->no hay letra
-char array_fabricantes_hotkey_letra[]="satimzcjvbulpr ";
+char array_fabricantes_hotkey_letra[]="satimbgpcrjzlvu";
 
 
 /*
