@@ -46,7 +46,6 @@ Y lo haga la gente manualmente y/ o se detecte si es rpi1
 *modos turbo next 14 y 28 mhz
 *Probar a cambiar paleta interna del next mediante Basic 
 
--traps de cinta de bios zxuno deberia considerar solo opcodes y no registro pc
 
 
 -cuando en remote command, se hace run, si cerramos telnet, luego al hacer F5 sale del emulador entero. Parece que el hilo que esta en espera en el menu:
@@ -68,6 +67,8 @@ No sale de ese bucle while y se cierra todo emulador
 *quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
 
 
+-Mostrar backtrace de stack. quiza solo en remote command protocol. Stack y su densemsamblaje de cada dirección. Hasta 5?
+->Falta motorola
 
 
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
@@ -89,7 +90,7 @@ https://zx.itch.io/derbyplus
 
 
 
--Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense
+-Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense: quiza esto quedara para formato zsf?
 
 -Soft QL
 http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Computer&lang=en
@@ -700,8 +701,7 @@ Es poder saber antes las opciones de configuracion dado que la comprobacion del 
 y haciendo maximize desde ventana, hace full screen pero distorsionado
 -cerrar el emulador desde el boton de cerrar ventana, con driver opengl, acaba provocando segmentation fault
 -script de speech say falla cuando texto empieza con "-", como en README
--con app de "loopback audio", ejecutando ZEsarUX como app de Mac se oye diferente. Sera algo que lee del info.plist??? parece alguna especie de eco.
-Desinstalando "loopback audio" no pasa
+-con app de "loopback audio", ejecutando ZEsarUX como app de Mac se oye diferente. ->  Desinstalando "loopback audio" no pasa
 
 
 ------------------
@@ -1005,6 +1005,8 @@ crear tambien metodos de deteccion de tercer trap? Aunque esto quiza solo sirve 
 
 --- Mejoras especificas de ZX-Uno: ---
 
+-traps de cinta de bios zxuno deberia considerar solo opcodes y no registro pc
+
 -al escribir archivo default spi flash, al buscarlo por entre todas las rutas, si en una lo encuentra pero no se puede escribir,
 que no siga buscando y alerte del error de que esta pero no puede escribirlo, en vez de andar buscandolo por el resto de rutas
 
@@ -1020,8 +1022,6 @@ http://www.zxuno.com/forum/viewtopic.php?p=4296#p4296
 -Probar upgrade zxuno flash desde menu (aunque sea una version vieja!). Parece que falla porque usa comando 0x48 de mmc CMD8 preguntar a antonio villena
 
 -nmi-divmmc opción no soportada en zxuno??
-
--registros para hacer scroll / desplazamiento de pantalla
 
 
 ------
@@ -1285,8 +1285,6 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 -con vo stdout y speech habilitado, parece que cambiar entre maquinas zx81 y spectrum, vuelve a decir texto de bienvenida. normal??
 
--3 chips AY como el Next?
-
 -agregar otro detector silencio, en este caso para specdrum. tiene sentido? total no altera mucho la onda de salida cuando lo activo y no se envia sonido 
 
 -Futuro filtro conversor de real audio a Puerto fe, que sea capaz de saber cuando es 1 (onda arriba) y cuando 0 (onda abajo)
@@ -1328,18 +1326,7 @@ opcion tambien para bajar bit 7 final
 
 -items recientemente abiertos en quickload . Y en otros menus de carga tambien?
 
--poder definir shortcuts para teclas directas, por ejemplo, F8 para hacer reset, o F11 para hacer nmi, etc, poder redefinir las teclas que emulan el joystick, en especial la tecla de disparo (como por ejemplo ponerla a TAB)
-:
-Asignar teclas a eventos
-
--Se intercepta en convert_numeros_letras_puerto_teclado y en util_set_reset_key
--Se llama a función que altera valor tecla si conviene. También activa función si conviene, como salir del emulador por ejemplo. Definir funciones….
-
-Valor tecla puede ser:
-entre 0 y 255, letra ascii
-mas alla de 1000, tecla especial, como F1, ALT_L, etc. hay que redefinir valores de constantes UTIL_KEY_** para que empiecen a contar a partir de 1000
-
-las dos funciones deben tener como valor de entrada un int (ahora tienen z80_byte y enum)
+-poder redefinir las teclas que emulan el joystick, en especial la tecla de disparo (como por ejemplo ponerla a TAB)
 
 -poder asignar botones joystick a teclas como symbol o shift
 
@@ -1347,11 +1334,7 @@ las dos funciones deben tener como valor de entrada un int (ahora tienen z80_byt
 
 -insistir en el tema de hotswap entre zx80-zx81
 
--Menú gestionable por ratón. Botón izquierdo selecciona. Derecho ESC
-
 -joystick derecha para tab. solo en menu
-
--En ver registros AY, mostrar teclado piano con dibujo mejorado, no letras
 
 -menu debug keys. que muestre en pantalla las teclas que se pulsan
 
@@ -1378,13 +1361,13 @@ no-thread no funcionara tampoco
 -Desensamblador, que permita copiar código assembler a texto
 ->desensamblador, pero de momento no puede copiar a texto
 
-- menus transparentes
+-menus transparentes
 
 -acceso a cintas, snaps , etc de archive WOS. Hacer un browser sencillo html para poder navegar entre las cintas
 
 -Browser cintas que permita alterar la posición de la cinta
 
--incluir pantallas de teclado spectrum, zx80,zx81, z88
+-incluir pantallas de teclado spectrum, zx80,zx81, z88, etc
 
 -quickload debe dejar bajar a subcarpetas pero no ir mas arriba de ruta inicial (--quickloadpath) ?
 
@@ -1422,7 +1405,7 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 -poder configurar lightgun por linea de comandos
 
--Mostrar backtrace de stack. quiza solo en remote command protocol. Stack y su densemsamblaje de cada dirección. Hasta 5?
+HASTA AQUI REVISADO
 
 -Pantalla de cpu panic, que colores aplique a toda pantalla y no solo 256x192. Util en otras maquinas, como ql, cpc, etc
 
@@ -1430,7 +1413,6 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 -Borrar enterrom y exitrom como debug breakpoint, que ya no tienen sentido
 
--Remote command protocol: poder hacer OCR de pantalla
 
 -Transaction log que también incluya byte anterior a operación de escritura 
 

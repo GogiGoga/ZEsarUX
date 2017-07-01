@@ -45,6 +45,7 @@
 #include "tsconf.h"
 
 
+
 int remote_protocol_port=DEFAULT_REMOTE_PROTOCOL_PORT;
 z80_bit remote_protocol_enabled={0};
 z80_bit remote_ack_enter_cpu_step={0};
@@ -722,6 +723,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
   {"get-registers","|gr",NULL,"Get CPU registers"},
+	{"get-stack-backtrace",NULL,NULL,"Get last 5 16-bit values from the stack"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
   {"hard-reset-cpu",NULL,NULL,"Hard resets the machine"},
   {"help","|?","[command]","Shows help screen or command help"},
@@ -2969,6 +2971,19 @@ char buffer_retorno[2048];
     print_registers(buffer_retorno);
     escribir_socket (misocket,buffer_retorno);
   }
+
+	else if (!strcmp(comando_sin_parametros,"get-stack-backtrace")) {
+		if (CPU_IS_MOTOROLA) {
+
+		}
+		else {
+			int i;
+			for (i=0;i<5;i++) {
+				z80_int valor=peek_byte_z80_moto(reg_sp+i*2)+256*peek_byte_z80_moto(reg_sp+1+i*2);
+				escribir_socket_format(misocket,"%04XH ",valor);
+			}
+		}
+	}
 
 
 
