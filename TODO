@@ -33,13 +33,12 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
--quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
 
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
 
 
-tbblue:
+-tbblue:
 *Raster tbblue. 
 *scroll hardware tbblue
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
@@ -63,11 +62,12 @@ else if (menu_event_remote_protocol_enterstep.v) {
 
 No sale de ese bucle while y se cierra todo emulador
 
--tsconf: parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
+-tsconf: 
+*parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
 ->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
+*quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
 
 
--ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cfconsultar http://www.zxuno.com/forum/viewtopic.php?f=39&t=358&hilit=rst+8
 
 
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
@@ -92,8 +92,9 @@ https://zx.itch.io/derbyplus
 -Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense
 
 -Soft QL
-
 http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Computer&lang=en
+
+-Mirar uqlx a ver cómo hace el load 
 
 -Probar diferencia de sonido speech ay en versión actual y anteriores
 Chase hq
@@ -103,8 +104,6 @@ Demo covox
 Etc...
 
 -Quizá inicializacion de ruido de cada chip debe ser diferente 
-
--Mirar uqlx a ver cómo hace el load 
 
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
 
@@ -120,8 +119,6 @@ o bien el mezclado de chip ay
 
 -mejorar deteccion frecuencia sonido en audio wave form
 -beeper piano
-
--quiza inicializacion de ruido de cada chip ay debe ser diferente
 
 
 -pentagon 512 y superiores modos de paginacion ram
@@ -416,6 +413,16 @@ Conversión de tap a wav en ace. Requiere rutina diferente que la de spectrum
 -Sprites de 16x16?
 
 -----------------------
+
+
+
+--- Chrome ---
+
+Autoload load "" para chrome
+
+-----------------------
+
+
 
 
 --- Chloe ---
@@ -1682,6 +1689,8 @@ Si es botón está también mapeado a un evento, entonces esa letra no se ve
 *** Otros ***
 
 -emulacion keypad spectrum 128
+
+-ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cfconsultar http://www.zxuno.com/forum/viewtopic.php?f=39&t=358&hilit=rst+8
 
 -Código konami para Easter egg
 
