@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-agregar el features, etc lista de maquinas nuevas: mk14, tsconf, chrome
+
 
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
@@ -1878,4 +1880,3 @@ http://map.grauw.nl/resources/system/msxtech.pdf
 https://en.m.wikipedia.org/wiki/ATM_(computer)
 
 
-Sinclair MK14
