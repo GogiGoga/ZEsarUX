@@ -337,6 +337,7 @@ struct x_tabla_teclado ql_tabla_teclado_numeros[]={
 /*
 
 Lista fabricantes
+Science of Cambridge
 Sinclair
 Amstrad
 Timex Sinclair
@@ -350,24 +351,10 @@ Jupiter cantab
 Miles Gordon Tech
 Pentagon
 
-Nueva:
-#define FABRICANTE_SINCLAIR 0
-#define FABRICANTE_AMSTRAD 1
-#define FABRICANTE_TIMEX_SINCLAIR 2
-#define FABRICANTE_INVESTRONICA 3
-#define FABRICANTE_MICRODIGITAL_ELECTRONICA 4
-#define FABRICANTE_CAMBRIDGE_COMPUTERS 5
-#define FABRICANTE_MILES_GORDON 6
-#define FABRICANTE_PENTAGON 7
-#define FABRICANTE_CHLOE_CORPORATION 8
-#define FABRICANTE_MARIOPRATO 9
-#define FABRICANTE_JEFF_BRAINE 10
-#define FABRICANTE_ZXUNO_TEAM 11
-#define FABRICANTE_TSLABS 12
-#define FABRICANTE_TBBLUE 13
-#define FABRICANTE_JUPITER_CANTAB 14
+
 */
 char *array_fabricantes[]={
+  "Science of Cambridge",
 	"Sinclair Research",
   "Amstrad",
 	"Timex Sinclair",
@@ -386,6 +373,7 @@ char *array_fabricantes[]={
 };
 
 char *array_fabricantes_hotkey[]={
+        "Scie~~nce of Cambridge",
         "~~Sinclair Research",
         "~~Amstrad",
         "~~Timex Sinclair",
@@ -406,7 +394,7 @@ char *array_fabricantes_hotkey[]={
 };
 
 //Si letra es espacio->no hay letra
-char array_fabricantes_hotkey_letra[]="satimbgpcrjzlvu";
+char array_fabricantes_hotkey_letra[]="nsatimbgpcrjzlvu";
 
 
 
@@ -472,6 +460,10 @@ int array_maquinas_tslabs[]={
 	MACHINE_ID_TSCONF,255
 };
 
+int array_maquinas_science_of_cambridge[]={
+	MACHINE_ID_MK14_STANDARD,255
+};
+
 //Retorna array a maquinas segun fabricante
 int *return_maquinas_fabricante(int fabricante)
 {
@@ -534,6 +526,10 @@ int *return_maquinas_fabricante(int fabricante)
 
     case FABRICANTE_TSLABS:
       return array_maquinas_tslabs;
+    break;
+
+    case FABRICANTE_SCIENCE_OF_CAMBRIDGE:
+      return array_maquinas_science_of_cambridge;
     break;
 
 		default:
@@ -624,6 +620,10 @@ int return_fabricante_maquina(int maquina)
 
     case MACHINE_ID_TSCONF:
       return FABRICANTE_TSLABS;
+    break;
+
+    case MACHINE_ID_MK14_STANDARD:
+      return FABRICANTE_SCIENCE_OF_CAMBRIDGE;
     break;
 
 		default:
@@ -7138,6 +7138,7 @@ int get_machine_id_by_name(char *machine_name)
                                 else if (!strcasecmp(machine_name,"CPC464")) return_machine=140;
                                 else if (!strcasecmp(machine_name,"SAM")) return_machine=150;
                                 else if (!strcasecmp(machine_name,"QL")) return_machine=160;
+                                else if (!strcasecmp(machine_name,"MK14")) return_machine=MACHINE_ID_MK14_STANDARD;
                                 else {
                                         debug_printf (VERBOSE_ERR,"Unknown machine %s",machine_name);
                                         return_machine=-1;
@@ -7289,6 +7290,10 @@ break;
 
 case 160:
 strcpy(machine_name,"QL");
+break;
+
+case MACHINE_ID_MK14_STANDARD:
+strcpy(machine_name,"MK14");
 break;
 
 default:

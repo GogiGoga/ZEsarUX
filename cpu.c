@@ -96,6 +96,7 @@
 #include "multiface.h"
 #include "chrome.h"
 #include "tsconf.h"
+#include "scmp.h"
 
 #ifdef COMPILE_STDOUT
 #include "scrstdout.h"
@@ -933,11 +934,15 @@ util_stats_init();
 		ql_ipc_reset();
 	}
 
+	if (MACHINE_IS_MK14) {
+		scmp_reset();
+	}
+
 }
 
 char *string_machines_list_description=
 //Ordenados por fabricante y año. Misma ordenacion en menu machine selection
-
+							" MK14     MK14\n"
 
 							" ZX80     ZX-80\n"
 							" ZX81     ZX-81\n"
@@ -1904,6 +1909,7 @@ struct s_machine_names machine_names[]={
 				            {"CPC 464",  			140},
 					    {"Sam Coupe", 			150},
 					    {"QL",				160},
+							{"MK14", MACHINE_ID_MK14_STANDARD},
 
 						//Indicador de final
 					{"",0}
@@ -2203,6 +2209,13 @@ void malloc_mem_machine(void) {
 
 		        }
 
+						else if (MACHINE_IS_MK14) {
+
+										//64 kb ram/rom
+										malloc_machine(65536);
+
+						}
+
 
           else if (MACHINE_IS_TIMEX_TS2068) {
 
@@ -2304,6 +2317,9 @@ void set_machine_params(void)
 151-59 reservado para otros sam (old 51-59)
 160=QL Standard
 161-179 reservado para otros QL
+
+180=MK14 Standard
+181-189 reservado para otros MK14
 */
 
 		char mensaje_error[200];
@@ -2656,6 +2672,14 @@ void set_machine_params(void)
 		}
 
 
+		else if (MACHINE_IS_MK14) {
+																	 contend_read=contend_read_mk14;
+																	 contend_read_no_mreq=contend_read_no_mreq_mk14;
+																	 contend_write_no_mreq=contend_write_no_mreq_mk14;
+
+								ula_contend_port_early=ula_contend_port_early_mk14;
+								ula_contend_port_late=ula_contend_port_late_mk14;
+		}
 
 
 
@@ -3042,6 +3066,13 @@ void set_machine_params(void)
 		break;
 
 
+		case MACHINE_ID_MK14_STANDARD:
+		poke_byte=poke_byte_mk14;
+		peek_byte=peek_byte_mk14;
+		peek_byte_no_time=peek_byte_no_time_mk14;
+		poke_byte_no_time=poke_byte_no_time_mk14;
+		lee_puerto=lee_puerto_legacy_mk14;
+		break;
 
 
 
@@ -3398,6 +3429,10 @@ void rom_load(char *romfilename)
 		//romfilename="ql_jm.rom";
 		break;
 
+		case MACHINE_ID_MK14_STANDARD:
+		romfilename="mk14.rom";
+		break;
+
                         default:
                                 //printf ("ROM for Machine id %d not supported. Exiting\n",machine_type);
                                 sprintf (mensaje_error,"ROM for Machine id %d not supported. Exiting",current_machine_type);
@@ -3632,6 +3667,15 @@ Total 20 pages=320 Kb
                                 if (leidos<16384) {
                                         cpu_panic("Error loading ROM");
                                  }
+
+		}
+
+
+		else if (MACHINE_IS_MK14) {
+			leidos=fread(memoria_spectrum,1,512,ptr_romfile);
+			if (leidos!=512) {
+					cpu_panic("Error loading ROM");
+			}
 
 		}
 

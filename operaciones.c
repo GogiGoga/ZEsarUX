@@ -1973,7 +1973,40 @@ z80_byte peek_byte_tsconf(z80_int dir)
 
 
 
+void poke_byte_no_time_mk14(z80_int dir,z80_byte valor)
+{
 
+    memoria_spectrum[dir]=valor;
+
+}
+
+void poke_byte_mk14(z80_int dir,z80_byte valor)
+{
+
+        poke_byte_no_time_mk14(dir,valor);
+}
+
+
+
+z80_byte peek_byte_no_time_mk14(z80_int dir)
+{
+
+    return memoria_spectrum[dir];
+
+}
+
+z80_byte peek_byte_mk14(z80_int dir)
+{
+        return peek_byte_no_time_mk14(dir);
+
+}
+
+
+z80_byte lee_puerto_legacy_mk14(z80_byte h GCC_UNUSED,z80_byte l GCC_UNUSED)
+{
+        debug_printf(VERBOSE_ERR,"Calling lee_puerto function on a MK14 machine. TODO fix it!");
+        return 0;
+}
 
 z80_byte *timex_return_segment_memory(z80_int dir)
 {

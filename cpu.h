@@ -277,13 +277,17 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 
 
 #define MACHINE_ID_SPECTRUM_48 1
-#define MACHINE_ID_CPC_464     140
-#define MACHINE_ID_QL_STANDARD     160
+
 #define MACHINE_ID_PENTAGON 21
 #define MACHINE_ID_CHROME 22
 
 #define MACHINE_ID_TSCONF 23
 #define MACHINE_ID_BASECONF 24
+
+
+#define MACHINE_ID_CPC_464     140
+#define MACHINE_ID_QL_STANDARD     160
+#define MACHINE_ID_MK14_STANDARD 180
 
 
 //Condiciones de maquinas activas
@@ -332,6 +336,14 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 
 #define MACHINE_IS_QL_STANDARD (current_machine_type==MACHINE_ID_QL_STANDARD)
 #define MACHINE_IS_QL (current_machine_type>=160 && current_machine_type<=179)
+
+/*
+180=MK14 Standard
+181-189 reservado para otros MK14
+*/
+
+#define MACHINE_IS_MK14_STANDARD (current_machine_type==MACHINE_ID_MK14_STANDARD)
+#define MACHINE_IS_MK14 (current_machine_type>=180 && current_machine_type<=189)
 
 
 #define CPU_IS_MOTOROLA (MACHINE_IS_QL)

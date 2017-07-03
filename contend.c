@@ -885,6 +885,37 @@ z80_int segmento;
 
 }
 
+//mk14
+
+void contend_read_mk14(z80_int direccion,int time)
+{
+
+
+}
+
+void contend_read_no_mreq_mk14(z80_int direccion,int time)
+{
+
+
+}
+
+void contend_write_no_mreq_mk14(z80_int direccion,int time)
+{
+
+
+}
+
+
+void ula_contend_port_early_mk14( z80_int port )
+{
+
+}
+
+void ula_contend_port_late_mk14( z80_int port )
+{
+
+
+}
 
 
 //prism. No tiene memoria contended
