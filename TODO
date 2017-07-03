@@ -31,6 +31,10 @@ The format of each table entry is as follows:
 -- Fin estado funciones microdrive QL
 
 
+-mk14
+*condiciones registros, establecer registros
+
+
 -cosas para la version 5.1
 
 -agregar el features, etc lista de maquinas nuevas: mk14, tsconf, chrome
