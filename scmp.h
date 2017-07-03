@@ -24,11 +24,11 @@
 
 #include "compileoptions.h"
 
-typedef unsigned char UINT8;
+typedef unsigned char SCMP8;
 typedef char INT8;
-typedef unsigned short UINT16;
+typedef unsigned short SCMP16;
 typedef short INT16;
-typedef unsigned int UINT32;
+typedef unsigned int SCMP32;
 typedef int INT32;
 
 union SCMP_PAIR
@@ -36,22 +36,30 @@ union SCMP_PAIR
 
 
 #ifdef WORDS_BIGENDIAN
-        struct { UINT8 h3,h2,h,l; } b;
+        struct { SCMP8 h3,h2,h,l; } b;
         struct { INT8 h3,h2,h,l; } sb;
-        struct { UINT16 h,l; } w;
+        struct { SCMP16 h,l; } w;
         struct { INT16 h,l; } sw;
 #else
-        struct { UINT8 l,h,h2,h3; } b;
-        struct { UINT16 l,h; } w;
+        struct { SCMP8 l,h,h2,h3; } b;
+        struct { SCMP16 l,h; } w;
         struct { INT8 l,h,h2,h3; } sb;
         struct { INT16 l,h; } sw;
 
 
 #endif
 
-        UINT32 d;
+        SCMP32 d;
         INT32 sd;
 };
+
+extern union SCMP_PAIR    scmp_m_PC;
+extern union SCMP_PAIR    scmp_m_P1;
+extern union SCMP_PAIR    scmp_m_P2;
+extern union SCMP_PAIR    scmp_m_P3;
+extern SCMP8   scmp_m_AC;
+extern SCMP8   scmp_m_ER;
+extern SCMP8   scmp_m_SR;
 
 
 extern void scmp_run_opcode(void);

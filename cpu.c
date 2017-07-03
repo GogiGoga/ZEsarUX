@@ -2386,6 +2386,11 @@ void set_machine_params(void)
 			cpu_core_loop_active=CPU_CORE_QL;
 		}
 
+		else if (MACHINE_IS_MK14) {
+			cpu_core_loop_active=CPU_CORE_MK14;
+		}
+
+
 		else {
 			cpu_core_loop_active=CPU_CORE_Z88;
 		}

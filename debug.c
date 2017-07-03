@@ -58,6 +58,7 @@
 #include "ql.h"
 #include "m68k.h"
 #include "superupgrade.h"
+#include "core_mk14.h"
 
 
 struct timeval debug_timer_antes, debug_timer_ahora;
@@ -1567,6 +1568,12 @@ void set_cpu_core_loop(void)
 			cpu_core_loop=cpu_core_loop_ql;
       cpu_core_loop_name="QL";
 		break;
+
+    case CPU_CORE_MK14:
+      debug_printf(VERBOSE_INFO,"Setting MK14 CPU core");
+      cpu_core_loop=cpu_core_loop_mk14;
+      cpu_core_loop_name="MK14";
+    break;
 
 
                 default:

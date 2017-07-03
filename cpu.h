@@ -218,6 +218,7 @@ extern z80_byte video_zx8081_ula_video_output;
 #define CPU_CORE_CPC 5
 #define CPU_CORE_SAM 6
 #define CPU_CORE_QL 7
+#define CPU_CORE_MK14 8
 
 extern struct timeval z80_interrupts_timer_antes, z80_interrupts_timer_ahora;
 extern long z80_timer_difftime, z80_timer_seconds, z80_timer_useconds;
