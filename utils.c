@@ -81,6 +81,7 @@
 #include "remote.h"
 #include "ula.h"
 #include "snap_rzx.h"
+#include "scmp.h"
 
 //Archivo usado para entrada de teclas
 FILE *ptr_input_file_keyboard;
@@ -8148,7 +8149,8 @@ unsigned int get_ql_pc(void)
 
 unsigned int get_pc_register(void)
 {
-  if (CPU_IS_MOTOROLA) return get_ql_pc();
+  if (CPU_IS_SCMP) return scmp_m_PC.w.l;
+  else if (CPU_IS_MOTOROLA) return get_ql_pc();
   else return reg_pc;
 }
 

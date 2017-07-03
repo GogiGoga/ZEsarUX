@@ -600,6 +600,18 @@ void scmp_reset()
 }
 
 
+void scmp_get_flags_letters(unsigned char f,char *buffer)
+{
+	sprintf(buffer,"%c%c%c%c%c%c%c%c",
+	  (f & 0x80) ? 'C' : ' ',
+	  (f & 0x40) ? 'V' : ' ',
+	  (f & 0x20) ? 'B' : ' ',
+	  (f & 0x10) ? 'A' : ' ',
+	  (f & 0x08) ? 'I' : ' ',
+	  (f & 0x04) ? '2' : ' ',
+	  (f & 0x02) ? '1' : ' ',
+	  (f & 0x01) ? '0' : ' ');
+}
 
 /***************************************************************************
     COMMON STATE IMPORT/EXPORT

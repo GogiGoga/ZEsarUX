@@ -83,6 +83,7 @@
 #include "remote.h"
 #include "snap_rzx.h"
 #include "multiface.h"
+#include "scmp.h"
 
 
 #if defined(__APPLE__)
@@ -4892,8 +4893,37 @@ int menu_debug_registers_print_registers(void)
 			debugger_disassemble(dumpassembler,32,&longitud_opcode,get_pc_register() );
 			menu_escribe_linea_opcion(linea++,-1,1,dumpassembler);
 
+			if (CPU_IS_SCMP) {
+				menu_debug_registers_dump_hex(dumpmemoria,get_pc_register(),8);
+	      sprintf (textoregistros,"PC: %04X : %s",get_pc_register(),dumpmemoria);
+	      menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
-			if (CPU_IS_MOTOROLA) {
+				menu_debug_registers_dump_hex(dumpmemoria,scmp_m_P1.w.l,8);
+				sprintf (textoregistros,"P1: %04X : %s",scmp_m_P1.w.l,dumpmemoria);
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+
+				menu_debug_registers_dump_hex(dumpmemoria,scmp_m_P2.w.l,8);
+				sprintf (textoregistros,"P2: %04X : %s",scmp_m_P2.w.l,dumpmemoria);
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+
+				menu_debug_registers_dump_hex(dumpmemoria,scmp_m_P3.w.l,8);
+				sprintf (textoregistros,"P3: %04X : %s",scmp_m_P3.w.l,dumpmemoria);
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+
+				sprintf (textoregistros,"AC: %02X ER: %02XH",scmp_m_AC, scmp_m_ER);
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+
+				char buffer_flags[9];
+				scmp_get_flags_letters(scmp_m_SR,buffer_flags);
+
+				sprintf (textoregistros,"SR: %02X %s",scmp_m_SR,buffer_flags);
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+
+
+
+			}
+
+			else if (CPU_IS_MOTOROLA) {
 				sprintf (textoregistros,"PC: %05X SP: %05X USP: %05X",get_pc_register(),m68k_get_reg(NULL, M68K_REG_SP),m68k_get_reg(NULL, M68K_REG_USP));
 				/*
 				case M68K_REG_A7:       return cpu->dar[15];
@@ -4938,7 +4968,7 @@ int menu_debug_registers_print_registers(void)
 			}
 
 			else {
-
+				//Z80
 			menu_debug_registers_dump_hex(dumpmemoria,get_pc_register(),8);
 
                         sprintf (textoregistros,"PC: %04X : %s",get_pc_register(),dumpmemoria);
@@ -5510,45 +5540,7 @@ void menu_debug_configuration_stepover(MENU_ITEM_PARAMETERS)
 	debug_core_evitamos_inter.v ^=1;
 }
 
-/*void menu_debug_configuration(MENU_ITEM_PARAMETERS)
-{
 
-        menu_espera_no_tecla();
-
-        menu_item *array_menu_debug_configuration;
-        menu_item item_seleccionado;
-        int retorno_menu;
-        do {
-
-
-                        menu_add_item_menu_inicial_format(&array_menu_debug_configuration,MENU_OPCION_NORMAL,menu_debug_configuration_stepover,NULL,"Step over interrupt: %s",(debug_core_evitamos_inter.v ? "Yes" : "No") );
-                        menu_add_item_menu_tooltip(array_menu_debug_configuration,"Avoid step to step or continuous execution of nmi or maskable interrupt routines");
-                        menu_add_item_menu_ayuda(array_menu_debug_configuration,"Avoid step to step or continuous execution of nmi or maskable interrupt routines");
-
-
-			menu_add_item_menu_format(array_menu_debug_configuration,MENU_OPCION_NORMAL, menu_breakpoints_condition_behaviour,NULL,"Breakp. behaviour: %s",(debug_breakpoints_cond_behaviour.v ? "On Change" : "Always") );
-                        menu_add_item_menu_tooltip(array_menu_debug_configuration,"Indicates wether breakpoints are fired always or only on change from false to true");
-                        menu_add_item_menu_ayuda(array_menu_debug_configuration,"Indicates wether breakpoints are fired always or only on change from false to true");
-
-
-		menu_add_item_menu(array_menu_debug_configuration,"",MENU_OPCION_SEPARADOR,NULL,NULL);
-                menu_add_ESC_item(array_menu_debug_configuration);
-                retorno_menu=menu_dibuja_menu(&debug_configuration_opcion_seleccionada,&item_seleccionado,array_menu_debug_configuration,"Debug Configuration" );
-
-                cls_menu_overlay();
-
-                if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
-                        //llamamos por valor de funcion
-                        if (item_seleccionado.menu_funcion!=NULL) {
-                                //printf ("actuamos por funcion\n");
-                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
-                                cls_menu_overlay();
-                        }
-                }
-
-        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
-}
-*/
 
 void menu_debug_registers_next_view(void)
 {

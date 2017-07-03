@@ -1975,7 +1975,8 @@ z80_byte peek_byte_tsconf(z80_int dir)
 
 void poke_byte_no_time_mk14(z80_int dir,z80_byte valor)
 {
-
+		//De momento hacer que 0-7FF es rom
+		if (dir<0x800) return;
     memoria_spectrum[dir]=valor;
 
 }

@@ -59,6 +59,7 @@
 #include "m68k.h"
 #include "superupgrade.h"
 #include "core_mk14.h"
+#include "scmp.h"
 
 
 struct timeval debug_timer_antes, debug_timer_ahora;
@@ -670,7 +671,18 @@ unsigned int cpu_core_loop_debug_registro(char *registro,int *si_cond_opcode)
 
 	//printf ("cpu_core_loop_debug_registro: registro: -%s-\n",registro);
 
-	if (CPU_IS_MOTOROLA) {
+  if (CPU_IS_SCMP) {
+
+
+    if (!strcasecmp(registro,"pc")) return scmp_m_PC.w.l;
+
+    //En caso contrario, fin
+
+    //TODO. En caso de motorola se puede dar ese valor para algun registro. Hacer que devuelva otra cosa diferente en caso de no reconocimiento de registro
+    return 0xFFFFFFFF;
+  }
+
+	else if (CPU_IS_MOTOROLA) {
 
 		if (!strcasecmp(registro,"pc")) return get_pc_register();
 
@@ -2519,10 +2531,13 @@ int debug_change_register(char *texto)
 	//Parsear valor
 	valor_registro=parse_string_to_number(&texto[i]);
 
+  if (CPU_IS_SCMP) {
+
+  }
 
 	//Cambiar registros
   //Motorola
-	if (CPU_IS_MOTOROLA) {
+	else if (CPU_IS_MOTOROLA) {
 
 
     if (!strcasecmp(texto_registro,"PC")) {

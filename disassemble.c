@@ -32,6 +32,7 @@
 #include "debug.h"
 #include "m68k.h"
 #include "utils.h"
+#include "scmp.h"
 
 //Indica 1 al desensamblador que el peek_byte debe usar direcciones de memoria de spectrum. modo normal
 //Indica 0 al desensamblador que debe usar direcciones del array de desensamblaje, usado en cpu statistics
@@ -122,6 +123,14 @@ debugger_disassemble( char *buffer, size_t buflen, size_t *length,
 	disassemble_show_value.v=1;
 	disassemble_ddfd_anidado=0;
 
+	//Caso para MK14
+	if (CPU_IS_SCMP) {
+		unsigned char op=disassemble_peek_byte(address);
+		unsigned char arg=disassemble_peek_byte(address+1);
+		int longitud=scmp_CPU_DISASSEMBLE( address , op, arg, buffer);
+		*length=longitud;
+		return;
+	}
 
 	//Caso para QL
 	if (CPU_IS_MOTOROLA) {

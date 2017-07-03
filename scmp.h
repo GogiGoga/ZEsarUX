@@ -65,4 +65,8 @@ extern SCMP8   scmp_m_SR;
 extern void scmp_run_opcode(void);
 extern void scmp_reset();
 
+extern int scmp_CPU_DISASSEMBLE( int pc , unsigned char op, unsigned char arg, char *buffer);
+
+extern void scmp_get_flags_letters(unsigned char f,char *buffer);
+
 #endif
