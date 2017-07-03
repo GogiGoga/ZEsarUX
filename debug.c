@@ -210,7 +210,17 @@ char *zx80_rom_tokens[]={
 void print_registers(char *buffer)
 {
 
-  if (CPU_IS_MOTOROLA) {
+  if (CPU_IS_SCMP) {
+    char buffer_flags[9];
+    scmp_get_flags_letters(scmp_m_SR,buffer_flags);
+    sprintf (buffer,"PC=%04x P1=%04x P2=%04x P3=%04x AC=%02x ER=%02x SR=%s",
+
+      get_pc_register(),scmp_m_P1.w.l,scmp_m_P2.w.l,scmp_m_P3.w.l,
+      scmp_m_AC, scmp_m_ER,buffer_flags);
+
+  }
+
+  else if (CPU_IS_MOTOROLA) {
 
 unsigned int registro_sr=m68k_get_reg(NULL, M68K_REG_SR);
 

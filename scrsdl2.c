@@ -350,6 +350,11 @@ void scrsdl_refresca_pantalla(void)
                 scr_refresca_pantalla_y_border_ql();
         }
 
+        else if (MACHINE_IS_MK14) {
+                scr_refresca_pantalla_y_border_mk14();
+        }
+
+
 
 
 

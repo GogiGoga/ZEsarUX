@@ -2513,8 +2513,6 @@ void scrcocoa_refresca_pantalla(void)
 
 
         if (MACHINE_IS_ZX8081) {
-
-
                 //scr_refresca_pantalla_rainbow_comun();
                 scrcocoa_refresca_pantalla_zx81();
         }
@@ -2526,7 +2524,7 @@ void scrcocoa_refresca_pantalla(void)
         else if (MACHINE_IS_SPECTRUM) {
 
 					if (MACHINE_IS_TSCONF)	temp_refresca_pentevo_text();
-					
+
 
 
                 //modo clasico. sin rainbow
@@ -2570,6 +2568,10 @@ void scrcocoa_refresca_pantalla(void)
 		scr_refresca_pantalla_y_border_ql();
 	}
 
+
+	else if (MACHINE_IS_MK14) {
+		scr_refresca_pantalla_y_border_mk14();
+	}
 
         //printf ("%d\n",spectrum_colortable[1]);
 

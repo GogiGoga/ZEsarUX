@@ -75,6 +75,8 @@ extern void scr_refresca_border(void);
 
 extern void screen_prism_refresca_pantalla(void);
 
+extern void scr_refresca_pantalla_y_border_mk14(void);
+
 extern z80_int *putpixel_cache;
 
 extern void scr_refresca_pantalla_rainbow_comun(void);

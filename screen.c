@@ -2551,6 +2551,56 @@ void scr_refresca_pantalla_comun(void)
 
 }
 
+//Refresco pantalla Para mk14. De momento solo poner la pantalla en blanco
+void scr_refresca_pantalla_y_border_mk14(void)
+{
+
+	if (border_enabled.v) {
+					//ver si hay que refrescar border
+					if (modificado_border.v)
+					{
+//printf ("refrescamos border\n");
+									scr_refresca_border_comun_spectrumzx8081(7);
+									modificado_border.v=0;
+//sleep (1);
+					}
+
+	}
+
+	int x,y,bit;
+
+        int color=0;
+        int fila;
+
+
+	z80_byte x_hi;
+
+        for (y=0;y<192;y++) {
+
+                fila=y/8;
+
+                for (x=0,x_hi=0;x<32;x++,x_hi +=8) {
+
+
+									//Ver en casos en que puede que haya menu activo y hay que hacer overlay
+									if (scr_ver_si_refrescar_por_menu_activo(x,fila)) {
+
+                	 for (bit=0;bit<8;bit++) {
+
+											color=7;
+											scr_putpixel_zoom(x_hi+bit,y,color);
+
+
+        	         }
+								 }
+
+
+              }
+
+      }
+
+}
+
 
 //Rutina usada por todos los drivers para escribir caracteres en pantalla en zx8081 y ace, en rutina de refresco que
 //lee directament de DFILE

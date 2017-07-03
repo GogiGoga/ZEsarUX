@@ -367,7 +367,6 @@ void scrfbdev_putchar_footer(int x,int y, z80_byte caracter,z80_byte tinta,z80_b
                 if (border_enabled.v) yorigen+=QL_TOP_BORDER_NO_ZOOM/8;
         }
 
-
 	else {
 		//Spectrum o ZX80/81
 		if (border_enabled.v) yorigen=31;
@@ -468,6 +467,11 @@ void scrfbdev_refresca_pantalla(void)
         else if (MACHINE_IS_QL) {
                 scr_refresca_pantalla_y_border_ql();
         }
+
+        else if (MACHINE_IS_MK14) {
+                scr_refresca_pantalla_y_border_mk14();
+        }
+
 
 
 
