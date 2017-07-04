@@ -143,6 +143,8 @@ void mk14_dibuja_led(z80_byte valor)
 
 void temp_dibuja_leds(void)
 {
+	printf ("\n\n\n\n");
+
 	int i;
 	for (i=0;i<MK14_DIGITS;i++) {
 		//printf ("%i %d %d\n",i,mk14_ledlit[i],mk14_ledstat[i]);
