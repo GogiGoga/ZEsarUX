@@ -936,6 +936,7 @@ util_stats_init();
 
 	if (MACHINE_IS_MK14) {
 		scmp_reset();
+		mk14_reset();
 	}
 
 }
