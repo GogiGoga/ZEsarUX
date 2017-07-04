@@ -31,3 +31,6 @@ ZEsarUX distributed under GNU GENERAL PUBLIC LICENSE v3. You may read it on the 
 ZEsarUX includes Musashi 3.4 - A portable Motorola M680x0 processor emulation engine.
 Copyright 1998-2002 Karl Stenerud. All rights reserved. Distributed under MIT License, you may read it on the LICENSE_MOTOROLA_CORE file
 
+Includes National Semiconductor SC/MP CPU Emulator
+Copyright 2017 Miodrag Milanovic. Distributed under BSD-3 License, you may read it on the LICENSE_SCMP_CORE
+

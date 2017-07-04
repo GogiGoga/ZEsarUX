@@ -20697,6 +20697,11 @@ void menu_about_license_motorola_core(MENU_ITEM_PARAMETERS)
         menu_about_read_file("Motorola License","LICENSE_MOTOROLA_CORE");
 }
 
+void menu_about_license_scmp_core(MENU_ITEM_PARAMETERS)
+{
+        menu_about_read_file("SCMP License","LICENSE_SCMP_CORE");
+}
+
 void menu_about_statistics(MENU_ITEM_PARAMETERS)
 {
 
@@ -20924,7 +20929,8 @@ void menu_about(MENU_ITEM_PARAMETERS)
                 menu_add_item_menu(array_menu_about,"Lic~~ense",MENU_OPCION_NORMAL,menu_about_license,NULL);
 		menu_add_item_menu_shortcut(array_menu_about,'e');
 
-								menu_add_item_menu(array_menu_about,"Motorola Core License",MENU_OPCION_NORMAL,menu_about_license_motorola_core,NULL);
+		menu_add_item_menu(array_menu_about,"Motorola Core License",MENU_OPCION_NORMAL,menu_about_license_motorola_core,NULL);
+		menu_add_item_menu(array_menu_about,"SCMP Core License",MENU_OPCION_NORMAL,menu_about_license_scmp_core,NULL);
 
 
                 menu_add_item_menu(array_menu_about,"",MENU_OPCION_SEPARADOR,NULL,NULL);

@@ -5578,7 +5578,10 @@ int zesarux_main (int main_argc,char *main_argv[]) {
 			"This program comes with ABSOLUTELY NO WARRANTY\n"
 			"This is free software, and you are welcome to redistribute it under certain conditions\n\n");
 			printf ("Includes Musashi 3.4 - A portable Motorola M680x0 processor emulation engine.\n"
-						"Copyright 1998-2002 Karl Stenerud. All rights reserved.\n\n");
+						"Copyright 1998-2002 Karl Stenerud. All rights reserved.\n");
+			printf ("Includes Includes National Semiconductor SC/MP CPU Emulator.\n"
+						"Copyright 2017 Miodrag Milanovic.\n\n");
+
 			printf ("ZEsarUX Version: " EMULATOR_VERSION " Date: " EMULATOR_DATE " - " EMULATOR_EDITION_NAME "\n\n");
 
 
