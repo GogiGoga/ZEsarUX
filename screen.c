@@ -49,7 +49,7 @@
 #include "timer.h"
 #include "tbblue.h"
 #include "tsconf.h"
-
+#include "mk14.h"
 
 //Incluimos estos dos para la funcion de fade out
 #ifdef COMPILE_XWINDOWS
@@ -2551,6 +2551,99 @@ void scr_refresca_pantalla_comun(void)
 
 }
 
+void scr_mk14_linea(int x,int y,int longitud,int incx,int incy,int color)
+{
+	while (longitud) {
+		scr_putpixel_zoom(x,y,color);
+		x +=incx;
+		y +=incy;
+
+		longitud--;
+	}
+}
+
+/*
+Digitos. Bitmap:
+
+   0123456789012345
+00   xxxxxx
+01   xxxxxx
+02 xx      xx
+03 xx      xx
+04 xx      xx
+05 xx      xx
+06   xxxxxx
+07   xxxxxx
+08 xx      xx
+09 xx      xx
+10 xx      xx
+11 xx      xx
+12   xxxxxx  xx
+13   xxxxxx  xx
+14
+15
+
+
+Estado leds
+bit
+
+    0
+    _
+5  |  |  1
+	  -
+4	 |  |  2
+    _
+    3
+
+6: centro
+7: punto
+
+*/
+
+void scr_mk14_draw_led(z80_byte valor,int x,int y,int color)
+{
+	if (valor&1) {
+		scr_mk14_linea(x+2,y,6,+1,0,color);
+		scr_mk14_linea(x+2,y+1,6,+1,0,color);
+	}
+
+	if (valor&2) {
+		scr_mk14_linea(x+8,y+2,4,0,+1,color);
+		scr_mk14_linea(x+9,y+2,4,0,+1,color);
+	}
+
+	if (valor&4) {
+		scr_mk14_linea(x+8,y+8,4,0,+1,color);
+		scr_mk14_linea(x+9,y+8,4,0,+1,color);
+	}
+
+	if (valor&8) {
+		scr_mk14_linea(x+2,y+12,6,+1,0,color);
+		scr_mk14_linea(x+2,y+13,6,+1,0,color);
+	}
+
+	if (valor&16) {
+		scr_mk14_linea(x,y+8,4,0,+1,color);
+		scr_mk14_linea(x+1,y+8,4,0,+1,color);
+	}
+
+	if (valor&32) {
+		scr_mk14_linea(x,y+2,4,0,+1,color);
+		scr_mk14_linea(x+1,y+2,4,0,+1,color);
+	}
+
+	if (valor&64) {
+		scr_mk14_linea(x+2,y+6,6,+1,0,color);
+		scr_mk14_linea(x+2,y+7,6,+1,0,color);
+	}
+
+
+	if (valor&128) {
+		scr_mk14_linea(x+10,y+12,2,+1,0,color);
+		scr_mk14_linea(x+10,y+13,2,+1,0,color);
+	}
+}
+
 //Refresco pantalla Para mk14. De momento solo poner la pantalla en blanco
 void scr_refresca_pantalla_y_border_mk14(void)
 {
@@ -2598,6 +2691,17 @@ void scr_refresca_pantalla_y_border_mk14(void)
               }
 
       }
+
+
+			//Dibujar digitos
+			int i;
+			x=0;
+			y=0;
+			for (i=0;i<MK14_DIGITS;i++) {
+				scr_mk14_draw_led(mk14_ledstat[i]|128,x,y,2);
+
+				x += 14;
+			}
 
 }
 

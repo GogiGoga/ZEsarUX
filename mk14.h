@@ -24,5 +24,6 @@
 
 #define MK14_DIGITS 8
 
+extern int mk14_ledstat[MK14_DIGITS];
 
 #endif

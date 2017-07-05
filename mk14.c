@@ -189,12 +189,12 @@ bit
 
 		//Prueba tecla 1
 		if (dir==0 && (puerto_63486&1)==0) {
-			temp_dibuja_leds();
+			//temp_dibuja_leds();
 			return 255-64;  //tecla 1
 		}
 
 		else if (dir==0 && (puerto_63486&2)==0) {
-			temp_dibuja_leds();
+			//temp_dibuja_leds();
 			return 255-32;  //tecla 2
 		}
 

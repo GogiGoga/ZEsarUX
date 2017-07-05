@@ -1230,7 +1230,7 @@ audionull.o: audionull.c audionull.h cpu.h debug.h audio.h
 ay38912.o: ay38912.c ay38912.h cpu.h audio.h joystick.h
 	\$(CC) \$(CFLAGS) -c ay38912.c
 
-screen.o: screen.c screen.h debug.h mem128.h chloe.h prism.h timex.h cpc.h prism.h operaciones.h zx8081.h charset.h menu.h audio.h contend.h ula.h tape_smp.h z88.h ulaplus.h zxuno.h spectra.h spritechip.h timer.h sam.h ql.h chrome.h tsconf.h
+screen.o: screen.c screen.h debug.h mem128.h chloe.h prism.h timex.h cpc.h prism.h operaciones.h zx8081.h charset.h menu.h audio.h contend.h ula.h tape_smp.h z88.h ulaplus.h zxuno.h spectra.h spritechip.h timer.h sam.h ql.h chrome.h tsconf.h mk14.h
 	\$(CC) \$(CFLAGS) -c screen.c
 
 mem128.o: mem128.c cpu.h mem128.h debug.h contend.h zxuno.h chloe.h prism.h timex.h sam.h ula.h tbblue.h superupgrade.h chrome.h tsconf.h
