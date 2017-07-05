@@ -22,8 +22,11 @@
 #ifndef MK14_H
 #define MK14_H
 
+#include "cpu.h"
+
 #define MK14_DIGITS 8
 
-extern int mk14_ledstat[MK14_DIGITS];
+extern int mk14_ledstat[];
+extern z80_byte mk14_keystatus[];
 
 #endif

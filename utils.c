@@ -82,6 +82,7 @@
 #include "ula.h"
 #include "snap_rzx.h"
 #include "scmp.h"
+#include "mk14.h"
 
 //Archivo usado para entrada de teclas
 FILE *ptr_input_file_keyboard;
@@ -333,6 +334,21 @@ struct x_tabla_teclado ql_tabla_teclado_numeros[]={
         {&ql_keyboard_table[0],128}, //7
         {&ql_keyboard_table[6],1},
         {&ql_keyboard_table[5],1} //9
+};
+
+
+struct x_tabla_teclado mk14_tabla_teclado_numeros[]={
+        {&mk14_keystatus[0],128}, //0
+        {&mk14_keystatus[1],128},
+        {&mk14_keystatus[2],128},
+        {&mk14_keystatus[3],128},
+        {&mk14_keystatus[4],128},
+        {&mk14_keystatus[5],128},     //5
+        {&mk14_keystatus[6],128},
+        {&mk14_keystatus[7],128},
+        {&mk14_keystatus[0],64},
+        {&mk14_keystatus[1],64}
+
 };
 
 /*
@@ -3404,6 +3420,88 @@ void convert_numeros_letras_puerto_teclado_continue(z80_byte tecla,int pressrele
             else *puerto |=mascara;
           }
 
+          if (MACHINE_IS_MK14) {
+            //Solo algunas letras
+            /*
+            mk14_keystatus
+
+            Matriz teclado
+             128 64  32  16
+
+              0  8   -   A	mk14_keystatus[0]
+            	1  9   -   B	mk14_keystatus[1]
+            	2  -   GO  C	mk14_keystatus[2]
+            	3  -   MEM D	mk14_keystatus[3]
+            	4  -   ABR -	mk14_keystatus[4]
+            	5  -   -   -	mk14_keystatus[5]
+            	6  -   -   E	mk14_keystatus[6]
+            	7  -   TER F	mk14_keystatus[7]
+
+            GO: mapeado a G
+            MEM: mapeado a M
+            ABR: mapeado a Z
+            TERM: mapeado a T
+            */
+
+            mascara=255;
+
+            if (tecla=='a') {
+              puerto=&mk14_keystatus[0];
+              mascara=16;
+            }
+
+            if (tecla=='b') {
+              puerto=&mk14_keystatus[1];
+              mascara=16;
+            }
+
+            if (tecla=='c') {
+              puerto=&mk14_keystatus[2];
+              mascara=16;
+            }
+
+            if (tecla=='d') {
+              puerto=&mk14_keystatus[3];
+              mascara=16;
+            }
+
+            if (tecla=='e') {
+              puerto=&mk14_keystatus[6];
+              mascara=16;
+            }
+
+            if (tecla=='f') {
+              puerto=&mk14_keystatus[7];
+              mascara=16;
+            }
+
+            if (tecla=='g') {
+              puerto=&mk14_keystatus[2];
+              mascara=32;
+            }
+
+            if (tecla=='m') {
+              puerto=&mk14_keystatus[3];
+              mascara=32;
+            }
+
+            if (tecla=='z') {
+              puerto=&mk14_keystatus[4];
+              mascara=32;
+            }
+
+            if (tecla=='t') {
+              puerto=&mk14_keystatus[7];
+              mascara=32;
+            }
+
+
+            if (mascara!=255) {
+              if (pressrelease) *puerto &=255-mascara;
+              else *puerto |=mascara;
+            }
+          }
+
 
     }
 
@@ -3445,6 +3543,14 @@ void convert_numeros_letras_puerto_teclado_continue(z80_byte tecla,int pressrele
 
                                           if (pressrelease) *puerto &=255-mascara;
                                           else *puerto |=mascara;
+  }
+
+  if (MACHINE_IS_MK14) {
+                                                puerto=mk14_tabla_teclado_numeros[indice].puerto;
+                                                mascara=mk14_tabla_teclado_numeros[indice].mascara;
+
+                                                if (pressrelease) *puerto &=255-mascara;
+                                                else *puerto |=mascara;
   }
 
 

@@ -2554,7 +2554,9 @@ void scr_refresca_pantalla_comun(void)
 void scr_mk14_linea(int x,int y,int longitud,int incx,int incy,int color)
 {
 	while (longitud) {
-		scr_putpixel_zoom(x,y,color);
+		if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) {
+			scr_putpixel_zoom(x,y,color);
+		}
 		x +=incx;
 		y +=incy;
 

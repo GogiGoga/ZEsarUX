@@ -1185,7 +1185,7 @@ core_ql.o: core_ql.c core_ql.h cpu.h debug.h tape.h audio.h screen.h ay38912.h o
 core_mk14.o: core_mk14.c core_mk14.h scmp.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h snap_zx8081.h utils.h realjoystick.h ula.h
 	\$(CC) \$(CFLAGS) -c core_mk14.c
 
-mk14.o: mk14.c mk14.h cpu.h debug.h scmp.h
+mk14.o: mk14.c mk14.h cpu.h debug.h scmp.h utils.h
 	\$(CC) \$(CFLAGS) -c mk14.c
 
 core_z88.o: core_z88.c core_z88.h cpu.h debug.h tape.h audio.h screen.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h z88.h audio.h utils.h
@@ -1326,7 +1326,7 @@ menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h
 disassemble.o: disassemble.c disassemble.h cpu.h operaciones.h debug.h ql.h utils.h scmp.h
 	\$(CC) \$(CFLAGS) -c disassemble.c
 
-utils.o: utils.c utils.h cpu.h debug.h joystick.h compileoptions.h tape.h snap.h screen.h realjoystick.h menu.h z88.h playtzx.h tape_tzx.h operaciones.h zx8081.h autoselectoptions.h ulaplus.h ay38912.h textspeech.h spectra.h zxuno.h spritechip.h timex.h cpc.h sam.h divmmc.h divide.h superupgrade.h chardetect.h zx8081.h jupiterace.h mmc.h ide.h zxpand.h diviface.h divmmc.h divide.h dandanator.h ql.h m68k.h remote.h ula.h snap_rzx.h scmp.h
+utils.o: utils.c utils.h cpu.h debug.h joystick.h compileoptions.h tape.h snap.h screen.h realjoystick.h menu.h z88.h playtzx.h tape_tzx.h operaciones.h zx8081.h autoselectoptions.h ulaplus.h ay38912.h textspeech.h spectra.h zxuno.h spritechip.h timex.h cpc.h sam.h divmmc.h divide.h superupgrade.h chardetect.h zx8081.h jupiterace.h mmc.h ide.h zxpand.h diviface.h divmmc.h divide.h dandanator.h ql.h m68k.h remote.h ula.h snap_rzx.h scmp.h mk14.h
 	\$(CC) \$(CFLAGS) -c utils.c
 
 playtzx.o: playtzx.c playtzx.h debug.h audio.h utils.h

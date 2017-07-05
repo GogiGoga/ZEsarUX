@@ -34,11 +34,34 @@
 #include "scmp.h"
 #include "cpu.h"
 #include "debug.h"
+#include "utils.h"
 
 
 z80_byte mk14_keystatus[MK14_DIGITS]={
 	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
 };
+
+/*
+Matriz teclado
+ 128 64  32  16
+
+  0  8   -   A	mk14_keystatus[0]
+	1  9   -   B	mk14_keystatus[1]
+	2  -   GO  C	mk14_keystatus[2]
+	3  -   MEM D	mk14_keystatus[3]
+	4  -   ABR -	mk14_keystatus[4]
+	5  -   -   -	mk14_keystatus[5]
+	6  -   -   E	mk14_keystatus[6]
+	7  -   TER F	mk14_keystatus[7]
+
+GO: mapeado a G
+MEM: mapeado a M
+ABR: mapeado a Z
+TERM: mapeado a T
+
+*/
+
+
 
 //Parece que keystatus pone los 4 bits superiores a 0 por cada 4 teclas
 /*
@@ -186,20 +209,31 @@ bit
 
 	if (dir<8) {
 		//printf ("--Leyendo tecla indice %d\n",dir);
+		return mk14_keystatus[dir];
 
+		/*
 		//Prueba tecla 1
 		if (dir==0 && (puerto_63486&1)==0) {
-			//temp_dibuja_leds();
-			return 255-64;  //tecla 1
+			return 255-128;  //tecla 1
 		}
 
 		else if (dir==0 && (puerto_63486&2)==0) {
-			//temp_dibuja_leds();
-			return 255-32;  //tecla 2
+			return 255-64;  //tecla 2
 		}
 
+		else if (dir==0 && (puerto_63486&4)==0) {
+			return 255-32;  //tecla 3
+		}
 
-		else return mk14_keystatus[dir];
+		else if (dir==0 && (puerto_63486&8)==0) {
+			return 255-16;  //tecla 4
+		}
+
+		else if (dir==1 && (puerto_63486&16)==0) {
+			return 255-8;  //tecla 5
+		}
+		*/
+
 	}
 	else return 0xFF;
 }
