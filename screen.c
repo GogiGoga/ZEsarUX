@@ -2699,8 +2699,8 @@ void scr_refresca_pantalla_y_border_mk14(void)
 			int i;
 			x=0;
 			y=0;
-			for (i=0;i<MK14_DIGITS;i++) {
-				scr_mk14_draw_led(mk14_ledstat[i]|128,x,y,2);
+			for (i=MK14_DIGITS-1;i>=0;i--) {
+				scr_mk14_draw_led(mk14_ledstat[i],x,y,2);
 
 				x += 14;
 			}

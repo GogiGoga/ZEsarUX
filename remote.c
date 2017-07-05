@@ -779,6 +779,7 @@ struct s_items_ayuda items_ayuda[]={
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be separed by one space"},
+	{"write-mapped-memory-raw",NULL,"address values","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be in hexadecimal and not separed"},
 
 
   {NULL,NULL,NULL,NULL}
@@ -3453,6 +3454,41 @@ else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comand
 			valor=parse_string_to_number(s);
 			poke_byte_z80_moto(direccion++,valor);
 			s=find_space_or_end(s);
+		}
+		/*else {
+			escribir_socket(misocket,"ERROR. No value set");
+		}*/
+
+	}
+
+}
+
+
+else if (!strcmp(comando_sin_parametros,"write-mapped-memory-raw") ) {
+	unsigned int direccion;
+	z80_byte valor;
+	if (parametros[0]==0) {
+		escribir_socket(misocket,"ERROR. No parameters set");
+	}
+
+	else {
+
+		direccion=parse_string_to_number(parametros);
+		//Ver si hay espacio
+		char *s=find_space_or_end(parametros);
+		while (*s) {
+			char buffer_valor[4];
+			buffer_valor[0]=s[0];
+			buffer_valor[1]=s[1];
+			buffer_valor[2]='H';
+			buffer_valor[3]=0;
+			//printf ("%s\n",buffer_valor);
+			valor=parse_string_to_number(buffer_valor);
+			//printf ("valor: %d\n",valor);
+			poke_byte_z80_moto(direccion++,valor);
+
+			s++;
+			if (*s) s++;
 		}
 		/*else {
 			escribir_socket(misocket,"ERROR. No value set");
