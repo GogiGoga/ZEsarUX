@@ -1185,7 +1185,7 @@ core_ql.o: core_ql.c core_ql.h cpu.h debug.h tape.h audio.h screen.h ay38912.h o
 core_mk14.o: core_mk14.c core_mk14.h scmp.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h snap_zx8081.h utils.h realjoystick.h ula.h
 	\$(CC) \$(CFLAGS) -c core_mk14.c
 
-mk14.o: mk14.c mk14.h cpu.h debug.h scmp.h utils.h
+mk14.o: mk14.c mk14.h cpu.h debug.h scmp.h utils.h menu.h
 	\$(CC) \$(CFLAGS) -c mk14.c
 
 core_z88.o: core_z88.c core_z88.h cpu.h debug.h tape.h audio.h screen.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h z88.h audio.h utils.h

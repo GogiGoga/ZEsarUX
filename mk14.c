@@ -35,6 +35,7 @@
 #include "cpu.h"
 #include "debug.h"
 #include "utils.h"
+#include "menu.h"
 
 
 z80_byte mk14_keystatus[MK14_DIGITS]={
@@ -209,30 +210,9 @@ bit
 
 	if (dir<8) {
 		//printf ("--Leyendo tecla indice %d\n",dir);
-		return mk14_keystatus[dir];
+		if (menu_abierto) return 255;
+		else return mk14_keystatus[dir];
 
-		/*
-		//Prueba tecla 1
-		if (dir==0 && (puerto_63486&1)==0) {
-			return 255-128;  //tecla 1
-		}
-
-		else if (dir==0 && (puerto_63486&2)==0) {
-			return 255-64;  //tecla 2
-		}
-
-		else if (dir==0 && (puerto_63486&4)==0) {
-			return 255-32;  //tecla 3
-		}
-
-		else if (dir==0 && (puerto_63486&8)==0) {
-			return 255-16;  //tecla 4
-		}
-
-		else if (dir==1 && (puerto_63486&16)==0) {
-			return 255-8;  //tecla 5
-		}
-		*/
 
 	}
 	else return 0xFF;
