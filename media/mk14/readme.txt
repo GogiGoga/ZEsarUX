@@ -1,6 +1,16 @@
 clock.bin: load at 0f16h. run at 0f16h  (on mk14 keyboard: 0f16g)
 duckshoot.bin: load at 0f20h. run at 0f23h
-mastermind.bin. load at 0f1ch. run at 0f1ch . ;       Term new game .  Mem clear .  Go process
+mastermind.bin. load at 0f1ch. run at 0f1ch . ;       Term: new game .  Mem: clear .  Go: process
+moonlanding.bin. load at 0F14h. run at 0f52h.
+;       Moon landing (MK14 Manual)
+;
+;       Keys 1-7 control the thrust
+;
+;	0f08	Alt,
+;	0f0B	Vel,
+;	0f0E	Acceleration,
+;	0f10	Thrust,
+;	0f12	Fuel
 
 ----
 
