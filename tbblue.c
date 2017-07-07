@@ -125,6 +125,22 @@ Parece que se mapea la pagina de sram indicada en registro 19
 
 */
 
+
+/*
+
+IMPORTANT!!
+
+Trying some old layer2 demos that doesn't set register 19 is dangerous.
+To avoid problems, first do:
+out 9275, 19
+out 9531,32
+To set layer2 to the extra ram:
+0x080000 – 0x0FFFFF (512K) => Extra RAM
+
+Then load the demo program and will work
+
+*/
+
 z80_byte tbblue_port_123b;
 
 int tbblue_write_on_layer2(void)
@@ -1044,7 +1060,7 @@ void tbblue_set_memory_pages(void)
 
 			if (tbblue_bootrom.v==0) {
 				/*
-When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 512K, 
+When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 512K,
 and the page mapping is configured by bits 4-0 of the I/O port 'config1'.
 These 5 bits maps 32 16K pages the start of 512K SRAM space 0-16363 the Speccy,
 which allows you access to all SRAM.
