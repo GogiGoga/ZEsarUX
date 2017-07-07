@@ -124,6 +124,9 @@ $02 = 00000010b Layer2 on and nothing paged in. etc
 Parece que se mapea la pagina de sram indicada en registro 19
 
 */
+
+z80_byte tbblue_port_123b;
+
 void tbblue_reset_sprites(void)
 {
 	//Inicializar Paleta
@@ -619,6 +622,16 @@ Register:
 
 			}
 
+}
+
+z80_byte tbblue_get_port_layer2_value(void)
+{
+	return tbblue_port_123b;
+}
+
+void tbblue_out_port_layer2_value(z80_byte value)
+{
+	tbblue_port_123b=value;
 }
 
 

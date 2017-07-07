@@ -65,6 +65,7 @@ extern void tbblue_set_timing_48k(void);
 
 #define TBBLUE_REGISTER_PORT 0x243b
 #define TBBLUE_VALUE_PORT 0x253b
+#define TBBLUE_LAYER2_PORT 0x123B
 
 #define TBBLUE_SPRITE_INDEX_PORT 0x303B
 #define TBBLUE_SPRITE_PALETTE_PORT 0x53
@@ -108,5 +109,8 @@ extern void tbblue_out_sprite_palette(z80_byte value);
 extern void tbblue_out_sprite_pattern(z80_byte value);
 extern void tbblue_out_sprite_sprite(z80_byte value);
 extern z80_byte tbblue_get_port_sprite_index(void);
+
+extern z80_byte tbblue_port_123b;
+
 
 #endif

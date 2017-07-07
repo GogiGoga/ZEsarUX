@@ -1737,6 +1737,28 @@ set_visualmembuffer(dir);
 
 #endif
 
+		//Si se escribe en memoria layer2
+		if (dir<16384 && tbblue_port_123b &1) {
+			int offset=tbblue_registers[19]&63;
+			offset*=16384;
+
+			z80_byte region=tbblue_port_123b&(64+128);
+			switch (region) {
+				case 64:
+					offset +=16384;
+				break;
+
+				case 128: //TODO: en la documentacion dice 192... tiene logica???
+					offset +=32768;
+				break;
+			}
+
+			offset +=dir;
+			memoria_spectrum[offset]=valor;
+
+			printf ("Escribiendo layer 2 direccion %d valor %d\n",dir,valor);
+		}
+
 		//Proteccion ROM
 		if (dir<16384 && tbblue_low_segment_writable.v==0) {
 			//printf ("No se puede escribir en la rom. Dir=%d PC=%d\n",dir,reg_pc);
@@ -1982,7 +2004,7 @@ void poke_byte_no_time_mk14(z80_int dir,z80_byte valor)
 			mk14_write_io_port(dir,valor);
 			return;
 	}
-	
+
 		//De momento hacer que 0-7FF es rom
 		if (dir<0x800) return;
     memoria_spectrum[dir]=valor;
@@ -5338,6 +5360,8 @@ z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 		//if (puerto==0x24DF) return tbblue_port_24df;
 		if (puerto==TBBLUE_VALUE_PORT) return tbblue_get_value_port();
 		if (puerto==TBBLUE_SPRITE_INDEX_PORT)	return tbblue_get_port_sprite_index();
+		if (puerto==TBBLUE_LAYER2_PORT)	return tbblue_get_port_layer2_value();
+
 		if (puerto==DS1307_PORT_CLOCK) return ds1307_get_port_clock();
 		if (puerto==DS1307_PORT_DATA) return ds1307_get_port_data();
 	}
@@ -6478,6 +6502,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
                         }
 
 		if (puerto==TBBLUE_SPRITE_INDEX_PORT)	tbblue_out_port_sprite_index(value);
+		if (puerto==TBBLUE_LAYER2_PORT) tbblue_out_port_layer2_value(value);
 
 		if (puerto_l==TBBLUE_SPRITE_PALETTE_PORT)	tbblue_out_sprite_palette(value);
 		if (puerto_l==TBBLUE_SPRITE_PATTERN_PORT) tbblue_out_sprite_pattern(value);
