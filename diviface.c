@@ -282,8 +282,6 @@ reached:
 		//Devolver pagina de memoria ram
 		int pagina=diviface_control_register&get_diviface_ram_mask();
 
-		//Saltar los primeros kb asignados para firmware
-		//int offset=DIVIFACE_FIRMWARE_ALLOCATED_KB*1024;
 		int offset=0;
 
 		//Nos ubicamos en la pagina
@@ -517,8 +515,8 @@ void diviface_enable(char *romfile)
 		//Pagina 0 del tbblue
 		//diviface_memory_pointer=memoria_spectrum;
 
-		diviface_memory_pointer=&memoria_spectrum[0x60000];
-		diviface_ram_memory_pointer=memoria_spectrum;
+		diviface_memory_pointer=&memoria_spectrum[0x010000];   //Donde va la ROM de diviface, normalmente esxdos
+		diviface_ram_memory_pointer=&memoria_spectrum[0x020000];   //Donde va la ram de diviface
 	}
 
 	else {

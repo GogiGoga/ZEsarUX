@@ -762,15 +762,22 @@ TBBlue’s default 512K SRAM is mapped as follows:
 0x06c000 – 0x06FFFF (16K) => Multiface RAM
 0x070000 – 0x07FFFF (64K) => ZX Spectrum ROM
 
-
-
-
 Segundo bloque de ram: 512K, todo accesible para Spectrum. Se mapean 256 o 512 mediante bit 6 y 7 de puerto 32765
 0x080000 - 0x0FFFFF (512K) => Speccy RAM
 
 Luego 8 KB de rom de la fpga
 0x100000 - 0x101FFF
 
+Nuevo:
+
+OK 0x000000 – 0x00FFFF (64K) => ZX Spectrum ROM
+OK 0x010000 – 0x013FFF (16K) => ESXDOS ROM
+0x014000 – 0x017FFF (16K) => Multiface ROM
+0x018000 – 0x01BFFF (16K) => Multiface extra ROM
+0x01c000 – 0x01FFFF (16K) => Multiface RAM
+OK 0x020000 – 0x05FFFF (256K) => divMMC RAM
+OK 0x060000 – 0x07FFFF (128K) => ZX Spectrum RAM
+OK 0x080000 – 0x0FFFFF (512K) => Extra RAM
 
 */
 
@@ -783,15 +790,15 @@ Luego 8 KB de rom de la fpga
 	//Los 8 KB de la fpga ROM estan al final
 	tbblue_fpga_rom=&memoria_spectrum[1024*1024];
 
-	//32 Paginas RAM spectrum 512k
+	//32 Paginas RAM spectrum 512k. Hay 128kb mas despues de estos...
 	for (i=0;i<32;i++) {
-		indice=0x080000+16384*i;
+		indice=0x060000+16384*i;
 		tbblue_ram_memory_pages[i]=&memoria_spectrum[indice];
 	}
 
 	//4 Paginas ROM
 	for (i=0;i<4;i++) {
-		indice=0x070000+16384*i;
+		indice=0+16384*i;
 		tbblue_rom_memory_pages[i]=&memoria_spectrum[indice];
 	}
 
@@ -1037,7 +1044,10 @@ void tbblue_set_memory_pages(void)
 
 			if (tbblue_bootrom.v==0) {
 				/*
-When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 512K, and the page mapping is configured by bits 4-0 of the I/O port 'config1'. These 5 bits maps 32 16K pages the start of 512K SRAM space 0-16363 the Speccy, which allows you access to all SRAM.
+When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 512K, 
+and the page mapping is configured by bits 4-0 of the I/O port 'config1'.
+These 5 bits maps 32 16K pages the start of 512K SRAM space 0-16363 the Speccy,
+which allows you access to all SRAM.
 */
 				romram_page=(tbblue_registers[4]&31);
 				indice=romram_page*16384;

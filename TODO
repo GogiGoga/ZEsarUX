@@ -51,13 +51,13 @@ O quizá setting configurable
 
 -tbblue:
 *Raster tbblue. 
-*scroll hardware tbblue
+*scroll hardware tbblue layer2
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *sid commodore para tbbue. ver ReSID
 *modos turbo next 14 y 28 mhz
 *Probar a cambiar paleta interna del next mediante Basic 
 
-
+-probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 -cuando en remote command, se hace run, si cerramos telnet, luego al hacer F5 sale del emulador entero. Parece que el hilo que esta en espera en el menu:
 else if (menu_event_remote_protocol_enterstep.v) {
