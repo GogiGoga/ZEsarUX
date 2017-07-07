@@ -82,6 +82,48 @@ Port 0x303B, if written, defines the sprite slot to be configured by ports 0x55 
 z80_byte tbblue_port_303b;
 
 
+/* Informacion relacionada con Layer2. Puede cambiar en el futuro, hay que ir revisando info en web de Next
+
+Registros internos implicados:
+
+(R/W) 19 => Layer 2 RAM page
+ bits 7-6 = Reserved, must be 0
+ bits 5-0 = SRAM page
+
+(R/W) 20 => Layer 2 transparency color
+  bits 7-4 = Reserved, must be 0
+  bits 3-0 = ULA transparency color (IGRB)(Reset to "1000" black with bright, after a reset)
+
+
+
+(R/W) 22 => Layer2 Offset X
+  bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
+
+(R/W) 23 => Layer2 Offset Y
+  bist 7-0 = Y Offset (0-191)(Reset to 0 after a reset)
+
+
+Posiblemente registro 20 aplica a cuando el layer2 esta por detras de pantalla de spectrum, y dice el color de pantalla de spectrum
+que actua como transparente
+Cuando layer2 esta encima de pantalla spectrum, el color transparente parece que es el mismo que sprites: TBBLUE_TRANSPARENT_COLOR 0xE3
+
+Formato layer2: 256x192, linear, 8bpp, RRRGGGBB (mismos colores que sprites), ocupa 48kb
+
+Se accede en modo escritura en 0000-3fffh mediante puerto:
+
+Banking in Layer2 is out 4667 ($123B)
+bit 0 = write enable, which changes writes from 0-3fff to write to layer2,
+bit 1 = Layer2 ON or OFF set=ON,
+bit 4 puts layer 2 behind the normal spectrum screen
+bit 6 and 7 are to say which 16K section is paged in,
+$03 = 00000011b Layer2 on and writable and top third paged in at $0000,
+$43 = 01000011b Layer2 on and writable and middle third paged in at $0000,
+$C3 = 11000011b Layer2 on and writable and bottom third paged in at $0000,
+$02 = 00000010b Layer2 on and nothing paged in. etc
+
+Parece que se mapea la pagina de sram indicada en registro 19
+
+*/
 void tbblue_reset_sprites(void)
 {
 	//Inicializar Paleta
