@@ -1738,9 +1738,9 @@ set_visualmembuffer(dir);
 #endif
 
 		//Si se escribe en memoria layer2
-		if (dir<16384 && tbblue_port_123b &1) {
-			int offset=tbblue_registers[19]&63;
-			offset*=16384;
+		if (dir<16384 && (tbblue_port_123b &1) ) {
+
+			int offset=tbblue_get_offset_start_layer2();
 
 			z80_byte region=tbblue_port_123b&(64+128);
 			switch (region) {
@@ -1756,7 +1756,7 @@ set_visualmembuffer(dir);
 			offset +=dir;
 			memoria_spectrum[offset]=valor;
 
-			printf ("Escribiendo layer 2 direccion %d valor %d\n",dir,valor);
+			//printf ("Escribiendo layer 2 direccion %d valor %d offset %d region %d\n",dir,valor,offset,region);
 		}
 
 		//Proteccion ROM

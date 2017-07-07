@@ -5179,6 +5179,11 @@ void screen_store_scanline_rainbow_solo_display(void)
 
         direccion=screen_addr_table[(scanline_copia<<5)];
 
+				//Inicializar puntero a layer2 de tbblue, irlo incrementando a medida que se ponen pixeles
+				int tbblue_layer2_offset=tbblue_get_offset_start_layer2();
+
+				tbblue_layer2_offset +=scanline_copia*256;
+
 
         fila=scanline_copia/8;
         //dir_atributo=6144+(fila*32);
@@ -5408,9 +5413,25 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 				color= ( byte_leido & 128 ? ink : paper ) ;
 
+				//Si layer2 tbblue
+				if (tbblue_is_active_layer2() ) {
+						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset];
+
+						//Si layer2 encima
+						if ( (tbblue_port_123b & 16)==0) {
+							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) store_value_rainbow(puntero_buf_rainbow,RGB8_INDEX_FIRST_COLOR+color_layer2);
+							else store_value_rainbow(puntero_buf_rainbow,color);
+						}
+
+				}
+				else {
                                 store_value_rainbow(puntero_buf_rainbow,color);
+				}
 
                                 byte_leido=byte_leido<<1;
+
+
+																tbblue_layer2_offset++;
                         }
 			direccion++;
                 	//dir_atributo++;

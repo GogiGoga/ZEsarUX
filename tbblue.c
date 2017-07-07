@@ -127,6 +127,21 @@ Parece que se mapea la pagina de sram indicada en registro 19
 
 z80_byte tbblue_port_123b;
 
+int tbblue_is_active_layer2(void)
+{
+	if (tbblue_port_123b & 2) return 1;
+	return 0; 
+}
+
+
+int tbblue_get_offset_start_layer2(void)
+{
+	int offset=tbblue_registers[19]&63;
+	offset*=16384;
+
+	return offset;
+}
+
 void tbblue_reset_sprites(void)
 {
 	//Inicializar Paleta
