@@ -5419,8 +5419,13 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 						//Si layer2 encima
 						if ( (tbblue_port_123b & 16)==0) {
-							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) store_value_rainbow(puntero_buf_rainbow,RGB8_INDEX_FIRST_COLOR+color_layer2);
-							else store_value_rainbow(puntero_buf_rainbow,color);
+							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
+								store_value_rainbow(puntero_buf_rainbow,RGB8_INDEX_FIRST_COLOR+color_layer2);
+							}
+
+							else {
+								store_value_rainbow(puntero_buf_rainbow,color);
+							}
 						}
 
 				}
