@@ -118,7 +118,7 @@ bit 4 puts layer 2 behind the normal spectrum screen
 bit 6 and 7 are to say which 16K section is paged in,
 $03 = 00000011b Layer2 on and writable and top third paged in at $0000,
 $43 = 01000011b Layer2 on and writable and middle third paged in at $0000,
-$C3 = 11000011b Layer2 on and writable and bottom third paged in at $0000,
+$C3 = 11000011b Layer2 on and writable and bottom third paged in at $0000,  ?? sera 100000011b??? TODO
 $02 = 00000010b Layer2 on and nothing paged in. etc
 
 Parece que se mapea la pagina de sram indicada en registro 19
@@ -127,10 +127,16 @@ Parece que se mapea la pagina de sram indicada en registro 19
 
 z80_byte tbblue_port_123b;
 
+int tbblue_write_on_layer2(void)
+{
+	if (tbblue_port_123b &1) return 1;
+	return 0;
+}
+
 int tbblue_is_active_layer2(void)
 {
 	if (tbblue_port_123b & 2) return 1;
-	return 0; 
+	return 0;
 }
 
 
@@ -1135,9 +1141,10 @@ void tbblue_reset(void)
 	/*
 	(R/W) 20 => Layer 2 transparency color
   bits 7-4 = Reserved, must be 0
-  bits 3-0 = ULA transparency color (IGRB)(Reset to 0 after a reset)
+  bits 3-0 = ULA transparency color (IGRB)(Reset to "1000" black with bright, after a reset)
+
 	*/
-	tbblue_registers[20] &=(255-1-2-4-8);
+	tbblue_registers[20]=8;
 
 	tbblue_registers[21]=0;
 	tbblue_registers[22]=0;

@@ -1738,7 +1738,7 @@ set_visualmembuffer(dir);
 #endif
 
 		//Si se escribe en memoria layer2
-		if (dir<16384 && (tbblue_port_123b &1) ) {
+		if (dir<16384 && tbblue_write_on_layer2() ) {
 
 			int offset=tbblue_get_offset_start_layer2();
 

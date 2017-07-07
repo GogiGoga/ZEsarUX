@@ -301,6 +301,10 @@ reached:
 //Si hay que hacer poke a memoria interna.
 void diviface_poke_byte_to_internal_memory(z80_int dir,z80_byte valor)
 {
+
+	//Si en tbblue y escribiendo en memoria layer2, ignorar
+	if (MACHINE_IS_TBBLUE && tbblue_write_on_layer2() ) return;
+
 	if ((diviface_control_register&128)==0 && diviface_paginacion_automatica_activa.v==0) {
   	return;
   }
