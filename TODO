@@ -31,13 +31,15 @@ The format of each table entry is as follows:
 -- Fin estado funciones microdrive QL
 
 
+-cosas para la version 5.1
+
+
 -mk14
 *condiciones registros, establecer registros
 *input, output, teclas, visualizacion leds
 *y posiblemente muchas mas cosas...
 
 
--cosas para la version 5.1
 
 -agregar el features, etc lista de maquinas nuevas: mk14, tsconf, chrome
 
@@ -58,7 +60,9 @@ O quizá setting configurable
 *Probar a cambiar paleta interna del next mediante Basic 
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
 
+
 -probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
+
 
 -cuando en remote command, se hace run, si cerramos telnet, luego al hacer F5 sale del emulador entero. Parece que el hilo que esta en espera en el menu:
 else if (menu_event_remote_protocol_enterstep.v) {
