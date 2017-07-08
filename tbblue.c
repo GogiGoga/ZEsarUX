@@ -766,7 +766,7 @@ void tbblue_init_memory_tables(void)
 
 Primer bloque de ram: memoria interna de tbblue en principio no accesible por el spectrum:
 
-TBBlue’s default 512K SRAM is mapped as follows:
+Mapeo viejo
 
 0x000000 – 0x01FFFF (128K) => DivMMC RAM
 0x020000 – 0x03FFFF (128K) => Layer2 RAM
@@ -786,14 +786,14 @@ Luego 8 KB de rom de la fpga
 
 Nuevo:
 
-OK 0x000000 – 0x00FFFF (64K) => ZX Spectrum ROM
-OK 0x010000 – 0x013FFF (16K) => ESXDOS ROM
+0x000000 – 0x00FFFF (64K) => ZX Spectrum ROM
+0x010000 – 0x013FFF (16K) => ESXDOS ROM
 0x014000 – 0x017FFF (16K) => Multiface ROM
 0x018000 – 0x01BFFF (16K) => Multiface extra ROM
 0x01c000 – 0x01FFFF (16K) => Multiface RAM
-OK 0x020000 – 0x05FFFF (256K) => divMMC RAM
-OK 0x060000 – 0x07FFFF (128K) => ZX Spectrum RAM
-OK 0x080000 – 0x0FFFFF (512K) => Extra RAM
+0x020000 – 0x05FFFF (256K) => divMMC RAM
+0x060000 – 0x07FFFF (128K) => ZX Spectrum RAM
+0x080000 – 0x0FFFFF (512K) => Extra RAM
 
 */
 
@@ -1240,7 +1240,9 @@ void tbblue_hard_reset(void)
 	tbblue_registers[7]=0;
 	tbblue_registers[8]=0;
 
-
+//TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
+	//0x080000 – 0x0FFFFF (512K) => Extra RAM
+	tbblue_registers[19]=32;
 
 	tbblue_bootrom.v=1;
 	tbblue_set_memory_pages();
