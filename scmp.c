@@ -35,21 +35,21 @@ int scmp_m_icount;
 
 
 
-SCMP8 scmp_device_read_decrypted_byte(SCMP16 a)
+SCMP_UINT_8 scmp_device_read_decrypted_byte(SCMP_UINT_16 a)
 {
 	return peek_byte_no_time(a);
 }
-SCMP8 scmp_device_read_raw_byte(SCMP16 a)
-{
-	return peek_byte_no_time(a);
-}
-
-SCMP8 scmp_device_read_byte(SCMP32 a)
+SCMP_UINT_8 scmp_device_read_raw_byte(SCMP_UINT_16 a)
 {
 	return peek_byte_no_time(a);
 }
 
-void scmp_device_write_byte(SCMP32 a, SCMP8 v)
+SCMP_UINT_8 scmp_device_read_byte(SCMP_UINT_32 a)
+{
+	return peek_byte_no_time(a);
+}
+
+void scmp_device_write_byte(SCMP_UINT_32 a, SCMP_UINT_8 v)
 {
 	//printf ("--Write %04XH valor %02XH\n",a,v);
 	poke_byte_no_time(a,v);
@@ -60,13 +60,13 @@ union SCMP_PAIR    scmp_m_PC;
 union SCMP_PAIR    scmp_m_P1;
 union SCMP_PAIR    scmp_m_P2;
 union SCMP_PAIR    scmp_m_P3;
-SCMP8   scmp_m_AC;
-SCMP8   scmp_m_ER;
-SCMP8   scmp_m_SR;
+SCMP_UINT_8   scmp_m_AC;
+SCMP_UINT_8   scmp_m_ER;
+SCMP_UINT_8   scmp_m_SR;
 
 
 /*
-scmp_device_scmp_device(const machine_config &mconfig, const char *tag, device_t *owner, SCMP32 clock)
+scmp_device_scmp_device(const machine_config &mconfig, const char *tag, device_t *owner, SCMP_UINT_32 clock)
 	: cpu_device(mconfig, SCMP, "INS 8050 SC/MP", tag, owner, clock, "ins8050", __FILE__)
 	, scmp_m_prograscmp_m_config("program", ENDIANNESS_LITTLE, 8, 16, 0)
 	, scmp_m_flag_out_func(*this)
@@ -79,7 +79,7 @@ scmp_device_scmp_device(const machine_config &mconfig, const char *tag, device_t
 }
 
 
-scmp_device_scmp_device(const machine_config &mconfig, device_type type, const char *name, const char *tag, device_t *owner, SCMP32 clock, const char *shortname, const char *source)
+scmp_device_scmp_device(const machine_config &mconfig, device_type type, const char *name, const char *tag, device_t *owner, SCMP_UINT_32 clock, const char *shortname, const char *source)
 	: cpu_device(mconfig, type, name, tag, owner, clock, shortname, source)
 	, scmp_m_prograscmp_m_config("program", ENDIANNESS_LITTLE, 8, 16, 0)
 	, scmp_m_flag_out_func(*this)
@@ -92,53 +92,53 @@ scmp_device_scmp_device(const machine_config &mconfig, device_type type, const c
 }
 
 
-ins8060_device_ins8060_device(const machine_config &mconfig, const char *tag, device_t *owner, SCMP32 clock)
+ins8060_device_ins8060_device(const machine_config &mconfig, const char *tag, device_t *owner, SCMP_UINT_32 clock)
 	: scmp_device(mconfig, INS8060, "INS 8060 SC/MP II", tag, owner, clock, "ins8060", __FILE__)
 {
 }
 
-offs_t scmp_device_disasscmp_m_disassemble(char *buffer, offs_t pc, const SCMP8 *oprom, const SCMP8 *opram, SCMP32 options)
+offs_t scmp_device_disasscmp_m_disassemble(char *buffer, offs_t pc, const SCMP_UINT_8 *oprom, const SCMP_UINT_8 *opram, SCMP_UINT_32 options)
 {
 	extern CPU_DISASSEMBLE( scmp );
 	return CPU_DISASSEMBLE_NAME(scmp)(this, buffer, pc, oprom, opram, options);
 }
 */
 
-SCMP16 scmp_device_ADD12(SCMP16 addr, INT8 val)
+SCMP_UINT_16 scmp_device_ADD12(SCMP_UINT_16 addr, SCMP_INT_8 val)
 {
 	return ((addr + val) & 0x0fff) | (addr & 0xf000);
 }
 
-SCMP8 scmp_device_ROP()
+SCMP_UINT_8 scmp_device_ROP()
 {
-	SCMP16 pc = scmp_m_PC.w.l;
+	SCMP_UINT_16 pc = scmp_m_PC.w.l;
 	scmp_m_PC.w.l = scmp_device_ADD12(scmp_m_PC.w.l,1);   //PC=PC+1
 	//return scmp_m_direct->read_decrypted_byte( pc);
 	return scmp_device_read_decrypted_byte( pc);
 }
 
-SCMP8 scmp_device_ARG()
+SCMP_UINT_8 scmp_device_ARG()
 {
-	SCMP16 pc = scmp_m_PC.w.l;
+	SCMP_UINT_16 pc = scmp_m_PC.w.l;
 	scmp_m_PC.w.l = scmp_device_ADD12(scmp_m_PC.w.l,1);  //PC=PC+1
 	return scmp_device_read_raw_byte(pc);
 }
 
-SCMP8 scmp_device_RM(SCMP32 a)
+SCMP_UINT_8 scmp_device_RM(SCMP_UINT_32 a)
 {
 	//return scmp_m_program->read_byte(a);
 	return scmp_device_read_byte(a);
 }
 
-void scmp_device_WM(SCMP32 a, SCMP8 v)
+void scmp_device_WM(SCMP_UINT_32 a, SCMP_UINT_8 v)
 {
 	//scmp_m_program->write_byte(a, v);
 	scmp_device_write_byte(a, v);
 }
 
-void scmp_device_illegal(SCMP8 opcode)
+void scmp_device_illegal(SCMP_UINT_8 opcode)
 {
-//	SCMP16 pc = scmp_m_PC.w.l;
+//	SCMP_UINT_16 pc = scmp_m_PC.w.l;
 //	LOG(("SC/MP illegal instruction %04X $%02X\n", pc-1, opcode));
 }
 
@@ -153,10 +153,10 @@ union SCMP_PAIR *scmp_device_GET_PTR_REG(int num)
 	}
 }
 
-void scmp_device_BIN_ADD(SCMP8 val)
+void scmp_device_BIN_ADD(SCMP_UINT_8 val)
 {
-	SCMP16 tmp = scmp_m_AC + val + ((scmp_m_SR >> 7) & 1);
-	SCMP8 ov = (((scmp_m_AC & 0x80)==(val & 0x80)) && ((scmp_m_AC & 0x80)!=(tmp & 0x80))) ? 0x40 : 0x00;
+	SCMP_UINT_16 tmp = scmp_m_AC + val + ((scmp_m_SR >> 7) & 1);
+	SCMP_UINT_8 ov = (((scmp_m_AC & 0x80)==(val & 0x80)) && ((scmp_m_AC & 0x80)!=(tmp & 0x80))) ? 0x40 : 0x00;
 
 	scmp_m_AC = tmp & 0xff;
 	scmp_m_SR &= 0x3f; // clear CY/L and OV flag
@@ -164,28 +164,28 @@ void scmp_device_BIN_ADD(SCMP8 val)
 	scmp_m_SR |= ov;
 }
 
-void scmp_device_DEC_ADD(SCMP8 val)
+void scmp_device_DEC_ADD(SCMP_UINT_8 val)
 {
-	SCMP16 tmp = scmp_m_AC + val + ((scmp_m_SR >> 7) & 1);
+	SCMP_UINT_16 tmp = scmp_m_AC + val + ((scmp_m_SR >> 7) & 1);
 	if ((tmp & 0x0f) > 9) tmp +=6;
 	scmp_m_AC = tmp % 0xa0;
 	scmp_m_SR &= 0x7f; // clear CY/L flag
 	scmp_m_SR |= (tmp > 0x99) ? 0x80 : 0x00;
 }
 
-SCMP16 scmp_device_GET_ADDR(SCMP8 code)
+SCMP_UINT_16 scmp_device_GET_ADDR(SCMP_UINT_8 code)
 {
-	SCMP16 addr = 0;
-	INT8 offset = 0;
-	SCMP16 retVal = 0;
-	SCMP16 ptr = scmp_device_GET_PTR_REG(code & 0x03)->w.l;
+	SCMP_UINT_16 addr = 0;
+	SCMP_INT_8 offset = 0;
+	SCMP_UINT_16 retVal = 0;
+	SCMP_UINT_16 ptr = scmp_device_GET_PTR_REG(code & 0x03)->w.l;
 
-	SCMP8 arg = scmp_device_ARG();
+	SCMP_UINT_8 arg = scmp_device_ARG();
 	if (arg == 0x80) {
 		offset = scmp_m_ER;
 	} else {
 		if (arg & 0x80) {
-			offset = (INT8)arg;
+			offset = (SCMP_INT_8)arg;
 		} else {
 			offset = arg;
 		}
@@ -217,8 +217,8 @@ SCMP16 scmp_device_GET_ADDR(SCMP8 code)
 
 void scmp_device_execute_one(int opcode)
 {
-	SCMP8 tmp;
-	SCMP8 ptr = opcode & 3;
+	SCMP_UINT_8 tmp;
+	SCMP_UINT_8 ptr = opcode & 3;
 	if (opcode&128) {
 		// two bytes instructions
 		switch (opcode)
@@ -276,7 +276,7 @@ void scmp_device_execute_one(int opcode)
 			case 0xa8 : case 0xa9 : case 0xaa : case 0xab :
 						// IDL
 						{
-							SCMP16 addr = scmp_device_GET_ADDR(opcode);
+							SCMP_UINT_16 addr = scmp_device_GET_ADDR(opcode);
 							t_estados+= 22;
 							scmp_m_AC = scmp_device_RM(addr) + 1;
 							scmp_device_WM(addr,scmp_m_AC);
@@ -285,7 +285,7 @@ void scmp_device_execute_one(int opcode)
 			case 0xb8 : case 0xb9 : case 0xba : case 0xbb :
 						// DLD
 						{
-							SCMP16 addr = scmp_device_GET_ADDR(opcode);
+							SCMP_UINT_16 addr = scmp_device_GET_ADDR(opcode);
 							t_estados+= 22;
 							scmp_m_AC = scmp_device_RM(addr) - 1;
 							scmp_device_WM(addr,scmp_m_AC);
@@ -324,7 +324,7 @@ void scmp_device_execute_one(int opcode)
 			case 0x90 : case 0x91 : case 0x92 : case 0x93 :// JMP
 						t_estados+= 11;
 						tmp = scmp_device_ARG();
-						scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(INT8)tmp);
+						scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(SCMP_INT_8)tmp);
 
 						//temp. Parece que falta esto! Sino, en el primer jmp de la rom, se queda registro PC por detras
 						//Luego se comprueba que siguientes JMP saltan a donde deben
@@ -337,7 +337,7 @@ void scmp_device_execute_one(int opcode)
 						t_estados+= 9;
 						tmp = scmp_device_ARG();
 						if (!(scmp_m_AC & 0x80)) {
-							scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(INT8)tmp);
+							scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(SCMP_INT_8)tmp);
 							t_estados+= 2;
 						}
 						break;
@@ -346,7 +346,7 @@ void scmp_device_execute_one(int opcode)
 						t_estados+= 9;
 						tmp = scmp_device_ARG();
 						if (!scmp_m_AC) {
-							scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(INT8)tmp);
+							scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(SCMP_INT_8)tmp);
 							t_estados+= 2;
 						}
 						break;
@@ -355,14 +355,14 @@ void scmp_device_execute_one(int opcode)
 						t_estados+= 9;
 						tmp = scmp_device_ARG();
 						if (scmp_m_AC) {
-							scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(INT8)tmp);
+							scmp_m_PC.w.l = scmp_device_ADD12(scmp_device_GET_PTR_REG(ptr)->w.l,(SCMP_INT_8)tmp);
 							t_estados+= 2;
 						}
 						break;
 			// Double-Byte Miscellaneous Instructions
 			case 0x8f:  // DLY
 						tmp = scmp_device_ARG();
-						t_estados+= 13 + (scmp_m_AC * 2) + (((SCMP32)tmp) << 1) + (((SCMP32)tmp) << 9);
+						t_estados+= 13 + (scmp_m_AC * 2) + (((SCMP_UINT_32)tmp) << 1) + (((SCMP_UINT_32)tmp) << 9);
 						scmp_m_AC = 0xff;
 						break;
 			// Others are illegal
@@ -427,7 +427,7 @@ void scmp_device_execute_one(int opcode)
 			case 0x3c:  case 0x3d :case 0x3e: case 0x3f:
 						// XPPC
 						{
-							SCMP16 tmp16 = scmp_device_ADD12(scmp_m_PC.w.l,-1); // Since PC is incremented we need to fix it
+							SCMP_UINT_16 tmp16 = scmp_device_ADD12(scmp_m_PC.w.l,-1); // Since PC is incremented we need to fix it
 							t_estados+= 7;
 							scmp_m_PC.w.l = scmp_device_GET_PTR_REG(ptr)->w.l;
 							scmp_device_GET_PTR_REG(ptr)->w.l = tmp16;
@@ -513,7 +513,7 @@ void scmp_device_execute_one(int opcode)
 ***************************************************************************/
 void scmp_device_take_interrupt()
 {
-	SCMP16 tmp = scmp_device_ADD12(scmp_m_PC.w.l,-1); // We fix PC so at return it goes to current location
+	SCMP_UINT_16 tmp = scmp_device_ADD12(scmp_m_PC.w.l,-1); // We fix PC so at return it goes to current location
 	scmp_m_SR &= 0xf7; // clear IE flag
 
 	t_estados+= 8; // assumption
@@ -687,14 +687,14 @@ prueba_main()
 
 
 
-//typedef unsigned char SCMP8;
-//typedef unsigned int SCMP16;
+//typedef unsigned char SCMP_UINT_8;
+//typedef unsigned int SCMP_UINT_16;
 
 int scmp_CPU_DISASSEMBLE( int pc , unsigned char op, unsigned char arg, char *buffer)
 {
 	unsigned int PC = pc;
-	//SCMP8 op = OP(pc++);
-	SCMP8 ptr = op & 3;
+	//SCMP_UINT_8 op = OP(pc++);
+	SCMP_UINT_8 ptr = op & 3;
 
 	pc++;
 
@@ -702,7 +702,7 @@ int scmp_CPU_DISASSEMBLE( int pc , unsigned char op, unsigned char arg, char *bu
 		// two bytes instructions
 		char as[10];
 		char aspr[10];
-		//SCMP8 arg = ARG(pc);
+		//SCMP_UINT_8 arg = ARG(pc);
 		pc++;
 		if (arg==0x80) {
 			sprintf(as,"E");

@@ -24,42 +24,54 @@
 
 #include "compileoptions.h"
 
-typedef unsigned char SCMP8;
-typedef char INT8;
-typedef unsigned short SCMP16;
-typedef short INT16;
-typedef unsigned int SCMP32;
-typedef int INT32;
+typedef unsigned char SCMP_UINT_8;
+typedef unsigned short SCMP_UINT_16;
+typedef unsigned int SCMP_UINT_32;
+
+typedef char SCMP_INT_8;
+typedef short SCMP_INT_16;
+typedef int SCMP_INT_32;
+
+/*
+antes
+-typedef unsigned char SCMP8;
+-typedef unsigned short SCMP16;
+-typedef unsigned int SCMP32;
+-typedef char INT8;
+-typedef short INT16;
+-typedef int INT32;
+
+*/
 
 union SCMP_PAIR
 {
 
 
 #ifdef WORDS_BIGENDIAN
-        struct { SCMP8 h3,h2,h,l; } b;
-        struct { INT8 h3,h2,h,l; } sb;
-        struct { SCMP16 h,l; } w;
-        struct { INT16 h,l; } sw;
+        struct { SCMP_UINT_8 h3,h2,h,l; } b;
+        struct { SCMP_INT_8 h3,h2,h,l; } sb;
+        struct { SCMP_UINT_16 h,l; } w;
+        struct { SCMP_INT_16 h,l; } sw;
 #else
-        struct { SCMP8 l,h,h2,h3; } b;
-        struct { SCMP16 l,h; } w;
-        struct { INT8 l,h,h2,h3; } sb;
-        struct { INT16 l,h; } sw;
+        struct { SCMP_UINT_8 l,h,h2,h3; } b;
+        struct { SCMP_UINT_16 l,h; } w;
+        struct { SCMP_INT_8 l,h,h2,h3; } sb;
+        struct { SCMP_INT_16 l,h; } sw;
 
 
 #endif
 
-        SCMP32 d;
-        INT32 sd;
+        SCMP_UINT_32 d;
+        SCMP_INT_32 sd;
 };
 
 extern union SCMP_PAIR    scmp_m_PC;
 extern union SCMP_PAIR    scmp_m_P1;
 extern union SCMP_PAIR    scmp_m_P2;
 extern union SCMP_PAIR    scmp_m_P3;
-extern SCMP8   scmp_m_AC;
-extern SCMP8   scmp_m_ER;
-extern SCMP8   scmp_m_SR;
+extern SCMP_UINT_8   scmp_m_AC;
+extern SCMP_UINT_8   scmp_m_ER;
+extern SCMP_UINT_8   scmp_m_SR;
 
 
 extern void scmp_run_opcode(void);
