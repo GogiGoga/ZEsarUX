@@ -19669,11 +19669,11 @@ int menu_hotswap_machine_cond(void) {
 
 	if (MACHINE_IS_Z88) return 0;
 	if (MACHINE_IS_ACE) return 0;
-	//if (MACHINE_IS_TIMEX_TS2068) return 0;
 	if (MACHINE_IS_CPC) return 0;
 	if (MACHINE_IS_SAM) return 0;
 	if (MACHINE_IS_QL) return 0;
-	//if (MACHINE_IS_PRISM) return 0;
+	if (MACHINE_IS_MK14) return 0;
+
 
 	return 1;
 }
