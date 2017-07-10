@@ -15,6 +15,7 @@ Added emulation of other DAC chips appart from Specdrum: Covox, etc
 Added setting to set 256kb or 512kb on Spectrum 128k machines
 Added setting to set F keys (F1, F2, etc) to run different actions: reset, nmi, exit emulator, etc
 Added TBBlue Sprite chip emulation
+Added TBBlue Layer2 emulation
 Added RTC clock TBBlue/Spectrum Next support for esxdos
 Added ZXUno Radasoffset and Radaspadding registers, to do hardware scrolling
 Improved TBBlue emulation: 1 MB RAM
