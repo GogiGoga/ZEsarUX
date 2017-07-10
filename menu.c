@@ -6192,6 +6192,8 @@ void menu_debug_draw_sprites(void)
 		for (y=0;y<view_sprites_alto_sprite;y++) {
 			for (x=0;x<view_sprites_ancho_sprite;x++) {
 				byte_leido=peek_byte_z80_moto(puntero);
+//extern z80_byte *tsconf_ram_mem_table[];
+//				byte_leido=*(tsconf_ram_mem_table[0xf7]+puntero);
 
 				puntero +=view_sprite_incremento;
 
