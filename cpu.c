@@ -97,6 +97,7 @@
 #include "chrome.h"
 #include "tsconf.h"
 #include "scmp.h"
+#include "mk14.h"
 
 #ifdef COMPILE_STDOUT
 #include "scrstdout.h"
@@ -676,6 +677,10 @@ void cold_start_cpu_registers(void)
 	if (MACHINE_IS_TBBLUE) {
 		tbblue_hard_reset();
 	}
+
+	if (MACHINE_IS_TSCONF) {
+		tsconf_hard_reset();
+	}
 }
 
 
@@ -704,11 +709,8 @@ void hard_reset_cpu(void)
 	}
 
 	else if (MACHINE_IS_TSCONF) {
-		//temporal. hacer que al hard reset de tsconf se vuelva a mapear la rom de la bios
-		reset_cpu();
-		temp_tsconf_in_system_rom_flag=1;
-		tsconf_af_ports[0x21]=0;
-		tsconf_set_memory_pages();
+		tsconf_hard_reset();
+
 	}
 
 }

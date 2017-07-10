@@ -59,6 +59,7 @@ O quizá setting configurable
 *modos turbo next 14 y 28 mhz
 *Probar a cambiar paleta interna del next mediante Basic 
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
+*cambiar puerto 55h a 5bh
 
 
 -probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere

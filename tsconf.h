@@ -40,6 +40,7 @@ extern z80_byte tsconf_af_ports[];
 extern int temp_tsconf_in_system_rom_flag;
 
 extern void tsconf_reset_cpu(void);
+extern void tsconf_hard_reset(void);
 
 
 #endif

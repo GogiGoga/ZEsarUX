@@ -136,7 +136,7 @@ void scmp_device_WM(SCMP_UINT_32 a, SCMP_UINT_8 v)
 	scmp_device_write_byte(a, v);
 }
 
-void scmp_device_illegal(SCMP_UINT_8 opcode)
+void scmp_device_illegal(SCMP_UINT_8 opcode GCC_UNUSED)
 {
 //	SCMP_UINT_16 pc = scmp_m_PC.w.l;
 //	LOG(("SC/MP illegal instruction %04X $%02X\n", pc-1, opcode));

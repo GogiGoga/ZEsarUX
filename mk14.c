@@ -85,16 +85,16 @@ int mk14_keybuffer=0xFF;
 
 
 
-void mk14_condraw_led(int led,int pattern)
+/*void mk14_condraw_led(int led,int pattern)
 {
-/*if (hDCWork != NULL)
+if (hDCWork != NULL)
         {
         pattern = pattern & 0xFF;
         refreshled(hDCWork,led,pattern,mk14_ledstatus[led]);
         mk14_ledstatus[led] = pattern;
         }
-*/
-}
+
+}*/
 
 
 void mk14_init_display(void)
@@ -104,7 +104,7 @@ void mk14_init_display(void)
 	  // Put a - pattern...
         {
         mk14_ledlit[n] = mk14_ledstat[n] = 0xFF;
-        mk14_condraw_led(n,mk14_ledstat[n]);
+        //mk14_condraw_led(n,mk14_ledstat[n]);
         mk14_latencycount[n] = 1;                            // Low latency
         mk14_keystatus[n] = 0xFF;                            // Keys not pressed
         }
@@ -126,7 +126,7 @@ void mk14_set_digit_latch(int n,int Write)
 					 // Update display if changed
 
                 mk14_ledlit[n] = mk14_ledlit[n] | mk14_segmentlatch;
-                mk14_condraw_led(MK14_DIGITS-1-n,mk14_ledlit[n]);
+                //mk14_condraw_led(MK14_DIGITS-1-n,mk14_ledlit[n]);
                 mk14_ledstat[n] = mk14_segmentlatch;
         }
 
@@ -165,7 +165,7 @@ void mk14_dibuja_led(z80_byte valor)
 
 }
 
-void temp_dibuja_leds(void)
+/*void temp_dibuja_leds(void)
 {
 	printf ("\n\n\n\n");
 
@@ -175,7 +175,7 @@ void temp_dibuja_leds(void)
 		//printf ("%i %d\n",i,mk14_ledstat[i]);
 		mk14_dibuja_led(mk14_ledstat[i]);
 	}
-}
+}*/
 
 z80_byte mk14_get_io_port(z80_int dir)
 {

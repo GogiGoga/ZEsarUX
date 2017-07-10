@@ -102,6 +102,35 @@ void tsconf_init_memory_tables(void)
 
 }
 
+
+
+/*
+
+Memory paging:
+
+af_registers[16] page at 0000 at reset: 0
+af_registers[17] page at 4000 at reset: 5
+af_registers[18] page at 8000 at reset: 2
+af_registers[19] page at c000 at reset: 0
+
+Segmentos 4000 y 8000 siempre determinados por esos 17 y 18
+
+Parece que espacio 0-3fff viene determinado por bits W0_RAM y W0_MAP pero aun no se como
+
+En espacio c000 interviene:
+af_registers[19] (page3)
+Memconfig=af_register[33]
+bits 6,7=lck128
+si lck128:
+
+00 512 kb  7ffd[7:6]=page3[4:3]
+01 128 kb  7ffd[7:6]=00
+10 auto    !a[13] ???????
+11 1024kb   #7FFD[7:6] = Page3[4:3], #7FFD[5] = Page3[5]
+
+
+*/
+
 int temp_tsconf_in_system_rom_flag=1;
 
 
@@ -174,6 +203,8 @@ bit1/0
 
 z80_byte tsconf_get_ram_bank_c0(void)
 {
+    //De momento mapear como un 128k
+
         z80_byte banco;
 
       	banco=puerto_32765&7;
@@ -189,6 +220,9 @@ void tsconf_set_memory_pages(void)
 	z80_byte rom_page=tsconf_get_rom_bank();
 	z80_byte ram_page_c0=tsconf_get_ram_bank_c0();
 
+  z80_byte ram_page_40=tsconf_af_ports[17];
+  z80_byte ram_page_80=tsconf_af_ports[18];
+
 
 	/*
 	Port 1FFDh (read/write)
@@ -200,13 +234,32 @@ void tsconf_set_memory_pages(void)
 
 
 
-	tsconf_memory_paged[1]=tsconf_ram_mem_table[5];
-	tsconf_memory_paged[2]=tsconf_ram_mem_table[2];
+	tsconf_memory_paged[1]=tsconf_ram_mem_table[ram_page_40];
+	tsconf_memory_paged[2]=tsconf_ram_mem_table[ram_page_80];
 	tsconf_memory_paged[3]=tsconf_ram_mem_table[ram_page_c0];
 
   debug_paginas_memoria_mapeadas[0]=128+rom_page;
-	debug_paginas_memoria_mapeadas[1]=5;
-	debug_paginas_memoria_mapeadas[2]=2;
+	debug_paginas_memoria_mapeadas[1]=ram_page_40;
+	debug_paginas_memoria_mapeadas[2]=ram_page_80;
 	debug_paginas_memoria_mapeadas[3]=ram_page_c0;
 
+}
+
+
+void tsconf_hard_reset(void)
+{
+  //temporal. hacer que al hard reset de tsconf se vuelva a mapear la rom de la bios
+  reset_cpu();
+  temp_tsconf_in_system_rom_flag=1;
+  tsconf_af_ports[0x21]=0;
+
+  //Paginas RAM
+  tsconf_af_ports[0x10]=0;
+  tsconf_af_ports[0x11]=5;
+  tsconf_af_ports[0x12]=2;
+  tsconf_af_ports[0x13]=0;
+
+
+
+  tsconf_set_memory_pages();
 }

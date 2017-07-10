@@ -34,6 +34,7 @@
 #include "zxuno.h"
 #include "contend.h"
 #include "prism.h"
+#include "tbblue.h"
 
 z80_bit diviface_enabled={0};
 
@@ -300,7 +301,7 @@ reached:
 void diviface_poke_byte_to_internal_memory(z80_int dir,z80_byte valor)
 {
 
-	//Si en tbblue y escribiendo en memoria layer2, ignorar
+	//Si en tbblue y escribiendo en memoria layer2, ignorar, dado que esa memoria layer2 en escritura se mapea en 0-3fffh
 	if (MACHINE_IS_TBBLUE && tbblue_write_on_layer2() ) return;
 
 	if ((diviface_control_register&128)==0 && diviface_paginacion_automatica_activa.v==0) {
