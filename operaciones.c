@@ -6469,6 +6469,12 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 					if (puerto_l==0xaf) tsconf_write_af_port(puerto_h,value);
 
+					//Puerto de baseconf que parece que aqui no se usa
+					/*if (puerto_l==0xbf) {
+						printf ("Escritura puerto 0xbf valor: %02XH\n",value);
+						sleep(1);
+					}*/
+
 
 					//Otros puertos en escritura, hacer debug
 					if ( (puerto & 32770) != 0 && puerto_l!=0xFE ) {

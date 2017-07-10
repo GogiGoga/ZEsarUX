@@ -94,3 +94,11 @@ NVRAM
 Port EFF7. Bit 7 a 1, permitir escritura en NVRAM. Bit 7 a 0, no permitir escritura en NVRAM
 Port DFF7. Elige celda nvram (0...EFH)
 Port BFF7. (r/w). Valor de la celda nvram
+
+------
+
+Modo texto. Charset sale de archivo 866_code.fnt (2kb). modo 80x30?
+es hasta 128x64. charset de 6x8?
+ver https://github.com/tslabs/zx-evo/blob/f3b8fa4fccc609b127ba317d65eecb304873fcfe/pentevo/rom/src/arrays.asm -> font8
+
+quiza se guarda en nvram??
