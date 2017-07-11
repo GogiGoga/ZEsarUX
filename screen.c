@@ -1374,10 +1374,13 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
 
                 byte_leido=(byte_leido&127)<<1;
 
-		//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
-		if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+bit+margenx_izq,y+margeny_arr,color);
+								if (scr_ver_si_refrescar_por_menu_activo((x+bit)/8,y/8)) {
 
-                else scr_putpixel_zoom(x+bit,y,color);
+										//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
+										if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+bit+margenx_izq,y+margeny_arr,color);
+
+                		else scr_putpixel_zoom(x+bit,y,color);
+								}
 
            }
         }

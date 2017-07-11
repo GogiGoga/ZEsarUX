@@ -6446,8 +6446,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 							//Port 0x7FFD is an alias of Page3, page3=tsconf_af_ports[0x13];
 							tsconf_af_ports[0x13]=value;
 
-							//Paginar RAM y ROM
-							tsconf_set_memory_pages();
+
 
 							//Bit 4 de 32765 es bit 0 de #21AF
 							z80_byte memconfig=tsconf_af_ports[0x21];
@@ -6457,6 +6456,9 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 							if (value&16) memconfig|=1;
 
 							tsconf_af_ports[0x21]=memconfig;
+
+							//Paginar RAM y ROM
+							tsconf_set_memory_pages();
 
 						}
 			    }

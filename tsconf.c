@@ -189,9 +189,10 @@ bit1/0
         z80_byte memconfig=tsconf_get_memconfig();
         if (memconfig & 4) {
           //Modo no map
-          cpu_panic("No map mode not emulated yet");
+          //cpu_panic("No map mode not emulated yet");
           //solo para que no se queje el compilador
-          return 0;
+          z80_byte banco=tsconf_af_ports[0x10]&31;
+          return banco;
         }
         else {
           z80_byte banco;
@@ -308,7 +309,7 @@ void tsconf_hard_reset(void)
   //temporal. hacer que al hard reset de tsconf se vuelva a mapear la rom de la bios
   reset_cpu();
   temp_tsconf_in_system_rom_flag=1;
-  tsconf_af_ports[0x21]=0;
+  tsconf_af_ports[0x21]=4;
 
   //Valores por defecto
   tsconf_af_ports[0]=0;
