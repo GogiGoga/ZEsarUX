@@ -430,7 +430,9 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 						//[2] 3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror, bit 1 is rotate flag and bit 0 is X MSB.
 						z80_byte mirror_y=tbsprite_sprites[conta_sprites][2]&4;
 
-						z80_byte palette_offset=(tbsprite_sprites[conta_sprites][2]>>4)&15;
+						//3rd: bits 7-4 is palette offset, bit 3 is X mirror, bit 2 is Y mirror, bit 1 is rotate flag and bit 0 is X MSB.
+						//Offset paleta se lee tal cual sin rotar valor
+						z80_byte palette_offset=(tbsprite_sprites[conta_sprites][2]) & 0xF0;
 
 						index_pattern=tbsprite_sprites[conta_sprites][3]&63;
 						//Si coordenada y esta en margen y sprite activo
