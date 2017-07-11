@@ -6513,6 +6513,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 		if (puerto_l==TBBLUE_SPRITE_PALETTE_PORT)	tbblue_out_sprite_palette(value);
 		if (puerto_l==TBBLUE_SPRITE_PATTERN_PORT) tbblue_out_sprite_pattern(value);
+
+		//Mantenemos puerto 0x55 port compatibilidad temporalmente. Se eliminara al subir nueva beta o la estable
+		if (puerto_l==0x55) tbblue_out_sprite_pattern(value);
+
 		if (puerto_l==TBBLUE_SPRITE_SPRITE_PORT) tbblue_out_sprite_sprite(value);
 
                 if (puerto==DS1307_PORT_CLOCK) ds1307_write_port_clock(value);
