@@ -1346,7 +1346,7 @@ void temp_refresca_pentevo_text(void)
 //inverse si o no
 //ink, paper
 //si emula fast mode o no
-void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode)
+void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel)
 {
 
         z80_byte color;
@@ -1358,31 +1358,8 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
         int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
         int margeny_arr=screen_borde_superior*border_enabled.v;
 
-	if (MACHINE_IS_Z88) {
-		//no hay border. estas variables se leen en modo rainbow
-		margenx_izq=margeny_arr=0;
-	}
-
-	else if (MACHINE_IS_CPC) {
-		margenx_izq=CPC_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-		margeny_arr=CPC_TOP_BORDER_NO_ZOOM*border_enabled.v;
-	}
-
-	else if (MACHINE_IS_PRISM) {
-		margenx_izq=PRISM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-		margeny_arr=PRISM_TOP_BORDER_NO_ZOOM*border_enabled.v;
-	}
-
-        else if (MACHINE_IS_SAM) {
-                margenx_izq=SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-                margeny_arr=SAM_TOP_BORDER_NO_ZOOM*border_enabled.v;
-        }
-
-				else if (MACHINE_IS_QL) {
-								margenx_izq=QL_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-								margeny_arr=QL_TOP_BORDER_NO_ZOOM*border_enabled.v;
-				}
-
+				//temp
+				//margenx_izq=margeny_arr=0;
 
         //y=y*8;
 
@@ -1411,6 +1388,11 @@ void screen_tsconf_refresca_text_mode(void)
 	//Haremos muy sencillo de momento. Caracteres de 6 pixeles de ancho
 	int ancho_caracter=6;
 	int ancho_linea=256;
+	int alto_pantalla=192;
+
+	//temp 352x304
+	//ancho_linea=352;
+	//alto_pantalla=304;
 
 	z80_int puntero=0xc000;
 	int ancho_linea_caracteres=256;
@@ -1427,9 +1409,7 @@ void screen_tsconf_refresca_text_mode(void)
 	z80_byte caracter,caracter_text;
 
 
-	z80_bit f;
 
-	f.v=0;
 
 	z80_bit inverse;
 
@@ -1451,18 +1431,19 @@ void screen_tsconf_refresca_text_mode(void)
 
 		offset_caracter=caracter*8;
 
+		//No tengo ni idea de si se leen los atributos asi, pero parece similar al real
 		tinta=atributo&15;
 		papel=(atributo>>4)&15;
 
-		scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],x,y,inverse,tinta,papel,f);
-		//scr_tsconf_putsprite_comun(memoria_spectrum,x,y,inverse,0,7,f);
+		scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],x,y,inverse,tinta,papel);
+		//scr_tsconf_putsprite_comun(memoria_spectrum,x,y,inverse,0,7);
 
 		x+=ancho_caracter;
 		if (x+ancho_caracter>ancho_linea) {
 			printf ("\n");
 			x=0;
 			y+=8;
-			if (y+8>192) {
+			if (y+8>alto_pantalla) {
 				//provocar fin
 				puntero=0xffff;
 			}
