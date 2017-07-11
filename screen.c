@@ -1430,7 +1430,7 @@ void screen_tsconf_refresca_text_mode(void)
 
 		caracter_text=caracter;
 		if (caracter<32 || caracter>127) caracter_text='.';
-		printf ("%c",caracter_text);
+		//printf ("%c",caracter_text);
 
 		offset_caracter=caracter*8;
 
@@ -1443,7 +1443,7 @@ void screen_tsconf_refresca_text_mode(void)
 
 		x+=ancho_caracter;
 		if (x+ancho_caracter>ancho_linea) {
-			printf ("\n");
+			//printf ("\n");
 			x=0;
 			y+=8;
 			if (y+8>alto_pantalla) {
