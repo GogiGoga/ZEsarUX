@@ -39,6 +39,7 @@ The format of each table entry is as follows:
 *input, output, teclas, visualizacion leds
 *y posiblemente muchas mas cosas...
 
+-tsconf: que redibuje pantalla en todos drivers, no solo cocoa
 
 
 -agregar el features, etc lista de maquinas nuevas: mk14, tsconf, chrome
