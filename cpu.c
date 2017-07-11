@@ -2204,7 +2204,7 @@ void malloc_mem_machine(void) {
 
 		                //512 kb rom, 4096 ram
 		                malloc_machine((512+4096)*1024);
-		                random_ram(memoria_spectrum+512*1024,4096*1024);
+		                //temp de momento nada de random random_ram(memoria_spectrum+512*1024,4096*1024);
 
 				tsconf_init_memory_tables();
 				tsconf_set_memory_pages();

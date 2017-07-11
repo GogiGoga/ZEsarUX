@@ -42,5 +42,7 @@ extern int temp_tsconf_in_system_rom_flag;
 extern void tsconf_reset_cpu(void);
 extern void tsconf_hard_reset(void);
 
+extern z80_byte tsconf_get_text_font_page(void);
+
 
 #endif

@@ -1283,7 +1283,225 @@ void screen_prism_refresca_no_rainbow(void)
 
 	screen_prism_refresca_pantalla_comun();
 
+}
 
+
+void screen_tsconf_refresca_no_rainbow(void)
+{
+
+	if (border_enabled.v) {
+		//ver si hay que refrescar border
+		if (modificado_border.v) {
+			int color;
+			color=out_254 & 7;
+
+
+			if (color==0) {
+				//tiene que venir de la tabla ula2 de 256 colores
+				color=PRISM_INDEX_FIRST_COLOR+prism_palette_two[prism_ula2_border_colour];
+				//printf ("Color prism %d Index 12 bit: %d   Colour RGB: 0x%X\n",prism_ula2_border_colour,prism_palette_two[prism_ula2_border_colour],
+				//	spectrum_colortable_normal[  PRISM_INDEX_FIRST_COLOR+prism_palette_two[prism_ula2_border_colour]  ] );
+			}
+
+			//En caso de no rainbow y color no 0, la paleta de colores es la misma
+
+			screen_prism_refresca_no_rainbow_border(color);
+			modificado_border.v=0;
+		}
+
+	}
+
+	screen_prism_refresca_pantalla_comun();
+
+}
+
+void temp_refresca_pentevo_text(void)
+{
+
+	if ((tsconf_af_ports[0]&3)!=3) return;
+
+	//temp pentevo
+	//if c000h-de00h
+	z80_int puntero;
+	int ancho_linea=128;
+	int x=0;
+	for (puntero=0xc000;puntero<0xde00;puntero++) {
+		z80_byte caracter=peek_byte_no_time(puntero);
+		if (caracter<32 || caracter>127) caracter='.';
+		printf ("%c",caracter);
+		x++;
+		if (x==ancho_linea) {
+			printf ("\n");
+			x=0;
+			puntero+=ancho_linea; //saltar atributos
+		}
+	}
+	//fin temp pentevo
+}
+
+
+//Muestra un caracter en pantalla, al estilo del spectrum o zx80/81 o jupiter ace
+//entrada: puntero=direccion a tabla del caracter
+//x,y: coordenadas en x-0..31 e y 0..23 del zx81
+//inverse si o no
+//ink, paper
+//si emula fast mode o no
+void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode)
+{
+
+        z80_byte color;
+        z80_byte bit;
+        z80_byte line;
+        z80_byte byte_leido;
+
+        //margenes de zona interior de pantalla. Para modo rainbow
+        int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
+        int margeny_arr=screen_borde_superior*border_enabled.v;
+
+	if (MACHINE_IS_Z88) {
+		//no hay border. estas variables se leen en modo rainbow
+		margenx_izq=margeny_arr=0;
+	}
+
+	else if (MACHINE_IS_CPC) {
+		margenx_izq=CPC_LEFT_BORDER_NO_ZOOM*border_enabled.v;
+		margeny_arr=CPC_TOP_BORDER_NO_ZOOM*border_enabled.v;
+	}
+
+	else if (MACHINE_IS_PRISM) {
+		margenx_izq=PRISM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
+		margeny_arr=PRISM_TOP_BORDER_NO_ZOOM*border_enabled.v;
+	}
+
+        else if (MACHINE_IS_SAM) {
+                margenx_izq=SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
+                margeny_arr=SAM_TOP_BORDER_NO_ZOOM*border_enabled.v;
+        }
+
+				else if (MACHINE_IS_QL) {
+								margenx_izq=QL_LEFT_BORDER_NO_ZOOM*border_enabled.v;
+								margeny_arr=QL_TOP_BORDER_NO_ZOOM*border_enabled.v;
+				}
+
+
+        //y=y*8;
+
+        for (line=0;line<8;line++,y++) {
+          byte_leido=*puntero++;
+          if (inverse.v==1) byte_leido = byte_leido ^255;
+          for (bit=0;bit<8;bit++) {
+                if (byte_leido & 128 ) color=tinta;
+                else color=papel;
+
+
+
+                byte_leido=(byte_leido&127)<<1;
+
+		//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
+		if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+bit+margenx_izq,y+margeny_arr,color);
+
+                else scr_putpixel_zoom(x+bit,y,color);
+
+           }
+        }
+}
+
+void screen_tsconf_refresca_text_mode(void)
+{
+	//Haremos muy sencillo de momento. Caracteres de 6 pixeles de ancho
+	int ancho_caracter=6;
+	int ancho_linea=256;
+
+	z80_int puntero=0xc000;
+	int ancho_linea_caracteres=256;
+	int x=0;
+	int y=0;
+
+	z80_byte font_page=tsconf_get_text_font_page();
+
+	z80_byte *puntero_fuente;
+	puntero_fuente=tsconf_ram_mem_table[font_page];
+
+	z80_int puntero_orig=puntero;
+
+	z80_byte caracter,caracter_text;
+
+
+	z80_bit f;
+
+	f.v=0;
+
+	z80_bit inverse;
+
+	inverse.v=0;
+
+	z80_int offset_caracter;
+
+	z80_byte tinta,papel;
+
+	z80_byte atributo;
+
+	for (;puntero<0xde00;puntero++) {
+		caracter=peek_byte_no_time(puntero);
+		atributo=peek_byte_no_time(puntero+128);
+
+		caracter_text=caracter;
+		if (caracter<32 || caracter>127) caracter_text='.';
+		printf ("%c",caracter_text);
+
+		offset_caracter=caracter*8;
+
+		tinta=atributo&15;
+		papel=(atributo>>4)&15;
+
+		scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],x,y,inverse,tinta,papel,f);
+		//scr_tsconf_putsprite_comun(memoria_spectrum,x,y,inverse,0,7,f);
+
+		x+=ancho_caracter;
+		if (x+ancho_caracter>ancho_linea) {
+			printf ("\n");
+			x=0;
+			y+=8;
+			if (y+8>192) {
+				//provocar fin
+				puntero=0xffff;
+			}
+			puntero=puntero_orig+ancho_linea_caracteres; //saltar atributos
+			puntero_orig=puntero;
+		}
+	}
+}
+
+void screen_tsconf_refresca_pantalla(void)
+{
+	//Modo texto
+	if ((tsconf_af_ports[0]&3)==3) {
+		//temp_refresca_pentevo_text();
+		screen_tsconf_refresca_text_mode();
+		return;
+	}
+
+	//Como spectrum clasico
+
+	//modo clasico. sin rainbow
+	if (rainbow_enabled.v==0) {
+					if (border_enabled.v) {
+									//ver si hay que refrescar border
+									if (modificado_border.v)
+									{
+													scr_refresca_border();
+													modificado_border.v=0;
+									}
+
+					}
+
+					scr_refresca_pantalla_comun();
+	}
+
+	else {
+	//modo rainbow - real video
+					scr_refresca_pantalla_rainbow_comun();
+	}
 
 }
 
@@ -11412,30 +11630,4 @@ int get_rgb8_color (z80_byte color)
 		return color32;
 
 
-}
-
-
-
-void temp_refresca_pentevo_text(void)
-{
-
-	if ((tsconf_af_ports[0]&3)!=3) return;
-
-	//temp pentevo
-	//if c000h-de00h
-	z80_int puntero;
-	int ancho_linea=128;
-	int x=0;
-	for (puntero=0xc000;puntero<0xde00;puntero++) {
-		z80_byte caracter=peek_byte_no_time(puntero);
-		if (caracter<32 || caracter>127) caracter='.';
-		printf ("%c",caracter);
-		x++;
-		if (x==ancho_linea) {
-			printf ("\n");
-			x=0;
-			puntero+=ancho_linea; //saltar atributos
-		}
-	}
-	//fin temp pentevo
 }

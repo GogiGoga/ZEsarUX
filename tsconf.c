@@ -61,8 +61,13 @@ void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
     if (value&1) puerto_32765|=16;
   }
 
-  //Si cambia registro #21AF (memconfig) o #10af (page0)
-  if (puerto_h==0x21 || puerto_h==0x10) tsconf_set_memory_pages();
+  //Port 0x7FFD is an alias of Page3, page3=tsconf_af_ports[0x13];
+  if (puerto_h==0x13) {
+    puerto_32765=value;
+  }
+
+  //Si cambia registro #21AF (memconfig) o page0-3
+  if (puerto_h==0x21 || puerto_h==0x10 || puerto_h==0x11 || puerto_h==0x12 || puerto_h==0x13 ) tsconf_set_memory_pages();
 }
 
 z80_byte tsconf_get_af_port(z80_byte index)
@@ -131,6 +136,18 @@ si lck128:
 
 */
 
+z80_byte tsconf_get_memconfig(void)
+{
+  return tsconf_af_ports[0x21];
+}
+
+z80_byte tsconf_get_memconfig_lck(void)
+{
+  return (tsconf_get_memconfig()>>6)&3;
+}
+
+
+
 int temp_tsconf_in_system_rom_flag=1;
 
 
@@ -169,7 +186,7 @@ bit1/0
 
 
 
-        z80_byte memconfig=tsconf_af_ports[0x21];
+        z80_byte memconfig=tsconf_get_memconfig();
         if (memconfig & 4) {
           //Modo no map
           cpu_panic("No map mode not emulated yet");
@@ -204,15 +221,53 @@ bit1/0
 z80_byte tsconf_get_ram_bank_c0(void)
 {
     //De momento mapear como un 128k
+    z80_byte tsconf_lck=tsconf_get_memconfig_lck();
 
-        z80_byte banco;
+    /*
+    00 512 kb  7ffd[7:6]=page3[4:3]
+    01 128 kb  7ffd[7:6]=00
+    10 auto    !a[13] ???????
+    11 1024kb   #7FFD[7:6] = Page3[4:3], #7FFD[5] = Page3[5]
 
-      	banco=puerto_32765&7;
 
-        return banco;
+    Port 0x7FFD is an alias of Page3, thus selects page in 0xC000-0xFFFF window. Its behaviour depends on MemConfig LCK128 bits.
+    00 - 512k: #7FFD[7:6] -> Page3[4:3], #7FFD[2:0] -> Page3[2:0], Page3[7:5] = 0,
+    01 - 128k: #7FFD[2:0] -> Page3[2:0], Page3[7:3] = 0,
+    10 - Auto: OUT (#FD) works as mode 01, OUT (C), r works as mode 00,
+    11 - 1024k: #7FFD[7:6] -> Page3[4:3], #7FFD[2:0] -> Page3[2:0], #7FFD[5] -> Page3[5], Page3[7:6] = 0.
+
+
+    Port 0x7FFD is an alias of Page3, page3=tsconf_af_ports[0x13];
+    */
+
+    z80_byte banco=0;
+
+    switch (tsconf_lck) {
+
+        case 0:
+          banco=(puerto_32765&7)| ((puerto_32765>>3)&24);
+        break;
+
+        case 1:
+      	 banco=puerto_32765&7;
+        break;
+
+        default:
+          cpu_panic("TODO invalid value for tsconf_lck");
+        break;
+    }
+
+    return banco;
+
 }
 
 
+z80_byte tsconf_get_text_font_page(void)
+{
+  //En teoria es la misma pagina que registro af vpage(01) xor 1 pero algo falla, nos guiamos por pagina mapeada en segmento c0
+  z80_byte pagina=tsconf_get_ram_bank_c0() ^ 1;
+  return pagina;
+}
 
 
 void tsconf_set_memory_pages(void)
@@ -243,6 +298,8 @@ void tsconf_set_memory_pages(void)
 	debug_paginas_memoria_mapeadas[2]=ram_page_80;
 	debug_paginas_memoria_mapeadas[3]=ram_page_c0;
 
+  printf ("32765: %02XH rom %d ram1 %d ram2 %d ram3 %d\n",puerto_32765,rom_page,ram_page_40,ram_page_80,ram_page_c0);
+
 }
 
 
@@ -253,13 +310,36 @@ void tsconf_hard_reset(void)
   temp_tsconf_in_system_rom_flag=1;
   tsconf_af_ports[0x21]=0;
 
+  //Valores por defecto
+  tsconf_af_ports[0]=0;
+  tsconf_af_ports[1]=5;
+  tsconf_af_ports[2]=0;
+
+  tsconf_af_ports[3] &=(255-1);
+  tsconf_af_ports[4]=0;
+  tsconf_af_ports[5] &=(255-1);
+  tsconf_af_ports[6] &=3;
+  tsconf_af_ports[7]=15;
+
   //Paginas RAM
   tsconf_af_ports[0x10]=0;
   tsconf_af_ports[0x11]=5;
   tsconf_af_ports[0x12]=2;
   tsconf_af_ports[0x13]=0;
 
+  tsconf_af_ports[0x15] &=(255-16);
+  tsconf_af_ports[0x20]=1;
 
+  tsconf_af_ports[0x22]=1;
+  tsconf_af_ports[0x23]=0;
+  tsconf_af_ports[0x24] &=(2+4+8);
+
+  tsconf_af_ports[0x29] &=(255-1-2-4-8);
+
+  tsconf_af_ports[0x2A] &=(255-1-2-4);
+  tsconf_af_ports[0x2A] |=1;
+
+  tsconf_af_ports[0x2B] &=(255-1-2-4-8);
 
   tsconf_set_memory_pages();
 }

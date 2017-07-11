@@ -6442,6 +6442,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 						if ((puerto_32765 & 32)==0) {
 
 							puerto_32765=value;
+
+							//Port 0x7FFD is an alias of Page3, page3=tsconf_af_ports[0x13];
+							tsconf_af_ports[0x13]=value;
+
 							//Paginar RAM y ROM
 							tsconf_set_memory_pages();
 
