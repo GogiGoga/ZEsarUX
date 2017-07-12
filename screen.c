@@ -561,6 +561,10 @@ void recalcular_get_total_ancho_rainbow(void)
 		get_total_ancho_rainbow_cached=(screen_total_borde_izquierdo+screen_total_borde_derecho)*border_enabled.v+512;
         }
 
+			else if (MACHINE_IS_TSCONF) {
+					get_total_ancho_rainbow_cached=(screen_total_borde_izquierdo+screen_total_borde_derecho)*border_enabled.v+TSCONF_DISPLAY_WIDTH;
+			}
+
 	else if (MACHINE_IS_SAM) {
                 get_total_ancho_rainbow_cached=2*SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v+SAM_DISPLAY_WIDTH;
         }
@@ -596,6 +600,10 @@ void recalcular_get_total_alto_rainbow(void)
                 //get_total_alto_rainbow_cached=2*PRISM_TOP_BORDER_NO_ZOOM*border_enabled.v+PRISM_DISPLAY_HEIGHT;
 		get_total_alto_rainbow_cached=(screen_borde_superior+screen_total_borde_inferior)*border_enabled.v+384;
         }
+
+				else if (MACHINE_IS_TSCONF) {
+		get_total_alto_rainbow_cached=(screen_borde_superior+screen_total_borde_inferior)*border_enabled.v+TSCONF_DISPLAY_HEIGHT;
+				}
 
         else if (MACHINE_IS_SAM) {
                 get_total_alto_rainbow_cached=2*SAM_TOP_BORDER_NO_ZOOM*border_enabled.v+SAM_DISPLAY_HEIGHT;
@@ -1340,6 +1348,12 @@ void temp_refresca_pentevo_text(void)
 }
 
 
+//Hace putpixel tsconf pero teniendo en cuenta desplazamiento de border, que en el caso de tsconf es variable
+void scr_tsconf_putpixel_sum_border(int x,int y,unsigned color)
+{
+	scr_putpixel_zoom(x+tsconf_current_border_width,y+tsconf_current_border_height,color);
+}
+
 //Muestra un caracter en pantalla, al estilo del spectrum o zx80/81 o jupiter ace
 //entrada: puntero=direccion a tabla del caracter
 //x,y: coordenadas en x-0..31 e y 0..23 del zx81
@@ -1379,7 +1393,7 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
 										//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
 										if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+bit+margenx_izq,y+margeny_arr,color);
 
-                		else scr_putpixel_zoom(x+bit,y,color);
+                		else scr_tsconf_putpixel_sum_border(x+bit,y,color);
 								}
 
            }
@@ -1744,6 +1758,10 @@ void scr_putpixel_zoom_mas_de_uno(int x,int y,unsigned int color)
 		indice_cache=(get_total_ancho_rainbow()*(PRISM_TOP_BORDER_NO_ZOOM*border_enabled.v+y)) + PRISM_LEFT_BORDER_NO_ZOOM*border_enabled.v+x;
         }
 
+				else if (MACHINE_IS_TSCONF) {
+					indice_cache=(get_total_ancho_rainbow()*(TSCONF_TOP_BORDER_NO_ZOOM*border_enabled.v+y)) + TSCONF_LEFT_BORDER_NO_ZOOM*border_enabled.v+x;
+			        }
+
 	else if (MACHINE_IS_SAM) {
                 indice_cache=(get_total_ancho_rainbow()*(SAM_TOP_BORDER_NO_ZOOM*border_enabled.v+y)) + SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v+x;
         }
@@ -1779,6 +1797,11 @@ void scr_putpixel_zoom_mas_de_uno(int x,int y,unsigned int color)
 	else if (MACHINE_IS_PRISM) {
 		offsetx=PRISM_LEFT_BORDER*border_enabled.v;
                 offsety=PRISM_TOP_BORDER*border_enabled.v;
+	}
+
+	else if (MACHINE_IS_TSCONF) {
+		offsetx=TSCONF_LEFT_BORDER*border_enabled.v;
+                offsety=TSCONF_TOP_BORDER*border_enabled.v;
 	}
 
         else if (MACHINE_IS_SAM) {
@@ -1839,6 +1862,11 @@ void scr_putpixel_zoom_uno(int x,int y,unsigned int color)
 		//sleep(1);
         }
 
+				else if (MACHINE_IS_TSCONF) {
+            indice_cache=(get_total_ancho_rainbow()*(TSCONF_TOP_BORDER_NO_ZOOM*border_enabled.v+y)) + TSCONF_LEFT_BORDER_NO_ZOOM*border_enabled.v+x;
+
+	        }
+
         else if (MACHINE_IS_SAM) {
                 indice_cache=(get_total_ancho_rainbow()*(SAM_TOP_BORDER_NO_ZOOM*border_enabled.v+y)) + SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v+x;
                 //printf ("total ancho rainbow : %d\n",get_total_ancho_rainbow() );
@@ -1881,6 +1909,11 @@ void scr_putpixel_zoom_uno(int x,int y,unsigned int color)
                 offsetx=PRISM_LEFT_BORDER*border_enabled.v;
                 offsety=PRISM_TOP_BORDER*border_enabled.v;
         }
+
+				else if (MACHINE_IS_TSCONF) {
+			                offsetx=TSCONF_LEFT_BORDER*border_enabled.v;
+			                offsety=TSCONF_TOP_BORDER*border_enabled.v;
+			        }
 
         else if (MACHINE_IS_SAM) {
                 offsetx=SAM_LEFT_BORDER*border_enabled.v;
@@ -1960,6 +1993,11 @@ void scr_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte 
 	else if (MACHINE_IS_PRISM) {
 		margenx_izq=PRISM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
 		margeny_arr=PRISM_TOP_BORDER_NO_ZOOM*border_enabled.v;
+	}
+
+	else if (MACHINE_IS_TSCONF) {
+		margenx_izq=TSCONF_LEFT_BORDER_NO_ZOOM*border_enabled.v;
+		margeny_arr=TSCONF_TOP_BORDER_NO_ZOOM*border_enabled.v;
 	}
 
         else if (MACHINE_IS_SAM) {
@@ -9141,6 +9179,10 @@ int screen_get_emulated_display_width_no_zoom(void)
         return PRISM_DISPLAY_WIDTH+PRISM_LEFT_BORDER_NO_ZOOM*2;
 	}
 
+	else if (MACHINE_IS_TSCONF) {
+        return TSCONF_DISPLAY_WIDTH+TSCONF_LEFT_BORDER_NO_ZOOM*2;
+	}
+
         else if (MACHINE_IS_SAM) {
         return SAM_DISPLAY_WIDTH+SAM_LEFT_BORDER_NO_ZOOM*2;
         }
@@ -9168,6 +9210,10 @@ int screen_get_emulated_display_height_no_zoom(void)
 
 	else if (MACHINE_IS_PRISM) {
         return PRISM_DISPLAY_HEIGHT+PRISM_TOP_BORDER_NO_ZOOM*2;
+	}
+
+	else if (MACHINE_IS_TSCONF) {
+        return TSCONF_DISPLAY_HEIGHT+TSCONF_TOP_BORDER_NO_ZOOM*2;
 	}
 
         else if (MACHINE_IS_SAM) {
@@ -9204,6 +9250,10 @@ int screen_get_emulated_display_width_no_zoom_border_en(void)
 	return PRISM_DISPLAY_WIDTH+(PRISM_LEFT_BORDER_NO_ZOOM*2)*border_enabled.v;
 	}
 
+	else if (MACHINE_IS_TSCONF) {
+	return TSCONF_DISPLAY_WIDTH+(TSCONF_LEFT_BORDER_NO_ZOOM*2)*border_enabled.v;
+	}
+
         else if (MACHINE_IS_SAM) {
         return SAM_DISPLAY_WIDTH+(SAM_LEFT_BORDER_NO_ZOOM*2)*border_enabled.v;
         }
@@ -9233,6 +9283,10 @@ int screen_get_emulated_display_height_no_zoom_bottomborder_en(void)
 
         else if (MACHINE_IS_PRISM) {
         return PRISM_DISPLAY_HEIGHT+(PRISM_TOP_BORDER_NO_ZOOM)*border_enabled.v;
+        }
+
+				else if (MACHINE_IS_TSCONF) {
+        return TSCONF_DISPLAY_HEIGHT+(TSCONF_TOP_BORDER_NO_ZOOM)*border_enabled.v;
         }
 
         else if (MACHINE_IS_SAM) {
@@ -9266,6 +9320,10 @@ int screen_get_emulated_display_height_no_zoom_border_en(void)
 
 	else if (MACHINE_IS_PRISM) {
 	return PRISM_DISPLAY_HEIGHT+(PRISM_TOP_BORDER_NO_ZOOM*2)*border_enabled.v;
+	}
+
+	else if (MACHINE_IS_TSCONF) {
+	return TSCONF_DISPLAY_HEIGHT+(TSCONF_TOP_BORDER_NO_ZOOM*2)*border_enabled.v;
 	}
 
         else if (MACHINE_IS_SAM) {

@@ -102,3 +102,25 @@ es hasta 128x64. charset de 6x8?
 ver https://github.com/tslabs/zx-evo/blob/f3b8fa4fccc609b127ba317d65eecb304873fcfe/pentevo/rom/src/arrays.asm -> font8
 
 quiza se guarda en nvram??
+
+------
+
+Modos video:
+
+Yet another fact. The size of visible window is selected via VConfig register bits 6..7:
+00 - 256x192 (512x192 for text)
+01 - 320x200 (640x200 for text)
+10 - 320x240 (640x240 for text)
+11 - 360x288 (720x288 for text)
+
+Text mode uses so called 'Hi-Res' resolution which is twice as normal by X axis. One char despite being 8x8 pixels occupies screen area equal to 4x8 ZX pixels.
+So maximum characters in a line, on the bigger video mode, is 360/4=90
+
+So, you have a total window of 360x288 and you enlarge border size (and reducing pixel size) depending on the video mode, so:
+
+00 - 256x192: border size: 104x96
+01 - 320x200: border size: 40x88
+10 - 320x240: border size: 40x48
+11 - 360x288: border size: 0x0
+
+I think on emulation I will make a window size of 720x576 (to have a 4:3 aspect ratio window), drawing "central" pixels and border with a size of 2x2 and text mode pixels with a size of 1x2.

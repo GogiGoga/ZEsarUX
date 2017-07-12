@@ -24,6 +24,16 @@
 
 #include "cpu.h"
 
+
+#define TSCONF_LEFT_BORDER_NO_ZOOM 0
+#define TSCONF_TOP_BORDER_NO_ZOOM 0
+
+#define TSCONF_LEFT_BORDER TSCONF_LEFT_BORDER_NO_ZOOM*zoom_x
+#define TSCONF_TOP_BORDER TSCONF_TOP_BORDER_NO_ZOOM*zoom_y
+
+#define TSCONF_DISPLAY_WIDTH 720
+#define TSCONF_DISPLAY_HEIGHT 576
+
 extern z80_byte tsconf_last_port_eff7;
 extern z80_byte tsconf_last_port_dff7;
 extern z80_byte tsconf_nvram[];
@@ -43,6 +53,11 @@ extern void tsconf_reset_cpu(void);
 extern void tsconf_hard_reset(void);
 
 extern z80_byte tsconf_get_text_font_page(void);
+
+extern int tsconf_current_pixel_width;
+extern int tsconf_current_pixel_height;
+extern int tsconf_current_border_width;
+extern int tsconf_current_border_height;
 
 
 #endif

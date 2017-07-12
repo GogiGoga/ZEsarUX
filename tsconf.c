@@ -50,9 +50,65 @@ z80_byte *tsconf_memory_paged[4];
 z80_bit tsconf_dos_signal={0};
 
 
+//Almacena tamanyo pantalla y border para modo actual
+//Los inicializamos con algo por si acaso
+int tsconf_current_pixel_width=256;
+int tsconf_current_pixel_height=192;
+int tsconf_current_border_width=0;
+int tsconf_current_border_height=0;
+
+//Actualiza valores de variables de tamanyo pantalla segun modo de video actual
+void tsconf_set_sizes_display(void)
+{
+  z80_byte videomode=tsconf_af_ports[0]&3;
+
+/*
+  00 - 256x192: border size: 104x96
+01 - 320x200: border size: 40x88
+10 - 320x240: border size: 40x48
+11 - 360x288: border size: 0x0
+*/
+
+  switch (videomode) {
+    case 0:
+      tsconf_current_pixel_width=256;
+      tsconf_current_pixel_height=192;
+    break;
+
+    case 1:
+      tsconf_current_pixel_width=320;
+      tsconf_current_pixel_height=200;
+    break;
+
+    case 2:
+      tsconf_current_pixel_width=320;
+      tsconf_current_pixel_height=240;
+    break;
+
+    case 3:
+      tsconf_current_pixel_width=360;
+      tsconf_current_pixel_height=288;
+    break;
+
+  }
+
+  tsconf_current_border_width=360-tsconf_current_pixel_width;
+  tsconf_current_border_height=288-tsconf_current_pixel_height;
+
+
+  printf ("Current video mode. Pixel size: %dX%d Border size: %dX%d\n",
+      tsconf_current_pixel_width,tsconf_current_pixel_height,tsconf_current_border_width,tsconf_current_border_height);
+
+}
+
 void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
 {
   tsconf_af_ports[puerto_h]=value;
+
+  if (puerto_h==0) {
+    //Cambio vconfig
+    tsconf_set_sizes_display();
+  }
 
   //Bit 4 de 32765 es bit 0 de #21AF
   if (puerto_h==0x21) {
@@ -343,4 +399,5 @@ void tsconf_hard_reset(void)
   tsconf_af_ports[0x2B] &=(255-1-2-4-8);
 
   tsconf_set_memory_pages();
+  tsconf_set_sizes_display();
 }

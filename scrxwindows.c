@@ -750,6 +750,11 @@ void scrxwindows_putchar_footer(int x,int y, z80_byte caracter,z80_byte tinta,z8
 		if (border_enabled.v) yorigen+=PRISM_TOP_BORDER_NO_ZOOM/8;
 	}
 
+	else if (MACHINE_IS_TSCONF) {
+		yorigen=(TSCONF_DISPLAY_HEIGHT/8);
+		if (border_enabled.v) yorigen+=TSCONF_TOP_BORDER_NO_ZOOM/8;
+	}
+
         else if (MACHINE_IS_SAM) {
                 yorigen=(SAM_DISPLAY_HEIGHT/8);
                 if (border_enabled.v) yorigen+=SAM_TOP_BORDER_NO_ZOOM/8;

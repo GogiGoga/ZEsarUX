@@ -3200,6 +3200,22 @@ void post_set_machine_no_rom_load_reopen_window(void)
 											}
 							}
 
+
+							//si se cambia de maquina TSconf o a maquina tsconf, redimensionar ventana
+
+							if (last_machine_type!=255) {
+
+											if ( (MACHINE_IS_TSCONF && last_machine_type!=MACHINE_ID_TSCONF)   || (last_machine_type==MACHINE_ID_TSCONF && !(MACHINE_IS_TSCONF)  ) ) {
+															debug_printf (VERBOSE_INFO,"Reopening window so machine has different size (changing TSCONF to/from other machine)");
+
+															debug_printf(VERBOSE_INFO,"End Screen");
+															scr_end_pantalla();
+															debug_printf(VERBOSE_INFO,"Creating Screen");
+															scr_init_pantalla();
+															return;
+											}
+							}
+
 							//Si se cambia de maquina Spectrum o a maquina Spectrum - afecta especialmente a spectrum
 							if (last_machine_type!=255) {
 
