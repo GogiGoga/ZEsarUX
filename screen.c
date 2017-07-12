@@ -1326,7 +1326,9 @@ void screen_tsconf_refresca_no_rainbow(void)
 void temp_refresca_pentevo_text(void)
 {
 
-	if ((tsconf_af_ports[0]&3)!=3) return;
+	if (tsconf_get_video_mode_display()!=3) return;
+
+
 
 	//temp pentevo
 	//if c000h-de00h
@@ -1351,7 +1353,10 @@ void temp_refresca_pentevo_text(void)
 //Hace putpixel tsconf pero teniendo en cuenta desplazamiento de border, que en el caso de tsconf es variable
 void scr_tsconf_putpixel_sum_border(int x,int y,unsigned color)
 {
-	scr_putpixel_zoom(x+tsconf_current_border_width,y+tsconf_current_border_height,color);
+	//tsconf_current_border_width almacena el ancho de una franja, la izquierda por ejemplo
+	//Dado que el border (y la zona de pixeles) son pixeles de tamanyo 2x2, multiplicar en ancho y alto
+
+	scr_putpixel_zoom(x+tsconf_current_border_width*2,y+tsconf_current_border_height*2,color);
 }
 
 
@@ -1367,8 +1372,8 @@ void scr_tsconf_putpixel_zoom_rainbow_text_mode(int x,int y,unsigned color)
 {
 
 
-int margenx_izq=tsconf_current_border_width;
-int margeny_arr=tsconf_current_border_height;
+int margenx_izq=tsconf_current_border_width*2;
+int margeny_arr=tsconf_current_border_height*2;
 	y*=2;
 	scr_putpixel_zoom_rainbow(x+margenx_izq,y+margeny_arr,color);
 	scr_putpixel_zoom_rainbow(x+margenx_izq,y+margeny_arr+1,color);
@@ -1490,11 +1495,77 @@ void screen_tsconf_refresca_text_mode(void)
 	}
 }
 
+
+//Putpixel de pixeles 2x2 de border de tsconf para modo no rainbow
+void scr_tsconf_putpixel_zoom_border(int x,int y, unsigned int color)
+{
+	x*=2;
+	y*=2;
+
+	scr_putpixel_zoom(x,y,color);
+	scr_putpixel_zoom(x+1,y,color);
+	scr_putpixel_zoom(x,y+1,color);
+	scr_putpixel_zoom(x+1,y+1,color);
+}
+
+void scr_refresca_border_tsconf_cont(void)
+{
+	int color;
+
+	color=out_254 & 7;
+
+
+	if (scr_refresca_sin_colores.v) color=7;
+
+//      printf ("Refresco border\n");
+
+        int x,y;
+
+	//Top border cambia en spectrum y zx8081 y ace
+	int topborder=TOP_BORDER;
+
+        //parte superior e inferior
+        for (y=0;y<tsconf_current_border_height;y++) {
+                for (x=0;x<TSCONF_DISPLAY_WIDTH/2;x++) {
+                                scr_tsconf_putpixel_zoom_border(x,y,color);
+																scr_tsconf_putpixel_zoom_border(x,y+tsconf_current_pixel_height+tsconf_current_border_height,color);
+                }
+        }
+
+        //laterales
+        for (y=0;y<tsconf_current_pixel_height;y++) {
+                for (x=0;x<tsconf_current_border_width;x++) {
+                        scr_tsconf_putpixel_zoom_border(x,y+tsconf_current_border_height,color);
+                        scr_tsconf_putpixel_zoom_border(x+tsconf_current_border_width+tsconf_current_pixel_width,y+tsconf_current_border_height,color);
+                }
+
+        }
+
+}
+
+
+
+void screen_tsconf_refresca_border(void)
+{
+	if (rainbow_enabled.v==0) {
+					if (border_enabled.v) {
+									//ver si hay que refrescar border
+									if (modificado_border.v)
+									{
+													scr_refresca_border_tsconf_cont();
+													modificado_border.v=0;
+									}
+
+					}
+	}
+}
+
 void screen_tsconf_refresca_pantalla(void)
 {
 	//Modo texto
-	if ((tsconf_af_ports[0]&3)==3) {
+	if (tsconf_get_video_mode_display()==3) {
 		//temp_refresca_pentevo_text();
+		screen_tsconf_refresca_border();
 		screen_tsconf_refresca_text_mode();
 		return;
 	}
