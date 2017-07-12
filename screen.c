@@ -1363,6 +1363,17 @@ void scr_tsconf_putpixel_text_mode(int x,int y,unsigned color)
 	scr_tsconf_putpixel_sum_border(x,y+1,color);
 }
 
+void scr_tsconf_putpixel_zoom_rainbow_text_mode(int x,int y,unsigned color)
+{
+
+
+int margenx_izq=tsconf_current_border_width;
+int margeny_arr=tsconf_current_border_height;
+	y*=2;
+	scr_putpixel_zoom_rainbow(x+margenx_izq,y+margeny_arr,color);
+	scr_putpixel_zoom_rainbow(x+margenx_izq,y+margeny_arr+1,color);
+}
+
 //Muestra un caracter en pantalla, al estilo del spectrum o zx80/81 o jupiter ace
 //entrada: puntero=direccion a tabla del caracter
 //x,y: coordenadas en x-0..31 e y 0..23 del zx81
@@ -1400,7 +1411,7 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
 								if (scr_ver_si_refrescar_por_menu_activo((x+bit)/8,y/8)) {
 
 										//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
-										if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+bit+margenx_izq,y+margeny_arr,color);
+										if (rainbow_enabled.v==1) scr_tsconf_putpixel_zoom_rainbow_text_mode(x+bit,y,color);
 
                 		else scr_tsconf_putpixel_text_mode(x+bit,y,color);
 								}

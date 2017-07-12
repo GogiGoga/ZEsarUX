@@ -226,6 +226,11 @@ void scraa_refresca_pantalla(void)
 
 	else if (MACHINE_IS_SPECTRUM) {
 
+		if (MACHINE_IS_TSCONF)	screen_tsconf_refresca_pantalla();
+
+
+		  else { //Spectrum no TSConf
+
                 //modo clasico. sin rainbow
                 if (rainbow_enabled.v==0) {
 
@@ -246,6 +251,8 @@ void scraa_refresca_pantalla(void)
                         //modo rainbow - real video
                         scr_refresca_pantalla_rainbow_comun();
                 }
+
+		}
 
 	}
 
