@@ -1354,6 +1354,15 @@ void scr_tsconf_putpixel_sum_border(int x,int y,unsigned color)
 	scr_putpixel_zoom(x+tsconf_current_border_width,y+tsconf_current_border_height,color);
 }
 
+
+//Hace putpixel pero teniendo en cuenta tamanyo de 1x2
+void scr_tsconf_putpixel_text_mode(int x,int y,unsigned color)
+{
+	y*=2;
+	scr_tsconf_putpixel_sum_border(x,y,color);
+	scr_tsconf_putpixel_sum_border(x,y+1,color);
+}
+
 //Muestra un caracter en pantalla, al estilo del spectrum o zx80/81 o jupiter ace
 //entrada: puntero=direccion a tabla del caracter
 //x,y: coordenadas en x-0..31 e y 0..23 del zx81
@@ -1393,7 +1402,7 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
 										//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
 										if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+bit+margenx_izq,y+margeny_arr,color);
 
-                		else scr_tsconf_putpixel_sum_border(x+bit,y,color);
+                		else scr_tsconf_putpixel_text_mode(x+bit,y,color);
 								}
 
            }
@@ -1402,14 +1411,10 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
 
 void screen_tsconf_refresca_text_mode(void)
 {
-	//Haremos muy sencillo de momento. Caracteres de 6 pixeles de ancho
-	int ancho_caracter=6;
-	int ancho_linea=256;
-	int alto_pantalla=192;
 
-	//temp 352x304
-	//ancho_linea=352;
-	//alto_pantalla=304;
+	int ancho_caracter=8;
+	int ancho_linea=tsconf_current_pixel_width*2;
+	int alto_pantalla=tsconf_current_pixel_height;
 
 	z80_int puntero=0xc000;
 	int ancho_linea_caracteres=256;
@@ -1438,9 +1443,11 @@ void screen_tsconf_refresca_text_mode(void)
 
 	z80_byte atributo;
 
-	for (;puntero<0xde00;puntero++) {
+	for (;puntero<0xde00;) {
 		caracter=peek_byte_no_time(puntero);
 		atributo=peek_byte_no_time(puntero+128);
+
+		puntero++;
 
 		caracter_text=caracter;
 		if (caracter<32 || caracter>127) caracter_text='.';
@@ -1455,6 +1462,8 @@ void screen_tsconf_refresca_text_mode(void)
 		scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],x,y,inverse,tinta,papel);
 		//scr_tsconf_putsprite_comun(memoria_spectrum,x,y,inverse,0,7);
 
+
+
 		x+=ancho_caracter;
 		if (x+ancho_caracter>ancho_linea) {
 			//printf ("\n");
@@ -1462,7 +1471,7 @@ void screen_tsconf_refresca_text_mode(void)
 			y+=8;
 			if (y+8>alto_pantalla) {
 				//provocar fin
-				puntero=0xffff;
+				puntero=0xfffe;
 			}
 			puntero=puntero_orig+ancho_linea_caracteres; //saltar atributos
 			puntero_orig=puntero;
