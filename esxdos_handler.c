@@ -19,18 +19,31 @@
 
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "cpu.h"
 #include "esxdos_handler.h"
 #include "operaciones.h"
 #include "debug.h"
 
+#if defined(__APPLE__)
+	#include <sys/syslimits.h>
+#endif
 
-z80_bit esxdos_handler_enabled={1};
+
+//Al leer directorio se usa esxdos_handler_root_dir y esxdos_handler_cwd
+char esxdos_handler_root_dir[PATH_MAX]="";
+char esxdos_handler_cwd[PATH_MAX]="";
+
+z80_bit esxdos_handler_enabled={0};
 
 void temp_debug_rst8_copy_hl_to_string(char *buffer_fichero)
 {
@@ -50,58 +63,66 @@ void debug_rst8_esxdos(void)
 
 	char buffer_fichero[256];
 
-
-
-	if (funcion<0x80) return;
-
 	switch (funcion)
 	{
 
 		case ESXDOS_RST8_DISK_READ:
 			printf ("ESXDOS_RST8_DISK_READ\n");
+			rst(8);
 		break;
 
 		case ESXDOS_RST8_M_GETSETDRV:
 			printf ("ESXDOS_RST8_M_GETSETDRV\n");
+			rst(8);
 	  break;
 
 		case ESXDOS_RST8_F_OPEN:
 
 			temp_debug_rst8_copy_hl_to_string(buffer_fichero);
 			printf ("ESXDOS_RST8_F_OPEN. File: %s\n",buffer_fichero);
+			rst(8);
 
 		break;
 
 		case ESXDOS_RST8_F_CLOSE:
 			printf ("ESXDOS_RST8_F_CLOSE\n");
+			rst(8);
 		break;
 
 		case ESXDOS_RST8_F_READ:
 		//Read BC bytes at HL from file handle A.
 			printf ("ESXDOS_RST8_F_READ. Read %d bytes at %04XH from file handle %d\n",reg_bc,reg_hl,reg_a);
+			rst(8);
 		break;
 
 		case ESXDOS_RST8_F_GETCWD:
 			printf ("ESXDOS_RST8_F_GETCWD\n");
+			rst(8);
 		break;
 
 		case ESXDOS_RST8_F_CHDIR:
 			temp_debug_rst8_copy_hl_to_string(buffer_fichero);
 			printf ("ESXDOS_RST8_F_CHDIR: %s\n",buffer_fichero);
+			rst(8);
 		break;
 
 		case ESXDOS_RST8_F_OPENDIR:
 			printf ("ESXDOS_RST8_F_OPENDIR\n");
+			rst(8);
 		break;
 
 		case ESXDOS_RST8_F_READDIR:
 			printf ("ESXDOS_RST8_F_READDIR\n");
+			rst(8);
 		break;
 
 
 
 		default:
-			printf ("Unknown ESXDOS_RST8: %02XH !! \n",funcion);
+			if (funcion>=0x80) {
+				printf ("Unknown ESXDOS_RST8: %02XH !! \n",funcion);
+			}
+			rst(8);
 		break;
 	}
 }
@@ -110,5 +131,5 @@ void debug_rst8_esxdos(void)
 void esxdos_handler_run(void)
 {
 	debug_rst8_esxdos();
-	rst(8);
+
 }

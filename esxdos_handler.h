@@ -42,6 +42,9 @@
 #define ESXDOS_RST8_F_CHDIR 0xa9
 
 extern z80_bit esxdos_handler_enabled;
+extern void esxdos_handler_run(void);
+extern char esxdos_handler_root_dir[];
+extern char esxdos_handler_cwd[];
 
 
 #endif

@@ -34,6 +34,7 @@
 
 #include "compileoptions.h"
 #include "snap_rzx.h"
+#include "esxdos_handler.h"
 
 z80_int *registro_ixiy;
 
@@ -1897,7 +1898,9 @@ void instruccion_207()
 	if (esxdos_handler_enabled.v) {
 		esxdos_handler_run();
 	}
-	else rst(8);
+	else {
+		rst(8);
+	}
 }
 
 void instruccion_208()

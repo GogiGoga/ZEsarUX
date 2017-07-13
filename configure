@@ -1161,7 +1161,7 @@ codprddfd.o: codprddfd.c cpu.h operaciones.h debug.h contend.h utils.h compileop
 codpred.o: codpred.c cpu.h operaciones.h debug.h contend.h
 	\$(CC) \$(CFLAGS) -c codpred.c
 
-codsinpr.o: codsinpr.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h z88.h snap_rzx.h
+codsinpr.o: codsinpr.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h z88.h snap_rzx.h esxdos_handler.h
 	\$(CC) \$(CFLAGS) -c codsinpr.c
 
 operaciones.o: operaciones.c cpu.h operaciones.h debug.h audio.h tape.h ay38912.h mem128.h chloe.h prism.h tbblue.h timex.h zx8081.h menu.h screen.h compileoptions.h contend.h joystick.h ula.h utils.h printers.h disassemble.h z88.h ulaplus.h zxuno.h chardetect.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h timer.h pd765.h superupgrade.h snap_rzx.h multiface.h chrome.h tsconf.h ds1307.h mk14.h
@@ -1254,7 +1254,7 @@ prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.
 remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h superupgrade.h tbblue.h tsconf.h
 	\$(CC) \$(CFLAGS) -c remote.c
 
-esxdos_handler.o: esxdos_handler.h cpu.h operaciones.h debug.h
+esxdos_handler.o: esxdos_handler.c esxdos_handler.h cpu.h operaciones.h debug.h
 	\$(CC) \$(CFLAGS) -c esxdos_handler.c
 
 tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h

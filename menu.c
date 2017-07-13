@@ -84,6 +84,7 @@
 #include "snap_rzx.h"
 #include "multiface.h"
 #include "scmp.h"
+#include "esxdos_handler.h"
 
 
 #if defined(__APPLE__)
@@ -574,6 +575,7 @@ int settings_storage_opcion_seleccionada=0;
 int settings_tape_opcion_seleccionada=0;
 int settings_config_file_opcion_seleccionada=0;
 int ay_player_opcion_seleccionada=0;
+int esxdos_traps_opcion_seleccionada=0;
 
 
 //Indica que esta el splash activo o cualquier otro texto de splash, como el de cambio de modo de video
@@ -12233,6 +12235,69 @@ void menu_ql_flp1(MENU_ITEM_PARAMETERS)
 	menu_storage_string_root_dir(ql_flp1_root_dir);
 }
 
+
+void menu_storage_esxdos_traps_emulation(MENU_ITEM_PARAMETERS)
+{
+	esxdos_handler_enabled.v ^=1;
+}
+
+void menu_esxdos_traps_root_dir(MENU_ITEM_PARAMETERS)
+{
+
+}
+
+void menu_esxdos_traps(MENU_ITEM_PARAMETERS)
+{
+        menu_item *array_menu_esxdos_traps;
+        menu_item item_seleccionado;
+        int retorno_menu;
+        do {
+
+                char string_esxdos_traps_root_dir_shown[13];
+
+
+                menu_add_item_menu_inicial_format(&array_menu_esxdos_traps,MENU_OPCION_NORMAL,menu_storage_esxdos_traps_emulation,NULL,"~~Enabled: %s", (esxdos_handler_enabled.v ? "Yes" : "No"));
+          menu_add_item_menu_shortcut(array_menu_esxdos_traps,'e');
+          menu_add_item_menu_tooltip(array_menu_esxdos_traps,"Enable esxdos_traps");
+          menu_add_item_menu_ayuda(array_menu_esxdos_traps,"Enable esxdos_traps");
+
+						if (esxdos_handler_enabled.v) {
+                        menu_tape_settings_trunc_name(esxdos_handler_root_dir,string_esxdos_traps_root_dir_shown,13);
+                        menu_add_item_menu_format(array_menu_esxdos_traps,MENU_OPCION_NORMAL,menu_esxdos_traps_root_dir,NULL,"~~Root dir: %s",string_esxdos_traps_root_dir_shown);
+                        menu_add_item_menu_shortcut(array_menu_esxdos_traps,'r');
+                        menu_add_item_menu_tooltip(array_menu_esxdos_traps,"ROM Emulation file");
+                        menu_add_item_menu_ayuda(array_menu_esxdos_traps,"ROM Emulation file");
+						}
+
+
+
+
+
+
+                                menu_add_item_menu(array_menu_esxdos_traps,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+
+                menu_add_ESC_item(array_menu_esxdos_traps);
+
+                retorno_menu=menu_dibuja_menu(&esxdos_traps_opcion_seleccionada,&item_seleccionado,array_menu_esxdos_traps,"ZX esxdos_traps settings" );
+
+                cls_menu_overlay();
+                if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+                        //llamamos por valor de funcion
+                        if (item_seleccionado.menu_funcion!=NULL) {
+                                //printf ("actuamos por funcion\n");
+                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
+                                cls_menu_overlay();
+                        }
+                }
+
+        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
+
+
+
+
+}
+
+
 //menu storage settings
 void menu_storage_settings(MENU_ITEM_PARAMETERS)
 {
@@ -12322,9 +12387,6 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 			menu_add_item_menu_shortcut(array_menu_storage_settings,'m');
 			menu_add_item_menu_tooltip(array_menu_storage_settings,"MMC, DivMMC and ZXMMC settings");
 			menu_add_item_menu_ayuda(array_menu_storage_settings,"MMC, DivMMC and ZXMMC settings");
-
-
-
 		}
 
 
@@ -12339,6 +12401,13 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 
 		}
 
+
+		if (MACHINE_IS_SPECTRUM) {
+			menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_esxdos_traps,NULL,"~~ESXDOS Traps");
+			menu_add_item_menu_shortcut(array_menu_storage_settings,'e');
+			menu_add_item_menu_tooltip(array_menu_storage_settings,"ESXDOS traps");
+			menu_add_item_menu_ayuda(array_menu_storage_settings,"ESXDOS traps");
+		}
 
 
 
