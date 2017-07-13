@@ -36,7 +36,23 @@ The format of each table entry is as follows:
 -esxdos handler
 corregit cwd. inspirarse en rutinas de zxpand
 solo hace fopen, fread, fclose
+
+
 solo gestiona 1 archivo abierto a la vez
+al abrir, que pruebe con mayusculas y luego minusculas
+quiza habra problemas con rutas como : /BIN/paco
+
+si subo todo a mayusculas->no ira
+si subo todo a minusculas->no ira
+quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo minusculas o todo mayusculas
+ver que hace zxpand aqui....
+
+minimo: fwrite, dir (leer directorio), y diferentes modos de lectura
+
+
+
+
+quiza aqui 
 
 -mk14
 *condiciones registros, establecer registros
