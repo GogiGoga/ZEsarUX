@@ -12238,13 +12238,54 @@ void menu_ql_flp1(MENU_ITEM_PARAMETERS)
 
 void menu_storage_esxdos_traps_emulation(MENU_ITEM_PARAMETERS)
 {
-	esxdos_handler_enabled.v ^=1;
+
+	if (esxdos_handler_enabled.v) esxdos_handler_disable();
+	else esxdos_handler_enable();
 }
 
 void menu_esxdos_traps_root_dir(MENU_ITEM_PARAMETERS)
 {
 
+        char *filtros[2];
+
+        filtros[0]="";
+        filtros[1]=0;
+
+
+        //guardamos directorio actual
+        char directorio_actual[PATH_MAX];
+        getcwd(directorio_actual,PATH_MAX);
+
+        int ret;
+
+
+	char nada[PATH_MAX];
+
+        //Obtenemos ultimo directorio visitado
+	menu_filesel_chdir(esxdos_handler_root_dir);
+
+
+        ret=menu_filesel("Enter dir and press ESC",filtros,nada);
+
+
+	//Si sale con ESC
+	if (ret==0) {
+		//Directorio root esxdos
+		sprintf (esxdos_handler_root_dir,"%s",menu_filesel_last_directory_seen);
+		debug_printf (VERBOSE_DEBUG,"Selected directory: %s",esxdos_handler_root_dir);
+
+        	//directorio esxdos vacio
+	        esxdos_handler_cwd[0]=0;
+
+	}
+
+
+        //volvemos a directorio inicial
+        menu_filesel_chdir(directorio_actual);
+
+
 }
+
 
 void menu_esxdos_traps(MENU_ITEM_PARAMETERS)
 {
@@ -12253,7 +12294,7 @@ void menu_esxdos_traps(MENU_ITEM_PARAMETERS)
         int retorno_menu;
         do {
 
-                char string_esxdos_traps_root_dir_shown[13];
+                char string_esxdos_traps_root_dir_shown[18];
 
 
                 menu_add_item_menu_inicial_format(&array_menu_esxdos_traps,MENU_OPCION_NORMAL,menu_storage_esxdos_traps_emulation,NULL,"~~Enabled: %s", (esxdos_handler_enabled.v ? "Yes" : "No"));
@@ -12262,7 +12303,7 @@ void menu_esxdos_traps(MENU_ITEM_PARAMETERS)
           menu_add_item_menu_ayuda(array_menu_esxdos_traps,"Enable esxdos_traps");
 
 						if (esxdos_handler_enabled.v) {
-                        menu_tape_settings_trunc_name(esxdos_handler_root_dir,string_esxdos_traps_root_dir_shown,13);
+                        menu_tape_settings_trunc_name(esxdos_handler_root_dir,string_esxdos_traps_root_dir_shown,18);
                         menu_add_item_menu_format(array_menu_esxdos_traps,MENU_OPCION_NORMAL,menu_esxdos_traps_root_dir,NULL,"~~Root dir: %s",string_esxdos_traps_root_dir_shown);
                         menu_add_item_menu_shortcut(array_menu_esxdos_traps,'r');
                         menu_add_item_menu_tooltip(array_menu_esxdos_traps,"ROM Emulation file");
@@ -12278,7 +12319,7 @@ void menu_esxdos_traps(MENU_ITEM_PARAMETERS)
 
                 menu_add_ESC_item(array_menu_esxdos_traps);
 
-                retorno_menu=menu_dibuja_menu(&esxdos_traps_opcion_seleccionada,&item_seleccionado,array_menu_esxdos_traps,"ZX esxdos_traps settings" );
+                retorno_menu=menu_dibuja_menu(&esxdos_traps_opcion_seleccionada,&item_seleccionado,array_menu_esxdos_traps,"ESXDOS handler" );
 
                 cls_menu_overlay();
                 if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
@@ -12402,7 +12443,8 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 		}
 
 
-		if (MACHINE_IS_SPECTRUM) {
+
+		if (MACHINE_IS_SPECTRUM && mmc_enabled.v) {
 			menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_esxdos_traps,NULL,"~~ESXDOS Traps");
 			menu_add_item_menu_shortcut(array_menu_storage_settings,'e');
 			menu_add_item_menu_tooltip(array_menu_storage_settings,"ESXDOS traps");
