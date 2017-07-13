@@ -1893,7 +1893,11 @@ void instruccion_207()
 {
 //RST 8
 	contend_read_no_mreq( IR, 1 );
-	rst(8);
+
+	if (esxdos_handler_enabled.v) {
+		esxdos_handler_run();
+	}
+	else rst(8);
 }
 
 void instruccion_208()
