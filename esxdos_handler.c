@@ -69,7 +69,7 @@ void esxdos_handler_error_carry(void)
 
 void esxdos_handler_return_call(void)
 {
-	reg_pc=pop_valor();
+	reg_pc++;
 }
 
 //Temporales para leer 1 solo archivo
@@ -86,16 +86,20 @@ void esxdos_handler_call_f_open(void)
 	//Nombre de archivo final sera root_dir+cwd+nombre_archivo
 	sprintf (nombre_archivo_final,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,nombre_archivo);
 
-	//Abrir el archivo
+	//Abrir el archivo.
 	temp_esxdos_last_open_file_handler_unix=fopen(nombre_archivo_final,"rb");
+
+
 	if (temp_esxdos_last_open_file_handler_unix==NULL) {
 		esxdos_handler_error_carry();
+		printf ("Error from esxdos_handler_call_f_open file: %s\n",nombre_archivo_final);
 	}
 	else {
 		temp_esxdos_last_open_file_handler=1;
 
 		reg_a=temp_esxdos_last_open_file_handler;
 		esxdos_handler_no_error_uncarry();
+		printf ("Successfully esxdos_handler_call_f_open file: %s\n",nombre_archivo_final);
 	}
 
 	esxdos_handler_return_call();
@@ -116,6 +120,7 @@ void esxdos_handler_call_f_open(void)
 void esxdos_handler_call_f_read(void)
 {
 	if (temp_esxdos_last_open_file_handler_unix==NULL) {
+		printf ("Error from esxdos_handler_call_f_read\n");
 		esxdos_handler_error_carry();
 	}
 	else {
@@ -141,6 +146,8 @@ void esxdos_handler_call_f_read(void)
 
 		reg_bc=total_leidos;
 		esxdos_handler_no_error_uncarry();
+
+		printf ("Successfully esxdos_handler_call_f_read total bytes read: %d\n",total_leidos);
 
 	}
 

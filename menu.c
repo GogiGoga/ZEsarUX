@@ -6173,7 +6173,7 @@ z80_bit view_sprites_inverse={0};
 //Asi podemos saltar el byte de mascara
 int view_sprite_incremento=1;
 
-z80_byte temp_pagina=0xF7;
+//z80_byte temp_pagina=0xF7;
 
 void menu_debug_draw_sprites(void)
 {
@@ -6196,8 +6196,8 @@ void menu_debug_draw_sprites(void)
 		for (y=0;y<view_sprites_alto_sprite;y++) {
 			for (x=0;x<view_sprites_ancho_sprite;x++) {
 				byte_leido=peek_byte_z80_moto(puntero);
-extern z80_byte *tsconf_ram_mem_table[];
-				byte_leido=*(tsconf_ram_mem_table[temp_pagina]+puntero);
+//extern z80_byte *tsconf_ram_mem_table[];
+	//			byte_leido=*(tsconf_ram_mem_table[temp_pagina]+puntero);
 
 				puntero +=view_sprite_incremento;
 
@@ -6453,16 +6453,16 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 
                                         case 24:
                                                 //PgUp
-                                                //view_sprites_direccion -=bytes_por_ventana;
-																								temp_pagina--;
-																								printf ("pagina: %02XH\n",temp_pagina);
+                                                view_sprites_direccion -=bytes_por_ventana;
+																								//temp_pagina--;
+																								//printf ("pagina: %02XH\n",temp_pagina);
                                         break;
 
                                         case 25:
                                                 //PgDn
-                                                //view_sprites_direccion +=bytes_por_ventana;
-																								temp_pagina++;
-																								printf ("pagina: %02XH\n",temp_pagina);
+                                                view_sprites_direccion +=bytes_por_ventana;
+																								//temp_pagina++;
+																								//printf ("pagina: %02XH\n",temp_pagina);
                                         break;
 
                                         case 'm':

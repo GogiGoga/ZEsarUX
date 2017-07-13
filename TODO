@@ -33,6 +33,10 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-esxdos handler
+corregit cwd. inspirarse en rutinas de zxpand
+solo hace fopen, fread, fclose
+solo gestiona 1 archivo abierto a la vez
 
 -mk14
 *condiciones registros, establecer registros
