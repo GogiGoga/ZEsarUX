@@ -602,7 +602,7 @@ z80_int puntero=reg_hl+longitud_nombre+1; //saltar nombre+0 del final
 */
 
 z80_int puntero=reg_hl;
-poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,atributo_archivo);
 
 int retornado_nombre=esxdos_handler_string_to_msdos(esxdos_handler_dp->d_name,puntero);
 
@@ -630,7 +630,7 @@ puntero+=retornado_nombre;
 */
 
 //Atributos. TODO
-poke_byte_no_time(puntero++,atributo_archivo);
+poke_byte_no_time(puntero++,0);
 
 //Fecha. TODO
 poke_byte_no_time(puntero++,0);
