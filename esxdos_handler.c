@@ -473,9 +473,14 @@ int esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
 		poke_byte_no_time(puntero+i,fullname[i]);
 	}
 
+	//poke_byte_no_time(puntero+i,0);
+	//i++;
+
+	printf ("lenght name: %d\n",i);
 	//if (i<11) poke_byte_no_time(puntero+i,0);
 
-	return i;
+	return 12;
+	//return i;
 
 	//Primero rellenar con espacios
 
@@ -567,19 +572,24 @@ int longitud_nombre=strlen(esxdos_handler_dp->d_name);
 //obtener nombre con directorio. obtener combinando directorio root, actual y inicio listado
 char nombre_final[PATH_MAX];
 util_get_complete_path(esxdos_handler_last_dir_open,esxdos_handler_dp->d_name,nombre_final);
+
+z80_byte atributo_archivo=0;
+
 //sprintf (nombre_final,"%s/%s",esxdos_handler_last_dir_open,esxdos_handler_dp->d_name);
 
 //if (get_file_type(esxdos_handler_dp->d_type,esxdos_handler_dp->d_name)==2) {
-/*if (get_file_type(esxdos_handler_dp->d_type,nombre_final)==2) {
+if (get_file_type(esxdos_handler_dp->d_type,nombre_final)==2) {
 	//meter flags directorio y nombre entre <>
 	//esxdos_handler_filinfo_fattrib |=16;
-	sprintf((char *) &esxdos_handler_globaldata[0],"<%s>",esxdos_handler_dp->d_name);
-	longitud_nombre +=2;
+	//sprintf((char *) &esxdos_handler_globaldata[0],"<%s>",esxdos_handler_dp->d_name);
+	//longitud_nombre +=2;
+	atributo_archivo |=16;
+	printf ("Es directorio\n");
 }
 
 else {
-	sprintf((char *) &esxdos_handler_globaldata[0],"%s",esxdos_handler_dp->d_name);
-}*/
+	//sprintf((char *) &esxdos_handler_globaldata[0],"%s",esxdos_handler_dp->d_name);
+}
 
 //Meter nombre. Saltamos primer byte.
 //poke_byte_no_time(reg_hl++,0);
@@ -620,7 +630,7 @@ puntero+=retornado_nombre;
 */
 
 //Atributos. TODO
-poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,atributo_archivo);
 
 //Fecha. TODO
 poke_byte_no_time(puntero++,0);
