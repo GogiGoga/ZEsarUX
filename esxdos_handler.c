@@ -463,8 +463,52 @@ int esxdos_handler_readdir_no_valido(char *s)
 
 }
 
+void esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
+{
+	z80_int i;
+
+	for (i=0;i<12;i++) poke_byte_no_time(puntero+i,fullname[i]);
+
+	return;
+
+	//Primero rellenar con espacios
+
+
+	for (i=0;i<11;i++) poke_byte_no_time(puntero+i,' ');
+
+	//Aunque aqui no deberia exceder de 8 y 3, pero por si acaso
+	char nombre[PATH_MAX];
+	char extension[PATH_MAX];
+
+	util_get_file_without_extension(fullname,nombre);
+	util_get_file_extension(fullname,extension);
+
+	printf ("name: %s extension: %s\n",nombre,extension);
+
+	//Escribir nombre
+	for (i=0;i<8 && nombre[i];i++) {
+		printf ("%c",nombre[i]);
+		poke_byte_no_time(puntero+i,nombre[i]);
+	}
+
+	printf (".");
+
+	//Escribir extension
+	for (i=0;i<3 && extension[i];i++) {
+		printf ("%c",extension[i]);
+		poke_byte_no_time(puntero+8+i,extension[i]);
+	}
+
+	printf ("\n");
+
+}
+
 void esxdos_handler_call_f_readdir(void)
 {
+
+	//Guardamos hl por si acaso, porque lo modificaremos para comodidad
+	z80_int old_hl=reg_hl;
+
 	/*
 	f_readdir               equ fsys_base + 12;     // $a4  and h
 ;                                                                       // Read a folder entry to a buffer pointed
@@ -531,44 +575,74 @@ else {
 	sprintf((char *) &esxdos_handler_globaldata[0],"%s",esxdos_handler_dp->d_name);
 }*/
 
-//Meter nombre
-esxdos_handler_copy_string_to_hl(esxdos_handler_dp->d_name);
+//Meter nombre. Saltamos primer byte.
+//poke_byte_no_time(reg_hl++,0);
 
 /*
-esxdos_handler_zeddify(&esxdos_handler_globaldata[0]);
+esxdos_handler_copy_string_to_hl(esxdos_handler_dp->d_name);
 
-//nombre acabado con 0
-esxdos_handler_globaldata[longitud_nombre]=0;
-
-
-
-int indice=longitud_nombre+1;
-
-//esxdos_handler_globaldata[indice++]=esxdos_handler_filinfo_fattrib;
-
-
-long int longitud_total=get_file_size(nombre_final);
-
-
-
-//copia para ir dividiendo entre 256
-long int l=longitud_total;
-
-esxdos_handler_globaldata[indice++]=l&0xFF;
-
-l=l>>8;
-esxdos_handler_globaldata[indice++]=l&0xFF;
-
-l=l>>8;
-esxdos_handler_globaldata[indice++]=l&0xFF;
-
-l=l>>8;
-esxdos_handler_globaldata[indice++]=l&0xFF;
-
-esxdos_handler_latd=0x40;
+z80_int puntero=reg_hl+longitud_nombre+1; //saltar nombre+0 del final
 
 */
 
+z80_int puntero=reg_hl;
+poke_byte_no_time(puntero++,0);
+
+//esxdos_handler_string_to_msdos(esxdos_handler_dp->d_name,puntero);
+
+poke_byte_no_time(puntero++,'H');
+poke_byte_no_time(puntero++,'O');
+poke_byte_no_time(puntero++,'L');
+poke_byte_no_time(puntero++,'A');
+poke_byte_no_time(puntero++,' ');
+poke_byte_no_time(puntero++,' ');
+poke_byte_no_time(puntero++,' ');
+poke_byte_no_time(puntero++,' ');
+
+poke_byte_no_time(puntero++,'T');
+poke_byte_no_time(puntero++,'X');
+poke_byte_no_time(puntero++,'T');
+
+//z80_int puntero=reg_hl+11;
+
+puntero+=11;
+
+/*
+;                                                                       // <byte>   attributes (MS-DOS format)
+;                                                                       // <dword>  date
+;                                                                       // <dword>  filesize
+*/
+
+//Atributos. TODO
+poke_byte_no_time(puntero++,0);
+
+//Fecha. TODO
+poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,0);
+
+//Tamanyo
+
+//copia para ir dividiendo entre 256
+long int longitud_total=get_file_size(nombre_final);
+
+long int l=longitud_total;
+//l=0;
+
+poke_byte_no_time(puntero++,l&0xFF);
+
+l=l>>8;
+poke_byte_no_time(puntero++,l&0xFF);
+
+l=l>>8;
+poke_byte_no_time(puntero++,l&0xFF);
+
+l=l>>8;
+poke_byte_no_time(puntero++,l&0xFF);
+
+//Dejamos hl como estaba por si acaso
+reg_hl=old_hl;
 
 reg_a=1; //Hay mas ficheros
 	esxdos_handler_no_error_uncarry();
