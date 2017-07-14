@@ -51,6 +51,8 @@ minimo: fwrite, dir (leer directorio), y diferentes modos de lectura
 opendir: falta atributos, fecha
 f_fstat
 
+Seguramente nombre msdos, atributos, fecha etc es exactamente igual que especificacion msdos
+
 
 quiza aqui 
 
