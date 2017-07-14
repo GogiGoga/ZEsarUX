@@ -467,20 +467,20 @@ int esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
 {
 	z80_int i;
 
-	for (i=0;i<12;i++) poke_byte_no_time(puntero+i,' ');
+	//for (i=0;i<12;i++) poke_byte_no_time(puntero+i,' ');
 
 	for (i=0;i<12 && fullname[i];i++) {
 		poke_byte_no_time(puntero+i,fullname[i]);
 	}
 
-	//poke_byte_no_time(puntero+i,0);
-	//i++;
+	poke_byte_no_time(puntero+i,0);
+	i++;
 
 	printf ("lenght name: %d\n",i);
 	//if (i<11) poke_byte_no_time(puntero+i,0);
 
-	return 12;
-	//return i;
+	//return 12;
+	return i;
 
 	//Primero rellenar con espacios
 
@@ -575,6 +575,13 @@ util_get_complete_path(esxdos_handler_last_dir_open,esxdos_handler_dp->d_name,no
 
 z80_byte atributo_archivo=0;
 
+/*
+Attribute - a bitvector. Bit 0: read only. Bit 1: hidden.
+        Bit 2: system file. Bit 3: volume label. Bit 4: subdirectory.
+        Bit 5: archive. Bits 6-7: unused.
+
+*/
+
 //sprintf (nombre_final,"%s/%s",esxdos_handler_last_dir_open,esxdos_handler_dp->d_name);
 
 //if (get_file_type(esxdos_handler_dp->d_type,esxdos_handler_dp->d_name)==2) {
@@ -602,6 +609,7 @@ z80_int puntero=reg_hl+longitud_nombre+1; //saltar nombre+0 del final
 */
 
 z80_int puntero=reg_hl;
+//Atributos
 poke_byte_no_time(puntero++,atributo_archivo);
 
 int retornado_nombre=esxdos_handler_string_to_msdos(esxdos_handler_dp->d_name,puntero);
@@ -624,19 +632,35 @@ poke_byte_no_time(puntero++,'T');*/
 puntero+=retornado_nombre;
 
 /*
-;                                                                       // <byte>   attributes (MS-DOS format)
 ;                                                                       // <dword>  date
 ;                                                                       // <dword>  filesize
 */
 
 //Atributos. TODO
-poke_byte_no_time(puntero++,0);
+//poke_byte_no_time(puntero++,0);
 
 //Fecha. TODO
+/*
+22-23   Time (5/6/5 bits, for hour/minutes/doubleseconds)
+24-25   Date (7/4/5 bits, for year-since-1980/month/day)
+*/
+
+z80_byte anyo=37;
+z80_byte mes=9;
+z80_byte dia=18;
+
+z80_int campo_fecha;
+
+//       15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//       ----- anyo --------  --- mes --- ---- dia -----
+
+campo_fecha=(anyo<<9)|(mes<<5)|dia;
+
 poke_byte_no_time(puntero++,0);
 poke_byte_no_time(puntero++,0);
-poke_byte_no_time(puntero++,3); //probar dia 3
-poke_byte_no_time(puntero++,6);
+poke_byte_no_time(puntero++,campo_fecha&0xFF);
+poke_byte_no_time(puntero++,(campo_fecha>>8)&0xff);
+
 
 //Tamanyo
 
