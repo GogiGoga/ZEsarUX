@@ -48,8 +48,8 @@ quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo
 ver que hace zxpand aqui....
 
 minimo: fwrite, dir (leer directorio), y diferentes modos de lectura
-
-
+opendir: falta atributos, fecha
+f_fstat
 
 
 quiza aqui 
