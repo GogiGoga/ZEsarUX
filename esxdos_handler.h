@@ -22,9 +22,39 @@
 #ifndef ESXDOS_HANDLER_H
 #define ESXDOS_HANDLER_H
 
-#define ESXDOS_RST8_FA_READ      0x01
 
-#define ESXDOS_RST8_FA_WRITE      0x04
+#define ESXDOS_RST8_FA_READ 0x01
+// $01  ld bc,nn        read access
+
+
+#define ESXDOS_RST8_FA_WRITE  0x02
+// $02  ld (bc), a      write access
+
+
+#define ESXDOS_RST8_FA_OPEN_EX  0x00
+// $00  nop                     open if exists, else
+//                                      error
+
+#define ESXDOS_RST8_FA_OPEN_AL  0x08
+// $08  ex af,af'       open if exists, else
+ //                                      create
+
+#define ESXDOS_RST8_FA_CREATE_NEW 0x04
+// $04  inc b           create if does not
+ //                                      exist, else error
+
+//Este es suma de los anteriores
+//#define ESXDOS_RST8_FA_CREATE_AL  0x0C
+// $0c  inc c           create if does not
+ //                                      exist, else open and
+ //                                      truncate
+
+#define ESXDOS_RST8_FA_USE_HEADER  0x40
+// $40  ld b,b          use plus3dos header
+//                                      (passed in de)
+
+
+
 #define ESXDOS_RST8_FA_OVERWRITE   0x0c
 #define ESXDOS_RST8_FA_CLOSE      0x00
 

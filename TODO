@@ -34,8 +34,8 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 -esxdos handler
-corregit cwd. inspirarse en rutinas de zxpand
 solo hace fopen, fread, fclose
+error al leer mensajes de error esxdos cuando se ejecuta comando no reconocido
 
 
 solo gestiona 1 archivo abierto a la vez

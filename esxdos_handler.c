@@ -33,6 +33,8 @@
 #include "esxdos_handler.h"
 #include "operaciones.h"
 #include "debug.h"
+#include "menu.h"
+#include "utils.h"
 
 #if defined(__APPLE__)
 	#include <sys/syslimits.h>
@@ -45,7 +47,7 @@ char esxdos_handler_cwd[PATH_MAX]="";
 
 z80_bit esxdos_handler_enabled={0};
 
-void temp_debug_rst8_copy_hl_to_string(char *buffer_fichero)
+void esxdos_handler_copy_hl_to_string(char *buffer_fichero)
 {
 
 	int i;
@@ -72,40 +74,75 @@ void esxdos_handler_return_call(void)
 	reg_pc++;
 }
 
+
+//rellena fullpath con ruta completa
+//funcion similar a zxpand_fileopen
+void esxdos_handler_pre_fileopen(char *nombre_inicial,char *fullpath)
+{
+
+
+	//Si nombre archivo empieza por /, olvidar cwd
+	if (nombre_inicial[0]=='/') sprintf (fullpath,"%s%s",esxdos_handler_root_dir,nombre_inicial);
+
+	//TODO: habria que proteger que en el nombre indicado no se use ../.. para ir a ruta raiz inferior a esxdos_handler_root_dir
+	else sprintf (fullpath,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,nombre_inicial);
+
+
+	int existe_archivo=si_existe_archivo(fullpath);
+
+
+
+	//Si no existe buscar archivo sin comparar mayusculas/minusculas
+	//en otras partes del codigo directamente se busca primero el archivo con util_busca_archivo_nocase,
+	//aqui se hace al reves. Se busca normal, y si no se encuentra, se busca nocase
+
+
+		if (!existe_archivo) {
+			printf ("File %s not found. Searching without case sensitive\n",fullpath);
+			char encontrado[PATH_MAX];
+			char directorio[PATH_MAX];
+			util_get_complete_path(esxdos_handler_root_dir,esxdos_handler_cwd,directorio);
+			//sprintf (directorio,"%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd);
+			if (util_busca_archivo_nocase ((char *)nombre_inicial,directorio,encontrado) ) {
+				printf ("Found with name %s\n",encontrado);
+				existe_archivo=1;
+
+				//cambiamos el nombre fullpath y el nombre_inicial por el encontrado
+				sprintf ((char *)nombre_inicial,"%s",encontrado);
+
+				sprintf (fullpath,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,(char *)nombre_inicial);
+				//sprintf (fullpath,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,encontrado);
+				printf ("Found file %s searching without case sensitive\n",fullpath);
+			}
+		}
+
+
+
+
+
+}
+
+
+void esxdos_handler_debug_file_flags(z80_byte b)
+{
+	if (b&ESXDOS_RST8_FA_READ) printf ("FA_READ|");
+	if (b&ESXDOS_RST8_FA_WRITE) printf ("FA_WRITE|");
+	if (b&ESXDOS_RST8_FA_OPEN_EX) printf ("FA_OPEN_EX|");
+	if (b&ESXDOS_RST8_FA_OPEN_AL) printf ("FA_OPEN_AL|");
+	if (b&ESXDOS_RST8_FA_CREATE_NEW) printf ("FA_CREATE_NEW|");
+	if (b&ESXDOS_RST8_FA_USE_HEADER) printf ("FA_USE_HEADER|");
+
+	printf ("\n");
+}
+
 //Temporales para leer 1 solo archivo
 FILE *temp_esxdos_last_open_file_handler_unix=NULL;
 z80_byte temp_esxdos_last_open_file_handler;
 
 void esxdos_handler_call_f_open(void)
 {
-
-	char nombre_archivo[PATH_MAX];
-	char nombre_archivo_final[PATH_MAX];
-	temp_debug_rst8_copy_hl_to_string(nombre_archivo);
-
-	//Nombre de archivo final sera root_dir+cwd+nombre_archivo
-	sprintf (nombre_archivo_final,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,nombre_archivo);
-
-	//Abrir el archivo.
-	temp_esxdos_last_open_file_handler_unix=fopen(nombre_archivo_final,"rb");
-
-
-	if (temp_esxdos_last_open_file_handler_unix==NULL) {
-		esxdos_handler_error_carry();
-		printf ("Error from esxdos_handler_call_f_open file: %s\n",nombre_archivo_final);
-	}
-	else {
-		temp_esxdos_last_open_file_handler=1;
-
-		reg_a=temp_esxdos_last_open_file_handler;
-		esxdos_handler_no_error_uncarry();
-		printf ("Successfully esxdos_handler_call_f_open file: %s\n",nombre_archivo_final);
-	}
-
-	esxdos_handler_return_call();
-
 	/*
-;                                                                       // Open file. A=drive. HL=Pointer to null-
+	;                                                                       // Open file. A=drive. HL=Pointer to null-
 ;                                                                       // terminated string containg path and/or
 ;                                                                       // filename. B=file access mode. DE=Pointer
 ;                                                                       // to BASIC header data/buffer to be filled
@@ -113,8 +150,47 @@ void esxdos_handler_call_f_open(void)
 ;                                                                       // open a headerless file, the BASIC type is
 ;                                                                       // $ff. Only used when specified in B.
 ;                                                                       // On return without error, A=file handle.
-}
 */
+
+	esxdos_handler_debug_file_flags(reg_b);
+
+	//Modos soportados
+	if (reg_b!=ESXDOS_RST8_FA_READ) {
+		printf ("Unsupported fopen mode\n");
+		esxdos_handler_error_carry();
+		esxdos_handler_return_call();
+		return;
+	}
+
+	char nombre_archivo[PATH_MAX];
+	char fullpath[PATH_MAX];
+	esxdos_handler_copy_hl_to_string(nombre_archivo);
+
+
+	esxdos_handler_pre_fileopen(nombre_archivo,fullpath);
+
+	printf ("fullpath file: %s\n",fullpath);
+
+
+	//Abrir el archivo.
+	temp_esxdos_last_open_file_handler_unix=fopen(fullpath,"rb");
+
+
+	if (temp_esxdos_last_open_file_handler_unix==NULL) {
+		esxdos_handler_error_carry();
+		printf ("Error from esxdos_handler_call_f_open file: %s\n",fullpath);
+	}
+	else {
+		temp_esxdos_last_open_file_handler=1;
+
+		reg_a=temp_esxdos_last_open_file_handler;
+		esxdos_handler_no_error_uncarry();
+		printf ("Successfully esxdos_handler_call_f_open file: %s\n",fullpath);
+	}
+
+	esxdos_handler_return_call();
+
+
 }
 
 void esxdos_handler_call_f_read(void)
@@ -145,6 +221,7 @@ void esxdos_handler_call_f_read(void)
 		}
 
 		reg_bc=total_leidos;
+		//reg_hl +=total_leidos; //???
 		esxdos_handler_no_error_uncarry();
 
 		printf ("Successfully esxdos_handler_call_f_read total bytes read: %d\n",total_leidos);
@@ -169,17 +246,126 @@ void esxdos_handler_call_f_close(void)
 	esxdos_handler_return_call();
 }
 
+//tener en cuenta raiz y directorio actual
+//si localdir no es NULL, devolver directorio local (quitando esxdos_handler_root_dir)
+//funcion igual a zxpand_get_final_directory, solo adaptando nombres de variables zxpand->esxdos_handler
+void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdir)
+{
+
+
+	//printf ("esxdos_handler_get_final_directory. dir: %s esxdos_handler_root_dir: %s\n",dir,esxdos_handler_root_dir);
+
+	//Guardamos directorio actual del emulador
+	char directorio_actual[PATH_MAX];
+	getcwd(directorio_actual,PATH_MAX);
+
+	//cambiar a directorio indicado, juntando raiz, dir actual de esxdos_handler, y dir
+	char dir_pedido[PATH_MAX];
+
+	//Si directorio pedido es absoluto, cambiar cwd
+	if (dir[0]=='/') {
+		sprintf (esxdos_handler_cwd,"%s",dir);
+		sprintf (dir_pedido,"%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd);
+	}
+
+
+	else {
+		sprintf (dir_pedido,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,dir);
+	}
+
+	menu_filesel_chdir(dir_pedido);
+
+	//Ver en que directorio estamos
+	//char dir_final[PATH_MAX];
+	getcwd(finaldir,PATH_MAX);
+	//printf ("total final directory: %s . esxdos_handler_root_dir: %s\n",finaldir,esxdos_handler_root_dir);
+	//Esto suele retornar sim barra al final
+
+	//Si finaldir no tiene barra al final, haremos que esxdos_handler_root_dir tampoco la tenga
+	int l=strlen(finaldir);
+
+	if (l) {
+		if (finaldir[l-1]!='/' && finaldir[l-1]!='\\') {
+			//finaldir no tiene barra al final
+			int m=strlen(esxdos_handler_root_dir);
+			if (m) {
+				if (esxdos_handler_root_dir[m-1]=='/' || esxdos_handler_root_dir[m-1]=='\\') {
+					//root dir tiene barra al final. quitarla
+					//printf ("quitando barra del final de esxdos_handler_root_dir\n");
+					esxdos_handler_root_dir[m-1]=0;
+				}
+			}
+		}
+	}
+
+
+	//Ahora hay que quitar la parte del directorio raiz
+	//printf ("running strstr (%s,%s)\n",finaldir,esxdos_handler_root_dir);
+	char *s=strstr(finaldir,esxdos_handler_root_dir);
+
+	if (s==NULL) {
+		debug_printf (VERBOSE_DEBUG,"Directory change not allowed");
+		//directorio final es el mismo que habia
+		sprintf (finaldir,"%s",esxdos_handler_cwd);
+		return;
+	}
+
+	//Si esta bien, meter parte local
+	if (localdir!=NULL) {
+		int l=strlen(esxdos_handler_root_dir);
+		sprintf (localdir,"%s",&finaldir[l]);
+		//printf ("local directory: %s\n",localdir);
+	}
+
+	//printf ("directorio final local de esxdos_handler: %s\n",finaldir);
+
+
+	//Restauramos directorio actual del emulador
+	menu_filesel_chdir(directorio_actual);
+}
+
 
 void esxdos_handler_call_f_chdir(void)
 {
 
 	char ruta[PATH_MAX];
-	temp_debug_rst8_copy_hl_to_string(ruta);
-
-	//TODO . comprobar si ruta final (root+cwd) valido
+	esxdos_handler_copy_hl_to_string(ruta);
 
 
-	strcpy(esxdos_handler_cwd,ruta);
+
+		char directorio_final[PATH_MAX];
+
+		printf ("Changing to directory %s\n",ruta);
+
+		esxdos_handler_get_final_directory(ruta,directorio_final,esxdos_handler_cwd);
+
+		printf ("Final directory %s . cwd: %s\n",directorio_final,esxdos_handler_cwd);
+
+
+	esxdos_handler_no_error_uncarry();
+	esxdos_handler_return_call();
+}
+
+void esxdos_handler_copy_string_to_hl(char *s)
+{
+	z80_int p=0;
+
+	while (*s) {
+		poke_byte_no_time(reg_hl+p,*s);
+		s++;
+		p++;
+	}
+
+	poke_byte_no_time(reg_hl+p,0);
+}
+
+void esxdos_handler_call_f_getcwd(void)
+{
+
+	// Get current folder path (null-terminated)
+// to buffer. A=drive. HL=pointer to buffer.
+
+	esxdos_handler_copy_string_to_hl(esxdos_handler_cwd);
 
 	esxdos_handler_no_error_uncarry();
 	esxdos_handler_return_call();
@@ -206,8 +392,8 @@ void debug_rst8_esxdos(void)
 
 		case ESXDOS_RST8_F_OPEN:
 
-			temp_debug_rst8_copy_hl_to_string(buffer_fichero);
-			printf ("ESXDOS_RST8_F_OPEN. File: %s\n",buffer_fichero);
+			esxdos_handler_copy_hl_to_string(buffer_fichero);
+			printf ("ESXDOS_RST8_F_OPEN. Mode: %02XH File: %s\n",reg_b,buffer_fichero);
 			esxdos_handler_call_f_open();
 
 		break;
@@ -226,11 +412,11 @@ void debug_rst8_esxdos(void)
 
 		case ESXDOS_RST8_F_GETCWD:
 			printf ("ESXDOS_RST8_F_GETCWD\n");
-			rst(8);
+			esxdos_handler_call_f_getcwd();
 		break;
 
 		case ESXDOS_RST8_F_CHDIR:
-			temp_debug_rst8_copy_hl_to_string(buffer_fichero);
+			esxdos_handler_copy_hl_to_string(buffer_fichero);
 			printf ("ESXDOS_RST8_F_CHDIR: %s\n",buffer_fichero);
 			esxdos_handler_call_f_chdir();
 		break;
@@ -269,6 +455,8 @@ void esxdos_handler_enable(void)
 if (esxdos_handler_root_dir[0]==0) getcwd(esxdos_handler_root_dir,PATH_MAX);
 
 	esxdos_handler_enabled.v=1;
+	//directorio  vacio
+	esxdos_handler_cwd[0]=0;
 }
 
 
