@@ -463,18 +463,24 @@ int esxdos_handler_readdir_no_valido(char *s)
 
 }
 
-void esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
+int esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
 {
 	z80_int i;
 
-	for (i=0;i<12;i++) poke_byte_no_time(puntero+i,fullname[i]);
+	for (i=0;i<12;i++) poke_byte_no_time(puntero+i,' ');
 
-	return;
+	for (i=0;i<12 && fullname[i];i++) {
+		poke_byte_no_time(puntero+i,fullname[i]);
+	}
+
+	//if (i<11) poke_byte_no_time(puntero+i,0);
+
+	return i;
 
 	//Primero rellenar con espacios
 
 
-	for (i=0;i<11;i++) poke_byte_no_time(puntero+i,' ');
+
 
 	//Aunque aqui no deberia exceder de 8 y 3, pero por si acaso
 	char nombre[PATH_MAX];
@@ -588,9 +594,9 @@ z80_int puntero=reg_hl+longitud_nombre+1; //saltar nombre+0 del final
 z80_int puntero=reg_hl;
 poke_byte_no_time(puntero++,0);
 
-//esxdos_handler_string_to_msdos(esxdos_handler_dp->d_name,puntero);
+int retornado_nombre=esxdos_handler_string_to_msdos(esxdos_handler_dp->d_name,puntero);
 
-poke_byte_no_time(puntero++,'H');
+/*oke_byte_no_time(puntero++,'H');
 poke_byte_no_time(puntero++,'O');
 poke_byte_no_time(puntero++,'L');
 poke_byte_no_time(puntero++,'A');
@@ -601,11 +607,11 @@ poke_byte_no_time(puntero++,' ');
 
 poke_byte_no_time(puntero++,'T');
 poke_byte_no_time(puntero++,'X');
-poke_byte_no_time(puntero++,'T');
+poke_byte_no_time(puntero++,'T');*/
 
 //z80_int puntero=reg_hl+11;
 
-puntero+=11;
+puntero+=retornado_nombre;
 
 /*
 ;                                                                       // <byte>   attributes (MS-DOS format)
@@ -619,8 +625,8 @@ poke_byte_no_time(puntero++,0);
 //Fecha. TODO
 poke_byte_no_time(puntero++,0);
 poke_byte_no_time(puntero++,0);
-poke_byte_no_time(puntero++,0);
-poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,3); //probar dia 3
+poke_byte_no_time(puntero++,6);
 
 //Tamanyo
 
@@ -628,6 +634,7 @@ poke_byte_no_time(puntero++,0);
 long int longitud_total=get_file_size(nombre_final);
 
 long int l=longitud_total;
+printf ("lenght file: %ld\n",l);
 //l=0;
 
 poke_byte_no_time(puntero++,l&0xFF);
