@@ -45,6 +45,19 @@
 char esxdos_handler_root_dir[PATH_MAX]="";
 char esxdos_handler_cwd[PATH_MAX]="";
 
+
+
+//usados al leer directorio
+//z80_byte esxdos_handler_filinfo_fattrib;
+struct dirent *esxdos_handler_dp;
+DIR *esxdos_handler_dfd=NULL;
+
+//Solo soporto abrir un directorio a la vez
+z80_byte esxdos_handler_folder_handle;
+
+//ultimo directorio leido al listar archivos
+char esxdos_handler_last_dir_open[PATH_MAX]=".";
+
 z80_bit esxdos_handler_enabled={0};
 
 void esxdos_handler_copy_hl_to_string(char *buffer_fichero)
@@ -371,6 +384,204 @@ void esxdos_handler_call_f_getcwd(void)
 	esxdos_handler_return_call();
 }
 
+void esxdos_handler_call_f_opendir(void)
+{
+
+	/*
+
+	;                                                                       // Open folder. A=drive. HL=Pointer to zero
+;                                                                       // terminated string with path to folder.
+;                                                                       // B=folder access mode. Only the BASIC
+;                                                                       // header bit matters, whether you want to
+;                                                                       // read header information or not. On return
+;                                                                       // without error, A=folder handle.
+
+*/
+
+	char directorio[PATH_MAX];
+
+	esxdos_handler_copy_hl_to_string(directorio);
+	printf ("opening directory %s\n",directorio);
+
+	char directorio_final[PATH_MAX];
+	//obtener directorio final
+	esxdos_handler_get_final_directory((char *) directorio,directorio_final,NULL);
+
+
+	//Guardar directorio final, hace falta al leer cada entrada para saber su tamanyo
+	sprintf (esxdos_handler_last_dir_open,"%s",directorio_final);
+	esxdos_handler_dfd = opendir(directorio_final);
+
+	if (esxdos_handler_dfd == NULL) {
+	 	printf("Can't open directory %s (full: %s)\n", directorio,directorio_final);
+	  esxdos_handler_error_carry();
+	}
+
+	else {
+		//Solo soporto abrir un directorio a la vez. Asigno id 1 tal cual
+		esxdos_handler_folder_handle=1;
+		reg_a=esxdos_handler_folder_handle;
+		esxdos_handler_no_error_uncarry();
+	}
+
+
+	esxdos_handler_return_call();
+}
+
+//comprobaciones de nombre de archivos en directorio
+int esxdos_handler_readdir_no_valido(char *s)
+{
+
+	//Si longitud mayor que 12 (8 nombre, punto, 3 extension)
+	//if (strlen(s)>12) return 0;
+
+	printf ("checking is name %s is valid\n",s);
+
+
+	char extension[NAME_MAX];
+	char nombre[NAME_MAX];
+
+	util_get_file_extension(s,extension);
+	util_get_file_without_extension(s,nombre);
+
+	//si nombre mayor que 8
+	if (strlen(nombre)>8) return 0;
+
+	//si extension mayor que 3
+	if (strlen(extension)>3) return 0;
+
+
+	//si hay letras minusculas
+	//int i;
+	//for (i=0;s[i];i++) {
+	//	if (s[i]>='a' && s[i]<'z') return 0;
+	//}
+
+
+
+	return 1;
+
+}
+
+void esxdos_handler_call_f_readdir(void)
+{
+	/*
+	f_readdir               equ fsys_base + 12;     // $a4  and h
+;                                                                       // Read a folder entry to a buffer pointed
+;                                                                       // to by HL. A=handle. Buffer format:
+;                                                                       // <ASCII>  file/dirname
+;                                                                       // <byte>   attributes (MS-DOS format)
+;                                                                       // <dword>  date
+;                                                                       // <dword>  filesize
+;                                                                       // If opened with BASIC header bit, the
+;                                                                       // BASIC header follows the normal entry
+;                                                                       // (with type=$ff if headerless).
+;                                                                       // On return, if A=1 there are more entries.
+;                                                                       // If A=0 then it is the end of the folder.
+;                                                                       // Does not currently return the size of an
+;                                                                       // entry, or zero if end of folder reached.
+*/
+if (esxdos_handler_dfd==NULL) {
+	esxdos_handler_error_carry();
+	esxdos_handler_return_call();
+	return;
+}
+
+do {
+
+	esxdos_handler_dp = readdir(esxdos_handler_dfd);
+
+	if (esxdos_handler_dp == NULL) {
+		closedir(esxdos_handler_dfd);
+		esxdos_handler_dfd=NULL;
+		//no hay mas archivos
+		reg_a=0;
+		esxdos_handler_no_error_uncarry();
+		esxdos_handler_return_call();
+		return;
+	}
+
+
+} while(!esxdos_handler_readdir_no_valido(esxdos_handler_dp->d_name));
+
+
+//if (esxdos_handler_isValidFN(esxdos_handler_globaldata)
+
+//meter flags
+//esxdos_handler_filinfo_fattrib=0;
+
+
+
+int longitud_nombre=strlen(esxdos_handler_dp->d_name);
+
+//obtener nombre con directorio. obtener combinando directorio root, actual y inicio listado
+char nombre_final[PATH_MAX];
+util_get_complete_path(esxdos_handler_last_dir_open,esxdos_handler_dp->d_name,nombre_final);
+//sprintf (nombre_final,"%s/%s",esxdos_handler_last_dir_open,esxdos_handler_dp->d_name);
+
+//if (get_file_type(esxdos_handler_dp->d_type,esxdos_handler_dp->d_name)==2) {
+/*if (get_file_type(esxdos_handler_dp->d_type,nombre_final)==2) {
+	//meter flags directorio y nombre entre <>
+	//esxdos_handler_filinfo_fattrib |=16;
+	sprintf((char *) &esxdos_handler_globaldata[0],"<%s>",esxdos_handler_dp->d_name);
+	longitud_nombre +=2;
+}
+
+else {
+	sprintf((char *) &esxdos_handler_globaldata[0],"%s",esxdos_handler_dp->d_name);
+}*/
+
+//Meter nombre
+esxdos_handler_copy_string_to_hl(esxdos_handler_dp->d_name);
+
+/*
+esxdos_handler_zeddify(&esxdos_handler_globaldata[0]);
+
+//nombre acabado con 0
+esxdos_handler_globaldata[longitud_nombre]=0;
+
+
+
+int indice=longitud_nombre+1;
+
+//esxdos_handler_globaldata[indice++]=esxdos_handler_filinfo_fattrib;
+
+
+long int longitud_total=get_file_size(nombre_final);
+
+
+
+//copia para ir dividiendo entre 256
+long int l=longitud_total;
+
+esxdos_handler_globaldata[indice++]=l&0xFF;
+
+l=l>>8;
+esxdos_handler_globaldata[indice++]=l&0xFF;
+
+l=l>>8;
+esxdos_handler_globaldata[indice++]=l&0xFF;
+
+l=l>>8;
+esxdos_handler_globaldata[indice++]=l&0xFF;
+
+esxdos_handler_latd=0x40;
+
+*/
+
+
+reg_a=1; //Hay mas ficheros
+	esxdos_handler_no_error_uncarry();
+	esxdos_handler_return_call();
+
+}
+
+void esxdos_handler_run_normal_rst8(void)
+{
+	printf ("Running normal rst 8 call\n");
+	rst(8);
+}
+
 void debug_rst8_esxdos(void)
 {
 	z80_byte funcion=peek_byte_no_time(reg_pc);
@@ -382,12 +593,12 @@ void debug_rst8_esxdos(void)
 
 		case ESXDOS_RST8_DISK_READ:
 			printf ("ESXDOS_RST8_DISK_READ\n");
-			rst(8);
+			esxdos_handler_run_normal_rst8();
 		break;
 
 		case ESXDOS_RST8_M_GETSETDRV:
 			printf ("ESXDOS_RST8_M_GETSETDRV\n");
-			rst(8);
+			esxdos_handler_run_normal_rst8();
 	  break;
 
 		case ESXDOS_RST8_F_OPEN:
@@ -423,12 +634,12 @@ void debug_rst8_esxdos(void)
 
 		case ESXDOS_RST8_F_OPENDIR:
 			printf ("ESXDOS_RST8_F_OPENDIR\n");
-			rst(8);
+			esxdos_handler_call_f_opendir();
 		break;
 
 		case ESXDOS_RST8_F_READDIR:
 			printf ("ESXDOS_RST8_F_READDIR\n");
-			rst(8);
+			esxdos_handler_call_f_readdir();
 		break;
 
 
@@ -437,7 +648,8 @@ void debug_rst8_esxdos(void)
 			if (funcion>=0x80) {
 				printf ("Unknown ESXDOS_RST8: %02XH !! \n",funcion);
 			}
-			rst(8);
+			rst(8); //No queremos que muestre mensaje de debug
+			//esxdos_handler_run_normal_rst8();
 		break;
 	}
 }
