@@ -82,7 +82,7 @@ void esxdos_handler_fill_date_struct(z80_int puntero,z80_byte hora,z80_byte minu
 			z80_byte dia,z80_byte mes,z80_byte anyo)
 	{
 
-//Fecha. 
+//Fecha.
 /*
 22-23   Time (5/6/5 bits, for hour/minutes/doubleseconds)
 24-25   Date (7/4/5 bits, for year-since-1980/month/day)
@@ -95,6 +95,9 @@ z80_int campo_tiempo;
 campo_tiempo=(hora<<11)|(minuto<<5)|doblesegundos;
 
 
+poke_byte_no_time(puntero++,campo_tiempo&0xFF);
+poke_byte_no_time(puntero++,(campo_tiempo>>8)&0xff);
+
 z80_int campo_fecha;
 
 //       15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
@@ -102,8 +105,8 @@ z80_int campo_fecha;
 
 campo_fecha=(anyo<<9)|(mes<<5)|dia;
 
-poke_byte_no_time(puntero++,0);
-poke_byte_no_time(puntero++,0);
+
+
 poke_byte_no_time(puntero++,campo_fecha&0xFF);
 poke_byte_no_time(puntero++,(campo_fecha>>8)&0xff);
 }
