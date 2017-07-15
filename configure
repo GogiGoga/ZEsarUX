@@ -1167,7 +1167,7 @@ codsinpr.o: codsinpr.c cpu.h operaciones.h debug.h contend.h utils.h compileopti
 operaciones.o: operaciones.c cpu.h operaciones.h debug.h audio.h tape.h ay38912.h mem128.h chloe.h prism.h tbblue.h timex.h zx8081.h menu.h screen.h compileoptions.h contend.h joystick.h ula.h utils.h printers.h disassemble.h z88.h ulaplus.h zxuno.h chardetect.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h timer.h pd765.h superupgrade.h snap_rzx.h multiface.h chrome.h tsconf.h ds1307.h mk14.h
 	\$(CC) \$(CFLAGS) -c operaciones.c
 
-cpu.o: cpu.c cpu.h scrnull.h scrstdout.h scrsimpletext.h operaciones.h debug.h compileoptions.h tape.h tape_tap.h tape_tzx.h audio.h screen.h ay38912.h chloe.h prism.h tbblue.h mem128.h timex.h scrcurses.h scraa.h scrxwindows.h scrsdl.h scrnull.h scrfbdev.h audiodsp.h audiosdl.h audionull.h audioalsa.h audiopulse.h zx8081.h snap.h menu.h core_spectrum.h core_zx8081.h core_z88.h tape_smp.h contend.h utils.h ula.h printers.h joystick.h realjoystick.h z88.h ulaplus.h autoselectoptions.h zxuno.h chardetect.h textspeech.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h atomlite.h dandanator.h superupgrade.h ql.h remote.h snap_rzx.h multiface.h chrome.h tsconf.h scmp.h mk14.h
+cpu.o: cpu.c cpu.h scrnull.h scrstdout.h scrsimpletext.h operaciones.h debug.h compileoptions.h tape.h tape_tap.h tape_tzx.h audio.h screen.h ay38912.h chloe.h prism.h tbblue.h mem128.h timex.h scrcurses.h scraa.h scrxwindows.h scrsdl.h scrnull.h scrfbdev.h audiodsp.h audiosdl.h audionull.h audioalsa.h audiopulse.h zx8081.h snap.h menu.h core_spectrum.h core_zx8081.h core_z88.h tape_smp.h contend.h utils.h ula.h printers.h joystick.h realjoystick.h z88.h ulaplus.h autoselectoptions.h zxuno.h chardetect.h textspeech.h mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h cpc.h sam.h if1.h atomlite.h dandanator.h superupgrade.h ql.h remote.h snap_rzx.h multiface.h chrome.h tsconf.h scmp.h mk14.h esxdos_handler.h
 	\$(CC) \$(CFLAGS) -c cpu.c
 
 core_spectrum.o: core_spectrum.c core_spectrum.h cpu.h debug.h tape.h audio.h screen.h ay38912.h operaciones.h snap.h timer.h menu.h chardetect.h compileoptions.h contend.h ula.h utils.h realjoystick.h divmmc.h divide.h diviface.h timex.h zxuno.h prism.h snap_rzx.h superupgrade.h
@@ -1254,7 +1254,7 @@ prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.
 remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h superupgrade.h tbblue.h tsconf.h
 	\$(CC) \$(CFLAGS) -c remote.c
 
-esxdos_handler.o: esxdos_handler.c esxdos_handler.h cpu.h operaciones.h debug.h menu.h utils.h
+esxdos_handler.o: esxdos_handler.c esxdos_handler.h cpu.h operaciones.h debug.h menu.h utils.h diviface.h
 	\$(CC) \$(CFLAGS) -c esxdos_handler.c
 
 tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h
@@ -1329,7 +1329,7 @@ menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h
 disassemble.o: disassemble.c disassemble.h cpu.h operaciones.h debug.h ql.h utils.h scmp.h
 	\$(CC) \$(CFLAGS) -c disassemble.c
 
-utils.o: utils.c utils.h cpu.h debug.h joystick.h compileoptions.h tape.h snap.h screen.h realjoystick.h menu.h z88.h playtzx.h tape_tzx.h operaciones.h zx8081.h autoselectoptions.h ulaplus.h ay38912.h textspeech.h spectra.h zxuno.h spritechip.h timex.h cpc.h sam.h divmmc.h divide.h superupgrade.h chardetect.h zx8081.h jupiterace.h mmc.h ide.h zxpand.h diviface.h divmmc.h divide.h dandanator.h ql.h m68k.h remote.h ula.h snap_rzx.h scmp.h mk14.h
+utils.o: utils.c utils.h cpu.h debug.h joystick.h compileoptions.h tape.h snap.h screen.h realjoystick.h menu.h z88.h playtzx.h tape_tzx.h operaciones.h zx8081.h autoselectoptions.h ulaplus.h ay38912.h textspeech.h spectra.h zxuno.h spritechip.h timex.h cpc.h sam.h divmmc.h divide.h superupgrade.h chardetect.h zx8081.h jupiterace.h mmc.h ide.h zxpand.h diviface.h divmmc.h divide.h dandanator.h ql.h m68k.h remote.h ula.h snap_rzx.h scmp.h mk14.h esxdos_handler.h
 	\$(CC) \$(CFLAGS) -c utils.c
 
 playtzx.o: playtzx.c playtzx.h debug.h audio.h utils.h

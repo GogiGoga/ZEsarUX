@@ -98,6 +98,7 @@
 #include "tsconf.h"
 #include "scmp.h"
 #include "mk14.h"
+#include "esxdos_handler.h"
 
 #ifdef COMPILE_STDOUT
 #include "scrstdout.h"
@@ -1448,10 +1449,17 @@ printf (
 		"--zxpand-root-dir p        Set ZXpand root directory for sd/mmc filesystem. Uses current directory by default.\n"
 		"                           Note: ZXpand does not use --mmc-file setting\n"
 
+
+
                 "--ide-file f               Set ide image file\n"
                 "--enable-ide               Enable IDE emulation. Usually requires --ide-file\n"
                 "--enable-divide            Enable DIVIDE emulation. Usually requires --enable-ide\n"
 								"--divide-rom f             Sets divide firmware rom. If not set, uses default file\n"
+
+		"--enable-esxdos-handler    Enable ESXDOS traps handler. Requires divmmc or divide emulation\n"
+		"--esxdos-root-dir p        Set ESXDOS root directory for traps handler. Uses current directory by default.\n"
+
+
 		"--enable-8bit-ide          Enable 8-bit simple IDE emulation. Requires --enable-ide\n"
                 "--dandanator-rom f         Set ZX Dandanator rom file\n"
 		"--zxunospifile path        File to use on ZX-Uno as SPI Flash. Default: zxuno.flash\n"
@@ -4013,6 +4021,7 @@ z80_bit command_line_spritechip={0};
 z80_bit command_line_ulaplus={0};
 z80_bit command_line_chroma81={0};
 z80_bit command_line_zxpand={0};
+z80_bit command_line_esxdos_handler={0};
 z80_bit command_line_mmc={0};
 z80_bit command_line_zxmmc={0};
 z80_bit command_line_divmmc={0};
@@ -4845,6 +4854,26 @@ void parse_cmdline_options(void) {
 				else {
           sprintf (zxpand_root_dir,"%s",argv[puntero_parametro]);
 				}
+			}
+
+
+
+			else if (!strcmp(argv[puntero_parametro],"--enable-esxdos-handler")) {
+			  command_line_esxdos_handler.v=1;
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--esxdos-root-dir")) {
+			  siguiente_parametro_argumento();
+
+			  //Si es ruta relativa, poner ruta absoluta
+			  if (!si_ruta_absoluta(argv[puntero_parametro])) {
+			    //printf ("es ruta relativa\n");
+			    convert_relative_to_absolute(argv[puntero_parametro],esxdos_handler_root_dir);
+			  }
+
+			  else {
+			    sprintf (esxdos_handler_root_dir,"%s",argv[puntero_parametro]);
+			  }
 			}
 
 /*
@@ -6061,6 +6090,8 @@ struct sched_param sparam;
 	if (command_line_zxpand.v) zxpand_enable();
 
 
+
+
   if (command_line_ide.v) ide_enable();
 
   if (command_line_divide.v) {
@@ -6070,6 +6101,8 @@ struct sched_param sparam;
 
 
 	if (command_line_8bitide.v) eight_bit_simple_ide_enable();
+
+	if (command_line_esxdos_handler.v) esxdos_handler_enable();
 
 
 	//Dandanator

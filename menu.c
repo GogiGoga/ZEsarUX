@@ -12444,7 +12444,7 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 
 
 
-		if (MACHINE_IS_SPECTRUM && mmc_enabled.v) {
+		if (MACHINE_IS_SPECTRUM && diviface_enabled.v) {
 			menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_esxdos_traps,NULL,"~~ESXDOS Traps");
 			menu_add_item_menu_shortcut(array_menu_storage_settings,'e');
 			menu_add_item_menu_tooltip(array_menu_storage_settings,"ESXDOS traps");

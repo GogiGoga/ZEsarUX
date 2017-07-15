@@ -35,6 +35,7 @@
 #include "debug.h"
 #include "menu.h"
 #include "utils.h"
+#include "diviface.h"
 
 #if defined(__APPLE__)
 	#include <sys/syslimits.h>
@@ -712,14 +713,19 @@ puntero+=retornado_nombre;
 24-25   Date (7/4/5 bits, for year-since-1980/month/day)
 */
 
-z80_byte hora=11;
-z80_byte minutos=15;
-z80_byte doblesegundos=20*2;
+int hora=11;
+int minutos=15;
+int doblesegundos=20*2;
 
-z80_byte anyo=37;
-z80_byte mes=9;
-z80_byte dia=18;
+int anyo=37;
+int mes=9;
+int dia=18;
 
+
+get_file_date_from_name(nombre_final,&hora,&minutos,&doblesegundos,&dia,&mes,&anyo);
+
+anyo-=1980;
+doblesegundos *=2;
 
 esxdos_handler_fill_date_struct(puntero,hora,minutos,doblesegundos,dia,mes,anyo);
 
@@ -883,6 +889,20 @@ void esxdos_handler_run(void)
 
 void esxdos_handler_enable(void)
 {
+
+	//esto solo puede pasar activandolo por linea de comandos
+	if (!MACHINE_IS_SPECTRUM) {
+		debug_printf (VERBOSE_INFO,"ESXDOS handler can only be enabled on Spectrum");
+		return;
+	}
+
+	//Si no esta diviface
+	if (diviface_enabled.v==0) {
+		debug_printf(VERBOSE_ERR,"ESXDOS handler needs divmmc or divide emulation");
+	}
+
+	debug_printf(VERBOSE_DEBUG,"Enabling ESXDOS handler");
+
 	//root dir se pone directorio actual si esta vacio
 if (esxdos_handler_root_dir[0]==0) getcwd(esxdos_handler_root_dir,PATH_MAX);
 
@@ -895,5 +915,6 @@ if (esxdos_handler_root_dir[0]==0) getcwd(esxdos_handler_root_dir,PATH_MAX);
 
 void esxdos_handler_disable(void)
 {
+	debug_printf(VERBOSE_DEBUG,"Disabling ESXDOS handler");
 	esxdos_handler_enabled.v=0;
 }
