@@ -12299,15 +12299,22 @@ void menu_esxdos_traps(MENU_ITEM_PARAMETERS)
 
                 menu_add_item_menu_inicial_format(&array_menu_esxdos_traps,MENU_OPCION_NORMAL,menu_storage_esxdos_traps_emulation,NULL,"~~Enabled: %s", (esxdos_handler_enabled.v ? "Yes" : "No"));
           menu_add_item_menu_shortcut(array_menu_esxdos_traps,'e');
-          menu_add_item_menu_tooltip(array_menu_esxdos_traps,"Enable esxdos_traps");
-          menu_add_item_menu_ayuda(array_menu_esxdos_traps,"Enable esxdos_traps");
+          menu_add_item_menu_tooltip(array_menu_esxdos_traps,"Enable ESXDOS handler");
+          menu_add_item_menu_ayuda(array_menu_esxdos_traps,"Enable ESXDOS handler");
 
 						if (esxdos_handler_enabled.v) {
                         menu_tape_settings_trunc_name(esxdos_handler_root_dir,string_esxdos_traps_root_dir_shown,18);
                         menu_add_item_menu_format(array_menu_esxdos_traps,MENU_OPCION_NORMAL,menu_esxdos_traps_root_dir,NULL,"~~Root dir: %s",string_esxdos_traps_root_dir_shown);
                         menu_add_item_menu_shortcut(array_menu_esxdos_traps,'r');
-                        menu_add_item_menu_tooltip(array_menu_esxdos_traps,"ROM Emulation file");
-                        menu_add_item_menu_ayuda(array_menu_esxdos_traps,"ROM Emulation file");
+
+												menu_add_item_menu_tooltip(array_menu_esxdos_traps,"Sets the root directory for ESXDOS filesystem");
+												menu_add_item_menu_ayuda(array_menu_esxdos_traps,"Sets the root directory for ESXDOS filesystem. "
+													"Only file and folder names valid for ESXDOS will be shown:\n"
+													"-Maximum 8 characters for name and 3 for extension\n"
+													"-Files and folders will be shown always in uppercase. Folders which are not uppercase, are shown but can not be accessed\n"
+													);
+
+
 						}
 
 
@@ -12445,10 +12452,12 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 
 
 		if (MACHINE_IS_SPECTRUM && diviface_enabled.v) {
-			menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_esxdos_traps,NULL,"~~ESXDOS Traps");
+			menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_esxdos_traps,NULL,"~~ESXDOS Handler");
 			menu_add_item_menu_shortcut(array_menu_storage_settings,'e');
-			menu_add_item_menu_tooltip(array_menu_storage_settings,"ESXDOS traps");
-			menu_add_item_menu_ayuda(array_menu_storage_settings,"ESXDOS traps");
+			menu_add_item_menu_tooltip(array_menu_storage_settings,"Enables emulator to handle ESXDOS calls");
+			menu_add_item_menu_ayuda(array_menu_storage_settings,"Enables emulator to handle ESXDOS calls and "
+				"use local files from your computer instead of using from inside the mmc/ide virtual file. Use with caution, "
+				"only the basic ESXDOS calls are handled: fopen, fwrite, fread, etc , the rest are handled from the mmc/ide virtual file as always");
 		}
 
 
