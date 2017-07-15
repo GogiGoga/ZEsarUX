@@ -4134,21 +4134,17 @@ return get_file_type_from_stat(&buf_stat);
           }
 }
 
+
 //Retorna fecha de un archivo en valores de punteros
 //Devuelve 1 si error
 //anyo tal cual: 2017, etc
-int get_file_date_from_name(char *nombre,int *hora,int *minuto,int *segundo,int *dia,int *mes,int *anyo)
+int get_file_date_from_stat(struct stat *buf_stat,int *hora,int *minuto,int *segundo,int *dia,int *mes,int *anyo)
 {
-  struct stat buf_stat;
 
-          if (stat(nombre, &buf_stat)!=0) {
-                  debug_printf(VERBOSE_INFO,"Unable to get status of file %s",nombre);
-return 1;
-          }
 
           struct timespec *d;
 
-          d=&buf_stat.st_mtimespec;
+          d=&buf_stat->st_mtimespec;
 
 struct tm *foo;
 
@@ -4168,6 +4164,27 @@ printf("Second: %d\n", foo->tm_sec);
 *mes=foo->tm_mon+1;
 *anyo=foo->tm_year+1900;
 
+          return 0;
+
+
+}
+
+//Retorna fecha de un archivo en valores de punteros
+//Devuelve 1 si error
+//anyo tal cual: 2017, etc
+int get_file_date_from_name(char *nombre,int *hora,int *minuto,int *segundo,int *dia,int *mes,int *anyo)
+{
+  struct stat buf_stat;
+
+          if (stat(nombre, &buf_stat)!=0) {
+                  debug_printf(VERBOSE_INFO,"Unable to get status of file %s",nombre);
+return 1;
+          }
+
+
+          get_file_date_from_stat(&buf_stat,hora,minuto,segundo,dia,mes,anyo);
+
+  
           return 0;
 
 

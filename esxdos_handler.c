@@ -82,11 +82,18 @@ void esxdos_handler_fill_date_struct(z80_int puntero,z80_byte hora,z80_byte minu
 			z80_byte dia,z80_byte mes,z80_byte anyo)
 	{
 
-//Fecha. TODO
+//Fecha. 
 /*
 22-23   Time (5/6/5 bits, for hour/minutes/doubleseconds)
 24-25   Date (7/4/5 bits, for year-since-1980/month/day)
 */
+z80_int campo_tiempo;
+
+//       15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//       -- hora ------ --- minutos ----- -- doblesec --
+
+campo_tiempo=(hora<<11)|(minuto<<5)|doblesegundos;
+
 
 z80_int campo_fecha;
 
@@ -778,16 +785,22 @@ f_fstat                 equ fsys_base + 9;      // $a1  and c
 	poke_byte_no_time(reg_hl+2,atributo_archivo); //attrs
 
 	//Fecha
-	z80_byte hora=11;
-	z80_byte minutos=15;
-	z80_byte doblesegundos=20*2;
+	int hora=11;
+	int minuto=15;
+	int doblesegundos=20*2;
 
-	z80_byte anyo=37;
-	z80_byte mes=9;
-	z80_byte dia=18;
+	int anyo=37;
+	int mes=9;
+	int dia=18;
 
 
-	esxdos_handler_fill_date_struct(reg_hl+3,hora,minutos,doblesegundos,dia,mes,anyo);
+	get_file_date_from_stat(&last_file_buf_stat,&hora,&minuto,&doblesegundos,&dia,&mes,&anyo);
+
+	doblesegundos *=2;
+	anyo -=1980;
+
+
+	esxdos_handler_fill_date_struct(reg_hl+3,hora,minuto,doblesegundos,dia,mes,anyo);
 
 	z80_long_int size=last_file_buf_stat.st_size;
 	esxdos_handler_fill_size_struct(reg_hl+7,size);
