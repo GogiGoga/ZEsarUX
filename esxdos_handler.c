@@ -60,6 +60,46 @@ char esxdos_handler_last_dir_open[PATH_MAX]=".";
 
 z80_bit esxdos_handler_enabled={0};
 
+
+void esxdos_handler_fill_size_struct(z80_int puntero,z80_long_int l)
+{
+
+	poke_byte_no_time(puntero++,l&0xFF);
+
+	l=l>>8;
+	poke_byte_no_time(puntero++,l&0xFF);
+
+	l=l>>8;
+	poke_byte_no_time(puntero++,l&0xFF);
+
+	l=l>>8;
+	poke_byte_no_time(puntero++,l&0xFF);
+}
+
+
+void esxdos_handler_fill_date_struct(z80_int puntero,z80_byte hora,z80_byte minuto,z80_byte doblesegundos,
+			z80_byte dia,z80_byte mes,z80_byte anyo)
+	{
+
+//Fecha. TODO
+/*
+22-23   Time (5/6/5 bits, for hour/minutes/doubleseconds)
+24-25   Date (7/4/5 bits, for year-since-1980/month/day)
+*/
+
+z80_int campo_fecha;
+
+//       15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+//       ----- anyo --------  --- mes --- ---- dia -----
+
+campo_fecha=(anyo<<9)|(mes<<5)|dia;
+
+poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,0);
+poke_byte_no_time(puntero++,campo_fecha&0xFF);
+poke_byte_no_time(puntero++,(campo_fecha>>8)&0xff);
+}
+
 void esxdos_handler_copy_hl_to_string(char *buffer_fichero)
 {
 
@@ -77,9 +117,10 @@ void esxdos_handler_no_error_uncarry(void)
 	Z80_FLAGS=(Z80_FLAGS & (255-FLAG_C));
 }
 
-void esxdos_handler_error_carry(void)
+void esxdos_handler_error_carry(z80_byte error)
 {
 	Z80_FLAGS |=FLAG_C;
+	reg_a=error;
 }
 
 void esxdos_handler_return_call(void)
@@ -151,6 +192,7 @@ void esxdos_handler_debug_file_flags(z80_byte b)
 //Temporales para leer 1 solo archivo
 FILE *temp_esxdos_last_open_file_handler_unix=NULL;
 z80_byte temp_esxdos_last_open_file_handler;
+struct stat last_file_buf_stat;
 
 void esxdos_handler_call_f_open(void)
 {
@@ -170,7 +212,7 @@ void esxdos_handler_call_f_open(void)
 	//Modos soportados
 	if (reg_b!=ESXDOS_RST8_FA_READ) {
 		printf ("Unsupported fopen mode\n");
-		esxdos_handler_error_carry();
+		esxdos_handler_error_carry(ESXDOS_ERROR_EIO);
 		esxdos_handler_return_call();
 		return;
 	}
@@ -184,13 +226,23 @@ void esxdos_handler_call_f_open(void)
 
 	printf ("fullpath file: %s\n",fullpath);
 
+	//printf ("file type: %d\n",get_file_type_from_name(fullpath));
+	//sleep(5);
+
+	//Si archivo es directorio, error
+	if (get_file_type_from_name(fullpath)==2) {
+		printf ("is a directory. can't fopen it\n");
+		esxdos_handler_error_carry(ESXDOS_ERROR_EISDIR);
+		esxdos_handler_return_call();
+		return;
+	}
 
 	//Abrir el archivo.
 	temp_esxdos_last_open_file_handler_unix=fopen(fullpath,"rb");
 
 
 	if (temp_esxdos_last_open_file_handler_unix==NULL) {
-		esxdos_handler_error_carry();
+		esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
 		printf ("Error from esxdos_handler_call_f_open file: %s\n",fullpath);
 	}
 	else {
@@ -199,7 +251,17 @@ void esxdos_handler_call_f_open(void)
 		reg_a=temp_esxdos_last_open_file_handler;
 		esxdos_handler_no_error_uncarry();
 		printf ("Successfully esxdos_handler_call_f_open file: %s\n",fullpath);
+
+
+		if (stat(fullpath, &last_file_buf_stat)!=0) {
+						printf("Unable to get status of file %s\n",fullpath);
+		}
 	}
+
+	//Obtener atributos que luego se usaran en fstat
+
+
+
 
 	esxdos_handler_return_call();
 
@@ -210,7 +272,7 @@ void esxdos_handler_call_f_read(void)
 {
 	if (temp_esxdos_last_open_file_handler_unix==NULL) {
 		printf ("Error from esxdos_handler_call_f_read\n");
-		esxdos_handler_error_carry();
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	}
 	else {
 		/*
@@ -247,8 +309,13 @@ void esxdos_handler_call_f_read(void)
 void esxdos_handler_call_f_close(void)
 {
 
+	//TODO: fclose tambien se puede llamar para cerrar lectura de directorio. Tener ids de handle para directorios diferentes
+
 	if (temp_esxdos_last_open_file_handler_unix==NULL) {
-		esxdos_handler_error_carry();
+		//Aqui quiza cerramos un directorio. TODO. de momento retornar ok
+		esxdos_handler_no_error_uncarry();
+
+		//esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	}
 	else {
 		fclose(temp_esxdos_last_open_file_handler_unix);
@@ -414,7 +481,7 @@ void esxdos_handler_call_f_opendir(void)
 
 	if (esxdos_handler_dfd == NULL) {
 	 	printf("Can't open directory %s (full: %s)\n", directorio,directorio_final);
-	  esxdos_handler_error_carry();
+	  esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
 	}
 
 	else {
@@ -537,7 +604,7 @@ void esxdos_handler_call_f_readdir(void)
 ;                                                                       // entry, or zero if end of folder reached.
 */
 if (esxdos_handler_dfd==NULL) {
-	esxdos_handler_error_carry();
+	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	esxdos_handler_return_call();
 	return;
 }
@@ -645,21 +712,16 @@ puntero+=retornado_nombre;
 24-25   Date (7/4/5 bits, for year-since-1980/month/day)
 */
 
+z80_byte hora=11;
+z80_byte minutos=15;
+z80_byte doblesegundos=20*2;
+
 z80_byte anyo=37;
 z80_byte mes=9;
 z80_byte dia=18;
 
-z80_int campo_fecha;
 
-//       15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
-//       ----- anyo --------  --- mes --- ---- dia -----
-
-campo_fecha=(anyo<<9)|(mes<<5)|dia;
-
-poke_byte_no_time(puntero++,0);
-poke_byte_no_time(puntero++,0);
-poke_byte_no_time(puntero++,campo_fecha&0xFF);
-poke_byte_no_time(puntero++,(campo_fecha>>8)&0xff);
+esxdos_handler_fill_date_struct(puntero,hora,minutos,doblesegundos,dia,mes,anyo);
 
 
 //Tamanyo
@@ -667,25 +729,63 @@ poke_byte_no_time(puntero++,(campo_fecha>>8)&0xff);
 //copia para ir dividiendo entre 256
 long int longitud_total=get_file_size(nombre_final);
 
-long int l=longitud_total;
-printf ("lenght file: %ld\n",l);
-//l=0;
+z80_long_int l=longitud_total;
 
-poke_byte_no_time(puntero++,l&0xFF);
+printf ("lenght file: %d\n",l);
+esxdos_handler_fill_size_struct(puntero+4,l);
 
-l=l>>8;
-poke_byte_no_time(puntero++,l&0xFF);
-
-l=l>>8;
-poke_byte_no_time(puntero++,l&0xFF);
-
-l=l>>8;
-poke_byte_no_time(puntero++,l&0xFF);
 
 //Dejamos hl como estaba por si acaso
 reg_hl=old_hl;
 
 reg_a=1; //Hay mas ficheros
+	esxdos_handler_no_error_uncarry();
+	esxdos_handler_return_call();
+
+}
+
+void esxdos_handler_call_f_fstat(void)
+{
+
+/*
+f_fstat                 equ fsys_base + 9;      // $a1  and c
+;                                                                       // Get file info/status to buffer at HL.
+;                                                                       // A=handle. Buffer format:
+;                                                                       // <byte>  drive
+;                                                                       // <byte>  device
+;                                                                       // <byte>  file attributes (MS-DOS format)
+;                                                                       // <dword> date
+;                                                                       // <dword> file size
+*/
+
+	//TODO. segun file handler en A
+	poke_byte_no_time(reg_hl,0); //drive
+	poke_byte_no_time(reg_hl+1,0); //device
+
+
+	z80_byte atributo_archivo=0;
+	if (get_file_type_from_stat(&last_file_buf_stat)==2) {
+		printf ("fstat: is a directory\n");
+		atributo_archivo|=16;
+	}
+
+	poke_byte_no_time(reg_hl+2,atributo_archivo); //attrs
+
+	//Fecha
+	z80_byte hora=11;
+	z80_byte minutos=15;
+	z80_byte doblesegundos=20*2;
+
+	z80_byte anyo=37;
+	z80_byte mes=9;
+	z80_byte dia=18;
+
+
+	esxdos_handler_fill_date_struct(reg_hl+3,hora,minutos,doblesegundos,dia,mes,anyo);
+
+	z80_long_int size=last_file_buf_stat.st_size;
+	esxdos_handler_fill_size_struct(reg_hl+7,size);
+
 	esxdos_handler_no_error_uncarry();
 	esxdos_handler_return_call();
 
@@ -757,11 +857,16 @@ void debug_rst8_esxdos(void)
 			esxdos_handler_call_f_readdir();
 		break;
 
+		case ESXDOS_RST8_F_FSTAT:
+			printf ("ESXDOS_RST8_F_FSTAT\n");
+			esxdos_handler_call_f_fstat();
+		break;
+
 
 
 		default:
 			if (funcion>=0x80) {
-				printf ("Unknown ESXDOS_RST8: %02XH !! \n",funcion);
+				printf ("Unhandled ESXDOS_RST8: %02XH !! \n",funcion);
 			}
 			rst(8); //No queremos que muestre mensaje de debug
 			//esxdos_handler_run_normal_rst8();

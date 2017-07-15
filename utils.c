@@ -4111,6 +4111,24 @@ long int get_file_size(char *nombre)
                 }
 }
 
+//0 desconocido o inexistente
+//1 normal
+//2 directorio
+int get_file_type_from_name(char *nombre)
+{
+  struct stat buf_stat;
+
+          if (stat(nombre, &buf_stat)!=0) {
+                  debug_printf(VERBOSE_INFO,"Unable to get status of file %s",nombre);
+return 0;
+          }
+
+          else {
+//printf ("file size: %ld\n",buf_stat.st_size);
+return get_file_type_from_stat(&buf_stat);
+          }
+}
+
 
 
 //Retorna -1 si hay algun error
@@ -7543,6 +7561,18 @@ int si_ruta_absoluta(char *ruta)
 	else return 0;
 #endif
 
+}
+
+//Retorna tipo de archivo segun valor d_type
+//0: desconocido
+//1: archivo normal (o symbolic link)
+//2: directorio
+
+
+int get_file_type_from_stat(struct stat *f)
+{
+  if (f->st_mode & S_IFDIR) return 2;
+  else return 1;
 }
 
 
