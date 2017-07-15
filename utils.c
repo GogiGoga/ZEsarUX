@@ -4142,13 +4142,19 @@ int get_file_date_from_stat(struct stat *buf_stat,int *hora,int *minuto,int *seg
 {
 
 
+
+          struct tm *foo;
+
+#if defined(__APPLE__)
           struct timespec *d;
-
           d=&buf_stat->st_mtimespec;
+          foo = gmtime((const time_t *)d);
+#else
+          struct time_t *d;
+          d=&buf_stat->st_mtime;
+          foo = gmtime((const time_t *)d);
+#endif
 
-struct tm *foo;
-
-foo = gmtime((const time_t *)d);
 printf("Year: %d\n", foo->tm_year);
 printf("Month: %d\n", foo->tm_mon);
 printf("Day: %d\n", foo->tm_mday);
@@ -4184,7 +4190,7 @@ return 1;
 
           get_file_date_from_stat(&buf_stat,hora,minuto,segundo,dia,mes,anyo);
 
-  
+
           return 0;
 
 
