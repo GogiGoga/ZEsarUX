@@ -37,6 +37,8 @@ The format of each table entry is as follows:
 solo hace fopen, fread, fclose
 error al leer mensajes de error esxdos cuando se ejecuta comando no reconocido
 
+cambio de directorio en windows. hace cd pero luego no hace ls
+
 
 solo gestiona 1 archivo abierto a la vez
 al abrir, que pruebe con mayusculas y luego minusculas
