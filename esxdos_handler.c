@@ -74,6 +74,7 @@ struct s_esxdos_fopen {
 	//Indica a 1 que el archivo/directorio esta abierto. A 0 si no
 	z80_bit open_file;
 
+	z80_bit is_a_directory;
 };
 
 struct s_esxdos_fopen esxdos_fopen_files[ESXDOS_MAX_OPEN_FILES];
@@ -310,6 +311,8 @@ void esxdos_handler_call_f_open(void)
 
 		//Indicar handle ocupado
 		esxdos_fopen_files[free_handle].open_file.v=1;
+
+		esxdos_fopen_files[free_handle].is_a_directory.v=0;
 	}
 
 
@@ -371,7 +374,7 @@ void esxdos_handler_call_f_read(void)
 void esxdos_handler_call_f_close(void)
 {
 
-	//TODO: fclose tambien se puede llamar para cerrar lectura de directorio. Tener ids de handle para directorios diferentes
+	//fclose tambien se puede llamar para cerrar lectura de directorio.
 
 	int file_handler=reg_a;
 
@@ -379,21 +382,29 @@ void esxdos_handler_call_f_close(void)
 		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
+		return;
 	}
 
 
 
 	if (esxdos_fopen_files[file_handler].open_file.v==0) {
 		//printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
-		//esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
 
-
-		//Aqui quiza cerramos un directorio. TODO. de momento retornar ok
-		esxdos_handler_no_error_uncarry();
 	}
 
 	else {
-		fclose(esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+		if (esxdos_fopen_files[file_handler].is_a_directory.v==0) {
+			printf ("Closing a file\n");
+			fclose(esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+		}
+
+		else {
+			printf ("Closing a directory\n");
+		}
+
 		esxdos_fopen_files[file_handler].open_file.v=0;
 		esxdos_handler_no_error_uncarry();
 	}
@@ -570,6 +581,7 @@ if (free_handle==-1) {
 
 	else {
 		esxdos_fopen_files[free_handle].open_file.v=1;
+		esxdos_fopen_files[free_handle].is_a_directory.v=1;
 		reg_a=free_handle;
 		esxdos_handler_no_error_uncarry();
 	}
@@ -702,11 +714,11 @@ if (esxdos_fopen_files[file_handler].open_file.v==0) {
 	return;
 }
 
-/*if (esxdos_handler_dfd==NULL) {
+if (esxdos_fopen_files[file_handler].esxdos_handler_dfd==NULL) {
 	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	esxdos_handler_return_call();
 	return;
-}*/
+}
 
 do {
 
@@ -714,7 +726,7 @@ do {
 
 	if (esxdos_fopen_files[file_handler].esxdos_handler_dp == NULL) {
 		closedir(esxdos_fopen_files[file_handler].esxdos_handler_dfd);
-		//esxdos_handler_dfd=NULL;
+		esxdos_fopen_files[file_handler].esxdos_handler_dfd=NULL;
 		//no hay mas archivos
 		reg_a=0;
 		esxdos_handler_no_error_uncarry();

@@ -4155,12 +4155,12 @@ int get_file_date_from_stat(struct stat *buf_stat,int *hora,int *minuto,int *seg
           foo = gmtime((const time_t *)d);
 #endif
 
-printf("Year: %d\n", foo->tm_year);
-printf("Month: %d\n", foo->tm_mon);
-printf("Day: %d\n", foo->tm_mday);
-printf("Hour: %d\n", foo->tm_hour);
-printf("Minute: %d\n", foo->tm_min);
-printf("Second: %d\n", foo->tm_sec);
+//printf("Year: %d\n", foo->tm_year);
+//printf("Month: %d\n", foo->tm_mon);
+//printf("Day: %d\n", foo->tm_mday);
+//printf("Hour: %d\n", foo->tm_hour);
+//printf("Minute: %d\n", foo->tm_min);
+//printf("Second: %d\n", foo->tm_sec);
 
 *hora=foo->tm_hour;
 *minuto=foo->tm_min;
