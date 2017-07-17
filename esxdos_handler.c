@@ -69,6 +69,8 @@ struct s_esxdos_fopen {
 	//Solo soporto abrir un directorio a la vez
 	//z80_byte esxdos_handler_folder_handle;
 
+	z80_byte buffer_plus3dos_header[8];
+	z80_bit tiene_plus3dos_header;
 
 	/* Comun */
 	//Indica a 1 que el archivo/directorio esta abierto. A 0 si no
@@ -253,18 +255,39 @@ void esxdos_handler_call_f_open(void)
 
 	char fopen_mode[10];
 
-	esxdos_handler_debug_file_flags(reg_b);
+	z80_byte modo_abrir=reg_b;
+
+	esxdos_handler_debug_file_flags(modo_abrir);
+
+	//Si se debe escribir la cabecera plus3 . escribir en el sentido de:
+	//Si se abre para lectura, se pasaran los 8 bytes del basic a destino DE
+	//Si se abre para escritura, se leeran 8 bytes desde DE al archivo en cuanto se escriba la primera vez
+	int debe_escribir_plus3_header=0;
+
+	//Si se abre archivo para lectura
+	int escritura=1;
+
+	//Si debe escribir cabecera PLUS3DOS
+	if ( (modo_abrir&ESXDOS_RST8_FA_USE_HEADER)==ESXDOS_RST8_FA_USE_HEADER) {
+		//volcar contenido DE 8 bytes a buffer
+		debe_escribir_plus3_header=1;
+		modo_abrir &=(255-ESXDOS_RST8_FA_USE_HEADER);
+
+	}
 
 	//Modos soportados
 
-	switch (reg_b) {
+	switch (modo_abrir) {
 			case ESXDOS_RST8_FA_READ:
 				strcpy(fopen_mode,"rb");
+				escritura=0;
 			break;
 
 			case ESXDOS_RST8_FA_CREATE_NEW|ESXDOS_RST8_FA_WRITE:
 				strcpy(fopen_mode,"w+b");
 			break;
+
+			//case FA_WRITE|FA_CREATE_NEW|FA_USE_HEADER
 
 			default:
 
@@ -287,6 +310,20 @@ void esxdos_handler_call_f_open(void)
 	char nombre_archivo[PATH_MAX];
 	char fullpath[PATH_MAX];
 	esxdos_handler_copy_hl_to_string(nombre_archivo);
+
+	esxdos_fopen_files[free_handle].tiene_plus3dos_header.v=0;
+
+	if (debe_escribir_plus3_header && escritura) {
+		esxdos_fopen_files[free_handle].tiene_plus3dos_header.v=1;
+		int i;
+		for (i=0;i<8;i++) {
+			z80_byte byte_leido=peek_byte_no_time(reg_de+i);
+			esxdos_fopen_files[free_handle].buffer_plus3dos_header[i]=byte_leido;
+			printf ("%02XH ",byte_leido);
+		}
+
+		printf ("\n");
+	}
 
 
 	esxdos_handler_pre_fileopen(nombre_archivo,fullpath);
@@ -316,6 +353,24 @@ void esxdos_handler_call_f_open(void)
 	}
 	else {
 		//temp_esxdos_last_open_file_handler=1;
+		if (debe_escribir_plus3_header && escritura==0) {
+			printf ("Leyendo cabecera PLUS3DOS\n");
+			//Saltar los primeros 15
+			char buffer_quince[15];
+			fread(&buffer_quince,1,15,esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix);
+
+			//Y meter en DE los siguientes 8
+			int i;
+			z80_byte byte_leido;
+			for (i=0;i<8;i++) {
+				fread(&byte_leido,1,1,esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix);
+				poke_byte_no_time(reg_de+i,byte_leido);
+				printf ("%02XH ",byte_leido);
+			}
+
+			printf ("\n");
+		}
+
 
 		reg_a=free_handle;
 		esxdos_handler_no_error_uncarry();
@@ -415,6 +470,52 @@ void esxdos_handler_call_f_write(void)
 		;                                                                       // On return BC=number of bytes successfully
 		;                                                                       // written. File pointer is updated.
 		*/
+
+		if (esxdos_fopen_files[file_handler].tiene_plus3dos_header.v) {
+			//Escribir primero cabecera PLUS3DOS
+			//TODO: asumimos que se escriben todos los bytes de golpe->BC contiene la longitud total del bloque
+			/*
+
+Offset	Length	Description
+0	8	"PLUS3DOS" identification text
+8	1	0x1a marker byte (note 1)
+9	1	Issue number   (01 en esxdos)
+10	1	Version number (00 en esxdos)
+11	4	Length of the file in bytes (note 2)
+15..22		+3 Basic header data
+23..126		Reserved (note 3)
+127		Checksum (note 4))
+*/
+			char *cabe="PLUS3DOS";
+			fwrite(cabe,1,8,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+
+			z80_byte marker=0x1a,issue=1,version=1;
+			fwrite(&marker,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			fwrite(&issue,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			fwrite(&version,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+
+			//longitud
+			fwrite(&reg_c,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			fwrite(&reg_b,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			z80_byte valor_nulo=0;
+			fwrite(&valor_nulo,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			fwrite(&valor_nulo,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+
+			//La cabecera que teniamos guardada
+			int i;
+			for (i=0;i<8;i++) {
+				fwrite(&esxdos_fopen_files[file_handler].buffer_plus3dos_header[i],1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			}
+
+			//Reservado
+			for (i=0;i<104;i++) fwrite(&valor_nulo,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+
+			//Checksum. De momento inventarlo
+			z80_byte valor_checksum=0;
+			fwrite(&valor_checksum,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+		}
+
+
 
 		z80_int bytes_a_escribir=reg_bc;
 		z80_byte byte_read;

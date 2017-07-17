@@ -34,13 +34,15 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 -esxdos handler
-solo hace fopen, fread, fclose
-error al leer mensajes de error esxdos cuando se ejecuta comando no reconocido
+fopen,fread,fwrite,fclose,fopendir,freaddir
+*soporta cargar comandos, tapein, grabar snaps desde nmi
+*no lista directorio desde menu nmi
+
+Unhandled ESXDOS_RST8: B3H !!
 
 cambio de directorio en windows. hace cd pero luego no hace ls
 
 
-solo gestiona 1 archivo abierto a la vez
 al abrir, que pruebe con mayusculas y luego minusculas
 quiza habra problemas con rutas como : /BIN/paco
 
@@ -49,14 +51,6 @@ si subo todo a minusculas->no ira
 quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo minusculas o todo mayusculas
 ver que hace zxpand aqui....
 
-minimo: fwrite, dir (leer directorio), y diferentes modos de lectura
-opendir: falta atributos, fecha
-f_fstat
-
-Seguramente nombre msdos, atributos, fecha etc es exactamente igual que especificacion msdos
-
-
-quiza aqui 
 
 -mk14
 *condiciones registros, establecer registros
