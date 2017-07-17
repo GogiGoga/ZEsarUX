@@ -47,19 +47,54 @@ char esxdos_handler_root_dir[PATH_MAX]="";
 char esxdos_handler_cwd[PATH_MAX]="";
 
 
+//Usados al fopen de archivos y tambien al abrir directorios
 
-//usados al leer directorio
-//z80_byte esxdos_handler_filinfo_fattrib;
-struct dirent *esxdos_handler_dp;
-DIR *esxdos_handler_dfd=NULL;
+struct s_esxdos_fopen {
 
-//Solo soporto abrir un directorio a la vez
-z80_byte esxdos_handler_folder_handle;
+	/* Para archivos */
+	FILE *esxdos_last_open_file_handler_unix;
+	//z80_byte temp_esxdos_last_open_file_handler;
 
-//ultimo directorio leido al listar archivos
-char esxdos_handler_last_dir_open[PATH_MAX]=".";
+	//Usado al hacer fstat
+	struct stat last_file_buf_stat;
+
+
+	/* Para directorios */
+	//usados al leer directorio
+	//z80_byte esxdos_handler_filinfo_fattrib;
+	struct dirent *esxdos_handler_dp;
+	DIR *esxdos_handler_dfd; //	=NULL;
+	//ultimo directorio leido al listar archivos
+	char esxdos_handler_last_dir_open[PATH_MAX];
+	//Solo soporto abrir un directorio a la vez
+	//z80_byte esxdos_handler_folder_handle;
+
+
+	/* Comun */
+	//Indica a 1 que el archivo/directorio esta abierto. A 0 si no
+	z80_bit open_file;
+
+};
+
+struct s_esxdos_fopen esxdos_fopen_files[ESXDOS_MAX_OPEN_FILES];
+
 
 z80_bit esxdos_handler_enabled={0};
+
+//Retorna contador a array de estructura de archivo vacio. Retorna -1 si no hay
+int esxdos_find_free_fopen(void)
+{
+	int i;
+
+	for (i=0;i<ESXDOS_MAX_OPEN_FILES;i++) {
+		if (esxdos_fopen_files[i].open_file.v==0) {
+			printf ("Free handle: %d\n",i);
+			return i;
+		}
+	}
+
+	return -1;
+}
 
 
 void esxdos_handler_fill_size_struct(z80_int puntero,z80_long_int l)
@@ -200,10 +235,7 @@ void esxdos_handler_debug_file_flags(z80_byte b)
 	printf ("\n");
 }
 
-//Temporales para leer 1 solo archivo
-FILE *temp_esxdos_last_open_file_handler_unix=NULL;
-z80_byte temp_esxdos_last_open_file_handler;
-struct stat last_file_buf_stat;
+
 
 void esxdos_handler_call_f_open(void)
 {
@@ -224,6 +256,14 @@ void esxdos_handler_call_f_open(void)
 	if (reg_b!=ESXDOS_RST8_FA_READ) {
 		printf ("Unsupported fopen mode\n");
 		esxdos_handler_error_carry(ESXDOS_ERROR_EIO);
+		esxdos_handler_return_call();
+		return;
+	}
+
+	//Ver si no se han abierto el maximo de archivos y obtener handle libre
+	int free_handle=esxdos_find_free_fopen();
+	if (free_handle==-1) {
+		esxdos_handler_error_carry(ESXDOS_ERROR_ENFILE);
 		esxdos_handler_return_call();
 		return;
 	}
@@ -249,29 +289,28 @@ void esxdos_handler_call_f_open(void)
 	}
 
 	//Abrir el archivo.
-	temp_esxdos_last_open_file_handler_unix=fopen(fullpath,"rb");
+	esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix=fopen(fullpath,"rb");
 
 
-	if (temp_esxdos_last_open_file_handler_unix==NULL) {
+	if (esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix==NULL) {
 		esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
 		printf ("Error from esxdos_handler_call_f_open file: %s\n",fullpath);
 	}
 	else {
-		temp_esxdos_last_open_file_handler=1;
+		//temp_esxdos_last_open_file_handler=1;
 
-		reg_a=temp_esxdos_last_open_file_handler;
+		reg_a=free_handle;
 		esxdos_handler_no_error_uncarry();
 		printf ("Successfully esxdos_handler_call_f_open file: %s\n",fullpath);
 
 
-		if (stat(fullpath, &last_file_buf_stat)!=0) {
+		if (stat(fullpath, &esxdos_fopen_files[free_handle].last_file_buf_stat)!=0) {
 						printf("Unable to get status of file %s\n",fullpath);
 		}
+
+		//Indicar handle ocupado
+		esxdos_fopen_files[free_handle].open_file.v=1;
 	}
-
-	//Obtener atributos que luego se usaran en fstat
-
-
 
 
 	esxdos_handler_return_call();
@@ -281,9 +320,21 @@ void esxdos_handler_call_f_open(void)
 
 void esxdos_handler_call_f_read(void)
 {
-	if (temp_esxdos_last_open_file_handler_unix==NULL) {
-		printf ("Error from esxdos_handler_call_f_read\n");
+
+	int file_handler=reg_a;
+
+	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
+	}
+
+	if (esxdos_fopen_files[file_handler].open_file.v==0) {
+		printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
 	}
 	else {
 		/*
@@ -298,7 +349,7 @@ void esxdos_handler_call_f_read(void)
 
 		while (bytes_a_leer && leidos) {
 			z80_byte byte_read;
-			leidos=fread(&byte_read,1,1,temp_esxdos_last_open_file_handler_unix);
+			leidos=fread(&byte_read,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
 			if (leidos) {
 					poke_byte_no_time(reg_hl+total_leidos,byte_read);
 					total_leidos++;
@@ -322,15 +373,28 @@ void esxdos_handler_call_f_close(void)
 
 	//TODO: fclose tambien se puede llamar para cerrar lectura de directorio. Tener ids de handle para directorios diferentes
 
-	if (temp_esxdos_last_open_file_handler_unix==NULL) {
+	int file_handler=reg_a;
+
+	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+	}
+
+
+
+	if (esxdos_fopen_files[file_handler].open_file.v==0) {
+		//printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+		//esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+
+
 		//Aqui quiza cerramos un directorio. TODO. de momento retornar ok
 		esxdos_handler_no_error_uncarry();
-
-		//esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	}
+
 	else {
-		fclose(temp_esxdos_last_open_file_handler_unix);
-		temp_esxdos_last_open_file_handler_unix=NULL;
+		fclose(esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+		esxdos_fopen_files[file_handler].open_file.v=0;
 		esxdos_handler_no_error_uncarry();
 	}
 
@@ -476,6 +540,15 @@ void esxdos_handler_call_f_opendir(void)
 
 */
 
+//Ver si no se han abierto el maximo de archivos y obtener handle libre
+int free_handle=esxdos_find_free_fopen();
+if (free_handle==-1) {
+	esxdos_handler_error_carry(ESXDOS_ERROR_ENFILE);
+	esxdos_handler_return_call();
+	return;
+}
+
+
 	char directorio[PATH_MAX];
 
 	esxdos_handler_copy_hl_to_string(directorio);
@@ -487,18 +560,17 @@ void esxdos_handler_call_f_opendir(void)
 
 
 	//Guardar directorio final, hace falta al leer cada entrada para saber su tamanyo
-	sprintf (esxdos_handler_last_dir_open,"%s",directorio_final);
-	esxdos_handler_dfd = opendir(directorio_final);
+	sprintf (esxdos_fopen_files[free_handle].esxdos_handler_last_dir_open,"%s",directorio_final);
+	esxdos_fopen_files[free_handle].esxdos_handler_dfd = opendir(directorio_final);
 
-	if (esxdos_handler_dfd == NULL) {
+	if (esxdos_fopen_files[free_handle].esxdos_handler_dfd == NULL) {
 	 	printf("Can't open directory %s (full: %s)\n", directorio,directorio_final);
 	  esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
 	}
 
 	else {
-		//Solo soporto abrir un directorio a la vez. Asigno id 1 tal cual
-		esxdos_handler_folder_handle=1;
-		reg_a=esxdos_handler_folder_handle;
+		esxdos_fopen_files[free_handle].open_file.v=1;
+		reg_a=free_handle;
 		esxdos_handler_no_error_uncarry();
 	}
 
@@ -598,6 +670,14 @@ void esxdos_handler_call_f_readdir(void)
 	//Guardamos hl por si acaso, porque lo modificaremos para comodidad
 	z80_int old_hl=reg_hl;
 
+	int file_handler=reg_a;
+
+	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+	}
+
 	/*
 	f_readdir               equ fsys_base + 12;     // $a4  and h
 ;                                                                       // Read a folder entry to a buffer pointed
@@ -614,19 +694,27 @@ void esxdos_handler_call_f_readdir(void)
 ;                                                                       // Does not currently return the size of an
 ;                                                                       // entry, or zero if end of folder reached.
 */
-if (esxdos_handler_dfd==NULL) {
+
+if (esxdos_fopen_files[file_handler].open_file.v==0) {
+	printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
 	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	esxdos_handler_return_call();
 	return;
 }
 
+/*if (esxdos_handler_dfd==NULL) {
+	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+	esxdos_handler_return_call();
+	return;
+}*/
+
 do {
 
-	esxdos_handler_dp = readdir(esxdos_handler_dfd);
+	esxdos_fopen_files[file_handler].esxdos_handler_dp = readdir(esxdos_fopen_files[file_handler].esxdos_handler_dfd);
 
-	if (esxdos_handler_dp == NULL) {
-		closedir(esxdos_handler_dfd);
-		esxdos_handler_dfd=NULL;
+	if (esxdos_fopen_files[file_handler].esxdos_handler_dp == NULL) {
+		closedir(esxdos_fopen_files[file_handler].esxdos_handler_dfd);
+		//esxdos_handler_dfd=NULL;
 		//no hay mas archivos
 		reg_a=0;
 		esxdos_handler_no_error_uncarry();
@@ -635,7 +723,7 @@ do {
 	}
 
 
-} while(!esxdos_handler_readdir_no_valido(esxdos_handler_dp->d_name));
+} while(!esxdos_handler_readdir_no_valido(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_name));
 
 
 //if (esxdos_handler_isValidFN(esxdos_handler_globaldata)
@@ -645,11 +733,11 @@ do {
 
 
 
-int longitud_nombre=strlen(esxdos_handler_dp->d_name);
+int longitud_nombre=strlen(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_name);
 
 //obtener nombre con directorio. obtener combinando directorio root, actual y inicio listado
 char nombre_final[PATH_MAX];
-util_get_complete_path(esxdos_handler_last_dir_open,esxdos_handler_dp->d_name,nombre_final);
+util_get_complete_path(esxdos_fopen_files[file_handler].esxdos_handler_last_dir_open,esxdos_fopen_files[file_handler].esxdos_handler_dp->d_name,nombre_final);
 
 z80_byte atributo_archivo=0;
 
@@ -663,7 +751,7 @@ Attribute - a bitvector. Bit 0: read only. Bit 1: hidden.
 //sprintf (nombre_final,"%s/%s",esxdos_handler_last_dir_open,esxdos_handler_dp->d_name);
 
 //if (get_file_type(esxdos_handler_dp->d_type,esxdos_handler_dp->d_name)==2) {
-if (get_file_type(esxdos_handler_dp->d_type,nombre_final)==2) {
+if (get_file_type(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_type,nombre_final)==2) {
 	//meter flags directorio y nombre entre <>
 	//esxdos_handler_filinfo_fattrib |=16;
 	//sprintf((char *) &esxdos_handler_globaldata[0],"<%s>",esxdos_handler_dp->d_name);
@@ -690,7 +778,7 @@ z80_int puntero=reg_hl;
 //Atributos
 poke_byte_no_time(puntero++,atributo_archivo);
 
-int retornado_nombre=esxdos_handler_string_to_msdos(esxdos_handler_dp->d_name,puntero);
+int retornado_nombre=esxdos_handler_string_to_msdos(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_name,puntero);
 
 /*oke_byte_no_time(puntero++,'H');
 poke_byte_no_time(puntero++,'O');
@@ -773,6 +861,22 @@ f_fstat                 equ fsys_base + 9;      // $a1  and c
 ;                                                                       // <dword> date
 ;                                                                       // <dword> file size
 */
+int file_handler=reg_a;
+
+if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+	printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+	esxdos_handler_return_call();
+	return;
+}
+
+if (esxdos_fopen_files[file_handler].open_file.v==0) {
+	printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+	esxdos_handler_return_call();
+	return;
+}
+
 
 	//TODO. segun file handler en A
 	poke_byte_no_time(reg_hl,0); //drive
@@ -780,7 +884,7 @@ f_fstat                 equ fsys_base + 9;      // $a1  and c
 
 
 	z80_byte atributo_archivo=0;
-	if (get_file_type_from_stat(&last_file_buf_stat)==2) {
+	if (get_file_type_from_stat(&esxdos_fopen_files[file_handler].last_file_buf_stat)==2) {
 		printf ("fstat: is a directory\n");
 		atributo_archivo|=16;
 	}
@@ -797,7 +901,7 @@ f_fstat                 equ fsys_base + 9;      // $a1  and c
 	int dia=18;
 
 
-	get_file_date_from_stat(&last_file_buf_stat,&hora,&minuto,&doblesegundos,&dia,&mes,&anyo);
+	get_file_date_from_stat(&esxdos_fopen_files[file_handler].last_file_buf_stat,&hora,&minuto,&doblesegundos,&dia,&mes,&anyo);
 
 	doblesegundos *=2;
 	anyo -=1980;
@@ -805,7 +909,7 @@ f_fstat                 equ fsys_base + 9;      // $a1  and c
 
 	esxdos_handler_fill_date_struct(reg_hl+3,hora,minuto,doblesegundos,dia,mes,anyo);
 
-	z80_long_int size=last_file_buf_stat.st_size;
+	z80_long_int size=esxdos_fopen_files[file_handler].last_file_buf_stat.st_size;
 	esxdos_handler_fill_size_struct(reg_hl+7,size);
 
 	esxdos_handler_no_error_uncarry();
@@ -920,11 +1024,18 @@ void esxdos_handler_enable(void)
 	debug_printf(VERBOSE_DEBUG,"Enabling ESXDOS handler");
 
 	//root dir se pone directorio actual si esta vacio
-if (esxdos_handler_root_dir[0]==0) getcwd(esxdos_handler_root_dir,PATH_MAX);
+	if (esxdos_handler_root_dir[0]==0) getcwd(esxdos_handler_root_dir,PATH_MAX);
 
 	esxdos_handler_enabled.v=1;
 	//directorio  vacio
 	esxdos_handler_cwd[0]=0;
+
+	//Inicializar array de archivos abiertos
+	//esxdos_fopen_files[ESXDOS_MAX_OPEN_FILES];
+	int i;
+	for (i=0;i<ESXDOS_MAX_OPEN_FILES;i++) {
+		esxdos_fopen_files[i].open_file.v=0;
+	}
 }
 
 
