@@ -251,15 +251,30 @@ void esxdos_handler_call_f_open(void)
 ;                                                                       // On return without error, A=file handle.
 */
 
+	char fopen_mode[10];
+
 	esxdos_handler_debug_file_flags(reg_b);
 
 	//Modos soportados
-	if (reg_b!=ESXDOS_RST8_FA_READ) {
-		printf ("Unsupported fopen mode\n");
-		esxdos_handler_error_carry(ESXDOS_ERROR_EIO);
-		esxdos_handler_return_call();
-		return;
+
+	switch (reg_b) {
+			case ESXDOS_RST8_FA_READ:
+				strcpy(fopen_mode,"rb");
+			break;
+
+			case ESXDOS_RST8_FA_CREATE_NEW|ESXDOS_RST8_FA_WRITE:
+				strcpy(fopen_mode,"w+b");
+			break;
+
+			default:
+
+				printf ("Unsupported fopen mode: %02XH\n",reg_b);
+				esxdos_handler_error_carry(ESXDOS_ERROR_EIO);
+				esxdos_handler_return_call();
+				return;
+			break;
 	}
+
 
 	//Ver si no se han abierto el maximo de archivos y obtener handle libre
 	int free_handle=esxdos_find_free_fopen();
@@ -290,12 +305,14 @@ void esxdos_handler_call_f_open(void)
 	}
 
 	//Abrir el archivo.
-	esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix=fopen(fullpath,"rb");
+	esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix=fopen(fullpath,fopen_mode);
 
 
 	if (esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix==NULL) {
 		esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
 		printf ("Error from esxdos_handler_call_f_open file: %s\n",fullpath);
+		esxdos_handler_return_call();
+		return;
 	}
 	else {
 		//temp_esxdos_last_open_file_handler=1;
@@ -365,6 +382,55 @@ void esxdos_handler_call_f_read(void)
 		esxdos_handler_no_error_uncarry();
 
 		printf ("Successfully esxdos_handler_call_f_read total bytes read: %d\n",total_leidos);
+
+	}
+
+	esxdos_handler_return_call();
+}
+
+
+
+void esxdos_handler_call_f_write(void)
+{
+
+	int file_handler=reg_a;
+
+	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+		printf ("Error from esxdos_handler_call_f_write. Handler %d out of range\n",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
+	}
+
+	if (esxdos_fopen_files[file_handler].open_file.v==0) {
+		printf ("Error from esxdos_handler_call_f_write. Handler %d not found\n",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
+	}
+	else {
+		/*
+		f_write                 equ fsys_base + 6;      // $9e  sbc a,(hl)
+		;                                                                       // Write BC bytes from HL to file handle A.
+		;                                                                       // On return BC=number of bytes successfully
+		;                                                                       // written. File pointer is updated.
+		*/
+
+		z80_int bytes_a_escribir=reg_bc;
+		z80_byte byte_read;
+		z80_int total_leidos=0;
+
+		while (bytes_a_escribir) {
+			byte_read=peek_byte_no_time(reg_hl+total_leidos);
+			fwrite(&byte_read,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+			total_leidos++;
+			bytes_a_escribir--;
+
+		}
+
+		esxdos_handler_no_error_uncarry();
+
+		printf ("Successfully esxdos_handler_call_f_write total bytes write: %d\n",total_leidos);
 
 	}
 
@@ -577,6 +643,8 @@ if (free_handle==-1) {
 	if (esxdos_fopen_files[free_handle].esxdos_handler_dfd == NULL) {
 	 	printf("Can't open directory %s (full: %s)\n", directorio,directorio_final);
 	  esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
+		esxdos_handler_return_call();
+		return;
 	}
 
 	else {
@@ -688,6 +756,7 @@ void esxdos_handler_call_f_readdir(void)
 		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
+		return;
 	}
 
 	/*
@@ -972,6 +1041,12 @@ void debug_rst8_esxdos(void)
 		//Read BC bytes at HL from file handle A.
 			printf ("ESXDOS_RST8_F_READ. Read %d bytes at %04XH from file handle %d\n",reg_bc,reg_hl,reg_a);
 			esxdos_handler_call_f_read();
+		break;
+
+		case ESXDOS_RST8_F_WRITE:
+		//Write BC bytes at HL from file handle A.
+			printf ("ESXDOS_RST8_F_Write. Write %d bytes at %04XH from file handle %d\n",reg_bc,reg_hl,reg_a);
+			esxdos_handler_call_f_write();
 		break;
 
 		case ESXDOS_RST8_F_GETCWD:
