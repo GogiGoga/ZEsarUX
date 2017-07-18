@@ -9841,18 +9841,53 @@ void screen_text_set_normal_text(void)
 
 }
 
+//black, blue, red , magenta, green, cyan, yellow, white
+//Colores con brillo en ansi, para fg es + 60, en bg es +60
+z80_byte colores_ansi_fg[8]={
+30,34,31,35,32,36,33,37
+};
+
+
+z80_byte colores_ansi_bg[8]={
+40,44,41,45,42,46,43,47
+};
+
+
+//Colores entre 0..15
+void screen_text_set_ansi_color_fg(z80_byte ink)
+{
+	z80_byte color_fg=colores_ansi_fg[ink];
+	printf ("\x1b[%dm",color_fg);
+}
+
+//Colores entre 0..15
+void screen_text_set_ansi_color_bg(z80_byte paper)
+{
+	z80_byte color_bg=colores_ansi_bg[paper];
+	printf ("\x1b[%dm",color_bg);
+}
+
 char screen_text_return_color_border(void)
 {
 
         z80_byte border_colour=out_254 & 7;
 
-        //Hacemos un calculo muy aproximado de trama de grises
-        //4 tonos diferentes, desde mas oscuro a mas claro : #:.
-        if (border_colour<=1) return '#';
-        if (border_colour<=3) return ':';
-        if (border_colour<=5) return '.';
+				if (screen_text_accept_ansi) {
+					screen_text_set_ansi_color_bg(border_colour);
+					return ' ';
+				}
 
-        return ' ';
+				else {
+
+        	//Hacemos un calculo muy aproximado de trama de grises
+        	//4 tonos diferentes, desde mas oscuro a mas claro : #:.
+        	if (border_colour<=1) return '#';
+        	if (border_colour<=3) return ':';
+        	if (border_colour<=5) return '.';
+
+        	return ' ';
+
+				}
 
 }
 
@@ -10107,7 +10142,80 @@ void screen_text_repinta_pantalla_zx81_rainbow_comun(void (*puntero_printchar_ca
 
 
           }
+}
 
+
+
+
+
+void screen_text_ansi_asigna_color_atributo(unsigned char atributo,int *brillo,int *parpadeo)
+{
+
+        int paper,ink;
+        int copia_paper;
+
+
+        ink = atributo & 7;
+        paper = ( atributo >> 3 ) & 7;
+
+
+
+        //parpadeo
+        //no hacemos parpadeo mediante A_BLINK
+        *parpadeo=0;
+
+        if (atributo & 128) {
+                //hay parpadeo
+                if (estado_parpadeo.v) {
+                        //estado de inversion de color
+                        copia_paper=paper;
+                        paper=ink;
+                        ink=copia_paper;
+                }
+        }
+
+
+        //if (atributo & 64) *brillo=A_BOLD;
+        //else *brillo=0;
+
+	//printf ("\x1b[H");
+	if (*brillo) {
+		ink +=8;
+		paper +=8;
+	}
+
+	screen_text_set_ansi_color_fg(ink);
+	screen_text_set_ansi_color_fg(paper);
+
+}
+
+
+//Asigna color al siguiente caracter, obteniendolo de la pantalla de spectrum
+void screen_text_ansi_asigna_color (int x,int y,int *brillo,int *parpadeo)
+{
+
+	if (!screen_text_accept_ansi)  return;
+
+        int offset;
+        unsigned char atributo;
+
+        offset=6144;
+
+        offset = offset + y*32 ;
+
+        offset = offset +x ;
+
+//      printf ("%d ",offset);
+
+	z80_byte *pan;
+
+	pan=get_base_mem_pantalla();
+
+        atributo=pan[offset];
+
+        if (scr_refresca_sin_colores.v) atributo=56;
+
+        screen_text_ansi_asigna_color_atributo(atributo,brillo,parpadeo);
 
 }
 
@@ -10125,7 +10233,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
         unsigned char inv;
 
         int valor_get_pixel;
-
+	int brillo,parpadeo;
 
           //Refresco en Spectrum
           unsigned char *scrscreen_text_screen;
@@ -10137,6 +10245,9 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
                 if (si_border) screen_text_borde_vertical();
                 for (x=0;x<32;x++) {
 
+
+
+			screen_text_ansi_asigna_color(x,y,&brillo,&parpadeo);
 
                         caracter=compare_char(&scrscreen_text_screen[  calcula_offset_screen(x,y)  ] , &inv);
 
@@ -10182,6 +10293,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
                         }
 
                 }
+		screen_text_set_normal_text();
                 if (si_border) screen_text_borde_vertical();
                 //printf ("\n");
 		puntero_printchar_caracter('\n');
@@ -10190,6 +10302,8 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
 
         if (si_border) screen_text_borde_horizontal();
 
+
+				screen_text_set_normal_text();
 
 }
 

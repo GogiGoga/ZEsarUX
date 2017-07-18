@@ -18,11 +18,13 @@ Added TBBlue Sprite chip emulation
 Added TBBlue Layer2 emulation
 Added RTC clock TBBlue/Spectrum Next support for esxdos
 Added ZXUno Radasoffset and Radaspadding registers, to do hardware scrolling
+Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files
 Improved TBBlue emulation: 1 MB RAM
 Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
 Improved Sprite Viewer: Save sprite, TBBlue sprite viewer, inverse sprite
 Improved write-mapped-memory remote command to allow up to 64kb
 Improved a bit menu drawing: now colours are greyscaled when multitask disabled
+Improved stdout driver. Now can show ansi colours
 Fixed turbo mode and breakpoints. Breakpoints were disabled when changing turbo mode
 Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15
