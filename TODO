@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-opcion command line que permita divide paging tal cual como divmmc
+
 -esxdos handler
 fopen,fread,fwrite,fclose,fopendir,freaddir
 *soporta cargar comandos, tapein, grabar snaps desde nmi
