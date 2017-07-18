@@ -9853,17 +9853,24 @@ z80_byte colores_ansi_bg[8]={
 };
 
 
-//Colores entre 0..15
+//Colores entre 0..15.
 void screen_text_set_ansi_color_fg(z80_byte ink)
 {
-	z80_byte color_fg=colores_ansi_fg[ink];
+	z80_byte color_fg=colores_ansi_fg[ink&7];
+
+	//Si hay brillo, y no es color negro (porque en spectrum el negro con brillo es negro igual)
+	if (ink&8 && ink!=8) color_fg +=60;
 	printf ("\x1b[%dm",color_fg);
 }
 
 //Colores entre 0..15
 void screen_text_set_ansi_color_bg(z80_byte paper)
 {
-	z80_byte color_bg=colores_ansi_bg[paper];
+	z80_byte color_bg=colores_ansi_bg[paper&7];
+
+	//Si hay brillo, y no es color negro (porque en spectrum el negro con brillo es negro igual)
+	if (paper&8 && paper!=8) color_bg +=60;
+
 	printf ("\x1b[%dm",color_bg);
 }
 
@@ -10148,7 +10155,7 @@ void screen_text_repinta_pantalla_zx81_rainbow_comun(void (*puntero_printchar_ca
 
 
 
-void screen_text_ansi_asigna_color_atributo(unsigned char atributo,int *brillo,int *parpadeo)
+void screen_text_ansi_asigna_color_atributo(z80_byte atributo)
 {
 
         int paper,ink;
@@ -10158,11 +10165,6 @@ void screen_text_ansi_asigna_color_atributo(unsigned char atributo,int *brillo,i
         ink = atributo & 7;
         paper = ( atributo >> 3 ) & 7;
 
-
-
-        //parpadeo
-        //no hacemos parpadeo mediante A_BLINK
-        *parpadeo=0;
 
         if (atributo & 128) {
                 //hay parpadeo
@@ -10174,30 +10176,26 @@ void screen_text_ansi_asigna_color_atributo(unsigned char atributo,int *brillo,i
                 }
         }
 
-
-        //if (atributo & 64) *brillo=A_BOLD;
-        //else *brillo=0;
-
 	//printf ("\x1b[H");
-	if (*brillo) {
+	if (atributo & 64) {
 		ink +=8;
 		paper +=8;
 	}
 
 	screen_text_set_ansi_color_fg(ink);
-	screen_text_set_ansi_color_fg(paper);
+	screen_text_set_ansi_color_bg(paper);
 
 }
 
 
 //Asigna color al siguiente caracter, obteniendolo de la pantalla de spectrum
-void screen_text_ansi_asigna_color (int x,int y,int *brillo,int *parpadeo)
+void screen_text_ansi_asigna_color (int x,int y)
 {
 
 	if (!screen_text_accept_ansi)  return;
 
         int offset;
-        unsigned char atributo;
+        z80_byte atributo;
 
         offset=6144;
 
@@ -10215,7 +10213,7 @@ void screen_text_ansi_asigna_color (int x,int y,int *brillo,int *parpadeo)
 
         if (scr_refresca_sin_colores.v) atributo=56;
 
-        screen_text_ansi_asigna_color_atributo(atributo,brillo,parpadeo);
+        screen_text_ansi_asigna_color_atributo(atributo);
 
 }
 
@@ -10233,7 +10231,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
         unsigned char inv;
 
         int valor_get_pixel;
-	int brillo,parpadeo;
+	//int brillo,parpadeo;
 
           //Refresco en Spectrum
           unsigned char *scrscreen_text_screen;
@@ -10247,7 +10245,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
 
 
 
-			screen_text_ansi_asigna_color(x,y,&brillo,&parpadeo);
+			screen_text_ansi_asigna_color(x,y);
 
                         caracter=compare_char(&scrscreen_text_screen[  calcula_offset_screen(x,y)  ] , &inv);
 
