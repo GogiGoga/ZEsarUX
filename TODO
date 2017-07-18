@@ -58,11 +58,7 @@ ver que hace zxpand aqui....
 *input, output, teclas, visualizacion leds
 *y posiblemente muchas mas cosas...
 
--tsconf: que redibuje pantalla en todos drivers, no solo cocoa
-
-
 -agregar el features, etc lista de maquinas nuevas: mk14, tsconf, chrome
-
 
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
