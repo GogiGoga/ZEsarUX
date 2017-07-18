@@ -761,9 +761,9 @@ struct s_items_ayuda items_ayuda[]={
 	HELP_MESSAGE_BREAKPOINT_ACTION
 	},
 	{"set-cr",NULL,NULL,"Sends carriage return to every command output received, useful on Windows environments"},
-	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: "
-				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode. Bit 1: show 8 next opcodes on cpu stepping. "
-				"Bit 2: Do not add a L preffix when searching source code labels. "
+	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: \n"
+				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode.\nBit 1: show 8 next opcodes on cpu stepping.\n"
+				"Bit 2: Do not add a L preffix when searching source code labels.\n"
 				"Bit 3: Show bytes when debugging opcodes"},
 	{"set-machine","|sm","machine_name","Set machine"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},

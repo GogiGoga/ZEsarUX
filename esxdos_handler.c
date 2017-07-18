@@ -355,6 +355,11 @@ void esxdos_handler_call_f_open(void)
 		//temp_esxdos_last_open_file_handler=1;
 		if (debe_escribir_plus3_header && escritura==0) {
 			printf ("Leyendo cabecera PLUS3DOS\n");
+			char buffer_registros[1024];
+			print_registers(buffer_registros);
+			printf ("%s\n",buffer_registros);
+
+
 			//Saltar los primeros 15
 			char buffer_quince[15];
 			fread(&buffer_quince,1,15,esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix);
@@ -1176,11 +1181,23 @@ void debug_rst8_esxdos(void)
 			esxdos_handler_call_f_fstat();
 		break;
 
+		case 0xB3:
+			printf ("Unknown ESXDOS_RST8 B3H. Return ok\n");
+		//desconocida. salta cuando se hace un LOAD *"NOMBRE"
+		//hace un fread con flags  FA_READ|FA_USE_HEADER  y luego llama a este 0xB3
+			esxdos_handler_no_error_uncarry();
+			esxdos_handler_return_call();
+		break;
+
 
 
 		default:
 			if (funcion>=0x80) {
 				printf ("Unhandled ESXDOS_RST8: %02XH !! \n",funcion);
+				char buffer_registros[1024];
+				print_registers(buffer_registros);
+				printf ("%s\n",buffer_registros);
+
 			}
 			rst(8); //No queremos que muestre mensaje de debug
 			//esxdos_handler_run_normal_rst8();
