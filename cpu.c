@@ -1441,6 +1441,7 @@ printf (
 
 		"--mmc-file f               Set mmc image file\n"
 		"--enable-mmc               Enable MMC emulation. Usually requires --mmc-file\n"
+		"--enable-diviface-paging   Enabie DIVMMC/DIVIDE paging only\n"
 		"--enable-divmmc-ports      Enable DIVMMC emulation ports only, but not paging. Usually requires --enable-mmc\n"
 		"--enable-divmmc            Enable DIVMMC emulation: ports & paging. Usually requires --enable-mmc\n"
 		"--divmmc-rom f             Sets divmmc firmware rom. If not set, uses default file\n"
@@ -4026,6 +4027,7 @@ z80_bit command_line_mmc={0};
 z80_bit command_line_zxmmc={0};
 z80_bit command_line_divmmc={0};
 z80_bit command_line_divmmc_ports={0};
+z80_bit command_line_diviface_paging={0};
 z80_bit command_line_8bitide={0};
 
 z80_bit command_line_ide={0};
@@ -4819,6 +4821,10 @@ void parse_cmdline_options(void) {
 
 			else if (!strcmp(argv[puntero_parametro],"--enable-divmmc-ports")) {
 				command_line_divmmc_ports.v=1;
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--enable-diviface-paging")) {
+				command_line_diviface_paging.v=1;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--enable-divmmc")) {
@@ -6078,6 +6084,10 @@ struct sched_param sparam;
 
 	if (command_line_divmmc_ports.v) {
 		divmmc_mmc_ports_enable();
+	}
+
+	if (command_line_diviface_paging.v) {
+		divmmc_diviface_enable();
 	}
 
 	if (command_line_divmmc.v) {

@@ -70,6 +70,10 @@ void divmmc_mmc_ports_disable(void)
 //Activar solo la parte de paginacion cargando la rom de divmmc
 void divmmc_diviface_enable(void)
 {
+
+  //Si ya esta habilitado, salir
+  if (divmmc_diviface_enabled.v) return;
+
 	if (!MACHINE_IS_SPECTRUM) {
 		debug_printf(VERBOSE_INFO,"Can not enable divmmc on non Spectrum machine");
 		return;

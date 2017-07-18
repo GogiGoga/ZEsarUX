@@ -12456,7 +12456,10 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 			menu_add_item_menu_shortcut(array_menu_storage_settings,'e');
 			menu_add_item_menu_tooltip(array_menu_storage_settings,"Enables emulator to handle ESXDOS calls");
 			menu_add_item_menu_ayuda(array_menu_storage_settings,"Enables emulator to handle ESXDOS calls and "
-				"use local files from your computer instead of using from inside the mmc/ide virtual file. Use with caution, "
+				"use local files from your computer instead of using from inside the mmc/ide virtual file. You can choose to have also "
+				"enabled mmc/ide virtual file or not, you can use one of the settings or both. In case of using both, supported esxdos handler "
+				"functions are managed with it; if not, it will be carried by the usual mmc/ide virtual file hardware\n"
+				"Use with caution, "
 				"only the basic ESXDOS calls are handled: fopen, fwrite, fread, etc , the rest are handled from the mmc/ide virtual file as always\n"
 				"Note: you can also enable and disable ESXDOS handler when you want, for example in programs that use unsupported functions for handler, "
 				"like the NMI menu. For example, if you want to generate a snapshot from NMI menu, you can disable handler, generate NMI, enable handler, and press S"
