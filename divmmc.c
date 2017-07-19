@@ -95,7 +95,7 @@ void divmmc_diviface_enable(void)
 
 void divmmc_diviface_disable(void)
 {
-	debug_printf (VERBOSE_INFO,"Disabling divmmc diviface ports");
+	debug_printf (VERBOSE_INFO,"Disabling divmmc diviface paging");
 	diviface_disable();
 	divmmc_diviface_enabled.v=0;
 }

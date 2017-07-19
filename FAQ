@@ -363,6 +363,16 @@ Then enable MMC emulation and DivMMC ports (but not DivMMC paging), and do a har
 Or you can select it from the command line with:
 ./zesarux --mmc-file tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
 
+Q: Why can't enable divmmc paging (or full divmmc emulation) from command line/config file on TBBlue? When exiting emulator, these settings are not saved on configuration file. But... if I force them to enable from command line, TBBlue does not boot, and then doing a hard reset it boots ok
+A: TBBlue needs divmmc paging disabled to boot, if not, divmmc firmware will be activated on the tbblue boot and then it hangs. When you do a hard reset, some internal tbblue registers (reg 6, bit 4) are reset to zero. Resetting this register 6, divmmc paging is disabled and so the boot works ok. But when initializing the emulator the sequence is:
+
+-Apply most of the command line settings (divmmc settings are not applied here)
+-Initialize machine, CPU registers, I/O ports, and some tbblue registers to zero, including register 6. So divmmc paging is disabled
+-Apply the rest of command line settings, including divmmc settings. If you enabled divmmc paging here, it will be enabled
+-Pass control to Z80. Having divmmc paging enabled, does not boot tbblue
+You may ask now.... why do you apply some command line before initializing machine and some others after? I won't answer it here, it's too complex ;) If you want
+to know the answer, please e-mail me.
+
 
 Q: What is the difference between TBBlue and Spectrum Next?
 A: In a nut shell: TBBlue is the very same firmware that runs on all boards. Some boards have less space, so runs less features. 

@@ -95,7 +95,7 @@ void divide_diviface_enable(void)
 
 void divide_diviface_disable(void)
 {
-        debug_printf (VERBOSE_INFO,"Disabling divide diviface ports");
+        debug_printf (VERBOSE_INFO,"Disabling divide diviface paging");
         diviface_disable();
         divide_diviface_enabled.v=0;
 }
