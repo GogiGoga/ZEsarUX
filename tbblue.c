@@ -1115,6 +1115,7 @@ void tbblue_set_emulator_setting_divmmc(void)
         //printf ("Apply config2.divmmc change: %s\n",(diven ? "enabled" : "disabled") );
         if (diven) divmmc_diviface_enable();
         else divmmc_diviface_disable();
+
 }
 
 void tbblue_set_emulator_setting_ulaplus(void)
