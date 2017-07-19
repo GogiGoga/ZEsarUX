@@ -12239,8 +12239,16 @@ void menu_ql_flp1(MENU_ITEM_PARAMETERS)
 void menu_storage_esxdos_traps_emulation(MENU_ITEM_PARAMETERS)
 {
 
+
+
 	if (esxdos_handler_enabled.v) esxdos_handler_disable();
-	else esxdos_handler_enable();
+	else {
+		//Si no hay paging, avisar
+		if (diviface_enabled.v==0) {
+			if (menu_confirm_yesno_texto("No divide/mmc paging","Sure enable?")==0) return;
+		}
+		esxdos_handler_enable();
+	}
 }
 
 void menu_esxdos_traps_root_dir(MENU_ITEM_PARAMETERS)
@@ -12451,7 +12459,7 @@ void menu_storage_settings(MENU_ITEM_PARAMETERS)
 
 
 
-		if (MACHINE_IS_SPECTRUM && diviface_enabled.v) {
+		if (MACHINE_IS_SPECTRUM) {
 			menu_add_item_menu_format(array_menu_storage_settings,MENU_OPCION_NORMAL,menu_esxdos_traps,NULL,"~~ESXDOS Handler");
 			menu_add_item_menu_shortcut(array_menu_storage_settings,'e');
 			menu_add_item_menu_tooltip(array_menu_storage_settings,"Enables emulator to handle ESXDOS calls");
