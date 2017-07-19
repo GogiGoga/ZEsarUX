@@ -33,7 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
--opcion command line que permita divide paging tal cual como divmmc
+-poder buscar texto en ventanas de mensajes de texto
+
 -quiza esxdos podemos dejar que se habilite incluso sin tener divide/divmmc paging??
 
 -esxdos handler
