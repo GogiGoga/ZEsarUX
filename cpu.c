@@ -1307,7 +1307,7 @@ printf (
 	        "--arttextthresold n        Pixel threshold for artistic emulation for curses & stdout & simpletext (1..16. 4=normal)\n"
 	        "--disablearttext           Disable artistic emulation for curses & stdout & simpletext\n"
 		"--autoredrawstdout         Enable automatic display redraw for stdout & simpletext drivers\n"
-		"--sendansi                 Sends ANSI terminal control escape sequences for stdout & simpletext drivers\n"
+		"--sendansi                 Sends ANSI terminal control escape sequences for stdout & simpletext drivers, to use colours and cursor control\n"
 
 #ifdef COMPILE_FBDEV
                 "--no-use-ttyfbdev          Do not use a tty on fbdev driver. It disables keyboard\n"

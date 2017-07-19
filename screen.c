@@ -10245,7 +10245,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
 
 
 
-			screen_text_ansi_asigna_color(x,y);
+			if (!solo_texto) screen_text_ansi_asigna_color(x,y);
 
                         caracter=compare_char(&scrscreen_text_screen[  calcula_offset_screen(x,y)  ] , &inv);
 
@@ -10291,7 +10291,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
                         }
 
                 }
-		screen_text_set_normal_text();
+		if (!solo_texto) screen_text_set_normal_text();
                 if (si_border) screen_text_borde_vertical();
                 //printf ("\n");
 		puntero_printchar_caracter('\n');
@@ -10301,7 +10301,7 @@ void screen_text_repinta_pantalla_spectrum_comun(int si_border,void (*puntero_pr
         if (si_border) screen_text_borde_horizontal();
 
 
-				screen_text_set_normal_text();
+				if (!solo_texto) screen_text_set_normal_text();
 
 }
 
