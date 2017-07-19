@@ -1221,10 +1221,15 @@ void esxdos_handler_enable(void)
 		return;
 	}
 
-	//Si no esta diviface
-	if (diviface_enabled.v==0) {
-		debug_printf(VERBOSE_ERR,"ESXDOS handler needs divmmc or divide emulation");
-	}
+	//De momento permitir activar esto aunque paging este desactivado. Lo hago por dos razones
+	//1. tbblue debe arrancar con paging deshabilitado. Entonces cuando se arrancase tbblue y se tuviese esxdos handler activo en config, fallaria
+	//2. para quiza en un futuro permitir este handler aunque no haya nada de divide/divmmc activado
+
+	//Si no esta diviface paging
+	//if (diviface_enabled.v==0) {
+	//	debug_printf(VERBOSE_ERR,"ESXDOS handler needs divmmc or divide paging emulation");
+	//	return;
+	//}
 
 	debug_printf(VERBOSE_DEBUG,"Enabling ESXDOS handler");
 

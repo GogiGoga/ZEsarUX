@@ -1441,27 +1441,38 @@ printf (
 
 		"--mmc-file f               Set mmc image file\n"
 		"--enable-mmc               Enable MMC emulation. Usually requires --mmc-file\n"
-		"--enable-diviface-paging   Enabie DIVMMC/DIVIDE paging only\n"
+
 		"--enable-divmmc-ports      Enable DIVMMC emulation ports only, but not paging. Usually requires --enable-mmc\n"
+		"--enable-divmmc-paging     Enable DIVMMC paging only\n"
 		"--enable-divmmc            Enable DIVMMC emulation: ports & paging. Usually requires --enable-mmc\n"
 		"--divmmc-rom f             Sets divmmc firmware rom. If not set, uses default file\n"
+
 		"--enable-zxmmc             Enable ZXMMC emulation. Usually requires --enable-mmc\n"
+
+		"--ide-file f               Set ide image file\n"
+		"--enable-ide               Enable IDE emulation. Usually requires --ide-file\n"
+
+		"--enable-divide-ports      Enable DIVIDE emulation ports only, but not paging. Usually requires --enable-ide\n"
+		"--enable-divide-paging     Enable DIVIDE paging only\n"
+		"--enable-divide            Enable DIVIDE emulation. Usually requires --enable-ide\n"
+		"--divide-rom f             Sets divide firmware rom. If not set, uses default file\n"
+
+		"--enable-8bit-ide          Enable 8-bit simple IDE emulation. Requires --enable-ide\n"
+
+
+		"--enable-esxdos-handler    Enable ESXDOS traps handler. Requires divmmc or divide paging emulation\n"
+		"--esxdos-root-dir p        Set ESXDOS root directory for traps handler. Uses current directory by default.\n"
+
+
 		"--enable-zxpand            Enable ZXpand emulation\n"
 		"--zxpand-root-dir p        Set ZXpand root directory for sd/mmc filesystem. Uses current directory by default.\n"
 		"                           Note: ZXpand does not use --mmc-file setting\n"
 
 
 
-                "--ide-file f               Set ide image file\n"
-                "--enable-ide               Enable IDE emulation. Usually requires --ide-file\n"
-                "--enable-divide            Enable DIVIDE emulation. Usually requires --enable-ide\n"
-								"--divide-rom f             Sets divide firmware rom. If not set, uses default file\n"
-
-		"--enable-esxdos-handler    Enable ESXDOS traps handler. Requires divmmc or divide emulation\n"
-		"--esxdos-root-dir p        Set ESXDOS root directory for traps handler. Uses current directory by default.\n"
 
 
-		"--enable-8bit-ide          Enable 8-bit simple IDE emulation. Requires --enable-ide\n"
+
                 "--dandanator-rom f         Set ZX Dandanator rom file\n"
 		"--zxunospifile path        File to use on ZX-Uno as SPI Flash. Default: zxuno.flash\n"
 		"--zxunospiwriteenable      Enable writing to disk on ZX-Uno SPI Flash\n"
@@ -4027,11 +4038,15 @@ z80_bit command_line_mmc={0};
 z80_bit command_line_zxmmc={0};
 z80_bit command_line_divmmc={0};
 z80_bit command_line_divmmc_ports={0};
-z80_bit command_line_diviface_paging={0};
-z80_bit command_line_8bitide={0};
+
 
 z80_bit command_line_ide={0};
 z80_bit command_line_divide={0};
+z80_bit command_line_divide_ports={0};
+
+z80_bit command_line_divide_paging={0};
+z80_bit command_line_divmmc_paging={0};
+z80_bit command_line_8bitide={0};
 
 z80_bit command_line_dandanator={0};
 z80_bit command_line_dandanator_push_button={0};
@@ -4823,8 +4838,8 @@ void parse_cmdline_options(void) {
 				command_line_divmmc_ports.v=1;
 			}
 
-			else if (!strcmp(argv[puntero_parametro],"--enable-diviface-paging")) {
-				command_line_diviface_paging.v=1;
+			else if (!strcmp(argv[puntero_parametro],"--enable-divmmc-paging")) {
+				command_line_divmmc_paging.v=1;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--enable-divmmc")) {
@@ -4969,6 +4984,14 @@ void parse_cmdline_options(void) {
                         else if (!strcmp(argv[puntero_parametro],"--enable-divide")) {
                                 command_line_divide.v=1;
                         }
+
+												else if (!strcmp(argv[puntero_parametro],"--enable-divide-ports")) {
+													command_line_divide_ports.v=1;
+												}
+
+												else if (!strcmp(argv[puntero_parametro],"--enable-divide-paging")) {
+													command_line_divide_paging.v=1;
+												}
 
 												else if (!strcmp(argv[puntero_parametro],"--divide-rom")) {
 													siguiente_parametro_argumento();
@@ -6079,14 +6102,14 @@ struct sched_param sparam;
 
 	if (command_line_chroma81.v) enable_chroma81();
 
-
+	//MMC
 	if (command_line_mmc.v) mmc_enable();
 
 	if (command_line_divmmc_ports.v) {
 		divmmc_mmc_ports_enable();
 	}
 
-	if (command_line_diviface_paging.v) {
+	if (command_line_divmmc_paging.v) {
 		divmmc_diviface_enable();
 	}
 
@@ -6096,23 +6119,30 @@ struct sched_param sparam;
 	}
 
 	if (command_line_zxmmc.v) zxmmc_emulation.v=1;
-
-	if (command_line_zxpand.v) zxpand_enable();
-
+	if (command_line_8bitide.v) eight_bit_simple_ide_enable();
 
 
+	//IDE
+	if (command_line_ide.v) ide_enable();
 
-  if (command_line_ide.v) ide_enable();
+	if (command_line_divide_ports.v) {
+		divide_ide_ports_enable();
+	}
 
-  if (command_line_divide.v) {
+	if (command_line_divide_paging.v) {
+		divide_diviface_enable();
+	}
+
+	if (command_line_divide.v) {
 		divide_ide_ports_enable();
 		divide_diviface_enable();
   }
 
 
-	if (command_line_8bitide.v) eight_bit_simple_ide_enable();
 
 	if (command_line_esxdos_handler.v) esxdos_handler_enable();
+
+	if (command_line_zxpand.v) zxpand_enable();
 
 
 	//Dandanator

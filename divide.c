@@ -52,6 +52,10 @@ z80_bit divide_diviface_enabled={0};
 
 void divide_ide_ports_enable(void)
 {
+
+  //Si ya esta habilitado, salir
+  if (divide_ide_ports_enabled.v) return;
+
   if (!MACHINE_IS_SPECTRUM) {
     debug_printf(VERBOSE_INFO,"Can not enable divide ports on non Spectrum machine");
     return;
@@ -75,6 +79,9 @@ void divide_diviface_enable(void)
     debug_printf(VERBOSE_INFO,"Can not enable divide on non Spectrum machine");
     return;
   }
+
+  //Si ya esta habilitado, salir
+  if (divide_diviface_enabled.v) return;
 
   debug_printf (VERBOSE_INFO,"Enabling divide diviface ports");
   //Es excluyente con firmware de divmmc

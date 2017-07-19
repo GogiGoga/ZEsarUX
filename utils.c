@@ -2983,18 +2983,30 @@ int util_write_configfile(void)
   if (mmc_file_name[0]!=0)                    ADD_STRING_CONFIG,"--mmc-file \"%s\"",mmc_file_name);
   if (mmc_enabled.v)                          ADD_STRING_CONFIG,"--enable-mmc");
   if (divmmc_mmc_ports_enabled.v)             ADD_STRING_CONFIG,"--enable-divmmc-ports");
-  if (divmmc_diviface_enabled.v)              ADD_STRING_CONFIG,"--enable-diviface-paging");
 
 
-  //El siguiente setting no guardarlo si maquina es tbblue, pues acaba activando el divmmc paging en tbblue y entonces esto provoca que no arranque la tbblue rom
+  //Los settings de  mmc paging no guardarlo si maquina es tbblue, pues acaba activando el divmmc paging en tbblue y entonces esto provoca que no arranque la tbblue rom
   if (!MACHINE_IS_TBBLUE) {
-  if (divmmc_mmc_ports_enabled.v && divmmc_diviface_enabled.v)
+    if (divmmc_diviface_enabled.v)            ADD_STRING_CONFIG,"--enable-divmmc-paging");
+    if (divmmc_mmc_ports_enabled.v && divmmc_diviface_enabled.v)
                                               ADD_STRING_CONFIG,"--enable-divmmc");
   }
 
-
-
   if (divmmc_rom_name[0]!=0)                  ADD_STRING_CONFIG,"--divmmc-rom \"%s\"",divmmc_rom_name);
+
+
+
+
+  if (ide_file_name[0]!=0)                    ADD_STRING_CONFIG,"--ide-file \"%s\"",ide_file_name);
+  if (ide_enabled.v)                          ADD_STRING_CONFIG,"--enable-ide");
+  if (divide_ide_ports_enabled.v)             ADD_STRING_CONFIG,"--enable-divide-ports");
+  if (divide_diviface_enabled.v)              ADD_STRING_CONFIG,"--enable-divide-paging");
+
+  if (divide_ide_ports_enabled.v && divide_diviface_enabled.v)
+                                              ADD_STRING_CONFIG,"--enable-divide");
+  if (divide_rom_name[0]!=0)                  ADD_STRING_CONFIG,"--divide-rom \"%s\"",divide_rom_name);
+
+
   if (zxmmc_emulation.v)                      ADD_STRING_CONFIG,"--enable-zxmmc");
   if (eight_bit_simple_ide_enabled.v)         ADD_STRING_CONFIG,"--enable-8bit-ide");
   if (zxpand_enabled.v)                       ADD_STRING_CONFIG,"--enable-zxpand");
@@ -3008,11 +3020,8 @@ int util_write_configfile(void)
   if (ql_mdv2_root_dir[0]!=0)                 ADD_STRING_CONFIG,"--ql-mdv2-root-dir \"%s\"",ql_mdv2_root_dir);
   if (ql_flp1_root_dir[0]!=0)                 ADD_STRING_CONFIG,"--ql-flp1-root-dir \"%s\"",ql_flp1_root_dir);
 
-  if (ide_file_name[0]!=0)                    ADD_STRING_CONFIG,"--ide-file \"%s\"",ide_file_name);
-  if (ide_enabled.v)                          ADD_STRING_CONFIG,"--enable-ide");
-  if (divide_ide_ports_enabled.v && divide_diviface_enabled.v)
-                                              ADD_STRING_CONFIG,"--enable-divide");
-  if (divide_rom_name[0]!=0)                  ADD_STRING_CONFIG,"--divide-rom \"%s\"",divide_rom_name);
+
+
   if (dandanator_rom_file_name[0]!=0)         ADD_STRING_CONFIG,"--dandanator-rom \"%s\"",dandanator_rom_file_name);
   if (dandanator_enabled.v)                   ADD_STRING_CONFIG,"--enable-dandanator");
   if (superupgrade_rom_file_name[0]!=0)       ADD_STRING_CONFIG,"--superupgrade-flash \"%s\"",superupgrade_rom_file_name);

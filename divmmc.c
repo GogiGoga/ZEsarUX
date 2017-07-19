@@ -51,6 +51,10 @@ char divmmc_rom_name[PATH_MAX]="";
 
 void divmmc_mmc_ports_enable(void)
 {
+
+  //Si ya esta habilitado, salir
+  if (divmmc_mmc_ports_enabled.v) return;
+
 	if (!MACHINE_IS_SPECTRUM) {
 		debug_printf(VERBOSE_INFO,"Can not enable divmmc ports on non Spectrum machine");
 		return;
