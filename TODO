@@ -35,8 +35,6 @@ The format of each table entry is as follows:
 
 -poder buscar texto en ventanas de mensajes de texto
 
--quiza esxdos podemos dejar que se habilite incluso sin tener divide/divmmc paging??
-
 -esxdos handler
 fopen,fread,fwrite,fclose,fopendir,freaddir
 *soporta cargar comandos, tapein, grabar snaps desde nmi
@@ -51,6 +49,8 @@ si subo todo a mayusculas->no ira
 si subo todo a minusculas->no ira
 quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo minusculas o todo mayusculas
 ver que hace zxpand aqui....
+
+*recomendar que o bien usen todo mayusculas o todo minusculas... en mac o windows no hay problemas, en linux si
 
 -al cargar cinta, el footer se mezcla con F5 y nombre emulador
 
