@@ -35,6 +35,8 @@ The format of each table entry is as follows:
 
 -poder buscar texto en ventanas de mensajes de texto
 
+-ZRCP: enter-cpu-step && run se cuelga en windows
+
 -esxdos handler
 fopen,fread,fwrite,fclose,fopendir,freaddir
 *soporta cargar comandos, tapein, grabar snaps desde nmi
