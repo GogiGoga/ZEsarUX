@@ -126,6 +126,7 @@ extern int menu_generic_message_aux_filter(char *texto,int inicio, int final);
 #define WINDOW_FOOTER_ELEMENT_X_FLASH 10
 #define WINDOW_FOOTER_ELEMENT_X_MMC 11
 #define WINDOW_FOOTER_ELEMENT_X_IDE 11
+#define WINDOW_FOOTER_ELEMENT_X_ESX 11
 #define WINDOW_FOOTER_ELEMENT_X_DISK 11
 #define WINDOW_FOOTER_ELEMENT_X_TEXT_FILTER 10
 #define WINDOW_FOOTER_ELEMENT_X_ZXPAND 10

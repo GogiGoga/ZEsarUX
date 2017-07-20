@@ -112,6 +112,12 @@ extern void esxdos_handler_run(void);
 extern char esxdos_handler_root_dir[];
 extern char esxdos_handler_cwd[];
 
+extern int esxdos_handler_operating_counter;
+
+extern void esxdos_handler_enable(void);
+extern void esxdos_handler_disable(void);
+extern void esxdos_handler_delete_esx_text(void);
+
 #define ESXDOS_MAX_OPEN_FILES 16
 
 #endif

@@ -50,6 +50,7 @@
 #include "snap.h"
 #include "snap_rzx.h"
 #include "ql.h"
+#include "esxdos_handler.h"
 
 #include "autoselectoptions.h"
 
@@ -586,6 +587,14 @@ void timer_check_interrupt(void)
                                         ide_operating_counter--;
                                         if (ide_operating_counter==0) {
                                                 delete_ide_text();
+                                        }
+                                }
+
+																//temporizador de impresion para escribir texto MMC en pantalla
+                                if (esxdos_handler_operating_counter) {
+                                        esxdos_handler_operating_counter--;
+                                        if (esxdos_handler_operating_counter==0) {
+                                                esxdos_handler_delete_esx_text();
                                         }
                                 }
 

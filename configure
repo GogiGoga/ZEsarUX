@@ -1202,7 +1202,7 @@ scmp.o: scmp.c scmp.h cpu.h operaciones.h
 	\$(CC) \$(CFLAGS) -c scmp.c
 
 
-timer.o: timer.c timer.h cpu.h audio.h debug.h menu.h tape.h screen.h compileoptions.h zx8081.h joystick.h utils.h printers.h z88.h autoselectoptions.h zxuno.h textspeech.h mmc.h ide.h zxpand.h superupgrade.h snap.h snap_rzx.h ql.h
+timer.o: timer.c timer.h cpu.h audio.h debug.h menu.h tape.h screen.h compileoptions.h zx8081.h joystick.h utils.h printers.h z88.h autoselectoptions.h zxuno.h textspeech.h mmc.h ide.h zxpand.h superupgrade.h snap.h snap_rzx.h ql.h esxdos_handler.h
 	\$(CC) \$(CFLAGS) -c timer.c
 
 
@@ -1254,7 +1254,7 @@ prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.
 remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassemble.h menu.h audio.h timer.h screen.h ay38912.h charset.h diviface.h ula.h superupgrade.h tbblue.h tsconf.h
 	\$(CC) \$(CFLAGS) -c remote.c
 
-esxdos_handler.o: esxdos_handler.c esxdos_handler.h cpu.h operaciones.h debug.h menu.h utils.h diviface.h
+esxdos_handler.o: esxdos_handler.c esxdos_handler.h cpu.h operaciones.h debug.h menu.h utils.h diviface.h screen.h
 	\$(CC) \$(CFLAGS) -c esxdos_handler.c
 
 tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h

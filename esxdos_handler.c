@@ -36,6 +36,7 @@
 #include "menu.h"
 #include "utils.h"
 #include "diviface.h"
+#include "screen.h"
 
 #if defined(__APPLE__)
 	#include <sys/syslimits.h>
@@ -45,6 +46,36 @@
 //Al leer directorio se usa esxdos_handler_root_dir y esxdos_handler_cwd
 char esxdos_handler_root_dir[PATH_MAX]="";
 char esxdos_handler_cwd[PATH_MAX]="";
+
+int esxdos_handler_operating_counter=0;
+
+
+void esxdos_handler_delete_esx_text(void)
+{
+
+        menu_putstring_footer(WINDOW_FOOTER_ELEMENT_X_ESX,1,"     ",WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
+}
+
+void esxdos_handler_footer_print_esxdos_handler_operating(void)
+{
+        if (esxdos_handler_operating_counter) {
+                //color inverso
+                menu_putstring_footer(WINDOW_FOOTER_ELEMENT_X_ESX,1," ESX ",WINDOW_FOOTER_PAPER,WINDOW_FOOTER_INK);
+        }
+}
+
+void esxdos_handler_footer_esxdos_handler_operating(void)
+{
+
+        //Si ya esta activo, no volver a escribirlo. Porque ademas el menu_putstring_footer consumiria mucha cpu
+        if (!esxdos_handler_operating_counter) {
+
+                esxdos_handler_operating_counter=2;
+                esxdos_handler_footer_print_esxdos_handler_operating();
+
+        }
+}
+
 
 
 //Usados al fopen de archivos y tambien al abrir directorios
@@ -174,6 +205,7 @@ void esxdos_handler_error_carry(z80_byte error)
 
 void esxdos_handler_return_call(void)
 {
+	esxdos_handler_footer_esxdos_handler_operating();
 	reg_pc++;
 }
 
@@ -920,7 +952,7 @@ do {
 
 
 
-int longitud_nombre=strlen(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_name);
+//int longitud_nombre=strlen(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_name);
 
 //obtener nombre con directorio. obtener combinando directorio root, actual y inicio listado
 char nombre_final[PATH_MAX];
