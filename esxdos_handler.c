@@ -1160,6 +1160,8 @@ void esxdos_handler_begin_handling_commands(void)
 
 		case ESXDOS_RST8_M_GETSETDRV:
 			printf ("ESXDOS_RST8_M_GETSETDRV\n");
+			//M_GETSETDRV: If A=0 -> Get default drive in A. Else set default drive passed in A.
+
 			/*
 			; --------------------------------------------------
 ; BIT   |         7-3           |       2-0        |
@@ -1167,7 +1169,9 @@ void esxdos_handler_begin_handling_commands(void)
 ;       | Drive letter from A-Z | Drive number 0-7 |
 ; --------------------------------------------------
 */
-			reg_a=(8<<3); //1=a, 2=b, .... 8=h
+			if (reg_a==0) {
+				reg_a=(8<<3); //1=a, 2=b, .... 8=h
+			}
 			esxdos_handler_no_error_uncarry();
 			esxdos_handler_return_call();
 	  break;
