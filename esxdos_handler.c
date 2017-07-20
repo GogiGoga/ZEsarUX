@@ -205,6 +205,8 @@ void esxdos_handler_error_carry(z80_byte error)
 
 void esxdos_handler_return_call(void)
 {
+	//Este footer sale al finalizar el handler... Quiza seria hacerlo antes pero entonces habria que lanzarlo desde cada una
+	//de las diferentes rst8 que se gestionan en el switch de esxdos_handler_begin_handling_commands
 	esxdos_handler_footer_esxdos_handler_operating();
 	reg_pc++;
 }
@@ -1142,7 +1144,7 @@ void esxdos_handler_run_normal_rst8(void)
 	rst(8);
 }
 
-void debug_rst8_esxdos(void)
+void esxdos_handler_begin_handling_commands(void)
 {
 	z80_byte funcion=peek_byte_no_time(reg_pc);
 
@@ -1158,7 +1160,16 @@ void debug_rst8_esxdos(void)
 
 		case ESXDOS_RST8_M_GETSETDRV:
 			printf ("ESXDOS_RST8_M_GETSETDRV\n");
-			esxdos_handler_run_normal_rst8();
+			/*
+			; --------------------------------------------------
+; BIT   |         7-3           |       2-0        |
+; --------------------------------------------------
+;       | Drive letter from A-Z | Drive number 0-7 |
+; --------------------------------------------------
+*/
+			reg_a=(8<<3); //1=a, 2=b, .... 8=h
+			esxdos_handler_no_error_uncarry();
+			esxdos_handler_return_call();
 	  break;
 
 		case ESXDOS_RST8_F_OPEN:
@@ -1240,7 +1251,7 @@ void debug_rst8_esxdos(void)
 
 void esxdos_handler_run(void)
 {
-	debug_rst8_esxdos();
+	esxdos_handler_begin_handling_commands();
 
 }
 
