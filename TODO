@@ -44,9 +44,6 @@ fopen,fread,fwrite,fclose,fopendir,freaddir
 
 Unhandled ESXDOS_RST8: B3H !!
 
-cambio de directorio en windows. hace cd pero luego no hace ls
-
-
 al abrir, que pruebe con mayusculas y luego minusculas
 quiza habra problemas con rutas como : /BIN/paco
 

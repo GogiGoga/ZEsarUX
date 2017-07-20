@@ -5989,6 +5989,19 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
                         //ESC pulsado. Para Z88 y tecla menu
                         case UTIL_KEY_ESC:
 //A15 (#7) | RSH    SQR     ESC     INDEX   CAPS    .       /       £
+                          //ESC para Spectrum es BREAK, siempre que no este text to speech habilitado
+                        if (MACHINE_IS_SPECTRUM && textspeech_filter_program==NULL) {
+                          if (pressrelease) {
+                            puerto_65278 &=255-1;
+                            puerto_32766 &=255-1;
+                          }
+                          else {
+                            puerto_65278 |=1;
+                            puerto_32766 |=1;
+                          }
+                        }
+
+
 				if (pressrelease) {
 					blink_kbd_a15 &= (255-32);
 					puerto_especial1 &=255-1;
@@ -6009,18 +6022,7 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
           ql_keyboard_table[1] |= 8;
 				}
 
-				//ESC para Spectrum es BREAK
-				if (MACHINE_IS_SPECTRUM) {
-					if (pressrelease) {
-						//Shift
-                                                puerto_65278 &=255-1;
-						puerto_32766 &=255-1;
-					}
-					else {
-						puerto_65278 |=1;
-						puerto_32766 |=1;
-					}
-				}
+
 
 			break;
 

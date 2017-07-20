@@ -20985,7 +20985,7 @@ void menu_about_help(MENU_ITEM_PARAMETERS)
 			"ctrl(symbol shift)+r on Spectrum, shift+n on ZX80/81 or shift+, on Z88.\n\n"
 
 			"Inside a machine, the keys are mapped this way:\n"
-			"ESC: Shift+Space (break) on Spectrum\n"
+			"ESC: If text to speech is not enabled, sends Shift+Space (break) on Spectrum. If enabled, stops playing text to speech\n"
 			"CTRL/ALT: Symbol shift\n"
 			"TAB: Extended mode (symbol shift + caps shift)\n"
 			"\n"
