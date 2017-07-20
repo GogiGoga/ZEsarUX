@@ -122,7 +122,7 @@ int esxdos_find_free_fopen(void)
 
 	for (i=0;i<ESXDOS_MAX_OPEN_FILES;i++) {
 		if (esxdos_fopen_files[i].open_file.v==0) {
-			printf ("Free handle: %d\n",i);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Free handle: %d",i);
 			return i;
 		}
 	}
@@ -235,13 +235,13 @@ void esxdos_handler_pre_fileopen(char *nombre_inicial,char *fullpath)
 
 
 		if (!existe_archivo) {
-			printf ("File %s not found. Searching without case sensitive\n",fullpath);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: File %s not found. Searching without case sensitive",fullpath);
 			char encontrado[PATH_MAX];
 			char directorio[PATH_MAX];
 			util_get_complete_path(esxdos_handler_root_dir,esxdos_handler_cwd,directorio);
 			//sprintf (directorio,"%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd);
 			if (util_busca_archivo_nocase ((char *)nombre_inicial,directorio,encontrado) ) {
-				printf ("Found with name %s\n",encontrado);
+				debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Found with name %s",encontrado);
 				existe_archivo=1;
 
 				//cambiamos el nombre fullpath y el nombre_inicial por el encontrado
@@ -249,7 +249,7 @@ void esxdos_handler_pre_fileopen(char *nombre_inicial,char *fullpath)
 
 				sprintf (fullpath,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,(char *)nombre_inicial);
 				//sprintf (fullpath,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,encontrado);
-				printf ("Found file %s searching without case sensitive\n",fullpath);
+				debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Found file %s searching without case sensitive",fullpath);
 			}
 		}
 
@@ -262,14 +262,14 @@ void esxdos_handler_pre_fileopen(char *nombre_inicial,char *fullpath)
 
 void esxdos_handler_debug_file_flags(z80_byte b)
 {
-	if (b&ESXDOS_RST8_FA_READ) printf ("FA_READ|");
-	if (b&ESXDOS_RST8_FA_WRITE) printf ("FA_WRITE|");
-	if (b&ESXDOS_RST8_FA_OPEN_EX) printf ("FA_OPEN_EX|");
-	if (b&ESXDOS_RST8_FA_OPEN_AL) printf ("FA_OPEN_AL|");
-	if (b&ESXDOS_RST8_FA_CREATE_NEW) printf ("FA_CREATE_NEW|");
-	if (b&ESXDOS_RST8_FA_USE_HEADER) printf ("FA_USE_HEADER|");
+	if (b&ESXDOS_RST8_FA_READ) debug_printf (VERBOSE_DEBUG,"ESXDOS handler: FA_READ|");
+	if (b&ESXDOS_RST8_FA_WRITE) debug_printf (VERBOSE_DEBUG,"ESXDOS handler: FA_WRITE|");
+	if (b&ESXDOS_RST8_FA_OPEN_EX) debug_printf (VERBOSE_DEBUG,"ESXDOS handler: FA_OPEN_EX|");
+	if (b&ESXDOS_RST8_FA_OPEN_AL) debug_printf (VERBOSE_DEBUG,"ESXDOS handler: FA_OPEN_AL|");
+	if (b&ESXDOS_RST8_FA_CREATE_NEW) debug_printf (VERBOSE_DEBUG,"ESXDOS handler: FA_CREATE_NEW|");
+	if (b&ESXDOS_RST8_FA_USE_HEADER) debug_printf (VERBOSE_DEBUG,"ESXDOS handler: FA_USE_HEADER|");
 
-	printf ("\n");
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ");
 }
 
 
@@ -325,7 +325,7 @@ void esxdos_handler_call_f_open(void)
 
 			default:
 
-				printf ("Unsupported fopen mode: %02XH\n",reg_b);
+				debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Unsupported fopen mode: %02XH",reg_b);
 				esxdos_handler_error_carry(ESXDOS_ERROR_EIO);
 				esxdos_handler_return_call();
 				return;
@@ -353,23 +353,23 @@ void esxdos_handler_call_f_open(void)
 		for (i=0;i<8;i++) {
 			z80_byte byte_leido=peek_byte_no_time(reg_de+i);
 			esxdos_fopen_files[free_handle].buffer_plus3dos_header[i]=byte_leido;
-			printf ("%02XH ",byte_leido);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: %02XH ",byte_leido);
 		}
 
-		printf ("\n");
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ");
 	}
 
 
 	esxdos_handler_pre_fileopen(nombre_archivo,fullpath);
 
-	printf ("fullpath file: %s\n",fullpath);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: fullpath file: %s",fullpath);
 
-	//printf ("file type: %d\n",get_file_type_from_name(fullpath));
+	//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: file type: %d",get_file_type_from_name(fullpath));
 	//sleep(5);
 
 	//Si archivo es directorio, error
 	if (get_file_type_from_name(fullpath)==2) {
-		printf ("is a directory. can't fopen it\n");
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: is a directory. can't fopen it");
 		esxdos_handler_error_carry(ESXDOS_ERROR_EISDIR);
 		esxdos_handler_return_call();
 		return;
@@ -381,17 +381,17 @@ void esxdos_handler_call_f_open(void)
 
 	if (esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix==NULL) {
 		esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
-		printf ("Error from esxdos_handler_call_f_open file: %s\n",fullpath);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_open file: %s",fullpath);
 		esxdos_handler_return_call();
 		return;
 	}
 	else {
 		//temp_esxdos_last_open_file_handler=1;
 		if (debe_escribir_plus3_header && escritura==0) {
-			printf ("Leyendo cabecera PLUS3DOS\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Reading PLUS3DOS header");
 			char buffer_registros[1024];
 			print_registers(buffer_registros);
-			printf ("%s\n",buffer_registros);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: %s",buffer_registros);
 
 
 			//Saltar los primeros 15
@@ -404,20 +404,20 @@ void esxdos_handler_call_f_open(void)
 			for (i=0;i<8;i++) {
 				fread(&byte_leido,1,1,esxdos_fopen_files[free_handle].esxdos_last_open_file_handler_unix);
 				poke_byte_no_time(reg_de+i,byte_leido);
-				printf ("%02XH ",byte_leido);
+				debug_printf (VERBOSE_DEBUG,"ESXDOS handler: %02XH ",byte_leido);
 			}
 
-			printf ("\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ");
 		}
 
 
 		reg_a=free_handle;
 		esxdos_handler_no_error_uncarry();
-		printf ("Successfully esxdos_handler_call_f_open file: %s\n",fullpath);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Successfully esxdos_handler_call_f_open file: %s",fullpath);
 
 
 		if (stat(fullpath, &esxdos_fopen_files[free_handle].last_file_buf_stat)!=0) {
-						printf("Unable to get status of file %s\n",fullpath);
+						debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Unable to get status of file %s",fullpath);
 		}
 
 		//Indicar handle ocupado
@@ -438,14 +438,14 @@ void esxdos_handler_call_f_read(void)
 	int file_handler=reg_a;
 
 	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
-		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d out of range",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
 	}
 
 	if (esxdos_fopen_files[file_handler].open_file.v==0) {
-		printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d not found",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
@@ -475,7 +475,7 @@ void esxdos_handler_call_f_read(void)
 		//reg_hl +=total_leidos; //???
 		esxdos_handler_no_error_uncarry();
 
-		printf ("Successfully esxdos_handler_call_f_read total bytes read: %d\n",total_leidos);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Successfully esxdos_handler_call_f_read total bytes read: %d",total_leidos);
 
 	}
 
@@ -490,14 +490,14 @@ void esxdos_handler_call_f_write(void)
 	int file_handler=reg_a;
 
 	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
-		printf ("Error from esxdos_handler_call_f_write. Handler %d out of range\n",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_write. Handler %d out of range",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
 	}
 
 	if (esxdos_fopen_files[file_handler].open_file.v==0) {
-		printf ("Error from esxdos_handler_call_f_write. Handler %d not found\n",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_write. Handler %d not found",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
@@ -570,7 +570,7 @@ Offset	Length	Description
 
 		esxdos_handler_no_error_uncarry();
 
-		printf ("Successfully esxdos_handler_call_f_write total bytes write: %d\n",total_leidos);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Successfully esxdos_handler_call_f_write total bytes write: %d",total_leidos);
 
 	}
 
@@ -585,7 +585,7 @@ void esxdos_handler_call_f_close(void)
 	int file_handler=reg_a;
 
 	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
-		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d out of range",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
@@ -594,7 +594,7 @@ void esxdos_handler_call_f_close(void)
 
 
 	if (esxdos_fopen_files[file_handler].open_file.v==0) {
-		//printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+		//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d not found",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
@@ -603,12 +603,12 @@ void esxdos_handler_call_f_close(void)
 
 	else {
 		if (esxdos_fopen_files[file_handler].is_a_directory.v==0) {
-			printf ("Closing a file\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Closing a file");
 			fclose(esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
 		}
 
 		else {
-			printf ("Closing a directory\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Closing a directory");
 		}
 
 		esxdos_fopen_files[file_handler].open_file.v=0;
@@ -625,7 +625,7 @@ void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdi
 {
 
 
-	//printf ("esxdos_handler_get_final_directory. dir: %s esxdos_handler_root_dir: %s\n",dir,esxdos_handler_root_dir);
+	//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: esxdos_handler_get_final_directory. dir: %s esxdos_handler_root_dir: %s",dir,esxdos_handler_root_dir);
 
 	//Guardamos directorio actual del emulador
 	char directorio_actual[PATH_MAX];
@@ -650,7 +650,7 @@ void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdi
 	//Ver en que directorio estamos
 	//char dir_final[PATH_MAX];
 	getcwd(finaldir,PATH_MAX);
-	//printf ("total final directory: %s . esxdos_handler_root_dir: %s\n",finaldir,esxdos_handler_root_dir);
+	//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: total final directory: %s . esxdos_handler_root_dir: %s",finaldir,esxdos_handler_root_dir);
 	//Esto suele retornar sim barra al final
 
 	//Si finaldir no tiene barra al final, haremos que esxdos_handler_root_dir tampoco la tenga
@@ -663,7 +663,7 @@ void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdi
 			if (m) {
 				if (esxdos_handler_root_dir[m-1]=='/' || esxdos_handler_root_dir[m-1]=='\\') {
 					//root dir tiene barra al final. quitarla
-					//printf ("quitando barra del final de esxdos_handler_root_dir\n");
+					//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: quitando barra del final de esxdos_handler_root_dir");
 					esxdos_handler_root_dir[m-1]=0;
 				}
 			}
@@ -672,11 +672,11 @@ void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdi
 
 
 	//Ahora hay que quitar la parte del directorio raiz
-	//printf ("running strstr (%s,%s)\n",finaldir,esxdos_handler_root_dir);
+	//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: running strstr (%s,%s)",finaldir,esxdos_handler_root_dir);
 	char *s=strstr(finaldir,esxdos_handler_root_dir);
 
 	if (s==NULL) {
-		debug_printf (VERBOSE_DEBUG,"Directory change not allowed");
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Directory change not allowed");
 		//directorio final es el mismo que habia
 		sprintf (finaldir,"%s",esxdos_handler_cwd);
 		return;
@@ -686,10 +686,10 @@ void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdi
 	if (localdir!=NULL) {
 		int l=strlen(esxdos_handler_root_dir);
 		sprintf (localdir,"%s",&finaldir[l]);
-		//printf ("local directory: %s\n",localdir);
+		//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: local directory: %s",localdir);
 	}
 
-	//printf ("directorio final local de esxdos_handler: %s\n",finaldir);
+	//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: directorio final local de esxdos_handler: %s",finaldir);
 
 
 	//Restauramos directorio actual del emulador
@@ -707,11 +707,11 @@ void esxdos_handler_call_f_chdir(void)
 
 		char directorio_final[PATH_MAX];
 
-		printf ("Changing to directory %s\n",ruta);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Changing to directory %s",ruta);
 
 		esxdos_handler_get_final_directory(ruta,directorio_final,esxdos_handler_cwd);
 
-		printf ("Final directory %s . cwd: %s\n",directorio_final,esxdos_handler_cwd);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Final directory %s . cwd: %s",directorio_final,esxdos_handler_cwd);
 
 
 	esxdos_handler_no_error_uncarry();
@@ -769,7 +769,7 @@ if (free_handle==-1) {
 	char directorio[PATH_MAX];
 
 	esxdos_handler_copy_hl_to_string(directorio);
-	printf ("opening directory %s\n",directorio);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: opening directory %s",directorio);
 
 	char directorio_final[PATH_MAX];
 	//obtener directorio final
@@ -781,7 +781,7 @@ if (free_handle==-1) {
 	esxdos_fopen_files[free_handle].esxdos_handler_dfd = opendir(directorio_final);
 
 	if (esxdos_fopen_files[free_handle].esxdos_handler_dfd == NULL) {
-	 	printf("Can't open directory %s (full: %s)\n", directorio,directorio_final);
+	 	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Can't open directory %s (full: %s)", directorio,directorio_final);
 	  esxdos_handler_error_carry(ESXDOS_ERROR_ENOENT);
 		esxdos_handler_return_call();
 		return;
@@ -805,7 +805,7 @@ int esxdos_handler_readdir_no_valido(char *s)
 	//Si longitud mayor que 12 (8 nombre, punto, 3 extension)
 	//if (strlen(s)>12) return 0;
 
-	printf ("checking is name %s is valid\n",s);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: checking is name %s is valid",s);
 
 
 	char extension[NAME_MAX];
@@ -846,7 +846,7 @@ int esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
 	poke_byte_no_time(puntero+i,0);
 	i++;
 
-	printf ("lenght name: %d\n",i);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: lenght name: %d",i);
 	//if (i<11) poke_byte_no_time(puntero+i,0);
 
 	//return 12;
@@ -864,23 +864,23 @@ int esxdos_handler_string_to_msdos(char *fullname,z80_int puntero)
 	util_get_file_without_extension(fullname,nombre);
 	util_get_file_extension(fullname,extension);
 
-	printf ("name: %s extension: %s\n",nombre,extension);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: name: %s extension: %s",nombre,extension);
 
 	//Escribir nombre
 	for (i=0;i<8 && nombre[i];i++) {
-		printf ("%c",nombre[i]);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: %c",nombre[i]);
 		poke_byte_no_time(puntero+i,nombre[i]);
 	}
 
-	printf (".");
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: .");
 
 	//Escribir extension
 	for (i=0;i<3 && extension[i];i++) {
-		printf ("%c",extension[i]);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: %c",extension[i]);
 		poke_byte_no_time(puntero+8+i,extension[i]);
 	}
 
-	printf ("\n");
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ");
 
 }
 
@@ -893,7 +893,7 @@ void esxdos_handler_call_f_readdir(void)
 	int file_handler=reg_a;
 
 	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
-		printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d out of range",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
@@ -917,7 +917,7 @@ void esxdos_handler_call_f_readdir(void)
 */
 
 if (esxdos_fopen_files[file_handler].open_file.v==0) {
-	printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d not found",file_handler);
 	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	esxdos_handler_return_call();
 	return;
@@ -978,7 +978,7 @@ if (get_file_type(esxdos_fopen_files[file_handler].esxdos_handler_dp->d_type,nom
 	//sprintf((char *) &esxdos_handler_globaldata[0],"<%s>",esxdos_handler_dp->d_name);
 	//longitud_nombre +=2;
 	atributo_archivo |=16;
-	printf ("Es directorio\n");
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Is a directory");
 }
 
 else {
@@ -1056,7 +1056,7 @@ long int longitud_total=get_file_size(nombre_final);
 
 z80_long_int l=longitud_total;
 
-printf ("lenght file: %d\n",l);
+debug_printf (VERBOSE_DEBUG,"ESXDOS handler: lenght file: %d",l);
 esxdos_handler_fill_size_struct(puntero+4,l);
 
 
@@ -1085,14 +1085,14 @@ f_fstat                 equ fsys_base + 9;      // $a1  and c
 int file_handler=reg_a;
 
 if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
-	printf ("Error from esxdos_handler_call_f_read. Handler %d out of range\n",file_handler);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d out of range",file_handler);
 	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	esxdos_handler_return_call();
 	return;
 }
 
 if (esxdos_fopen_files[file_handler].open_file.v==0) {
-	printf ("Error from esxdos_handler_call_f_read. Handler %d not found\n",file_handler);
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_read. Handler %d not found",file_handler);
 	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 	esxdos_handler_return_call();
 	return;
@@ -1106,7 +1106,7 @@ if (esxdos_fopen_files[file_handler].open_file.v==0) {
 
 	z80_byte atributo_archivo=0;
 	if (get_file_type_from_stat(&esxdos_fopen_files[file_handler].last_file_buf_stat)==2) {
-		printf ("fstat: is a directory\n");
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: fstat: is a directory");
 		atributo_archivo|=16;
 	}
 
@@ -1140,7 +1140,7 @@ if (esxdos_fopen_files[file_handler].open_file.v==0) {
 
 void esxdos_handler_run_normal_rst8(void)
 {
-	printf ("Running normal rst 8 call\n");
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Running normal rst 8 call");
 	rst(8);
 }
 
@@ -1154,12 +1154,12 @@ void esxdos_handler_begin_handling_commands(void)
 	{
 
 		case ESXDOS_RST8_DISK_READ:
-			printf ("ESXDOS_RST8_DISK_READ\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_DISK_READ");
 			esxdos_handler_run_normal_rst8();
 		break;
 
 		case ESXDOS_RST8_M_GETSETDRV:
-			printf ("ESXDOS_RST8_M_GETSETDRV\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_M_GETSETDRV");
 			//M_GETSETDRV: If A=0 -> Get default drive in A. Else set default drive passed in A.
 
 			/*
@@ -1179,57 +1179,57 @@ void esxdos_handler_begin_handling_commands(void)
 		case ESXDOS_RST8_F_OPEN:
 
 			esxdos_handler_copy_hl_to_string(buffer_fichero);
-			printf ("ESXDOS_RST8_F_OPEN. Mode: %02XH File: %s\n",reg_b,buffer_fichero);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_OPEN. Mode: %02XH File: %s",reg_b,buffer_fichero);
 			esxdos_handler_call_f_open();
 
 		break;
 
 		case ESXDOS_RST8_F_CLOSE:
-			printf ("ESXDOS_RST8_F_CLOSE\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_CLOSE");
 			esxdos_handler_call_f_close();
 
 		break;
 
 		case ESXDOS_RST8_F_READ:
 		//Read BC bytes at HL from file handle A.
-			printf ("ESXDOS_RST8_F_READ. Read %d bytes at %04XH from file handle %d\n",reg_bc,reg_hl,reg_a);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_READ. Read %d bytes at %04XH from file handle %d",reg_bc,reg_hl,reg_a);
 			esxdos_handler_call_f_read();
 		break;
 
 		case ESXDOS_RST8_F_WRITE:
 		//Write BC bytes at HL from file handle A.
-			printf ("ESXDOS_RST8_F_Write. Write %d bytes at %04XH from file handle %d\n",reg_bc,reg_hl,reg_a);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_Write. Write %d bytes at %04XH from file handle %d",reg_bc,reg_hl,reg_a);
 			esxdos_handler_call_f_write();
 		break;
 
 		case ESXDOS_RST8_F_GETCWD:
-			printf ("ESXDOS_RST8_F_GETCWD\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_GETCWD");
 			esxdos_handler_call_f_getcwd();
 		break;
 
 		case ESXDOS_RST8_F_CHDIR:
 			esxdos_handler_copy_hl_to_string(buffer_fichero);
-			printf ("ESXDOS_RST8_F_CHDIR: %s\n",buffer_fichero);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_CHDIR: %s",buffer_fichero);
 			esxdos_handler_call_f_chdir();
 		break;
 
 		case ESXDOS_RST8_F_OPENDIR:
-			printf ("ESXDOS_RST8_F_OPENDIR\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_OPENDIR");
 			esxdos_handler_call_f_opendir();
 		break;
 
 		case ESXDOS_RST8_F_READDIR:
-			printf ("ESXDOS_RST8_F_READDIR\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_READDIR");
 			esxdos_handler_call_f_readdir();
 		break;
 
 		case ESXDOS_RST8_F_FSTAT:
-			printf ("ESXDOS_RST8_F_FSTAT\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_FSTAT");
 			esxdos_handler_call_f_fstat();
 		break;
 
 		case 0xB3:
-			printf ("Unknown ESXDOS_RST8 B3H. Return ok\n");
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Unknown ESXDOS_RST8 B3H. Return ok");
 		//desconocida. salta cuando se hace un LOAD *"NOMBRE"
 		//hace un fread con flags  FA_READ|FA_USE_HEADER  y luego llama a este 0xB3
 			esxdos_handler_no_error_uncarry();
@@ -1240,10 +1240,10 @@ void esxdos_handler_begin_handling_commands(void)
 
 		default:
 			if (funcion>=0x80) {
-				printf ("Unhandled ESXDOS_RST8: %02XH !! \n",funcion);
+				debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Unhandled ESXDOS_RST8: %02XH !! ",funcion);
 				char buffer_registros[1024];
 				print_registers(buffer_registros);
-				printf ("%s\n",buffer_registros);
+				debug_printf (VERBOSE_DEBUG,"ESXDOS handler: %s",buffer_registros);
 
 			}
 			rst(8); //No queremos que muestre mensaje de debug
