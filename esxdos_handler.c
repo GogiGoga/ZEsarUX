@@ -185,7 +185,7 @@ void esxdos_handler_pre_fileopen(char *nombre_inicial,char *fullpath)
 
 
 	//Si nombre archivo empieza por /, olvidar cwd
-	if (nombre_inicial[0]=='/') sprintf (fullpath,"%s%s",esxdos_handler_root_dir,nombre_inicial);
+	if (nombre_inicial[0]=='/' || nombre_inicial[0]=='\\') sprintf (fullpath,"%s%s",esxdos_handler_root_dir,nombre_inicial);
 
 	//TODO: habria que proteger que en el nombre indicado no se use ../.. para ir a ruta raiz inferior a esxdos_handler_root_dir
 	else sprintf (fullpath,"%s/%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd,nombre_inicial);
@@ -601,7 +601,7 @@ void esxdos_handler_get_final_directory(char *dir, char *finaldir, char *localdi
 	char dir_pedido[PATH_MAX];
 
 	//Si directorio pedido es absoluto, cambiar cwd
-	if (dir[0]=='/') {
+	if (dir[0]=='/' || dir[0]=='\\') {
 		sprintf (esxdos_handler_cwd,"%s",dir);
 		sprintf (dir_pedido,"%s/%s",esxdos_handler_root_dir,esxdos_handler_cwd);
 	}
