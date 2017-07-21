@@ -1104,10 +1104,7 @@ puntero+=retornado_nombre;
 ;                                                                       // <dword>  filesize
 */
 
-//Atributos. TODO
-//poke_byte_no_time(puntero++,0);
-
-//Fecha. TODO
+//Fecha.
 /*
 22-23   Time (5/6/5 bits, for hour/minutes/doubleseconds)
 24-25   Date (7/4/5 bits, for year-since-1980/month/day)
@@ -1148,8 +1145,8 @@ esxdos_fopen_files[file_handler].contador_directorio +=32;
 reg_hl=old_hl;
 
 reg_a=1; //Hay mas ficheros
-	esxdos_handler_no_error_uncarry();
-	esxdos_handler_return_call();
+esxdos_handler_no_error_uncarry();
+esxdos_handler_return_call();
 
 }
 
