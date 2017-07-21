@@ -97,8 +97,10 @@ struct s_esxdos_fopen {
 	DIR *esxdos_handler_dfd; //	=NULL;
 	//ultimo directorio leido al listar archivos
 	char esxdos_handler_last_dir_open[PATH_MAX];
-	//Solo soporto abrir un directorio a la vez
-	//z80_byte esxdos_handler_folder_handle;
+
+	//para telldir
+	unsigned int contador_directorio;
+
 
 	z80_byte buffer_plus3dos_header[8];
 	z80_bit tiene_plus3dos_header;
@@ -505,14 +507,14 @@ void esxdos_handler_call_f_seek(void)
 	int file_handler=reg_a;
 
 	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
-		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_write. Handler %d out of range",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_seek. Handler %d out of range",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
 	}
 
 	if (esxdos_fopen_files[file_handler].open_file.v==0) {
-		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_write. Handler %d not found",file_handler);
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_seek. Handler %d not found",file_handler);
 		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
 		esxdos_handler_return_call();
 		return;
@@ -868,6 +870,7 @@ if (free_handle==-1) {
 	else {
 		esxdos_fopen_files[free_handle].open_file.v=1;
 		esxdos_fopen_files[free_handle].is_a_directory.v=1;
+		esxdos_fopen_files[free_handle].contador_directorio=0;
 		reg_a=free_handle;
 		esxdos_handler_no_error_uncarry();
 	}
@@ -1138,6 +1141,9 @@ debug_printf (VERBOSE_DEBUG,"ESXDOS handler: lenght file: %d",l);
 esxdos_handler_fill_size_struct(puntero+4,l);
 
 
+//para telldir
+esxdos_fopen_files[file_handler].contador_directorio +=32;
+
 //Dejamos hl como estaba por si acaso
 reg_hl=old_hl;
 
@@ -1146,6 +1152,50 @@ reg_a=1; //Hay mas ficheros
 	esxdos_handler_return_call();
 
 }
+
+
+void esxdos_handler_call_f_telldir(void)
+{
+
+
+	int file_handler=reg_a;
+
+	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_telldir. Handler %d out of range",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
+	}
+
+
+if (esxdos_fopen_files[file_handler].open_file.v==0) {
+	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_telldir. Handler %d not found",file_handler);
+	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+	esxdos_handler_return_call();
+	return;
+}
+
+if (esxdos_fopen_files[file_handler].esxdos_handler_dfd==NULL) {
+	esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+	esxdos_handler_return_call();
+	return;
+}
+
+
+/*
+F_TELLDIR: Returns current offset of directory in BCDE. A=dir handle
+*/
+	reg_b=(esxdos_fopen_files[file_handler].contador_directorio>>24)&255;
+	reg_c=(esxdos_fopen_files[file_handler].contador_directorio>>16)&255;
+	reg_d=(esxdos_fopen_files[file_handler].contador_directorio>>8)&255;
+	reg_e=(esxdos_fopen_files[file_handler].contador_directorio   )&255;
+
+
+	esxdos_handler_no_error_uncarry();
+	esxdos_handler_return_call();
+
+}
+
 
 void esxdos_handler_call_f_fstat(void)
 {
@@ -1304,6 +1354,18 @@ void esxdos_handler_begin_handling_commands(void)
 		case ESXDOS_RST8_F_READDIR:
 			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_READDIR");
 			esxdos_handler_call_f_readdir();
+		break;
+
+		case ESXDOS_RST8_F_TELLDIR:
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_TELLDIR");
+			esxdos_handler_call_f_telldir();
+		break;
+
+		case ESXDOS_RST8_F_SEEKDIR:
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Incomplete ESXDOS_RST8_F_SEEKDIR. Offset: %04X%04XH . Return ok",reg_bc,reg_de);
+		//temporal. SEEKDIR. F_SEEKDIR: Sets offset of directory. A=dir handle, BCDE=offset
+			esxdos_handler_no_error_uncarry();
+			esxdos_handler_return_call();
 		break;
 
 		case ESXDOS_RST8_F_FSTAT:
