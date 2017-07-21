@@ -22,33 +22,39 @@
 #ifndef ESXDOS_HANDLER_H
 #define ESXDOS_HANDLER_H
 
+#define ESXDOS_RST8_FA_OPEN_EX  0x00
+// open if exists, else error
 
 #define ESXDOS_RST8_FA_READ 0x01
-// $01  ld bc,nn        read access
-
+// read access
 
 #define ESXDOS_RST8_FA_WRITE  0x02
-// $02  ld (bc), a      write access
-
-
-#define ESXDOS_RST8_FA_OPEN_EX  0x00
-// $00  nop                     open if exists, else
-//                                      error
-
-#define ESXDOS_RST8_FA_OPEN_AL  0x08
-// $08  ex af,af'       open if exists, else
- //                                      create
+// write access
 
 #define ESXDOS_RST8_FA_CREATE_NEW 0x04
-// $04  inc b           create if does not
- //                                      exist, else error
+// create if does not exist, else error
+
+#define ESXDOS_RST8_FA_OPEN_AL  0x08
+// open if exists, if not create
+
+/*
+FA_OPEN_EX              equ             %00000000                       ; Open if exists, else error
+FA_READ                 equ             %00000001                       ; Read access
+FA_WRITE                equ             %00000010                       ; Write access
+FA_CREATE_NEW   equ             %00000100                       ; Create if not exists, if exists error
+FA_OPEN_AL              equ             %00001000                       ; Open if exists, if not create
+
+
+FA_CREATE_AL    equ             %00001100                       ; Create if not exists, else open and truncate
+
+FA_USE_HEADER   equ             %01000000                       ; Use +3DOS header (passed in DE)
+*/
 
 //Este es suma de los anteriores
 //#define ESXDOS_RST8_FA_CREATE_AL  0x0C
 // $0c  inc c           create if does not
  //                                      exist, else open and
  //                                      truncate
-
 #define ESXDOS_RST8_FA_USE_HEADER  0x40
 // $40  ld b,b          use plus3dos header
 //                                      (passed in de)

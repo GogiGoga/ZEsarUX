@@ -311,6 +311,7 @@ void esxdos_handler_call_f_open(void)
 
 	//Modos soportados
 
+
 	switch (modo_abrir) {
 			case ESXDOS_RST8_FA_READ:
 				strcpy(fopen_mode,"rb");
@@ -318,7 +319,11 @@ void esxdos_handler_call_f_open(void)
 			break;
 
 			case ESXDOS_RST8_FA_CREATE_NEW|ESXDOS_RST8_FA_WRITE:
-				strcpy(fopen_mode,"w+b");
+				strcpy(fopen_mode,"wb");
+			break;
+
+			case ESXDOS_RST8_FA_OPEN_AL|ESXDOS_RST8_FA_WRITE:
+				strcpy(fopen_mode,"ab");
 			break;
 
 			//case FA_WRITE|FA_CREATE_NEW|FA_USE_HEADER
@@ -363,6 +368,18 @@ void esxdos_handler_call_f_open(void)
 	esxdos_handler_pre_fileopen(nombre_archivo,fullpath);
 
 	debug_printf (VERBOSE_DEBUG,"ESXDOS handler: fullpath file: %s",fullpath);
+
+
+	//Ver tipos de apertura que dan error si existe
+	if ( (modo_abrir&ESXDOS_RST8_FA_CREATE_NEW)==ESXDOS_RST8_FA_CREATE_NEW) {
+		if (si_existe_archivo(fullpath)) {
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: file exists and using mode FA_CREATE_NEW. Error");
+			esxdos_handler_error_carry(ESXDOS_ERROR_EEXIST);
+			esxdos_handler_return_call();
+			return;
+		}
+	}
+
 
 	//debug_printf (VERBOSE_DEBUG,"ESXDOS handler: file type: %d",get_file_type_from_name(fullpath));
 	//sleep(5);
