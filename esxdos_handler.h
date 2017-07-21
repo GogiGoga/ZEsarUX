@@ -65,6 +65,8 @@
 #define ESXDOS_RST8_F_READ      0x9d
 #define ESXDOS_RST8_F_WRITE      0x9e
 
+#define ESXDOS_RST8_F_SEEK 0x9f
+
 #define ESXDOS_RST8_F_FSTAT 0xa1
 
 #define ESXDOS_RST8_F_OPENDIR 0xa3

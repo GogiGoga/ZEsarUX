@@ -482,6 +482,67 @@ void esxdos_handler_call_f_read(void)
 	esxdos_handler_return_call();
 }
 
+void esxdos_handler_call_f_seek(void)
+{
+
+	int file_handler=reg_a;
+
+	if (file_handler>=ESXDOS_MAX_OPEN_FILES) {
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_write. Handler %d out of range",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
+	}
+
+	if (esxdos_fopen_files[file_handler].open_file.v==0) {
+		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_write. Handler %d not found",file_handler);
+		esxdos_handler_error_carry(ESXDOS_ERROR_EBADF);
+		esxdos_handler_return_call();
+		return;
+	}
+
+/*
+F_SEEK: Seek BCDE bytes. A=handle
+
+L=mode (0 from start of file, 1 fwd from current pos, 2 bak from current pos).
+
+On return BCDE=current file pointer. FIXME-Should return bytes actually seeked
+*/
+
+//fwrite(cabe,1,8,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
+
+	long offset=(reg_b<<24) | (reg_c<<16) | (reg_d<<8) | reg_e;
+
+	int whence;
+
+	switch (reg_l) {
+		case 0:
+			whence=SEEK_SET;
+		break;
+
+		case 1:
+			whence=SEEK_CUR;
+		break;
+
+		case 2:
+			whence=SEEK_CUR;
+			offset=-offset;
+		break;
+
+		default:
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Error from esxdos_handler_call_f_seek. Unsupported mode %d",reg_l);
+			esxdos_handler_error_carry(ESXDOS_ERROR_EIO);
+			esxdos_handler_return_call();
+			return;
+		break;
+
+	}
+
+	fseek (esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix, offset, whence);
+
+	esxdos_handler_no_error_uncarry();
+	esxdos_handler_return_call();
+}
 
 
 void esxdos_handler_call_f_write(void)
@@ -1200,6 +1261,11 @@ void esxdos_handler_begin_handling_commands(void)
 		//Write BC bytes at HL from file handle A.
 			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_Write. Write %d bytes at %04XH from file handle %d",reg_bc,reg_hl,reg_a);
 			esxdos_handler_call_f_write();
+		break;
+
+		case ESXDOS_RST8_F_SEEK:
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_SEEK. Move %04X%04XH bytes mode %d from file handle %d",reg_bc,reg_de,reg_l,reg_a);
+			esxdos_handler_call_f_seek();
 		break;
 
 		case ESXDOS_RST8_F_GETCWD:
