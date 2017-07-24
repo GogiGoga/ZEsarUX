@@ -87,8 +87,8 @@ A: Run alternate ROM alternaterom_plus3e_mmcen3eE.rom with machine type Spectrum
 Q: How can I use DIVMMC emulation?
 A: The emulator uses by default esxdos 0.8.5 firmware (file esxmmc085.rom). It also needs a filesystem for the common esxdos files.
 So, first select MMC file, the emulator comes with two mmc images for esxdos:
-divmmcesx085.mmc : for esxdos 0.8.5
-zxuno.mmc : for esxdos 0.8.6 beta (use with ZX-Uno)
+media/disk_images/divmmcesx085.mmc : for esxdos 0.8.5
+media/disk_images/zxuno.mmc : for esxdos 0.8.6 beta (use with ZX-Uno)
 Then enable MMC emulation,  and enable DIVMMC on the menu. Then reset the machine (and press space while booting if necessary)
 
 
@@ -105,7 +105,7 @@ ZXpand root directory will be the root directory for ZXpand interface. Only file
 Q: How can I use DIVIDE emulation?
 A: The emulator uses by default esxdos 0.8.5 firmware (file esxide085.rom). It also needs a filesystem for the common esxdos files.
 So, first select IDE file, the emulator comes with one ide image for esxdos:
-divideesx085.ide : for esxdos 0.8.5
+media/disk_images/divideesx085.ide : for esxdos 0.8.5
 Then enable IDE emulation,  and enable DIVIDE on the menu. Then reset the machine (and press space while booting if necessary)
 
 
@@ -118,6 +118,9 @@ to list it in File Selector
 -Windows: Windows doesn't have native support for mounting file images. You may use ImDisk:
 http://www.ltr-data.se/opencode.html/#ImDisk
 Or find another program to access disk images
+
+Q: Where are located the mmc and ide files? Some examples refer to them but I can't found them. Even more, previous versions of ZEsarUX included them
+A: Media folder has been separated from the emulator main distributed file. You have to download the extra-media package
 
 
 ----------------------------------------------------------------------------
@@ -358,10 +361,10 @@ TBBlue
 
 
 Q: I can't run TBBlue machine. I get the following error: "Erro ao inicializar cartao!"
-A: TBBlue machine needs a SD/MMC image to boot. You must select file image "tbblue.mmc" on Storage->MMC->MMC File.
+A: TBBlue machine needs a SD/MMC image to boot. You must select file image "media/disk_images/tbblue.mmc" on Storage->MMC->MMC File.
 Then enable MMC emulation and DivMMC ports (but not DivMMC paging), and do a hard reset
 Or you can select it from the command line with:
-./zesarux --mmc-file tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
+./zesarux --mmc-file media/disk_images/tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
 
 Q: Why can't enable divmmc paging (or full divmmc emulation) from command line/config file on TBBlue? When exiting emulator, these settings are not saved on configuration file. But... if I force them to enable from command line, TBBlue does not boot, and then doing a hard reset it boots ok
 A: TBBlue needs divmmc paging disabled to boot, if not, divmmc firmware will be activated on the tbblue boot and then it hangs. When you do a hard reset, some internal tbblue registers (reg 6, bit 4) are reset to zero. Resetting this register 6, divmmc paging is disabled and so the boot works ok. But when initializing the emulator the sequence is:
