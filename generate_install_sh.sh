@@ -14,7 +14,7 @@ mkdir -p $INSTALLPREFIX/bin
 mkdir -p $INSTALLPREFIX/share/zesarux/
 
 cp zesarux $INSTALLPREFIX/bin/
-cp *.rom divmmcesx085.mmc zxuno.mmc tbblue.mmc divideesx085.ide atomlite.ide zxuno.flash $INSTALLPREFIX/share/zesarux/
+cp *.rom zxuno.flash $INSTALLPREFIX/share/zesarux/
 
 #cp mantransfev3.bin macos_say_filter.sh $INSTALLPREFIX/share/zesarux/
 cp mantransfev3.bin $INSTALLPREFIX/share/zesarux/

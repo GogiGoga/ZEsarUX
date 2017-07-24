@@ -1416,7 +1416,7 @@ clean:
 	rm -f ZEsarUX_src-*tar.gz
 	rm -f ZEsarUX_win-*.zip
 
-COMMONFILES=ACKNOWLEDGEMENTS LICENSE LICENSE_MOTOROLA_CORE LICENSE_SCMP_CORE Changelog TODO README HISTORY FEATURES INSTALL INSTALLWINDOWS ALTERNATEROMS INCLUDEDTAPES FAQ zesarux.odt mantransfev3.bin *.rom zxuno.flash divmmcesx085.mmc zxuno.mmc tbblue.mmc divideesx085.ide atomlite.ide speech_filters media snap_tests docs zesarux.mp3 zesarux.xcf bin_sprite_to_c.sh
+COMMONFILES=ACKNOWLEDGEMENTS LICENSE LICENSE_MOTOROLA_CORE LICENSE_SCMP_CORE Changelog TODO README HISTORY FEATURES INSTALL INSTALLWINDOWS ALTERNATEROMS INCLUDEDTAPES FAQ zesarux.odt mantransfev3.bin *.rom zxuno.flash speech_filters media snap_tests docs zesarux.mp3 zesarux.xcf bin_sprite_to_c.sh
 
 ONLYSOURCEFILES=macos *.c *.m *.h *.tpl DEVELOPMENT CHECKLIST configure generate_install_sh.sh join_tzx.sh testsound.sh txt_to_basic_lines.sh zxuno_roms_bin_a_flash.sh *.asm benchmark_*.txt current_checklist.txt patches prism_change_boot.txt pruebas_screen_rgb32 nuevo_core_zx8081 pruebas_z88_core_topspeed/
 
