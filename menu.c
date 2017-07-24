@@ -20346,6 +20346,9 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 
         menu_dibuja_ventana(xventana,yventana,ancho_ventana,alto_ventana,titulo);
 
+
+				//Decir que se ha pulsado tecla asi no se lee todo cuando el cursor esta visible
+				if (mostrar_cursor) menu_speech_tecla_pulsada=1;
 	int i;
 	for (i=0;i<indice_linea-primera_linea && i<MAX_LINEAS_VENTANA_GENERIC_MESSAGE;i++) {
 		if (mostrar_cursor) {
@@ -20363,13 +20366,20 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 	debug_printf (VERBOSE_DEBUG,"First line: %s",buffer_lineas[primera_linea]);
 	debug_printf (VERBOSE_DEBUG,"Last line: %s",buffer_lineas[i+primera_linea-1]);
 
-	if (primera_linea_a_speech) {
-		menu_speech_tecla_pulsada=0;
-		menu_textspeech_send_text(buffer_lineas[primera_linea]);
+	if (!mostrar_cursor) {
+		if (primera_linea_a_speech) {
+			menu_speech_tecla_pulsada=0;
+			menu_textspeech_send_text(buffer_lineas[primera_linea]);
+		}
+		if (ultima_linea_a_speech) {
+			menu_speech_tecla_pulsada=0;
+			menu_textspeech_send_text(buffer_lineas[i+primera_linea-1]);
+		}
 	}
-	if (ultima_linea_a_speech) {
+
+	else {
 		menu_speech_tecla_pulsada=0;
-		menu_textspeech_send_text(buffer_lineas[i+primera_linea-1]);
+		menu_textspeech_send_text(buffer_lineas[primera_linea+linea_cursor]);
 	}
 
 
@@ -20537,9 +20547,9 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 																							//Mostramos cursor para poder indicar en que linea se ha encontrado el texto
 																							mostrar_cursor=1;
 
-																							//Decir que se ha pulsado tecla para que no se relea
-																							menu_speech_tecla_pulsada=1;
-																							primera_linea_a_speech=1;
+
+																							//menu_speech_tecla_pulsada=0;
+																							//menu_textspeech_send_text(buffer_lineas[ultima_linea_buscada]);
 																					}
 
 																					else {
