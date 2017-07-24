@@ -33,6 +33,28 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+
+-Separar carpeta media y docs y quizá otras carpetas del estable final. Quizá todo o parte del contenido
+Revisar script install y make install
+Carpetas:
+docs                            -> para extra
+media                           -> para extra
+snap_tests                      -> para extra
+
+macos                           -> solo en fuente
+nuevo_core_zx8081               -> solo en fuente
+patches                         -> solo en fuente
+pruebas_screen_rgb32            -> solo en fuente
+pruebas_z88_core_topspeed       -> solo en fuente
+speech_filters                  -> incluido en binario
+
+ok ->movido my sofware viejo a "some_old_soft_by_me"
+ok ->movido imagenes mmc y ide a media/disk_images
+ok ->el make install y generate_install deberia instalar lo mismo que ahora excepto docs, media, snap_tests
+-crear un script para tar.gz de docs, media, snap_tests
+
+
+
 -poder buscar texto en ventanas de mensajes de texto
 
 -ZRCP: enter-cpu-step && run se cuelga en windows
@@ -188,19 +210,6 @@ probado lo siguiente:
 
 -QL:
 *cpu stats: quiza no porque hay mas instrucciones que z80....
-
--Separar carpeta media y docs y quizá otras carpetas del estable final. Quizá todo o parte del contenido 
-Revisar script install y make install 
-Carpetas:
-docs 				-> para extra
-media 				-> para extra
-snap_tests 			-> para extra
-macos 				-> solo en fuente
-nuevo_core_zx8081 		-> solo en fuente
-patches 			-> solo en fuente
-pruebas_screen_rgb32 		-> solo en fuente
-pruebas_z88_core_topspeed 	-> solo en fuente
-speech_filters 			-> incluido en binario
 
 
 -Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros,
