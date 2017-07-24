@@ -20259,7 +20259,7 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 	int ultimo_indice_texto=0;
 	int longitud=strlen(texto);
 
-	int ultima_linea_buscada=0;
+	int ultima_linea_buscada=-1;
 	char buffer_texto_buscado[33];
 
 	//int indice_segunda_linea;
@@ -20505,7 +20505,7 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 																				case 'f':
 																				case 'n':
 
-																					if (tecla=='f') {
+																					if (tecla=='f' || ultima_linea_buscada==-1) {
 
 																						buffer_texto_buscado[0]=0;
 																		        menu_ventana_scanf("Text to find",buffer_texto_buscado,33);

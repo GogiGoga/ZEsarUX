@@ -53,6 +53,7 @@ ok ->movido imagenes mmc y ide a media/disk_images
 ok ->el make install y generate_install deberia instalar lo mismo que ahora excepto docs, media, snap_tests
 ok -crear un script para tar.gz de docs, media, snap_tests
 
+-en ventanas de texto, cuando se muestra el cursor, el speech no lee linea de cursor sino la linea final de texto
 
 
 -poder buscar texto en ventanas de mensajes de texto

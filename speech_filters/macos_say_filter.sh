@@ -1,5 +1,6 @@
 #!/bin/bash
 
-TEXTO=`cat`
+#eliminar - del texto
+TEXTO=`cat|sed 's/-//'`
 
 say  "$TEXTO"
