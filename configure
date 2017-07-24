@@ -1442,7 +1442,7 @@ bintargz: all
 	echo "Generated file is : ZEsarUX_bin-\$(EMULATOR_VERSION).tar.gz"
 
 extras:
-	zip -r ZEsarUX_extras.zip docs media snap_tests
+	zip -r ZEsarUX_extras.zip extras
 
 windows:
 	mkdir -p ZEsarUX_win-\$(EMULATOR_VERSION)
