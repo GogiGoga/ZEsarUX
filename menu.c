@@ -5722,7 +5722,7 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
                        	menu_escribe_linea_opcion(linea++,-1,1,"");
 
 			if (continuous_step==0) {
-				menu_escribe_linea_opcion(linea++,-1,1,"S: Exit step C: Cont step");
+				menu_escribe_linea_opcion(linea++,-1,1,"ESC: Exit step C: Cont step");
 				menu_escribe_linea_opcion(linea++,-1,1,"B: Breakp W: Watch V: V.Scr");
 				menu_escribe_linea_opcion(linea++,-1,1,"P: Clr tstatesp G: Chg View");
 			}
@@ -5766,7 +5766,8 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 
 				menu_debug_registers_ventana();
 
-        if (tecla=='s') {
+        			//if (tecla=='s') {
+        			if (tecla==2) { //ESC
 					cpu_step_mode.v=0;
 
 					//Decimos que no hay tecla pulsada
