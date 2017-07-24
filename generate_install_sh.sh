@@ -16,10 +16,10 @@ mkdir -p $INSTALLPREFIX/share/zesarux/
 cp zesarux $INSTALLPREFIX/bin/
 cp *.rom zxuno.flash $INSTALLPREFIX/share/zesarux/
 
-#cp mantransfev3.bin macos_say_filter.sh $INSTALLPREFIX/share/zesarux/
 cp mantransfev3.bin $INSTALLPREFIX/share/zesarux/
 
 cp -r speech_filters $INSTALLPREFIX/share/zesarux/
+cp -r some_old_soft_by_me $INSTALLPREFIX/share/zesarux/
 
 cp -r media $INSTALLPREFIX/share/zesarux/
 cp ACKNOWLEDGEMENTS Changelog HISTORY LICENSE LICENSE_MOTOROLA_CORE LICENSE_SCMP_CORE README FEATURES INSTALL INSTALLWINDOWS ALTERNATEROMS INCLUDEDTAPES FAQ $INSTALLPREFIX/share/zesarux/
