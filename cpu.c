@@ -988,7 +988,7 @@ char *string_machines_list_description=
 
 							" ZXUNO    ZX-Uno\n"
 
-							" TSConf   Pentevo TSConf\n"
+							" TSConf   ZX-Evolution TS-Conf\n"
 
 							" TBBlue   TBBlue/ZX Spectrum Next\n"
 
@@ -2328,8 +2328,8 @@ void set_machine_params(void)
 20=Spectrum + Spanish
 21=Pentagon
 22=Chrome
-23=TSConf: Pentagon + Evo = PentEvo
-24=BaseConf: ATM + Evo = ZX Evolution (no implementado aun)
+23=ZX-Evolution TS-Conf
+24=ZX-Evolution BaseConf (no implementado aun)
 25-29 Reservado (Spectrum)
 120=zx80 (old 20)
 121=zx81 (old 21)
