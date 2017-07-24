@@ -20,7 +20,7 @@ It's a ZX Machines Emulator for Unix, including:
 -Amstrad CPC 464
 
 ZEsarUX source code and binaries are distributed under GNU GPL license. 
-ZEsarUX also includes roms, media and programs/games NOT covered by this license.
+ZEsarUX also includes third-party roms, media, programs and games NOT covered by this license.
 
 This is my second spectrum emulator after ZXSpectr
 http://sourceforge.net/projects/zxspectr/
