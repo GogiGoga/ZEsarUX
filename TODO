@@ -59,6 +59,9 @@ ok -en ventanas de texto, cuando se muestra el cursor, el speech no lee linea de
 
 
 ok -poder buscar texto en ventanas de mensajes de texto
+-quiza buscar no deberia estar permitido pues se anidan ventanas
+-al anidarse ventanas, por ejemplo leer archivo y luego mensaje warning de no encontrado, que pasa con el texto? se llaman recursivamente a funciones?
+->quiza no pasa nada porque usan variables locales de funcion y no globales
 
 -ZRCP: enter-cpu-step && run se cuelga en windows
 
