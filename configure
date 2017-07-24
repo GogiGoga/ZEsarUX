@@ -1415,6 +1415,7 @@ clean:
 	rm -f ZEsarUX_bin-*tar.gz
 	rm -f ZEsarUX_src-*tar.gz
 	rm -f ZEsarUX_win-*.zip
+	rm -f ZEsarUX_extras-*.zip
 
 COMMONFILES=ACKNOWLEDGEMENTS LICENSE LICENSE_MOTOROLA_CORE LICENSE_SCMP_CORE Changelog TODO README HISTORY FEATURES INSTALL INSTALLWINDOWS ALTERNATEROMS INCLUDEDTAPES FAQ zesarux.odt mantransfev3.bin *.rom zxuno.flash speech_filters some_old_soft_by_me zesarux.mp3 zesarux.xcf bin_sprite_to_c.sh
 
@@ -1441,8 +1442,8 @@ bintargz: all
 	echo
 	echo "Generated file is : ZEsarUX_bin-\$(EMULATOR_VERSION).tar.gz"
 
-extras:
-	zip -r ZEsarUX_extras.zip extras
+extra_files:
+	zip -r ZEsarUX_extras-\$(EMULATOR_VERSION).zip extras
 
 windows:
 	mkdir -p ZEsarUX_win-\$(EMULATOR_VERSION)

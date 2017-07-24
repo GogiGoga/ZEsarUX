@@ -59,6 +59,12 @@ De todos los archivos generados y subidos a sourceforge, crear suma MD5SUM en lo
 con todos los archivos subidos comprimidos y README (y excluyendo este mismo MD5SUM)
 
 
+** Extra files
+
+make extra_files
+Y subir el zip a sourceforge
+
+
 ** Linux 
 Generar estos dos binarios de Linux:
 ZEsarUX_bin-version-debian8_x32.tar.gz 
