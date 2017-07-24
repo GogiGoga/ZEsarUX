@@ -53,10 +53,12 @@ ok ->movido imagenes mmc y ide a media/disk_images
 ok ->el make install y generate_install deberia instalar lo mismo que ahora excepto docs, media, snap_tests
 ok -crear un script para tar.gz de docs, media, snap_tests
 
--en ventanas de texto, cuando se muestra el cursor, el speech no lee linea de cursor sino la linea final de texto
+ok -en ventanas de texto, cuando se muestra el cursor, el speech no lee linea de cursor sino la linea final de texto
+
+-footer en windows por ejemplo se ve raro->se mezclan mensajes de F5 y de nombre version
 
 
--poder buscar texto en ventanas de mensajes de texto
+ok -poder buscar texto en ventanas de mensajes de texto
 
 -ZRCP: enter-cpu-step && run se cuelga en windows
 
