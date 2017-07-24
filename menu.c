@@ -20259,6 +20259,9 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 	int ultimo_indice_texto=0;
 	int longitud=strlen(texto);
 
+	int ultima_linea_buscada=0;
+	char buffer_texto_buscado[33];
+
 	//int indice_segunda_linea;
 
 	int texto_no_cabe=0;
@@ -20497,6 +20500,54 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 						menu_speech_tecla_pulsada=0;
                                         break;
 
+
+																				//Buscar texto
+																				case 'f':
+																				case 'n':
+
+																					if (tecla=='f') {
+
+																						buffer_texto_buscado[0]=0;
+																		        menu_ventana_scanf("Text to find",buffer_texto_buscado,33);
+
+																						ultima_linea_buscada=0;
+
+																					}
+
+																					int i;
+																					char *encontrado=NULL;
+																					for (i=0;i<indice_linea;i++) {
+																						encontrado=util_strcasestr(buffer_lineas[i], buffer_texto_buscado);
+																						if (encontrado && i>ultima_linea_buscada) {
+																							break;
+																						}
+																					}
+
+																					if (encontrado) {
+																						ultima_linea_buscada=i;
+																						//mover cursor hasta ahi
+																						primera_linea=0;
+																						linea_cursor=0;
+
+																						int contador;
+																						for (contador=0;contador<ultima_linea_buscada;contador++) {
+																								primera_linea=menu_generic_message_cursor_abajo_mostrar_cursor(primera_linea,alto_ventana,indice_linea,mostrar_cursor,&linea_cursor);
+																							}
+
+																							//Mostramos cursor para poder indicar en que linea se ha encontrado el texto
+																							mostrar_cursor=1;
+
+																							//Decir que se ha pulsado tecla para que no se relea
+																							menu_speech_tecla_pulsada=1;
+																							primera_linea_a_speech=1;
+																					}
+
+																					else {
+																						menu_warn_message("Text not found");
+																					}
+
+
+																				break;
 				}
 
 	//Salir con Enter o ESC o fin de tooltip
@@ -20980,6 +21031,10 @@ void menu_about_help(MENU_ITEM_PARAMETERS)
 			"- Use Space/cursor on filter\n"
 			"- Press the initial letter\n"
 			"  for faster searching"
+			"\n\n"
+			"On message windows:\n"
+			"- Use cursors and PgDn/Up\n"
+			"- Use f and n to find text\n"
 			"\n\n"
 			"On numeric input fields, numbers can be written on decimal, hexadecimal (with suffix H) or as a character (with quotes '' or \"\")\n\n"
 			"Symbols on menu must be written according to the current machine keyboard mapping, so for example, to write the symbol minus (<), you have to press "
