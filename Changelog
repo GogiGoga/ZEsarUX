@@ -18,8 +18,8 @@ Added TBBlue Sprite chip emulation
 Added TBBlue Layer2 emulation
 Added RTC clock TBBlue/Spectrum Next support for esxdos
 Added ZXUno Radasoffset and Radaspadding registers, to do hardware scrolling
-Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files. Examples can be found on extras/media/spectrum/esxdos_handler/
-Moved folders: docs, media, snap_tests to extras package. These folders have been separated from the emulator main distributed file. You have to download the ZEsarUX-extras package
+Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files. Examples can be found on extras/media/spectrum/esxdos_handler/. "Classic" mmc/ide emulation by using virtual mmc/ide files can also be used
+Moved folders: docs, media, snap_tests to a "ZEsarUX-extras" package. These folders have been separated from the emulator main distributed file, and the main download have been reduced to 5 MB aprox. The git repository still holds all the files (extras have been moved to folder "extras"), but maybe in the future I will remove them also from the repo.
 Moved mmc/ide files location to extras/media/disk_images folder
 Improved TBBlue emulation: 1 MB RAM
 Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
