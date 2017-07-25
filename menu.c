@@ -1478,6 +1478,11 @@ void menu_footer_f5_menu(void)
         //Decir F5 menu en linea de tarjetas de memoria de z88
         //Y si es la primera vez
         if (menu_si_mostrar_footer_f5_menu() ) {
+												//Borrar antes con espacios si hay algo               //01234567890123456789012345678901
+												//Sucede que al cargar emulador con un tap, se pone abajo primero el nombre de emulador y version,
+												//y cuando se quita el splash, se pone este texto. Si no pongo espacios, se mezcla parte del texto de F5 menu etc con la version del emulador
+
+												menu_putstring_footer(0,WINDOW_FOOTER_ELEMENT_Y_F5MENU,"                                ",WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
                         char texto_f_menu[32];
                         sprintf(texto_f_menu,"%s Menu",openmenu_key_message);
                         menu_putstring_footer(0,WINDOW_FOOTER_ELEMENT_Y_F5MENU,texto_f_menu,WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
