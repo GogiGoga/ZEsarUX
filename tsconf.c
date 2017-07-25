@@ -27,6 +27,7 @@
 #include "mem128.h"
 #include "debug.h"
 #include "contend.h"
+#include "menu.h"
 
 
 z80_byte tsconf_last_port_eff7;
@@ -58,20 +59,39 @@ int tsconf_current_pixel_height=192;
 int tsconf_current_border_width=0;
 int tsconf_current_border_height=0;
 
+char *tsconf_video_modes_array[]={
+  "ZX",
+  "16c",
+  "256c",
+  "Text"
+};
+
+char *tsconf_video_sizes_array[]={
+  "256x192",
+  "320x200",
+  "320x240",
+  "360x288"
+};
+
 z80_byte tsconf_get_video_mode_display(void)
 {
   /*
   Modos de video:
-  256c.
-Bits 7..0 are index to CRAM.
-Each line address is aligned to 512.
-GXOffs and GYOffs add offset to X and Y start address in pixels.
+0 ZX
 
-16c.
+1 16c.
 Bits are index to CRAM, where PalSel.GPAL is 4 MSBs and the pixel are 4 LSBs of the index.
 Pixels are bits7..4 - left, bits3..0 - right.
 Each line address is aligned to 256.
 GXOffs and GYOffs add offset to X and Y start address in pixels.
+
+2  256c.
+Bits 7..0 are index to CRAM.
+Each line address is aligned to 512.
+GXOffs and GYOffs add offset to X and Y start address in pixels.
+
+3 text
+
   */
   return (tsconf_af_ports[0]&3);
 }
@@ -126,11 +146,27 @@ void tsconf_set_sizes_display(void)
 
 }
 
+
+
+void tsconf_splash_video_size_mode_change(void)
+{
+  char buffer_mensaje[64];
+
+  sprintf (buffer_mensaje,"Setting video mode %s, size %s",
+    tsconf_video_modes_array[tsconf_get_video_mode_display()],tsconf_video_sizes_array[tsconf_get_video_size_display()]);
+
+  screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,buffer_mensaje);
+}
+
 void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
 {
+
   tsconf_af_ports[puerto_h]=value;
 
   if (puerto_h==0) {
+    tsconf_splash_video_size_mode_change();
+
+
     //Cambio vconfig
     tsconf_set_sizes_display();
     modificado_border.v=1;

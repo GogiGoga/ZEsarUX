@@ -1245,7 +1245,7 @@ chloe.o: chloe.c chloe.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.
 chrome.o: chrome.c chrome.h cpu.h mem128.h debug.h contend.h  
 	\$(CC) \$(CFLAGS) -c chrome.c
 
-tsconf.o: tsconf.c tsconf.h cpu.h mem128.h debug.h contend.h  
+tsconf.o: tsconf.c tsconf.h cpu.h mem128.h debug.h contend.h menu.h
 	\$(CC) \$(CFLAGS) -c tsconf.c
 
 prism.o: prism.c prism.h cpu.h timex.h mem128.h debug.h contend.h zxuno.h timex.h utils.h menu.h

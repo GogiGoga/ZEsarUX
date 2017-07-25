@@ -1481,8 +1481,8 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
         z80_byte byte_leido;
 
         //margenes de zona interior de pantalla. Para modo rainbow
-        int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
-        int margeny_arr=screen_borde_superior*border_enabled.v;
+        //int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
+        //int margeny_arr=screen_borde_superior*border_enabled.v;
 
 				//temp
 				//margenx_izq=margeny_arr=0;
@@ -1609,7 +1609,7 @@ void scr_refresca_border_tsconf_cont(void)
         int x,y;
 
 	//Top border cambia en spectrum y zx8081 y ace
-	int topborder=TOP_BORDER;
+	//int topborder=TOP_BORDER;
 
         //parte superior e inferior
         for (y=0;y<tsconf_current_border_height;y++) {

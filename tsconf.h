@@ -59,5 +59,7 @@ extern int tsconf_current_pixel_height;
 extern int tsconf_current_border_width;
 extern int tsconf_current_border_height;
 
+extern z80_byte tsconf_get_video_mode_display(void);
+
 
 #endif

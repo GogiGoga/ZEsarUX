@@ -50,6 +50,9 @@ char esxdos_handler_cwd[PATH_MAX]="";
 int esxdos_handler_operating_counter=0;
 
 
+z80_int *registro_parametros_hl_ix;
+
+
 void esxdos_handler_delete_esx_text(void)
 {
 
@@ -187,8 +190,8 @@ void esxdos_handler_copy_hl_to_string(char *buffer_fichero)
 
 	int i;
 
-	for (i=0;peek_byte_no_time(reg_hl+i);i++) {
-		buffer_fichero[i]=peek_byte_no_time(reg_hl+i);
+	for (i=0;peek_byte_no_time((*registro_parametros_hl_ix)+i);i++) {
+		buffer_fichero[i]=peek_byte_no_time((*registro_parametros_hl_ix)+i);
 	}
 
 	buffer_fichero[i]=0;
@@ -484,14 +487,14 @@ void esxdos_handler_call_f_read(void)
 			z80_byte byte_read;
 			leidos=fread(&byte_read,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
 			if (leidos) {
-					poke_byte_no_time(reg_hl+total_leidos,byte_read);
+					poke_byte_no_time((*registro_parametros_hl_ix)+total_leidos,byte_read);
 					total_leidos++;
 					bytes_a_leer--;
 			}
 		}
 
 		reg_bc=total_leidos;
-		//reg_hl +=total_leidos; //???
+		//(*registro_parametros_hl_ix) +=total_leidos; //???
 		esxdos_handler_no_error_uncarry();
 
 		debug_printf (VERBOSE_DEBUG,"ESXDOS handler: Successfully esxdos_handler_call_f_read total bytes read: %d",total_leidos);
@@ -641,7 +644,7 @@ Offset	Length	Description
 		z80_int total_leidos=0;
 
 		while (bytes_a_escribir) {
-			byte_read=peek_byte_no_time(reg_hl+total_leidos);
+			byte_read=peek_byte_no_time((*registro_parametros_hl_ix)+total_leidos);
 			fwrite(&byte_read,1,1,esxdos_fopen_files[file_handler].esxdos_last_open_file_handler_unix);
 			total_leidos++;
 			bytes_a_escribir--;
@@ -803,12 +806,12 @@ void esxdos_handler_copy_string_to_hl(char *s)
 	z80_int p=0;
 
 	while (*s) {
-		poke_byte_no_time(reg_hl+p,*s);
+		poke_byte_no_time((*registro_parametros_hl_ix)+p,*s);
 		s++;
 		p++;
 	}
 
-	poke_byte_no_time(reg_hl+p,0);
+	poke_byte_no_time((*registro_parametros_hl_ix)+p,0);
 }
 
 void esxdos_handler_call_f_getcwd(void)
@@ -969,7 +972,7 @@ void esxdos_handler_call_f_readdir(void)
 {
 
 	//Guardamos hl por si acaso, porque lo modificaremos para comodidad
-	z80_int old_hl=reg_hl;
+	z80_int old_hl=(*registro_parametros_hl_ix);
 
 	int file_handler=reg_a;
 
@@ -1067,16 +1070,16 @@ else {
 }
 
 //Meter nombre. Saltamos primer byte.
-//poke_byte_no_time(reg_hl++,0);
+//poke_byte_no_time((*registro_parametros_hl_ix)++,0);
 
 /*
 esxdos_handler_copy_string_to_hl(esxdos_handler_dp->d_name);
 
-z80_int puntero=reg_hl+longitud_nombre+1; //saltar nombre+0 del final
+z80_int puntero=(*registro_parametros_hl_ix)+longitud_nombre+1; //saltar nombre+0 del final
 
 */
 
-z80_int puntero=reg_hl;
+z80_int puntero=(*registro_parametros_hl_ix);
 //Atributos
 poke_byte_no_time(puntero++,atributo_archivo);
 
@@ -1095,7 +1098,7 @@ poke_byte_no_time(puntero++,'T');
 poke_byte_no_time(puntero++,'X');
 poke_byte_no_time(puntero++,'T');*/
 
-//z80_int puntero=reg_hl+11;
+//z80_int puntero=(*registro_parametros_hl_ix)+11;
 
 puntero+=retornado_nombre;
 
@@ -1142,7 +1145,7 @@ esxdos_handler_fill_size_struct(puntero+4,l);
 esxdos_fopen_files[file_handler].contador_directorio +=32;
 
 //Dejamos hl como estaba por si acaso
-reg_hl=old_hl;
+(*registro_parametros_hl_ix)=old_hl;
 
 reg_a=1; //Hay mas ficheros
 esxdos_handler_no_error_uncarry();
@@ -1225,8 +1228,8 @@ if (esxdos_fopen_files[file_handler].open_file.v==0) {
 
 
 	//TODO. segun file handler en A
-	poke_byte_no_time(reg_hl,0); //drive
-	poke_byte_no_time(reg_hl+1,0); //device
+	poke_byte_no_time((*registro_parametros_hl_ix),0); //drive
+	poke_byte_no_time((*registro_parametros_hl_ix)+1,0); //device
 
 
 	z80_byte atributo_archivo=0;
@@ -1235,7 +1238,7 @@ if (esxdos_fopen_files[file_handler].open_file.v==0) {
 		atributo_archivo|=16;
 	}
 
-	poke_byte_no_time(reg_hl+2,atributo_archivo); //attrs
+	poke_byte_no_time((*registro_parametros_hl_ix)+2,atributo_archivo); //attrs
 
 	//Fecha
 	int hora=11;
@@ -1253,10 +1256,10 @@ if (esxdos_fopen_files[file_handler].open_file.v==0) {
 	anyo -=1980;
 
 
-	esxdos_handler_fill_date_struct(reg_hl+3,hora,minuto,doblesegundos,dia,mes,anyo);
+	esxdos_handler_fill_date_struct((*registro_parametros_hl_ix)+3,hora,minuto,doblesegundos,dia,mes,anyo);
 
 	z80_long_int size=esxdos_fopen_files[file_handler].last_file_buf_stat.st_size;
-	esxdos_handler_fill_size_struct(reg_hl+7,size);
+	esxdos_handler_fill_size_struct((*registro_parametros_hl_ix)+7,size);
 
 	esxdos_handler_no_error_uncarry();
 	esxdos_handler_return_call();
@@ -1317,13 +1320,13 @@ void esxdos_handler_begin_handling_commands(void)
 
 		case ESXDOS_RST8_F_READ:
 		//Read BC bytes at HL from file handle A.
-			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_READ. Read %d bytes at %04XH from file handle %d",reg_bc,reg_hl,reg_a);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_READ. Read %d bytes at %04XH from file handle %d",reg_bc,(*registro_parametros_hl_ix),reg_a);
 			esxdos_handler_call_f_read();
 		break;
 
 		case ESXDOS_RST8_F_WRITE:
 		//Write BC bytes at HL from file handle A.
-			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_Write. Write %d bytes at %04XH from file handle %d",reg_bc,reg_hl,reg_a);
+			debug_printf (VERBOSE_DEBUG,"ESXDOS handler: ESXDOS_RST8_F_Write. Write %d bytes at %04XH from file handle %d",reg_bc,(*registro_parametros_hl_ix),reg_a);
 			esxdos_handler_call_f_write();
 		break;
 
@@ -1397,6 +1400,19 @@ void esxdos_handler_begin_handling_commands(void)
 
 void esxdos_handler_run(void)
 {
+/*
+RST $08
+-------
+
+Main syscall entry point. Parameters are the same for code inside ESXDOS (.commands, etc) and on speccy ram, EXCEPT on speccy RAM you must use IX instead of HL.
+
+
+*/
+	//Ver si se usa IX o HL
+
+	registro_parametros_hl_ix=&reg_hl;
+	if (reg_pc>16383) registro_parametros_hl_ix=&reg_ix;
+
 	esxdos_handler_begin_handling_commands();
 
 }
