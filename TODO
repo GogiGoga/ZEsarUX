@@ -48,7 +48,7 @@ pruebas_screen_rgb32            -> solo en fuente
 pruebas_z88_core_topspeed       -> solo en fuente
 speech_filters                  -> incluido en binario
 
-ok ->movido my sofware viejo a "some_old_soft_by_me"
+ok ->movido my sofware viejo a "my_soft"
 ok ->movido imagenes mmc y ide a media/disk_images
 ok ->el make install y generate_install deberia instalar lo mismo que ahora excepto docs, media, snap_tests
 ok -crear un script para tar.gz de docs, media, snap_tests

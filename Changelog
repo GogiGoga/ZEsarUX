@@ -19,7 +19,8 @@ Added TBBlue Layer2 emulation
 Added RTC clock TBBlue/Spectrum Next support for esxdos
 Added ZXUno Radasoffset and Radaspadding registers, to do hardware scrolling
 Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files
-Changed mmc/ide files location to media folder. Media folder has been separated from the emulator main distributed file. You have to download the extra-media package
+Moved folders: docs, media, snap_tests to extras package. These folders have been separated from the emulator main distributed file. You have to download the ZEsarUX-extras package
+Moved mmc/ide files location to extras/media/disk_images folder
 Improved TBBlue emulation: 1 MB RAM
 Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
 Improved Sprite Viewer: Save sprite, TBBlue sprite viewer, inverse sprite
