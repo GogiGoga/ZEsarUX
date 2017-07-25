@@ -78,6 +78,12 @@ O quizá setting configurable
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
 *TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
+*layer priorities
+*y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
+
+-FAQ esxdos handler. Comentar mayúsculas etc
+
+
 
 
 -probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
@@ -100,7 +106,9 @@ No sale de ese bucle while y se cierra todo emulador
 *parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
 ->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
 *quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
-*modo texto. dimensiones pantalla? dimensiones fuente? como carga la fuente? hardcoded o en nvram?
+*modo texto, estandard zx (sin rainbow) ok
+*faltan modos 16c, 256c
+
 
 
 -Mostrar backtrace de stack. quiza solo en remote command protocol. Stack y su densemsamblaje de cada dirección. Hasta 5?
