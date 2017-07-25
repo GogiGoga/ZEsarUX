@@ -121,6 +121,8 @@ int scr_tiene_colores=0;
 //nombre del driver: aa, null, xwindows, etc. inicializado por cada driver en init
 char *scr_driver_name;
 
+void scr_tsconf_putpixel_zx_mode(int x,int y,unsigned color);
+void scr_refresca_border_tsconf_cont(void);
 
 //esto se usa para curses y stdout, tambien afecta
 //a que los caracteres no imprimibles de zx8081 se muestren como ? o como caracteres simulados
@@ -1294,6 +1296,88 @@ void screen_prism_refresca_no_rainbow(void)
 }
 
 
+//Refresco pantalla sin rainbow en tsconf
+void scr_tsconf_refresca_pantalla_comun(void)
+{
+	int x,y,bit;
+        z80_int direccion,dir_atributo;
+        z80_byte byte_leido;
+        int color=0;
+        int fila;
+        //int zx,zy;
+
+        z80_byte attribute,ink,paper,bright,flash,aux;
+
+
+       z80_byte *screen=get_base_mem_pantalla();
+
+        //printf ("dpy=%x ventana=%x gc=%x image=%x\n",dpy,ventana,gc,image);
+	z80_byte x_hi;
+
+        for (y=0;y<192;y++) {
+                //direccion=16384 | devuelve_direccion_pantalla(0,y);
+
+                //direccion=16384 | screen_addr_table[(y<<5)];
+                direccion=screen_addr_table[(y<<5)];
+
+
+                fila=y/8;
+                dir_atributo=6144+(fila*32);
+                for (x=0,x_hi=0;x<32;x++,x_hi +=8) {
+
+
+			//Ver en casos en que puede que haya menu activo y hay que hacer overlay
+			if (scr_ver_si_refrescar_por_menu_activo(x,fila)) {
+
+                	        byte_leido=screen[direccion];
+	                        attribute=screen[dir_atributo];
+
+				if (scr_refresca_sin_colores.v) attribute=56;
+
+
+        	                ink=attribute &7;
+                	        paper=(attribute>>3) &7;
+	                        bright=(attribute) &64;
+        	                flash=(attribute)&128;
+                	        if (flash) {
+                        	        //intercambiar si conviene
+	                                if (estado_parpadeo.v) {
+        	                                aux=paper;
+                	                        paper=ink;
+	                                        ink=aux;
+        	                        }
+                	        }
+
+				if (bright) {
+					ink +=8;
+					paper +=8;
+				}
+
+                        	for (bit=0;bit<8;bit++) {
+
+					color= ( byte_leido & 128 ? ink : paper );
+					scr_tsconf_putpixel_zx_mode(x_hi+bit,y,color);
+
+	                                byte_leido=byte_leido<<1;
+        	                }
+			}
+
+			//temp
+			//else {
+			//	printf ("no refrescamos zona x %d fila %d\n",x,fila);
+			//}
+
+
+                        direccion++;
+			dir_atributo++;
+                }
+
+        }
+
+}
+
+
+
 void screen_tsconf_refresca_no_rainbow(void)
 {
 
@@ -1303,23 +1387,15 @@ void screen_tsconf_refresca_no_rainbow(void)
 			int color;
 			color=out_254 & 7;
 
+			//screen_prism_refresca_no_rainbow_border(color);
+			scr_refresca_border_tsconf_cont();
 
-			if (color==0) {
-				//tiene que venir de la tabla ula2 de 256 colores
-				color=PRISM_INDEX_FIRST_COLOR+prism_palette_two[prism_ula2_border_colour];
-				//printf ("Color prism %d Index 12 bit: %d   Colour RGB: 0x%X\n",prism_ula2_border_colour,prism_palette_two[prism_ula2_border_colour],
-				//	spectrum_colortable_normal[  PRISM_INDEX_FIRST_COLOR+prism_palette_two[prism_ula2_border_colour]  ] );
-			}
-
-			//En caso de no rainbow y color no 0, la paleta de colores es la misma
-
-			screen_prism_refresca_no_rainbow_border(color);
 			modificado_border.v=0;
 		}
 
 	}
 
-	screen_prism_refresca_pantalla_comun();
+	scr_tsconf_refresca_pantalla_comun();
 
 }
 
@@ -1366,6 +1442,17 @@ void scr_tsconf_putpixel_text_mode(int x,int y,unsigned color)
 	y*=2;
 	scr_tsconf_putpixel_sum_border(x,y,color);
 	scr_tsconf_putpixel_sum_border(x,y+1,color);
+}
+
+//Hace putpixel pero teniendo en cuenta tamanyo de 2x2
+void scr_tsconf_putpixel_zx_mode(int x,int y,unsigned color)
+{
+	y*=2;
+	x*=2;
+	scr_tsconf_putpixel_sum_border(x,y,color);
+	scr_tsconf_putpixel_sum_border(x,y+1,color);
+	scr_tsconf_putpixel_sum_border(x+1,y,color);
+	scr_tsconf_putpixel_sum_border(x+1,y+1,color);
 }
 
 void scr_tsconf_putpixel_zoom_rainbow_text_mode(int x,int y,unsigned color)
@@ -1574,22 +1661,14 @@ void screen_tsconf_refresca_pantalla(void)
 
 	//modo clasico. sin rainbow
 	if (rainbow_enabled.v==0) {
-					if (border_enabled.v) {
-									//ver si hay que refrescar border
-									if (modificado_border.v)
-									{
-													scr_refresca_border();
-													modificado_border.v=0;
-									}
 
-					}
 
-					scr_refresca_pantalla_comun();
+					if (tsconf_get_video_mode_display()==0) screen_tsconf_refresca_no_rainbow();
 	}
 
 	else {
 	//modo rainbow - real video
-					scr_refresca_pantalla_rainbow_comun();
+					if (tsconf_get_video_mode_display()==0) scr_refresca_pantalla_rainbow_comun();
 	}
 
 }
@@ -2881,6 +2960,10 @@ void scr_refresca_pantalla_comun(void)
         }
 
 }
+
+
+
+
 
 void scr_mk14_linea(int x,int y,int longitud,int incx,int incy,int color)
 {

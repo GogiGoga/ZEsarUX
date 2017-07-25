@@ -34,7 +34,6 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 
--footer en windows por ejemplo se ve raro->se mezclan mensajes de F5 y de nombre version
 
 -ZRCP: enter-cpu-step && run se cuelga en windows
 
@@ -55,7 +54,6 @@ ver que hace zxpand aqui....
 
 *recomendar que o bien usen todo mayusculas o todo minusculas... en mac o windows no hay problemas, en linux si
 
--al cargar cinta, el footer se mezcla con F5 y nombre emulador
 
 -mk14
 *condiciones registros, establecer registros

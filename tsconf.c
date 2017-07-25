@@ -60,6 +60,19 @@ int tsconf_current_border_height=0;
 
 z80_byte tsconf_get_video_mode_display(void)
 {
+  /*
+  Modos de video:
+  256c.
+Bits 7..0 are index to CRAM.
+Each line address is aligned to 512.
+GXOffs and GYOffs add offset to X and Y start address in pixels.
+
+16c.
+Bits are index to CRAM, where PalSel.GPAL is 4 MSBs and the pixel are 4 LSBs of the index.
+Pixels are bits7..4 - left, bits3..0 - right.
+Each line address is aligned to 256.
+GXOffs and GYOffs add offset to X and Y start address in pixels.
+  */
   return (tsconf_af_ports[0]&3);
 }
 
@@ -69,6 +82,7 @@ z80_byte tsconf_get_video_size_display(void)
 }
 
 //Actualiza valores de variables de tamanyo pantalla segun modo de video actual
+//Modo de video ZX Spectrum solo tiene sentido con resolucion 256x192
 void tsconf_set_sizes_display(void)
 {
   z80_byte videosize=tsconf_get_video_size_display();
