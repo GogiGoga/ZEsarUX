@@ -43,6 +43,18 @@ void load_spg_snapshot_free(void)
   free(snbuf);
 }
 
+
+void demlz(z80_byte *zxram, z80_byte *data, int size)
+{
+  mlz_decompress_simple(
+	zxram,
+	16384, /* = limit */
+	data,
+	size
+);
+
+}
+
 void load_spg_snapshot(char *filename)
 {
   //Asignamos 4 MB para snapshot.
@@ -127,7 +139,12 @@ void load_spg_snapshot(char *filename)
       iff1.v = (hdr10->clk & 4) ? 1 : 0;
       iff2.v = iff1.v;
   		//comp.ts.zclk = hdr10->clk & 3;
-  		//comp.ts.page[3] = hdr10->win3_pg;
+      tsconf_af_ports[0x13]= hdr10->win3_pg;
+
+      debug_printf(VERBOSE_DEBUG,"Register PC set to %04XH",reg_pc);
+
+      tsconf_set_memory_pages();
+      tsconf_set_sizes_display();
 
   		z80_byte *data = &hdr10->data;
   		for (z80_byte i = 0; i < hdr10->n_blk; i++)
@@ -145,12 +162,12 @@ void load_spg_snapshot(char *filename)
   					break;
 
   				case 0x01:
-            debug_printf(VERBOSE_DEBUG,"Unsupported block type 1");
-  					//demlz(zxram, data, size);
+            debug_printf(VERBOSE_DEBUG,"Uncompressing block type 1. Size: %d Page: %d Offset: %d",size,page,offs);
+  					demlz(zxram, data, size);
   					break;
 
   				case 0x02:
-            debug_printf(VERBOSE_DEBUG,"Unsupported block type 2");
+            debug_printf(VERBOSE_DEBUG,"Unsupported block type 2. Size: %d Page: %d Offset: %d",size,page,offs);
   					//dehrust(zxram, data, size);
   					break;
   			}
