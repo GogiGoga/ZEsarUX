@@ -44,16 +44,18 @@ void load_spg_snapshot_free(void)
 }
 
 
-void demlz(z80_byte *zxram, z80_byte *data, int size)
+/*void demlz(z80_byte *zxram, z80_byte *data, int size)
 {
-  mlz_decompress_simple(
+  int leidos=mlz_decompress_simple(
 	zxram,
-	16384, /* = limit */
+	16384, // = limit
 	data,
 	size
 );
 
-}
+  debug_printf (VERBOSE_DEBUG,"Uncompressed mlz size: %d",leidos);
+
+}*/
 
 void load_spg_snapshot(char *filename)
 {
@@ -136,12 +138,13 @@ void load_spg_snapshot(char *filename)
   	{
   		reg_sp = hdr10->sp;
   		reg_pc = hdr10->pc;
+      debug_printf(VERBOSE_DEBUG,"Register PC set to %04XH",reg_pc);
       iff1.v = (hdr10->clk & 4) ? 1 : 0;
       iff2.v = iff1.v;
   		//comp.ts.zclk = hdr10->clk & 3;
       tsconf_af_ports[0x13]= hdr10->win3_pg;
+      debug_printf(VERBOSE_DEBUG,"Paging RAM %02XH to C000H",hdr10->win3_pg);
 
-      debug_printf(VERBOSE_DEBUG,"Register PC set to %04XH",reg_pc);
 
       tsconf_set_memory_pages();
       tsconf_set_sizes_display();
@@ -167,7 +170,7 @@ void load_spg_snapshot(char *filename)
   					break;
 
   				case 0x02:
-            debug_printf(VERBOSE_DEBUG,"Unsupported block type 2. Size: %d Page: %d Offset: %d",size,page,offs);
+            debug_printf(VERBOSE_DEBUG,"UNSUPPORTED block type 2. Size: %d Page: %d Offset: %d",size,page,offs);
   					//dehrust(zxram, data, size);
   					break;
   			}
