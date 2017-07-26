@@ -63,6 +63,7 @@
 #include "diviface.h"
 #include "snap_rzx.h"
 #include "snap_zsf.h"
+#include "snap_spg.h"
 
 
 #include "autoselectoptions.h"
@@ -4846,6 +4847,11 @@ void snapshot_load_name(char *nombre)
                 else if (!util_compare_file_extension(nombre,"zsf") ) {
 			set_snap_file_options(nombre);
                         load_zsf_snapshot(nombre);
+                }
+
+                else if (!util_compare_file_extension(nombre,"spg") ) {
+      set_snap_file_options(nombre);
+                        load_spg_snapshot(nombre);
                 }
 
 

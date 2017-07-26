@@ -13917,7 +13917,7 @@ int menu_avisa_si_extension_no_habitual(char *filtros[],char *archivo)
 void menu_quickload(MENU_ITEM_PARAMETERS)
 {
 
-        char *filtros[26];
+        char *filtros[27];
 
         filtros[0]="zx";
         filtros[1]="sp";
@@ -13956,7 +13956,9 @@ void menu_quickload(MENU_ITEM_PARAMETERS)
 
 	filtros[24]="zsf";
 
-	filtros[25]=0;
+	filtros[25]="spg";
+
+	filtros[26]=0;
 
 
         //guardamos directorio actual
@@ -14525,7 +14527,7 @@ void menu_tape_settings(MENU_ITEM_PARAMETERS)
 void menu_snapshot_load(MENU_ITEM_PARAMETERS)
 {
 
-        char *filtros[13];
+        char *filtros[14];
 
         filtros[0]="zx";
         filtros[1]="sp";
@@ -14540,7 +14542,8 @@ void menu_snapshot_load(MENU_ITEM_PARAMETERS)
         filtros[9]="ace";
 				filtros[10]="rzx";
 				filtros[11]="zsf";
-        filtros[12]=0;
+				filtros[12]="spg";
+        filtros[13]=0;
 
 
 
