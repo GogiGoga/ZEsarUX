@@ -404,7 +404,12 @@ void tsconf_set_memory_pages(void)
 	Bit 1 High bit of ROM selection and bank 8 (0) or 9 (1) if bit0 = 1.
 	*/
 
-	tsconf_memory_paged[0]=tsconf_rom_mem_table[rom_page];
+	//memconfig
+	//bit3 selects what is in #0000..#3FFF (0 - ROM, 1 - RAM).
+
+	if (tsconf_get_memconfig()&8) tsconf_memory_paged[0]=tsconf_ram_mem_table[rom_page];
+
+	else tsconf_memory_paged[0]=tsconf_rom_mem_table[rom_page];
 
 
 

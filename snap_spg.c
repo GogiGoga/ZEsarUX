@@ -33,6 +33,8 @@
 #include "mem128.h"
 #include "tsconf.h"
 
+extern void demlz(z80_byte *dst, z80_byte *src, int size);
+
 
 z80_byte *snbuf;
 
@@ -141,6 +143,7 @@ void load_spg_snapshot(char *filename)
       debug_printf(VERBOSE_DEBUG,"Register PC set to %04XH",reg_pc);
       iff1.v = (hdr10->clk & 4) ? 1 : 0;
       iff2.v = iff1.v;
+	debug_printf(VERBOSE_DEBUG,"Setting iff1/2 to %d", iff2.v);
   		//comp.ts.zclk = hdr10->clk & 3;
       tsconf_af_ports[0x13]= hdr10->win3_pg;
       debug_printf(VERBOSE_DEBUG,"Paging RAM %02XH to C000H",hdr10->win3_pg);

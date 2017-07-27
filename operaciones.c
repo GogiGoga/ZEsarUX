@@ -1936,7 +1936,7 @@ set_visualmembuffer(dir);
 		puntero=tsconf_return_segment_memory(dir);
 
 		if (dir<16384) {
-			return; //TODO si ram en rom
+			if ((tsconf_get_memconfig()&8)==0) return; //si no ram en rom
 		}
 
 		dir = dir & 16383;
