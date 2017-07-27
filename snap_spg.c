@@ -188,10 +188,12 @@ void load_spg_snapshot(char *filename)
 
 
   	/* SPG ver.0.x */
-    /*
+
   	else
   	{
-  		cpu.sp = hdr02->sp;
+      debug_printf(VERBOSE_ERR,"Unsupported SPG file ver.0.x. TO-DO!");
+
+  		/*cpu.sp = hdr02->sp;
   		cpu.pc = hdr02->pc;
   		cpu.iff1 = 0;
   		comp.ts.zclk = 0;
@@ -247,17 +249,17 @@ void load_spg_snapshot(char *filename)
   			const z80_byte mgr[] = {0xC5, 0x4F, 0xE6, 0xF8, 0x79, 0x28, 0x04, 0xE6, 0x07, 0xF6, 0x40, 0xF6, 0x10, 0x01, 0xFD, 0x7F, 0xED, 0x79, 0xC1, 0xC9};	// Pentagon
   			memcpy(page_ram(5) + hdr02->pgmgr_addr - 0x4000, mgr, sizeof(mgr));
   		}
-
+      */
   	}
 
-  	set_clk();
-  	set_banks();
+  	//set_clk();
+  	//set_banks();
 
-  	snbuf[0x20] = 0;	// to avoid garbage in header
-  	SetWindowText(wnd, (char*)snbuf);
-  	return 1;
+  	//snbuf[0x20] = 0;	// to avoid garbage in header
+  	//SetWindowText(wnd, (char*)snbuf);
+  	//return 1;
 
-*/
+
 
 
   load_spg_snapshot_free();

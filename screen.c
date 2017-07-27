@@ -1759,7 +1759,7 @@ void screen_tsconf_refresca_pantalla(void)
 	//modo clasico. sin rainbow
 	if (rainbow_enabled.v==0) {
 
-
+			printf ("modo video: %d\n",tsconf_get_video_mode_display() );
 					if (tsconf_get_video_mode_display()==0) screen_tsconf_refresca_no_rainbow();
 					if (tsconf_get_video_mode_display()==1 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
 					if (tsconf_get_video_mode_display()==2 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
