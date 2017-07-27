@@ -6484,7 +6484,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 					//Otros puertos en escritura, hacer debug
 					if ( (puerto & 32770) != 0 && puerto_l!=0xFE ) {
-						printf ("Writing TSConf port %04XH value %02XH\n",puerto,value);
+						//printf ("Writing TSConf port %04XH value %02XH\n",puerto,value);
 					}
 				}
 

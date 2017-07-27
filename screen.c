@@ -1299,6 +1299,7 @@ void screen_prism_refresca_no_rainbow(void)
 //Refresco pantalla sin rainbow en tsconf
 void scr_tsconf_refresca_pantalla_comun(void)
 {
+	//printf ("refresca\n");
 	int x,y,bit;
         z80_int direccion,dir_atributo;
         z80_byte byte_leido;
@@ -1309,7 +1310,10 @@ void scr_tsconf_refresca_pantalla_comun(void)
         z80_byte attribute,ink,paper,bright,flash,aux;
 
 
-       z80_byte *screen=get_base_mem_pantalla();
+       z80_byte *screen;
+			 screen=tsconf_ram_mem_table[tsconf_get_vram_page()];
+			 //temp
+			 //screen=tsconf_ram_mem_table[tsconf_af_ports[1]];
 
         //printf ("dpy=%x ventana=%x gc=%x image=%x\n",dpy,ventana,gc,image);
 	z80_byte x_hi;
@@ -1376,6 +1380,151 @@ void scr_tsconf_refresca_pantalla_comun(void)
 
 }
 
+
+//Refresco pantalla sin rainbow en tsconf
+void scr_tsconf_refresca_pantalla_16c_no_rainbow(void)
+{
+	printf ("refresca 16c. vram page: %d\n",tsconf_af_ports[1]);
+	int x,y,bit;
+        z80_int direccion,dir_atributo;
+        z80_byte byte_leido;
+        int color=0;
+        int fila;
+        //int zx,zy;
+
+        z80_byte attribute,ink,paper,bright,flash,aux;
+
+
+       z80_int puntero=0;
+
+			 z80_byte vrampage=tsconf_get_vram_page();
+
+			 z80_byte *screen=tsconf_ram_mem_table[vrampage];
+
+			 //temp saltar pagina
+			 //screen=tsconf_ram_mem_table[conta++];
+
+        //printf ("dpy=%x ventana=%x gc=%x image=%x\n",dpy,ventana,gc,image);
+	z80_byte x_hi;
+
+//      tsconf_current_pixel_width=360;
+      //tsconf_current_pixel_height=288;
+        for (y=0;y<tsconf_current_pixel_height;y++) {
+                //direccion=16384 | devuelve_direccion_pantalla(0,y);
+
+								z80_int puntero_orig=puntero;
+
+                for (x=0;x<tsconf_current_pixel_width;x++) {
+
+
+			//Ver en casos en que puede que haya menu activo y hay que hacer overlay
+									if (1==1) {
+			//if (scr_ver_si_refrescar_por_menu_activo(x,fila)) {
+
+                	    color=screen[puntero++];
+	        						scr_tsconf_putpixel_zx_mode(x,y,(color>>4)&0xF);
+											scr_tsconf_putpixel_zx_mode(x++,y,color&0xF);
+
+
+        	         }
+							}
+								puntero=puntero_orig+512;
+								if (puntero>=16384) {
+									puntero=0;
+									vrampage++;
+									screen=tsconf_ram_mem_table[vrampage];
+
+								}
+
+
+
+
+        }
+
+}
+
+//Refresco pantalla sin rainbow en tsconf
+void scr_tsconf_refresca_pantalla_256c_no_rainbow(void)
+{
+	printf ("refresca 256c. vram page: %d\n",tsconf_af_ports[1]);
+	int x,y,bit;
+        z80_int direccion,dir_atributo;
+        z80_byte byte_leido;
+        int color=0;
+        int fila;
+        //int zx,zy;
+
+        z80_byte attribute,ink,paper,bright,flash,aux;
+
+
+       z80_byte *screen;
+
+			 screen=tsconf_ram_mem_table[tsconf_get_vram_page()];
+
+        //printf ("dpy=%x ventana=%x gc=%x image=%x\n",dpy,ventana,gc,image);
+	z80_byte x_hi;
+
+        for (y=0;y<192;y++) {
+                //direccion=16384 | devuelve_direccion_pantalla(0,y);
+
+                //direccion=16384 | screen_addr_table[(y<<5)];
+                direccion=screen_addr_table[(y<<5)];
+
+
+                fila=y/8;
+                dir_atributo=6144+(fila*32);
+                for (x=0,x_hi=0;x<32;x++,x_hi +=8) {
+
+
+			//Ver en casos en que puede que haya menu activo y hay que hacer overlay
+			if (scr_ver_si_refrescar_por_menu_activo(x,fila)) {
+
+                	        byte_leido=screen[direccion];
+	                        attribute=screen[dir_atributo];
+
+				if (scr_refresca_sin_colores.v) attribute=56;
+
+
+        	                ink=attribute &7;
+                	        paper=(attribute>>3) &7;
+	                        bright=(attribute) &64;
+        	                flash=(attribute)&128;
+                	        if (flash) {
+                        	        //intercambiar si conviene
+	                                if (estado_parpadeo.v) {
+        	                                aux=paper;
+                	                        paper=ink;
+	                                        ink=aux;
+        	                        }
+                	        }
+
+				if (bright) {
+					ink +=8;
+					paper +=8;
+				}
+
+                        	for (bit=0;bit<8;bit++) {
+
+					color= ( byte_leido & 128 ? ink : paper );
+					scr_tsconf_putpixel_zx_mode(x_hi+bit,y,color);
+
+	                                byte_leido=byte_leido<<1;
+        	                }
+			}
+
+			//temp
+			//else {
+			//	printf ("no refrescamos zona x %d fila %d\n",x,fila);
+			//}
+
+
+                        direccion++;
+			dir_atributo++;
+                }
+
+        }
+
+}
 
 
 void screen_tsconf_refresca_no_rainbow(void)
@@ -1519,7 +1668,13 @@ void screen_tsconf_refresca_text_mode(void)
 	int ancho_linea=tsconf_current_pixel_width*2;
 	int alto_pantalla=tsconf_current_pixel_height;
 
-	z80_int puntero=0xc000;
+	//z80_int puntero=0xc000;
+
+	z80_int puntero=0x0000;
+
+	z80_byte *screen;
+	screen=tsconf_ram_mem_table[tsconf_get_vram_page() ];
+
 	int ancho_linea_caracteres=256;
 	int x=0;
 	int y=0;
@@ -1546,9 +1701,12 @@ void screen_tsconf_refresca_text_mode(void)
 
 	z80_byte atributo;
 
-	for (;puntero<0xde00;) {
-		caracter=peek_byte_no_time(puntero);
-		atributo=peek_byte_no_time(puntero+128);
+	for (;puntero<7680;) {
+		//caracter=peek_byte_no_time(puntero);
+		//atributo=peek_byte_no_time(puntero+128);
+
+		caracter=screen[puntero];
+		atributo=screen[puntero+128];
 
 		puntero++;
 
@@ -1574,7 +1732,7 @@ void screen_tsconf_refresca_text_mode(void)
 			y+=8;
 			if (y+8>alto_pantalla) {
 				//provocar fin
-				puntero=0xfffe;
+				puntero=7680;
 			}
 			puntero=puntero_orig+ancho_linea_caracteres; //saltar atributos
 			puntero_orig=puntero;
@@ -1664,6 +1822,8 @@ void screen_tsconf_refresca_pantalla(void)
 
 
 					if (tsconf_get_video_mode_display()==0) screen_tsconf_refresca_no_rainbow();
+					if (tsconf_get_video_mode_display()==1 )scr_tsconf_refresca_pantalla_16c_no_rainbow();
+					if (tsconf_get_video_mode_display()==2 )scr_tsconf_refresca_pantalla_256c_no_rainbow();
 	}
 
 	else {

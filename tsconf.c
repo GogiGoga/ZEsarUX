@@ -172,6 +172,11 @@ void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
     modificado_border.v=1;
   }
 
+  //temp debug vpage
+  if (puerto_h==1) {
+    printf ("---VPAGE: %02XH\n",puerto_h);
+  }
+
   //Bit 4 de 32765 es bit 0 de #21AF
   if (puerto_h==0x21) {
     puerto_32765 &=(255-16); //Reset bit 4
@@ -384,15 +389,25 @@ z80_byte tsconf_get_ram_bank_c0(void)
 z80_byte tsconf_get_text_font_page(void)
 {
   //En teoria es la misma pagina que registro af vpage(01) xor 1 pero algo falla, nos guiamos por pagina mapeada en segmento c0
-  z80_byte pagina=tsconf_get_ram_bank_c0() ^ 1;
+  //z80_byte pagina=tsconf_get_ram_bank_c0() ^ 1;
+
+  z80_byte pagina=tsconf_af_ports[1] ^ 1;
   return pagina;
+}
+
+z80_byte tsconf_get_vram_page(void)
+{
+  return tsconf_af_ports[1];
 }
 
 
 void tsconf_set_memory_pages(void)
 {
 	z80_byte rom_page=tsconf_get_rom_bank();
-	z80_byte ram_page_c0=tsconf_get_ram_bank_c0();
+
+  //z80_byte ram_page_c0=tsconf_get_ram_bank_c0();
+  //temp
+  z80_byte ram_page_c0=tsconf_af_ports[19];
 
   z80_byte ram_page_40=tsconf_af_ports[17];
   z80_byte ram_page_80=tsconf_af_ports[18];
@@ -407,9 +422,15 @@ void tsconf_set_memory_pages(void)
 	//memconfig
 	//bit3 selects what is in #0000..#3FFF (0 - ROM, 1 - RAM).
 
-	if (tsconf_get_memconfig()&8) tsconf_memory_paged[0]=tsconf_ram_mem_table[rom_page];
+	if (tsconf_get_memconfig()&8) {
+    debug_paginas_memoria_mapeadas[0]=rom_page;
+    tsconf_memory_paged[0]=tsconf_ram_mem_table[rom_page];
+  }
 
-	else tsconf_memory_paged[0]=tsconf_rom_mem_table[rom_page];
+	else {
+    debug_paginas_memoria_mapeadas[0]=128+rom_page;
+    tsconf_memory_paged[0]=tsconf_rom_mem_table[rom_page];
+  }
 
 
 
@@ -417,7 +438,7 @@ void tsconf_set_memory_pages(void)
 	tsconf_memory_paged[2]=tsconf_ram_mem_table[ram_page_80];
 	tsconf_memory_paged[3]=tsconf_ram_mem_table[ram_page_c0];
 
-  debug_paginas_memoria_mapeadas[0]=128+rom_page;
+
 	debug_paginas_memoria_mapeadas[1]=ram_page_40;
 	debug_paginas_memoria_mapeadas[2]=ram_page_80;
 	debug_paginas_memoria_mapeadas[3]=ram_page_c0;

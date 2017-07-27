@@ -3044,6 +3044,9 @@ int util_write_configfile(void)
   if (screen_show_splash_texts.v==0)          ADD_STRING_CONFIG,"--nosplash");
   if (opcion_no_splash.v)                     ADD_STRING_CONFIG,"--nowelcomemessage");
   if (rainbow_enabled.v)                      ADD_STRING_CONFIG,"--realvideo");
+
+  if (autodetect_rainbow.v==0)                ADD_STRING_CONFIG,"--no-detect-realvideo");
+
   if (ulaplus_presente.v)                     ADD_STRING_CONFIG,"--enableulaplus");
   if (spectra_enabled.v)                      ADD_STRING_CONFIG,"--enablespectra");
   if (timex_video_emulation.v)                ADD_STRING_CONFIG,"--enabletimexvideo");

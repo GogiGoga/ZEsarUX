@@ -1271,6 +1271,7 @@ printf (
 		"\n"
 
 		"--realvideo                Enable real video display - for Spectrum (rainbow and other advanced effects) and ZX80/81 (non standard & hi-res modes)\n"
+		"--no-detect-realvideo      Disable real video autodetection\n"
 		"--snoweffect               Enable snow effect support for Spectrum\n"
 		"--enableulaplus            Enable ULAplus video modes\n"
 		"--enablespectra            Enable Spectra video modes\n"
@@ -5117,6 +5118,10 @@ void parse_cmdline_options(void) {
 
 			else if (!strcmp(argv[puntero_parametro],"--realvideo")) {
 				enable_rainbow();
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--no-detect-realvideo")) {
+				autodetect_rainbow.v=0;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--enableulaplus")) {

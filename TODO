@@ -121,6 +121,10 @@ Pixels are bits7..4 - left, bits3..0 - right.
 Each line address is aligned to 256.
 GXOffs and GYOffs add offset to X and Y start address in pixels.
 
+-Cuando se interpreta solo vram y cuando bit shadow de 128k?
+
+-Forzado segmento C000 a paginacion tsconf. cuando se lee solo puerto 32765?
+
 
 
 
