@@ -1,85 +1,86 @@
 #include "cpu.h"
 //------------------- DeHrust --------------------------
 
-/*
-class BBStream
-{
-  private:
+//class BBStream
+//{
+  //private:
 	z80_byte* base;
 	z80_byte* p;
 	int   idx;
 	int   len;
-	bool  eof;
+	int  eof;
 	z80_int  bits;
 
-  public:
-	BBStream( z80_byte* from, int blockSize )
+  //public:
+
+        z80_byte dehrust_getByte( void )
+        {
+          if( p - base == len ) { eof = 1; return 0; }
+          return *p++;
+        }
+
+	void BBStream( z80_byte* from, int blockSize )
 	{
 	  base = p = from;
 
 	  len = blockSize;
 	  idx = 0;
-	  eof = false;
+	  eof = 0;
 
-	  bits  = getByte();
-	  bits += 256*getByte();
+	  bits  = dehrust_getByte();
+	  bits += 256*dehrust_getByte();
 	}
 
-	z80_byte getByte( void )
-	{
-	  if( p - base == len ) { eof = true; return 0; }
-	  return *p++;
-	}
 
-	z80_byte getBit()
+	z80_byte dehrust_getBit()
 	{
 	  z80_int mask[]  = { 0x8000, 0x4000, 0x2000, 0x1000, 0x800, 0x400, 0x200, 0x100, 0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1 };
 
 	  z80_byte bit = ( bits & mask[idx] ) ? 1 : 0;
 	  if( idx == 15 )
 	  {
-		bits  = getByte();
-		bits += 256*getByte();
+		bits  = dehrust_getByte();
+		bits += 256*dehrust_getByte();
 	  }
 
 	  idx = (idx + 1) % 16;
 	  return bit;
 	}
 
-	z80_byte getBits( int n )
+	z80_byte dehrust_getBits( int n )
 	{
 	  z80_byte r = 0;
-	  do { r = 2*r + getBit(); } while( --n );
+	  do { r = 2*r + dehrust_getBit(); } while( --n );
 	  return r;
 	}
 
-	bool error( void ) { return eof; }
-};
-*/
+	int dehrust_error( void ) { return eof; }
+//};
+
 
 /* depacker */
-/*
+
 z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 {
-  BBStream s(src, size);
+  BBStream(src, size);
 
-  z80_byte* to = dst;
+  z80_byte *to = dst;
 
-  *to++ = s.getByte();
+  *to++ = dehrust_getByte();
 
   z80_byte noBits = 2;
   z80_byte mask[] = { 0, 0, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80, 0 };
 
-  while( !s.error() )
+  while( !dehrust_error() )
   {
-	while (s.getBit())
-		*to++ = s.getByte();
+	while (dehrust_getBit())
+		*to++ = dehrust_getByte();
 
 	z80_int len = 0;
 	z80_byte bb; //  = 0;
 	do
 	{
-	  bb = s.getBits( 2 );
+	  bb = dehrust_getBits( 2 );
 	  len += bb;
 	} while( bb == 0x03 && len != 0x0f );
 
@@ -87,18 +88,18 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 	if( len == 0 )
 	{
-	  offset = 0xfff8 + s.getBits( 3 );
+	  offset = 0xfff8 + dehrust_getBits( 3 );
 	  *to++ = to[offset];
 	  continue;
 	}
 
 	if( len == 1 )
 	{
-	  z80_byte code = s.getBits(2);
+	  z80_byte code = dehrust_getBits(2);
 
 	  if( code == 2 )
 	  {
-		z80_byte b = s.getByte();
+		z80_byte b = dehrust_getByte();
 		if( b >= 0xe0 )
 		{
 		  b <<= 1; ++b; // rlca
@@ -109,7 +110,7 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 		  offset = 0xff00 + b - 0x0f;
 
 		  *to++ = to[offset];
-		  *to++ = s.getByte();
+		  *to++ = dehrust_getByte();
 		  *to++ = to[offset];
 		  continue;
 		}
@@ -118,10 +119,10 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 	  if( code == 0 || code == 1 )
 	  {
-		offset = s.getByte();
+		offset = dehrust_getByte();
 		offset += 256*(code ? 0xfe : 0xfd );
 	  }
-	  if( code == 3 ) offset = 0xffe0 + s.getBits( 5 );
+	  if( code == 3 ) offset = 0xffe0 + dehrust_getBits( 5 );
 
 	  for( z80_byte i = 0; i < 2; ++i ) *to++ = to[offset];
 	  continue;
@@ -129,40 +130,40 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 	if( len == 3 )
 	{
-	  if( s.getBit() )
+	  if( dehrust_getBit() )
 	  {
-		offset = 0xfff0 + s.getBits( 4 );
+		offset = 0xfff0 + dehrust_getBits( 4 );
 		*to++ = to[offset];
-		*to++ = s.getByte();
+		*to++ = dehrust_getByte();
 		*to++ = to[offset];
 		continue;
 	  }
 
-	  if( s.getBit() )
+	  if( dehrust_getBit() )
 	  {
-		z80_byte noBytes = 6 + s.getBits(4);
-		for( z80_byte i = 0; i < 2*noBytes; ++i ) *to++ = s.getByte();
+		z80_byte noBytes = 6 + dehrust_getBits(4);
+		for( z80_byte i = 0; i < 2*noBytes; ++i ) *to++ = dehrust_getByte();
 		continue;
 	  }
 
-	  len = s.getBits( 7 );
+	  len = dehrust_getBits( 7 );
 	  if( len == 0x0f )
 		  break; // EOF
 	  if( len <  0x0f )
-		  len = 256*len + s.getByte();
+		  len = 256*len + dehrust_getByte();
 	}
 
 	if( len == 2 ) ++len;
 
-	z80_byte code = s.getBits( 2 );
+	z80_byte code = dehrust_getBits( 2 );
 
 	if( code == 1 )
 	{
-	  z80_byte b = s.getByte();
+	  z80_byte b = dehrust_getByte();
 
 	  if( b >= 0xe0 )
 	  {
-		if( len > 3 ) return false;
+		if( len > 3 ) return 0;
 
 		b <<= 1; ++b; // rlca
 		b ^= 3;	   // xor c
@@ -170,19 +171,19 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 		offset = 0xff00 + b - 0x0f;
 
 		*to++ = to[offset];
-		*to++ = s.getByte();
+		*to++ = dehrust_getByte();
 		*to++ = to[offset];
 		continue;
 	  }
 	  offset = 0xff00 + b;
 	}
 
-	if( code == 0 ) offset = 0xfe00 + s.getByte();
-	if( code == 2 ) offset = 0xffe0 + s.getBits( 5 );
+	if( code == 0 ) offset = 0xfe00 + dehrust_getByte();
+	if( code == 2 ) offset = 0xffe0 + dehrust_getBits( 5 );
 	if( code == 3 )
 	{
-	  offset  = 256*( mask[noBits] + s.getBits(noBits) );
-	  offset += s.getByte();
+	  offset  = 256*( mask[noBits] + dehrust_getBits(noBits) );
+	  offset += dehrust_getByte();
 	}
 
 	for( z80_int i = 0; i < len; ++i ) *to++ = to[offset];
@@ -190,7 +191,7 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
   return to - dst;
 }
-*/
+
 
 //------------------- DeMegaLZ --------------------------
 

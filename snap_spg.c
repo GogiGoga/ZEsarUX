@@ -34,6 +34,7 @@
 #include "tsconf.h"
 
 extern void demlz(z80_byte *dst, z80_byte *src, int size);
+extern z80_int dehrust(z80_byte* dst, z80_byte* src, int size);
 
 
 z80_byte *snbuf;
@@ -173,8 +174,8 @@ void load_spg_snapshot(char *filename)
   					break;
 
   				case 0x02:
-            debug_printf(VERBOSE_DEBUG,"UNSUPPORTED block type 2. Size: %d Page: %d Offset: %d",size,page,offs);
-  					//dehrust(zxram, data, size);
+            debug_printf(VERBOSE_DEBUG,"Uncompressing block type 2. Size: %d Page: %d Offset: %d",size,page,offs);
+  					dehrust(zxram, data, size);
   					break;
   			}
 
