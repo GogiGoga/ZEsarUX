@@ -4764,12 +4764,12 @@ void menu_debug_registers_get_mem_page(z80_byte segmento,char *texto_pagina)
 
 	if (debug_paginas_memoria_mapeadas[segmento] & 128) {
 		//ROM
-		sprintf (texto_pagina,"ROM%d",debug_paginas_memoria_mapeadas[segmento] & 127);
+		sprintf (texto_pagina,"RO%X",debug_paginas_memoria_mapeadas[segmento] & 127);
 	}
 
 	else {
 		//RAM
-		sprintf (texto_pagina,"RAM%d",debug_paginas_memoria_mapeadas[segmento]);
+		sprintf (texto_pagina,"RA%X",debug_paginas_memoria_mapeadas[segmento]);
 	}
 }
 

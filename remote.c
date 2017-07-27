@@ -775,7 +775,7 @@ struct s_items_ayuda items_ayuda[]={
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tsconf-get-af-port",NULL,"index","Get TSConf XXAF port value"},
- {"tsconf-get-vram",NULL,"index","Get TSConf NVRAM value at index"},
+ {"tsconf-get-nvram",NULL,"index","Get TSConf NVRAM value at index"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
 	{"write-mapped-memory","|wmm","address value","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be separed by one space"},
@@ -3391,14 +3391,14 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 							 if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
 							 else {
 								 z80_byte value=tsconf_get_af_port(index);
-								 escribir_socket_format(misocket,"%02X",value);
+								 escribir_socket_format(misocket,"%02XH",value);
 							 }
 						}
 					}
 
 				}
 
-				else if (!strcmp(comando_sin_parametros,"tsconf-get-vram") ) {
+				else if (!strcmp(comando_sin_parametros,"tsconf-get-nvram") ) {
 
 			  	if (!MACHINE_IS_TSCONF) escribir_socket(misocket,"ERROR. Machine is not TSConf");
 					else {
