@@ -46,7 +46,7 @@ z80_byte ds1307_registers[64];
 
 z80_byte ds_1307_received_register_number;
 
-int temp_conta=0;
+//int temp_conta=0;
 
 int ds1307_sending_data_from_speccy=1;
 
