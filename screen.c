@@ -1387,8 +1387,8 @@ void scr_tsconf_refresca_pantalla_comun(void)
 
 }
 
-z80_byte temp_conta_ts=0;
-z80_byte temp_conta_ts2=0;
+//z80_byte temp_conta_ts=0;
+//z80_byte temp_conta_ts2=0;
 
 //Refresco pantalla sin rainbow en tsconf
 void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
@@ -1409,12 +1409,12 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 
 			 z80_byte vrampage;
 
-			 vrampage=temp_conta_ts;
+			 //vrampage=temp_conta_ts;
 
-printf ("refresca 16c/256c. vram page: %d modo: %d pagina forzada: %d\n",tsconf_af_ports[1],modo,vrampage);
+//printf ("refresca 16c/256c. vram page: %d modo: %d pagina forzada: %d\n",tsconf_af_ports[1],modo,vrampage);
 
-			 temp_conta_ts2++;
-			 if ((temp_conta_ts2 % 4)==0) temp_conta_ts++;
+			 //temp_conta_ts2++;
+			 //if ((temp_conta_ts2 % 4)==0) temp_conta_ts++;
 
 
 			 vrampage=tsconf_get_vram_page();
@@ -1767,6 +1767,9 @@ void screen_tsconf_refresca_pantalla(void)
 	//modo clasico. sin rainbow
 	if (rainbow_enabled.v==0) {
 			z80_byte modo_video=tsconf_get_video_mode_display();
+
+		//temp
+		//modo_video=2;
 
 			printf ("modo video: %d\n",modo_video );
 					if (modo_video==0) screen_tsconf_refresca_no_rainbow();
