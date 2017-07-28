@@ -566,5 +566,7 @@ extern void screen_set_window_zoom(int z);
 
 extern int get_rgb8_color (z80_byte color);
 
+extern void screen_tsconf_refresca_pantalla(void);
+
 
 #endif

@@ -61,5 +61,9 @@ extern int tsconf_current_border_height;
 
 extern z80_byte tsconf_get_video_mode_display(void);
 
+extern z80_byte tsconf_get_memconfig(void);
+
+extern z80_byte tsconf_get_vram_page(void);
+
 
 #endif
