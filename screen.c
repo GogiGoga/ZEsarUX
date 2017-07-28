@@ -1295,6 +1295,7 @@ void screen_prism_refresca_no_rainbow(void)
 
 }
 
+//z80_int temp_cc=0;
 
 //Refresco pantalla sin rainbow en tsconf
 void scr_tsconf_refresca_pantalla_comun(void)
@@ -1311,7 +1312,13 @@ void scr_tsconf_refresca_pantalla_comun(void)
 
 
        z80_byte *screen;
-			 screen=tsconf_ram_mem_table[tsconf_get_vram_page()];
+			 z80_byte vram_page=tsconf_get_vram_page();
+			 //vram_page=temp_cc/64;
+			 //temp_cc++;
+
+
+			 printf ("refresca modo 0. vram: %d\n",vram_page);
+			 screen=tsconf_ram_mem_table[vram_page];
 			 //temp
 			 //screen=tsconf_ram_mem_table[tsconf_af_ports[1]];
 
@@ -1387,11 +1394,12 @@ z80_byte temp_conta_ts2=0;
 void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 {
 
-	int x,y,bit;
-        z80_int direccion,dir_atributo;
-        z80_byte byte_leido;
+	int x,y;
+
+        //z80_int direccion,dir_atributo;
+        //z80_byte byte_leido;
         z80_byte color;
-        int fila;
+        //int fila;
         //int zx,zy;
 
 
@@ -1418,7 +1426,7 @@ printf ("refresca 16c/256c. vram page: %d modo: %d pagina forzada: %d\n",tsconf_
 			 //screen=tsconf_ram_mem_table[conta++];
 
         //printf ("dpy=%x ventana=%x gc=%x image=%x\n",dpy,ventana,gc,image);
-	z80_byte x_hi;
+	//z80_byte x_hi;
 
 //      tsconf_current_pixel_width=360;
       //tsconf_current_pixel_height=288;
@@ -1758,11 +1766,12 @@ void screen_tsconf_refresca_pantalla(void)
 
 	//modo clasico. sin rainbow
 	if (rainbow_enabled.v==0) {
+			z80_byte modo_video=tsconf_get_video_mode_display();
 
-			printf ("modo video: %d\n",tsconf_get_video_mode_display() );
-					if (tsconf_get_video_mode_display()==0) screen_tsconf_refresca_no_rainbow();
-					if (tsconf_get_video_mode_display()==1 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
-					if (tsconf_get_video_mode_display()==2 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
+			printf ("modo video: %d\n",modo_video );
+					if (modo_video==0) screen_tsconf_refresca_no_rainbow();
+					if (modo_video==1 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
+					if (modo_video==2 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
 	}
 
 	else {
