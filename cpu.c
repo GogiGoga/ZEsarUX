@@ -2645,8 +2645,13 @@ void set_machine_params(void)
 
 
 									 	                screen_testados_linea=228;
-									         	        screen_invisible_borde_superior=7;
-									                 	screen_invisible_borde_derecho=104;
+
+									                 	//screen_invisible_borde_derecho=104;
+
+																		//Puede haber border de tamaño 0
+																		//screen_invisible_borde_superior=0;
+																		//screen_borde_superior=0;
+																		//screen_total_borde_inferior=0;
 
 
 						}

@@ -6431,6 +6431,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 					//Puerto tipicamente 32765
 					//The additional memory features of the 128K/+2 are controlled to by writes to port 0x7ffd. As normal on Sinclair hardware, the port address is in fact only partially decoded and the hardware will respond to any port address with bits 1 and 15 reset. However, 0x7ffd should be used if at all possible to avoid conflicts with other hardware.
 
+
 					if ( (puerto & 32770) == 0 ) {
 
 						//printf ("paginacion pc: %d\n",reg_pc);
@@ -6439,7 +6440,11 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 						//ver si paginacion desactivada
 						//if (puerto_32765 & 32) return;
 
-						if ((puerto_32765 & 32)==0) {
+						printf ("Paginando mediante 32765. valor: %02XH\n",value);
+
+
+						if (1==1) {
+						//if ((puerto_32765 & 32)==0) {
 
 							puerto_32765=value;
 
@@ -6460,8 +6465,11 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 							//Paginar RAM y ROM
 							tsconf_set_memory_pages();
 
-							printf ("Paginando mediante 32765\n");
 
+						}
+
+						else {
+							printf ("Paginacion 32765 desactivada\n");
 						}
 			    }
 
