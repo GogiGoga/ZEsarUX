@@ -1396,11 +1396,9 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 
 	int x,y;
 
-        //z80_int direccion,dir_atributo;
-        //z80_byte byte_leido;
+
         z80_byte color;
-        //int fila;
-        //int zx,zy;
+
 
 
 
@@ -1422,14 +1420,7 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 
 			 z80_byte *screen=tsconf_ram_mem_table[vrampage];
 
-			 //temp saltar pagina
-			 //screen=tsconf_ram_mem_table[conta++];
 
-        //printf ("dpy=%x ventana=%x gc=%x image=%x\n",dpy,ventana,gc,image);
-	//z80_byte x_hi;
-
-//      tsconf_current_pixel_width=360;
-      //tsconf_current_pixel_height=288;
         for (y=0;y<tsconf_current_pixel_height;y++) {
                 //direccion=16384 | devuelve_direccion_pantalla(0,y);
 
@@ -1457,7 +1448,10 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 
         	         }
 							}
-								puntero=puntero_orig+512;
+								//Siguiente linea
+								if (modo==1) puntero=puntero_orig+256;
+								else puntero=puntero_orig+512;
+
 								if (puntero>=16384) {
 									puntero=0;
 									vrampage++;
@@ -1773,8 +1767,8 @@ void screen_tsconf_refresca_pantalla(void)
 
 			printf ("modo video: %d\n",modo_video );
 					if (modo_video==0) screen_tsconf_refresca_no_rainbow();
-					if (modo_video==1 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
-					if (modo_video==2 )scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
+					if (modo_video==1)scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
+					if (modo_video==2)scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
 	}
 
 	else {
