@@ -1298,7 +1298,7 @@ void screen_prism_refresca_no_rainbow(void)
 //z80_int temp_cc=0;
 
 //Refresco pantalla sin rainbow en tsconf
-void scr_tsconf_refresca_pantalla_comun(void)
+void scr_tsconf_refresca_pantalla_zxmode_no_rainbow_comun(void)
 {
 	//printf ("refresca\n");
 	int x,y,bit;
@@ -1338,7 +1338,8 @@ void scr_tsconf_refresca_pantalla_comun(void)
 
 
 			//Ver en casos en que puede que haya menu activo y hay que hacer overlay
-			if (scr_ver_si_refrescar_por_menu_activo(x,fila)) {
+			if (1==1) {
+			//if (scr_ver_si_refrescar_por_menu_activo(x,fila)) {
 
                 	        byte_leido=screen[direccion];
 	                        attribute=screen[dir_atributo];
@@ -1387,8 +1388,8 @@ void scr_tsconf_refresca_pantalla_comun(void)
 
 }
 
-//z80_byte temp_conta_ts=0;
-//z80_byte temp_conta_ts2=0;
+z80_byte temp_conta_ts=0;
+z80_byte temp_conta_ts2=0;
 
 //Refresco pantalla sin rainbow en tsconf
 void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
@@ -1406,6 +1407,8 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
        z80_int puntero=0;
 
 			 z80_byte vrampage;
+			 vrampage=tsconf_get_vram_page();
+
 
 			 //vrampage=temp_conta_ts;
 
@@ -1415,7 +1418,7 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 			 //if ((temp_conta_ts2 % 4)==0) temp_conta_ts++;
 
 
-			 vrampage=tsconf_get_vram_page();
+
 
 
 			 z80_byte *screen=tsconf_ram_mem_table[vrampage];
@@ -1468,7 +1471,7 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 
 
 
-void screen_tsconf_refresca_no_rainbow(void)
+void scr_tsconf_refresca_pantalla_zxmode_no_rainbow(void)
 {
 
 	if (border_enabled.v) {
@@ -1485,7 +1488,7 @@ void screen_tsconf_refresca_no_rainbow(void)
 
 	}
 
-	scr_tsconf_refresca_pantalla_comun();
+	scr_tsconf_refresca_pantalla_zxmode_no_rainbow_comun();
 
 }
 
@@ -1762,11 +1765,9 @@ void screen_tsconf_refresca_pantalla(void)
 	if (rainbow_enabled.v==0) {
 			z80_byte modo_video=tsconf_get_video_mode_display();
 
-		//temp
-		//modo_video=2;
 
 			printf ("modo video: %d\n",modo_video );
-					if (modo_video==0) screen_tsconf_refresca_no_rainbow();
+					if (modo_video==0) scr_tsconf_refresca_pantalla_zxmode_no_rainbow();
 					if (modo_video==1)scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
 					if (modo_video==2)scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
 	}
