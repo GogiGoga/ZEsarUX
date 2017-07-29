@@ -111,6 +111,8 @@ void load_spg_snapshot(char *filename)
   	//load_spec_colors();
   	//reset_sound();
 
+    tsconf_hard_reset();
+
     /*switch (conf.spg_mem_init)
     {
     default:

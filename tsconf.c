@@ -243,7 +243,6 @@ af_registers[19] page at c000 at reset: 0
 
 Segmentos 4000 y 8000 siempre determinados por esos 17 y 18
 
-Parece que espacio 0-3fff viene determinado por bits W0_RAM y W0_MAP pero aun no se como
 
 En espacio c000 interviene:
 af_registers[19] (page3)

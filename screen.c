@@ -1326,9 +1326,7 @@ void scr_tsconf_refresca_pantalla_zxmode_no_rainbow_comun(void)
 	z80_byte x_hi;
 
         for (y=0;y<192;y++) {
-                //direccion=16384 | devuelve_direccion_pantalla(0,y);
 
-                //direccion=16384 | screen_addr_table[(y<<5)];
                 direccion=screen_addr_table[(y<<5)];
 
 
