@@ -166,17 +166,18 @@ void load_spg_snapshot(char *filename)
   			switch ((hdr10->blocks[i].size & 0xC0) >> 6)
   			{
   				case 0x00:
-            debug_printf(VERBOSE_DEBUG,"Copying block type 0. Size: %d Page: %d Offset: %d",size,page,offs);
+            debug_printf(VERBOSE_DEBUG,"Copying block type 0 (uncompressed). Size: %d Page: %d Offset: %d",size,page,offs);
   					memcpy(zxram, data, size);
   					break;
 
   				case 0x01:
-            debug_printf(VERBOSE_DEBUG,"Uncompressing block type 1. Size: %d Page: %d Offset: %d",size,page,offs);
+            debug_printf(VERBOSE_DEBUG,"Uncompressing block type 1 (mlz). Size: %d Page: %d Offset: %d",size,page,offs);
   					demlz(zxram, data, size);
   					break;
 
   				case 0x02:
-            debug_printf(VERBOSE_DEBUG,"Uncompressing block type 2. Size: %d Page: %d Offset: %d",size,page,offs);
+            debug_printf(VERBOSE_DEBUG,"Uncompressing block type 2 (hrust). Size: %d Page: %d Offset: %d",size,page,offs);
+            printf("Uncompressing block type 2 (hrust). Size: %d Page: %d Offset: %d\n",size,page,offs);
   					dehrust(zxram, data, size);
   					break;
   			}
@@ -262,7 +263,7 @@ void load_spg_snapshot(char *filename)
   	//return 1;
 
 
-
+    sleep(2);
 
   load_spg_snapshot_free();
 }

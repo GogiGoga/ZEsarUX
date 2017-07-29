@@ -149,6 +149,21 @@ GXOffs and GYOffs add offset to X and Y start address in pixels.
 
 -Store atributos después de cada opcode no hacerse si máquina es tsconf.  Misma excepción que para prism
 
+-Ver si depack de hrust esta correcto ahora o antes, o era equivalente. No parece haber diferencia de un metodo al otro:
+--- spg_depack.c.anterior       2017-07-29 11:36:46.000000000 +0200
++++ spg_depack.c        2017-07-29 11:39:40.000000000 +0200
+@@ -89,7 +89,8 @@
+        if( len == 0 )
+        {
+          offset = 0xfff8 + dehrust_getBits( 3 );
+-         *to++ = to[offset]; 
++         *to = to[offset];
++               to++;
+          continue;
+        }
+
+
+
 
 
 

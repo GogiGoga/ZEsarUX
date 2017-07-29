@@ -89,7 +89,8 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	if( len == 0 )
 	{
 	  offset = 0xfff8 + dehrust_getBits( 3 );
-	  *to++ = to[offset];
+	  *to = to[offset];
+		to++;
 	  continue;
 	}
 
@@ -109,9 +110,15 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 		  offset = 0xff00 + b - 0x0f;
 
-		  *to++ = to[offset];
-		  *to++ = dehrust_getByte();
-		  *to++ = to[offset];
+		  *to = to[offset];
+			to++;
+
+		  *to = dehrust_getByte();
+			to++;
+
+		  *to = to[offset];
+			to++;
+
 		  continue;
 		}
 		offset = 0xff00 + b;
@@ -124,7 +131,10 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	  }
 	  if( code == 3 ) offset = 0xffe0 + dehrust_getBits( 5 );
 
-	  for( z80_byte i = 0; i < 2; ++i ) *to++ = to[offset];
+	  for( z80_byte i = 0; i < 2; ++i ) {
+			*to = to[offset];
+			to++;
+		}
 	  continue;
 	}
 
@@ -133,9 +143,15 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	  if( dehrust_getBit() )
 	  {
 		offset = 0xfff0 + dehrust_getBits( 4 );
-		*to++ = to[offset];
-		*to++ = dehrust_getByte();
-		*to++ = to[offset];
+		*to = to[offset];
+		to++;
+
+		*to = dehrust_getByte();
+		to++;
+
+		*to = to[offset];
+		to++;
+
 		continue;
 	  }
 
@@ -170,9 +186,15 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 		offset = 0xff00 + b - 0x0f;
 
-		*to++ = to[offset];
-		*to++ = dehrust_getByte();
-		*to++ = to[offset];
+		*to = to[offset];
+		to++;
+
+		*to = dehrust_getByte();
+		to++;
+
+		*to = to[offset];
+		to++;
+
 		continue;
 	  }
 	  offset = 0xff00 + b;
@@ -186,7 +208,10 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	  offset += dehrust_getByte();
 	}
 
-	for( z80_int i = 0; i < len; ++i ) *to++ = to[offset];
+	for( z80_int i = 0; i < len; ++i ) {
+		*to = to[offset];
+		to++;
+	}
   }
 
   return to - dst;

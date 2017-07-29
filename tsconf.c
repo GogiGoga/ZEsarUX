@@ -449,7 +449,7 @@ void tsconf_set_memory_pages(void)
 
 void tsconf_hard_reset(void)
 {
-  //temporal. hacer que al hard reset de tsconf se vuelva a mapear la rom de la bios
+
   reset_cpu();
   temp_tsconf_in_system_rom_flag=1;
   tsconf_af_ports[0x21]=4;

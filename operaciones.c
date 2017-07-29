@@ -6460,6 +6460,8 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 							//Paginar RAM y ROM
 							tsconf_set_memory_pages();
 
+							printf ("Paginando mediante 32765\n");
+
 						}
 			    }
 
