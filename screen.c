@@ -1854,7 +1854,7 @@ void screen_tsconf_refresca_rainbow(void) {
         ancho=get_total_ancho_rainbow();
         alto=get_total_alto_rainbow();
 
-				printf ("alto: %d\n",alto);
+				//printf ("alto: %d\n",alto);
 
         int x,y,bit;
 

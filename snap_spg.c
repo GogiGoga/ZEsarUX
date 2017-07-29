@@ -263,7 +263,7 @@ void load_spg_snapshot(char *filename)
   	//return 1;
 
 
-    sleep(2);
+    //sleep(2);
 
   load_spg_snapshot_free();
 }
