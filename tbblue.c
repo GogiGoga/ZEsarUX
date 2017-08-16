@@ -192,6 +192,10 @@ void tbblue_reset_sprites(void)
 
 	tbblue_port_303b=0;
 
+	tbblue_registers[22]=0;
+	tbblue_registers[23]=0;
+
+
 }
 
 

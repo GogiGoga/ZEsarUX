@@ -5961,7 +5961,21 @@ void screen_store_scanline_rainbow_solo_display(void)
 				//Inicializar puntero a layer2 de tbblue, irlo incrementando a medida que se ponen pixeles
 				int tbblue_layer2_offset=tbblue_get_offset_start_layer2();
 
-				tbblue_layer2_offset +=scanline_copia*256;
+				//Mantener el offset y en 0..255
+				z80_byte tbblue_reg_23=tbblue_registers[23];
+				tbblue_reg_23 +=scanline_copia;
+
+				tbblue_layer2_offset +=tbblue_reg_23*256;
+
+				z80_byte tbblue_reg_22=tbblue_registers[22];
+
+/*
+(R/W) 22 => Layer2 Offset X
+  bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
+
+(R/W) 23 => Layer2 Offset Y
+  bist 7-0 = Y Offset (0-255)(Reset to 0 after a reset)
+*/
 
 
         fila=scanline_copia/8;
@@ -6194,7 +6208,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 				//Si layer2 tbblue
 				if (MACHINE_IS_TBBLUE && tbblue_is_active_layer2() ) {
-						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset];
+						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
 
 						//Si layer2 encima
 						if ( (tbblue_port_123b & 16)==0) {
@@ -6234,7 +6248,8 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
                                 byte_leido=byte_leido<<1;
 
 
-																tbblue_layer2_offset++;
+																//tbblue_layer2_offset++;
+				tbblue_reg_22++;
                         }
 			direccion++;
                 	//dir_atributo++;
