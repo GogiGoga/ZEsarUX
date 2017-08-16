@@ -100,10 +100,11 @@ O quizá setting configurable
 *modos turbo next 14 y 28 mhz
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
-*TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
+*TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
 *layer priorities
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
+*nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1
 
 -FAQ esxdos handler. Comentar mayúsculas etc
 
@@ -143,9 +144,13 @@ Pixels are bits7..4 - left, bits3..0 - right.
 Each line address is aligned to 256.
 GXOffs and GYOffs add offset to X and Y start address in pixels.
 
+-320 lineas
+
 -Cuando se interpreta solo vram y cuando bit shadow de 128k?
 
 -Forzado segmento C000 a paginacion tsconf. cuando se lee solo puerto 32765?
+
+-tsconf border en modos rainbow
 
 -Store atributos después de cada opcode no hacerse si máquina es tsconf.  Misma excepción que para prism
 
@@ -1410,6 +1415,8 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 
 *** Menu  ***
+
+-conversor archivos
 
 -Otra mejora: poder mover ventanas menu con ratón 
 

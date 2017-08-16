@@ -1547,15 +1547,20 @@ void scr_tsconf_putpixel_zx_mode(int x,int y,unsigned color)
 	scr_tsconf_putpixel_sum_border(x+1,y+1,color);
 }
 
-void scr_tsconf_putpixel_zoom_rainbow_text_mode(int x,int y,unsigned color)
+void scr_tsconf_putpixel_zoom_rainbow_text_mode(unsigned color,z80_int *puntero_rainbow,int ancho_linea)
 {
 
 
-int margenx_izq=tsconf_current_border_width*2;
-int margeny_arr=tsconf_current_border_height*2;
-	y*=2;
-	scr_putpixel_zoom_rainbow(x+margenx_izq,y+margeny_arr,color);
-	scr_putpixel_zoom_rainbow(x+margenx_izq,y+margeny_arr+1,color);
+
+
+	//puntero_rainbow +=margeny_arr*ancho_linea;
+	//puntero_rainbow +=margenx_izq;
+
+	*puntero_rainbow=color;
+
+	puntero_rainbow +=ancho_linea;
+	*puntero_rainbow=color;
+
 }
 
 //Muestra un caracter en pantalla, al estilo del spectrum o zx80/81 o jupiter ace
@@ -1564,7 +1569,7 @@ int margeny_arr=tsconf_current_border_height*2;
 //inverse si o no
 //ink, paper
 //si emula fast mode o no
-void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel)
+void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_int *puntero_rainbow,int ancho_rainbow)
 {
 
         z80_byte color;
@@ -1581,26 +1586,37 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z8
 
         //y=y*8;
 
-        for (line=0;line<8;line++,y++) {
+				z80_int *puntero_rainbow_orig;
+
+        for (line=0;line<alto;line++,y++) {
+					puntero_rainbow_orig=puntero_rainbow;
           byte_leido=*puntero++;
           if (inverse.v==1) byte_leido = byte_leido ^255;
           for (bit=0;bit<8;bit++) {
                 if (byte_leido & 128 ) color=tinta;
                 else color=papel;
 
-
-
                 byte_leido=(byte_leido&127)<<1;
 
-								if (scr_ver_si_refrescar_por_menu_activo((x+bit)/8,y/8)) {
+								if (puntero_rainbow!=NULL) {
 
-										//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
-										if (rainbow_enabled.v==1) scr_tsconf_putpixel_zoom_rainbow_text_mode(x+bit,y,color);
+											scr_tsconf_putpixel_zoom_rainbow_text_mode(color,puntero_rainbow,ancho_rainbow);
+											puntero_rainbow++;
 
-                		else scr_tsconf_putpixel_text_mode(x+bit,y,color);
+								}
+
+
+								else {
+									if (scr_ver_si_refrescar_por_menu_activo((x+bit)/8,y/8)) {
+
+										scr_tsconf_putpixel_text_mode(x+bit,y,color);
+									}
 								}
 
            }
+
+					 puntero_rainbow=puntero_rainbow_orig;
+					 puntero_rainbow +=ancho_rainbow;
         }
 }
 
@@ -1654,7 +1670,7 @@ void screen_tsconf_refresca_text_mode(void)
 		puntero++;
 
 		caracter_text=caracter;
-		if (caracter<32 || caracter>127) caracter_text='.';
+		//if (caracter<32 || caracter>127) caracter_text='.';
 		//printf ("%c",caracter_text);
 
 		offset_caracter=caracter*8;
@@ -1663,9 +1679,7 @@ void screen_tsconf_refresca_text_mode(void)
 		tinta=atributo&15;
 		papel=(atributo>>4)&15;
 
-		scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],x,y,inverse,tinta,papel);
-		//scr_tsconf_putsprite_comun(memoria_spectrum,x,y,inverse,0,7);
-
+		scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],8,x,y,inverse,tinta,papel,NULL,0);
 
 
 		x+=ancho_caracter;
@@ -1758,7 +1772,7 @@ void screen_tsconf_refresca_pantalla(void)
 			z80_byte modo_video=tsconf_get_video_mode_display();
 
 
-			printf ("modo video: %d\n",modo_video );
+			//printf ("modo video: %d\n",modo_video );
 					if (modo_video==0) scr_tsconf_refresca_pantalla_zxmode_no_rainbow();
 					if (modo_video==1)scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(1);
 					if (modo_video==2)scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(2);
@@ -5724,8 +5738,11 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 
         puntero_buf_rainbow=&rainbow_buffer[ y_rainbow*total_ancho_rainbow ];
 
-        puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+        //puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 
+				//Margenes border
+				puntero_buf_rainbow +=tsconf_current_border_width*2;
+				puntero_buf_rainbow +=total_ancho_rainbow*tsconf_current_border_height*2;
 
         int x,bit;
         z80_int direccion;
@@ -5764,6 +5781,75 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 
 
 	int posicion_array_pixeles_atributos=0;
+
+	if (videomode==3) {
+		//modo texto
+		int ancho_caracter=8;
+		int ancho_linea=tsconf_current_pixel_width*2;
+
+
+
+
+		z80_int puntero=0x0000;
+
+		z80_byte *screen;
+		screen=tsconf_ram_mem_table[tsconf_get_vram_page() ];
+
+		int ancho_linea_caracteres=256;
+		int x=0;
+		int y=scanline_copia;
+		puntero=fila*256;
+
+		z80_byte font_page=tsconf_get_text_font_page();
+
+		z80_byte *puntero_fuente;
+		puntero_fuente=tsconf_ram_mem_table[font_page];
+
+		z80_int puntero_orig=puntero;
+
+		z80_byte caracter,caracter_text;
+
+		z80_bit inverse;
+
+    inverse.v=0;
+
+    z80_int offset_caracter;
+
+    z80_byte tinta,papel;
+
+    z80_byte atributo;
+
+        for (x=0;x<ancho_linea;x+=ancho_caracter) {
+                //caracter=peek_byte_no_time(puntero);
+                //atributo=peek_byte_no_time(puntero+128);
+
+                caracter=screen[puntero];
+                atributo=screen[puntero+128];
+
+                puntero++;
+
+                caracter_text=caracter;
+                //if (caracter<32 || caracter>127) caracter_text='.';
+                //printf ("%c",caracter_text);
+
+                offset_caracter=caracter*8;
+
+								//Sumarle scanline % 8
+								offset_caracter +=(y % 8);
+
+                //No tengo ni idea de si se leen los atributos asi, pero parece similar al real
+                tinta=atributo&15;
+                papel=(atributo>>4)&15;
+
+                scr_tsconf_putsprite_comun(&puntero_fuente[offset_caracter],1,x,y,inverse,tinta,papel,puntero_buf_rainbow,total_ancho_rainbow);
+
+								puntero_buf_rainbow+=ancho_caracter;
+
+
+
+		}
+	}
+
 
 				if (videomode==1 || videomode==2) {
 					//puntero a vram
