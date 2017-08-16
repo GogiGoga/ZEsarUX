@@ -86,9 +86,15 @@ z80_byte tbblue_port_303b;
 
 Registros internos implicados:
 
-(R/W) 19 => Layer 2 RAM page
+
+(R/W) 18 => Layer 2 RAM page
  bits 7-6 = Reserved, must be 0
  bits 5-0 = SRAM page
+
+(R/W) 19 => Layer 2 RAM shadow page
+ bits 7-6 = Reserved, must be 0
+ bits 5-0 = SRAM page
+
 
 (R/W) 20 => Layer 2 transparency color
   bits 7-4 = Reserved, must be 0
@@ -100,7 +106,7 @@ Registros internos implicados:
   bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
 
 (R/W) 23 => Layer2 Offset Y
-  bist 7-0 = Y Offset (0-191)(Reset to 0 after a reset)
+  bist 7-0 = Y Offset (0-255)(Reset to 0 after a reset)
 
 
 Posiblemente registro 20 aplica a cuando el layer2 esta por detras de pantalla de spectrum, y dice el color de pantalla de spectrum
@@ -114,6 +120,8 @@ Se accede en modo escritura en 0000-3fffh mediante puerto:
 Banking in Layer2 is out 4667 ($123B)
 bit 0 = write enable, which changes writes from 0-3fff to write to layer2,
 bit 1 = Layer2 ON or OFF set=ON,
+bit 2 = ????
+bit 3 = Use register 19 instead of 18 to tell sram page
 bit 4 puts layer 2 behind the normal spectrum screen
 bit 6 and 7 are to say which 16K section is paged in,
 $03 = 00000011b Layer2 on and writable and top third paged in at $0000,
@@ -158,7 +166,9 @@ int tbblue_is_active_layer2(void)
 
 int tbblue_get_offset_start_layer2(void)
 {
-	int offset=tbblue_registers[19]&63;
+	int offset=tbblue_registers[18]&63;
+	if (tbblue_port_123b & 8 ) offset=tbblue_registers[19]&63;
+	offset=tbblue_registers[18]&63;
 	offset*=16384;
 
 	return offset;
@@ -1249,7 +1259,10 @@ void tbblue_hard_reset(void)
 
 //TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
 	//0x080000 – 0x0FFFFF (512K) => Extra RAM
+	tbblue_registers[18]=32;
 	tbblue_registers[19]=32;
+
+	tbblue_port_123b=0;
 
 	tbblue_bootrom.v=1;
 	tbblue_set_memory_pages();
