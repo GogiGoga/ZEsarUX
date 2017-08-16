@@ -95,7 +95,6 @@ O quizá setting configurable
 
 -tbblue:
 *Raster tbblue. 
-*scroll hardware tbblue layer2
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *sid commodore para tbbue. ver ReSID
 *modos turbo next 14 y 28 mhz
@@ -104,6 +103,7 @@ O quizá setting configurable
 *TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
 *layer priorities
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
+*revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 
 -FAQ esxdos handler. Comentar mayúsculas etc
 
