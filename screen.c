@@ -1873,11 +1873,12 @@ void screen_tsconf_refresca_rainbow(void) {
         int x,y,bit;
 
         //margenes de zona interior de pantalla. Para overlay menu
-        int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
+        /*int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
         int margenx_der=screen_total_borde_izquierdo*border_enabled.v+512;
         int margeny_arr=screen_borde_superior*border_enabled.v;
-        int margeny_aba=screen_borde_superior*border_enabled.v+384;
+        int margeny_aba=screen_borde_superior*border_enabled.v+384;*/
 
+				//en tsconf menu no aparece con margen de border. Sale tal cual desde 0,0
 
         //para overlay menu tambien
         //int fila;
@@ -1897,24 +1898,25 @@ void screen_tsconf_refresca_rainbow(void) {
 
                         //Ver si esa zona esta ocupada por texto de menu u overlay
 
-                        if (y>=margeny_arr && y<margeny_aba && x>=margenx_izq && x<margenx_der) {
-
+                        //if (y>=margeny_arr && y<margeny_aba && x>=margenx_izq && x<margenx_der) {
+												if (y<192 && x<256) {
 
 
                                 //normalmente a 48
                                 //int screen_total_borde_izquierdo;
 
 				dibujar=0;
-				menu_x=(x-margenx_izq)/8;
-				menu_y=(y-margeny_arr)/8;
-				if (menu_x>31) dibujar=1;
-				else if (menu_y>23) dibujar=1;
-				else if (scr_ver_si_refrescar_por_menu_activo(menu_x,menu_y)) dibujar=1;
+				//menu_x=(x-margenx_izq)/8;
+				//menu_y=(y-margeny_arr)/8;
+				menu_x=x/8;
+				menu_y=y/8;
+
+				if (scr_ver_si_refrescar_por_menu_activo(menu_x,menu_y)) dibujar=1;
 
                         }
 
 												//temp
-												dibujar=1;
+												//dibujar=1;
 
                         if (dibujar==1) {
 
