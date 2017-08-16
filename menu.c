@@ -2628,6 +2628,10 @@ margenx_izq=PRISM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
 					margeny_arr=QL_TOP_BORDER_NO_ZOOM*border_enabled.v;
 	}
 
+	else if (MACHINE_IS_TSCONF) {
+		margenx_izq=margeny_arr=0;
+	}
+
 	*miz=margenx_izq;
 	*mar=margeny_arr;
 
