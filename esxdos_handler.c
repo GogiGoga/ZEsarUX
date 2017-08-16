@@ -323,6 +323,10 @@ void esxdos_handler_call_f_open(void)
 				escritura=0;
 			break;
 
+			case ESXDOS_RST8_FA_READ|ESXDOS_RST8_FA_WRITE:
+				strcpy(fopen_mode,"wb");
+			break;
+
 			case ESXDOS_RST8_FA_CREATE_NEW|ESXDOS_RST8_FA_WRITE:
 				strcpy(fopen_mode,"wb");
 			break;
