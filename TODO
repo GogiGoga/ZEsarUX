@@ -96,7 +96,6 @@ O quizá setting configurable
 -tbblue:
 *Raster tbblue. 
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
-*sid commodore para tbbue. ver ReSID
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
 *TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
@@ -150,8 +149,6 @@ GXOffs and GYOffs add offset to X and Y start address in pixels.
 -Forzado segmento C000 a paginacion tsconf. cuando se lee solo puerto 32765?
 
 -tsconf border en modos rainbow
-
--Store atributos después de cada opcode no hacerse si máquina es tsconf.  Misma excepción que para prism
 
 -Ver si depack de hrust esta correcto ahora o antes, o era equivalente. No parece haber diferencia de un metodo al otro:
 --- spg_depack.c.anterior       2017-07-29 11:36:46.000000000 +0200
@@ -614,6 +611,7 @@ Edición de colores de paleta 2
 
 --- TBBLUE ---
 
+-sid commodore para tbbue. ver ReSID
 -snapshot .zx para tbblue
 -Sincronizar bits de joystick de puerto config2
 -divmmc tiene 256kb en tbblue real, pero por defecto emulo 128k. Algun problema? Tener en cuenta que en zxuno y resto de spectrum la divmmc es de 128kb.

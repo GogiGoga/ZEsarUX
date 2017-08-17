@@ -133,6 +133,9 @@ void core_spectrum_store_rainbow_current_atributes(void)
 	//En maquina prism, no hacer esto
 	if (MACHINE_IS_PRISM) return;
 
+	//En maquina tsconf, no hacer esto tampoco
+	if (MACHINE_IS_TSCONF) return;
+
 				//ULA dibujo de pantalla
 				//last_x_atributo guarda ultima posicion (+1) antes de ejecutar el opcode
 				//lo que se pretende hacer aqui es guardar los atributos donde esta leyendo la ula actualmente,
