@@ -1607,7 +1607,7 @@ void tbblue_set_value_port(z80_byte value)
 		(R/W)	07 => Turbo mode
 					bit 0 = Turbo (0 = 3.5MHz, 1 = 7MHz)
 					*/
-					if ( (last_register_7&1) != (value&1)) tbblue_set_emulator_setting_turbo();
+					if ( last_register_7 != value ) tbblue_set_emulator_setting_turbo();
 		break;
 	}
 
