@@ -5721,6 +5721,8 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 				//TODO: tener en cuenta zona invisible border
 				if (scanline_copia<0) return;
 
+				if (scanline_copia>tsconf_current_pixel_height) return;
+
 				int total_ancho_rainbow=get_total_ancho_rainbow();
 
 				//scanline_copia tiene coordenada scanline de dentro de zona pantalla
@@ -5788,9 +5790,6 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 		//modo texto
 		int ancho_caracter=8;
 		int ancho_linea=tsconf_current_pixel_width*2;
-
-
-
 
 		z80_int puntero=0x0000;
 
