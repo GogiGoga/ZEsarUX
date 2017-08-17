@@ -158,6 +158,29 @@ void tsconf_splash_video_size_mode_change(void)
   screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,buffer_mensaje);
 }
 
+
+void tsconf_set_emulator_setting_turbo(void)
+{
+        /*
+        Register 32
+        bits 1-0:
+        00: 3.5 mhz
+        01: 7
+        10: 14
+        11: reserved
+
+                                */
+        z80_byte t=tsconf_af_ports[32] & 3;
+        if (t==0) cpu_turbo_speed=1;
+        else if (t==1) cpu_turbo_speed=2;
+        else cpu_turbo_speed=4;
+
+
+        //printf ("Setting turbo: %d\n",cpu_turbo_speed);
+
+        cpu_set_turbo_speed();
+}
+
 void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
 {
 
@@ -187,6 +210,10 @@ void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
   //Port 0x7FFD is an alias of Page3, page3=tsconf_af_ports[0x13];
   if (puerto_h==0x13) {
     puerto_32765=value;
+  }
+
+  if (puerto_h==32) {
+    tsconf_set_emulator_setting_turbo();
   }
 
   //Si cambia registro #21AF (memconfig) o page0-3
@@ -487,4 +514,5 @@ void tsconf_hard_reset(void)
 
   tsconf_set_memory_pages();
   tsconf_set_sizes_display();
+  tsconf_set_emulator_setting_turbo();
 }

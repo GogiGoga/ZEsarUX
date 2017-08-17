@@ -5721,6 +5721,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 				//TODO: tener en cuenta zona invisible border
 				if (scanline_copia<0) return;
 
+				//Si zona border inferior
 				if (scanline_copia>tsconf_current_pixel_height) return;
 
 				int total_ancho_rainbow=get_total_ancho_rainbow();
