@@ -1949,6 +1949,7 @@ set_visualmembuffer(dir);
 
 				z80_int tsconf_fmaps_offset=dir-tsconf_fmaps_start;
 				printf ("Escribiendo fmaps dir: %04XH valor: %02XH offset: %d\n",dir,valor,tsconf_fmaps_offset);
+				if (tsconf_fmaps_offset>0x400) printf ("Zona tsconf registers\n");
 				tsconf_fmaps[tsconf_fmaps_offset]=valor;
 			}
 
