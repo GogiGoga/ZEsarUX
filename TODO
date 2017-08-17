@@ -126,7 +126,9 @@ else if (menu_event_remote_protocol_enterstep.v) {
 No sale de ese bucle while y se cierra todo emulador
 
 -tsconf: 
--paleta tsconf cram
+-paleta tsconf y colores cram para modos texto, zx. 
+
+
 *parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
 ->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
 *quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente

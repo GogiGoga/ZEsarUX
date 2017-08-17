@@ -57,6 +57,12 @@ z80_int tsconf_return_cram_color(z80_byte color)
   return color_retorno;
 }
 
+
+z80_byte tsconf_return_cram_palette_offset(void)
+{
+ return (tsconf_af_ports[7]&0xF)*16;
+}
+
 //Direcciones donde estan cada pagina de rom. 32 paginas de 16 kb
 z80_byte *tsconf_rom_mem_table[32];
 
@@ -218,6 +224,10 @@ void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
   //temp debug vpage
   if (puerto_h==1) {
     printf ("---VPAGE: %02XH\n",puerto_h);
+  }
+
+  if (puerto_h==7) {
+    printf ("Palette: %02XH\n",value);
   }
 
   //Bit 4 de 32765 es bit 0 de #21AF

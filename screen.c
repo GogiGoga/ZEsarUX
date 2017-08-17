@@ -1367,6 +1367,10 @@ void scr_tsconf_refresca_pantalla_zxmode_no_rainbow_comun(void)
                         	for (bit=0;bit<8;bit++) {
 
 					color= ( byte_leido & 128 ? ink : paper );
+
+					color=TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color);
+
+
 					scr_tsconf_putpixel_zx_mode(x_hi+bit,y,color);
 
 	                                byte_leido=byte_leido<<1;
@@ -1438,8 +1442,8 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 										if (modo==1) { //16c
                 	    color=screen[puntero++];
 											//printf ("color: %d\n",color);
-	        						scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color ((color>>4)&0xF) );
-											scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (color&0xF) );
+	        						scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color (tsconf_return_cram_palette_offset()+(color>>4)&0xF) );
+											scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color&0xF) );
 										}
 
 										if (modo==2) { //256c
@@ -1597,6 +1601,9 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit i
                 else color=papel;
 
                 byte_leido=(byte_leido&127)<<1;
+
+								//Para modo texto se aplica paleta??
+								//color=TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color);
 
 								if (puntero_rainbow!=NULL) {
 
@@ -5892,6 +5899,9 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 								screen++;
 							}
 
+							//Con paleta
+							color +=tsconf_return_cram_palette_offset();
+
 						}
 
 						z80_int color_final=TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
@@ -5929,6 +5939,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 
 																color= ( byte_leido & 128 ? ink : paper ) ;
 
+																color=TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color);
 
 																//doble ancho
 																*puntero_buf_rainbow=color;
