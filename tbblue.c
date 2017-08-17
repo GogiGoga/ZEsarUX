@@ -1076,12 +1076,12 @@ void tbblue_set_memory_pages(void)
 
 			if (tbblue_bootrom.v==0) {
 				/*
-When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 512K,
-and the page mapping is configured by bits 4-0 of the I/O port 'config1'.
-These 5 bits maps 32 16K pages the start of 512K SRAM space 0-16363 the Speccy,
+When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 1024K,
+and the page mapping is configured by bits 5-0 of the I/O port 'config1'.
+These 6 bits maps 64 16K pages the start of 1024K SRAM space 0-16363 the Speccy,
 which allows you access to all SRAM.
 */
-				romram_page=(tbblue_registers[4]&31);
+				romram_page=(tbblue_registers[4]&63);
 				indice=romram_page*16384;
 				//printf ("page on 0-16383: %d offset: %X\n",romram_page,indice);
 				tbblue_memory_paged[0]=&memoria_spectrum[indice];
