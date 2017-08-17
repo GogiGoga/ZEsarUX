@@ -37,6 +37,26 @@ z80_byte tsconf_nvram[256];
 z80_byte tsconf_af_ports[256];
 
 
+z80_byte tsconf_fmaps[TSCONF_FMAPS_SIZE];
+/*
+Offset  A[11:8] RAM	  Description
+#000    000x  CRAM    Color Palette RAM, 256 cells 16 bit wide, 16 bit access
+#200    001x  SFILE   Sprite Descriptors, 85 cells 48 bit wide, 16 bit access
+#400    0100  REGS    TS-Conf Registers, 8 bit access, adressing is the same as by #nnAF port
+*/
+
+//Retorna valor entre 0...32767, segun color de entrada entre 0..255
+z80_int tsconf_return_cram_color(z80_byte color)
+{
+  int offset=color*2;
+  z80_byte color_l=tsconf_fmaps[offset];
+  z80_byte color_h=tsconf_fmaps[offset+1];
+
+  z80_int color_retorno=(color_h<<8)|color_l;
+
+  return color_retorno;
+}
+
 //Direcciones donde estan cada pagina de rom. 32 paginas de 16 kb
 z80_byte *tsconf_rom_mem_table[32];
 
@@ -210,6 +230,34 @@ void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
   //Port 0x7FFD is an alias of Page3, page3=tsconf_af_ports[0x13];
   if (puerto_h==0x13) {
     puerto_32765=value;
+  }
+
+  //Gestion fmaps
+  /*
+  Vamos a empezar por la carga de la paleta. Para ello, debe habilitar la memoria RAM paleta de mapeo,
+  incluyendo el puerto FMAddr cuarto bit. En este caso, los bits 0-3 especifica la asignación de dirección
+   (por ejemplo, 0 - # 0000 8-8000 # 15 - # F000, etc.). Después de encender el mapeo de las direcciones seleccionadas
+   estarán disponibles para la ventana para cargar paleta. A continuación, utilizando LDIR convencional nos movemos paleta de 512 bytes.
+   Después de enviar los datos, debe cerrar la ventana de asignación, dejando caer el puerto FMAddr cuarto bit. Considere este ejemplo:
+
+   FMAddr     EQU #15AF
+LOAD_PAL   LD  A,%00010000   ; Включаем маппинг по адресу #0000
+           LD  BC,FMAddr
+           OUT (C),A
+           LD  HL,ZXPAL      ; Перебрасываем данные (32 байта)
+           LD  DE,#0000
+           LD  BC,#0020
+           LDIR
+           XOR  A            ; Отключаем маппинг
+           LD  BC,FMAddr
+           OUT (C),A
+           RET
+
+ZXPAL      dw  #0000,#0010,#4000,#4010,#0200,#0210,#4200,#4210
+           dw  #0000,#0018,#6000,#6018,#0300,#0318,#6300,#6318
+  */
+  if (puerto_h==0x15) {
+    printf ("Registro fmaps 0x15 valor: %02XH\n",value);
   }
 
   if (puerto_h==32) {

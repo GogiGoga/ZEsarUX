@@ -1438,13 +1438,13 @@ void scr_tsconf_refresca_pantalla_16c_256c_no_rainbow(int modo)
 										if (modo==1) { //16c
                 	    color=screen[puntero++];
 											//printf ("color: %d\n",color);
-	        						scr_tsconf_putpixel_zx_mode(x++,y,RGB8_INDEX_FIRST_COLOR+((color>>4)&0xF));
-											scr_tsconf_putpixel_zx_mode(x++,y,RGB8_INDEX_FIRST_COLOR+(color&0xF));
+	        						scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color ((color>>4)&0xF) );
+											scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (color&0xF) );
 										}
 
 										if (modo==2) { //256c
 											color=screen[puntero++];
-											scr_tsconf_putpixel_zx_mode(x++,y,RGB8_INDEX_FIRST_COLOR+color);
+											scr_tsconf_putpixel_zx_mode(x++,y,TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color) );
 										}
 
 
@@ -5894,15 +5894,16 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 
 						}
 
+						z80_int color_final=TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
 
 						//doble ancho
-						*puntero_buf_rainbow=RGB8_INDEX_FIRST_COLOR+color;
-						*(puntero_buf_rainbow+1)=RGB8_INDEX_FIRST_COLOR+color;
+						*puntero_buf_rainbow=color_final;
+						*(puntero_buf_rainbow+1)=color_final;
 
 						//doble alto
 
-						*(puntero_buf_rainbow+total_ancho_rainbow)=RGB8_INDEX_FIRST_COLOR+color;
-						*(puntero_buf_rainbow+total_ancho_rainbow+1)=RGB8_INDEX_FIRST_COLOR+color;
+						*(puntero_buf_rainbow+total_ancho_rainbow)=color_final;
+						*(puntero_buf_rainbow+total_ancho_rainbow+1)=color_final;
 
 						//Siguiente pixel
 						puntero_buf_rainbow++;
@@ -7107,7 +7108,13 @@ G  G   R   R   B   B
 
 																									screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i, color32);
 
-			}
+																								}
+																								//trama de grises para tsconf
+																								for (i=0;i<32768;i++) {
+																					                                valorgris=i/128;
+																					                                VALOR_GRIS_A_R_G_B
+																					                                screen_set_colour_normal(TSCONF_INDEX_FIRST_COLOR+i,(r<<16)|(g<<8)|b);
+																					                        }
 
 
 
@@ -7219,6 +7226,36 @@ Bit 6 GRN1 most  significant bit of green.
 				for (i=0;i<256;i++) {
 					debug_printf (VERBOSE_DEBUG,"RGB8 color: %02XH 32 bit: %06XH",i,get_rgb8_color(i));
 					screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i,get_rgb8_color(i));
+				}
+
+
+				//Tenemos tabla de conversion de valor de 5 bits a 8 bits. Temporal aproximado
+				z80_byte tsconf_5_to_8[32];
+
+				for (i=0;i<32;i++) {
+					tsconf_5_to_8[i]=i*8;
+				}
+
+				//Colores tsconf
+				for (i=0;i<32768;i++) {
+
+					b= i & 0x1F;
+					g=(i >> 5 ) & 0x1F;
+					r=(i >> 10 ) & 0x1F;
+
+debug_printf (VERBOSE_DEBUG,"tsconf color: %d. 15 bit: r: %d g: %d b: %d",i,r,g,b);
+
+r=tsconf_5_to_8[r];
+g=tsconf_5_to_8[g];
+b=tsconf_5_to_8[b];
+
+
+					color32=(r<<16)|(g<<8)|b;
+
+					debug_printf (VERBOSE_DEBUG,"32 bit: r: %d g: %d b: %d",r,g,b);
+
+					screen_set_colour_normal(TSCONF_INDEX_FIRST_COLOR+i, color32);
+
 				}
 
 

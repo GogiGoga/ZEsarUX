@@ -455,8 +455,10 @@ extern void screen_switch_rainbow_buffer(void);
 
 #define RGB8_INDEX_FIRST_COLOR (SAM_INDEX_FIRST_COLOR+128)
 
-//16 colores normales spectrum, 16 grises de modo scanline, 256 de gigascreen, 4 de z88, 256 de ulaplus, 64 de spectra, 32 de CPC, 4096 de Prism, 128 de SAM, 256 de RGB8
-#define EMULATOR_TOTAL_PALETTE_COLOURS (32+256+4+256+64+32+4096+128+256)
+#define TSCONF_INDEX_FIRST_COLOR (RGB8_INDEX_FIRST_COLOR+256)
+
+//16 colores normales spectrum, 16 grises de modo scanline, 256 de gigascreen, 4 de z88, 256 de ulaplus, 64 de spectra, 32 de CPC, 4096 de Prism, 128 de SAM, 256 de RGB8, 32768 de TSCONF
+#define EMULATOR_TOTAL_PALETTE_COLOURS (32+256+4+256+64+32+4096+128+256+32768)
 
 //macro usado en paletas de colores (opciones --red, --green, --blue)
 #define VALOR_GRIS_A_R_G_B \

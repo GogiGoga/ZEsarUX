@@ -34,6 +34,8 @@
 #define TSCONF_DISPLAY_WIDTH 720
 #define TSCONF_DISPLAY_HEIGHT 576
 
+#define TSCONF_FMAPS_SIZE (1024+256)
+
 extern z80_byte tsconf_last_port_eff7;
 extern z80_byte tsconf_last_port_dff7;
 extern z80_byte tsconf_nvram[];
@@ -46,6 +48,8 @@ extern z80_byte *tsconf_memory_paged[];
 extern z80_byte *tsconf_rom_mem_table[];
 extern z80_byte *tsconf_ram_mem_table[];
 extern z80_byte tsconf_af_ports[];
+
+extern z80_byte tsconf_fmaps[];
 
 extern int temp_tsconf_in_system_rom_flag;
 

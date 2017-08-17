@@ -1935,7 +1935,29 @@ set_visualmembuffer(dir);
 		z80_byte *puntero;
 		puntero=tsconf_return_segment_memory(dir);
 
+
+		//Si se escribe en fmaps
+
+		if ((tsconf_af_ports[0x15]&0xF0)!=0) {
+
+			z80_int tsconf_fmaps_start=tsconf_af_ports[0x15]&0xF;
+			tsconf_fmaps_start=tsconf_fmaps_start<<12;
+
+			z80_int tsconf_fmaps_end=tsconf_fmaps_start+TSCONF_FMAPS_SIZE-1;
+
+			if (dir>=tsconf_fmaps_start && dir<=tsconf_fmaps_end) {
+
+				z80_int tsconf_fmaps_offset=dir-tsconf_fmaps_start;
+				printf ("Escribiendo fmaps dir: %04XH valor: %02XH offset: %d\n",dir,valor,tsconf_fmaps_offset);
+				tsconf_fmaps[tsconf_fmaps_offset]=valor;
+			}
+
+
+		}
+
 		if (dir<16384) {
+
+
 			if ((tsconf_get_memconfig()&8)==0) return; //si no ram en rom
 		}
 
