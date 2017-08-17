@@ -1157,11 +1157,15 @@ void tbblue_set_emulator_setting_turbo(void)
 {
 	/*
 	(R/W)	07 => Turbo mode
-				bit 0 = Turbo (0 = 3.5MHz, 1 = 7MHz)
+				bit 1-0 = Turbo (00 = 3.5MHz, 01 = 7MHz, 10 = 14MHz, 11 = 28MHz)(Reset to 00 after a PoR or Hard-reset)
+
 				*/
-	z80_byte t=tbblue_registers[7] & 1;
+	z80_byte t=tbblue_registers[7] & 3;
 	if (t==0) cpu_turbo_speed=1;
-	else cpu_turbo_speed=2;
+	else if (t==1) cpu_turbo_speed=2;
+	else if (t==2) cpu_turbo_speed=4;
+	else cpu_turbo_speed=8;
+	
 
 	//printf ("Setting turbo: %d\n",cpu_turbo_speed);
 
