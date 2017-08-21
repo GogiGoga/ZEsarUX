@@ -94,7 +94,7 @@ O quizá setting configurable
 
 
 -tbblue:
-*Raster tbblue. 
+*registros scanline tbblue (30,31)
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
@@ -1515,6 +1515,8 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 -funcion strcasestr da warning al compilar en linux
 
 -poder configurar lightgun por linea de comandos
+
+-recreated zx spectrum
 
 HASTA AQUI REVISADO
 

@@ -100,7 +100,7 @@ extern z80_byte zxuno_spi_bus_index;
 extern void zxuno_mem_page_ram_p2a(void);
 extern void zxuno_mem_page_rom_p2a(void);
 extern void zxuno_handle_raster_interrupts();
-extern z80_bit zxuno_disparada_raster;
+//extern z80_bit zxuno_disparada_raster;
 extern int zxuno_core_id_indice;
 extern void zxuno_set_emulator_setting_scandblctrl(void);
 

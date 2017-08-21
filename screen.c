@@ -12480,3 +12480,147 @@ int get_rgb8_color (z80_byte color)
 
 
 }
+
+
+
+z80_bit zxuno_tbblue_disparada_raster={0};
+
+z80_byte get_zxuno_tbblue_rasterctrl(void)
+{
+	if (MACHINE_IS_ZXUNO) return zxuno_ports[0x0d];
+	//suponemos tbblue
+	else return tbblue_registers[34];
+}
+
+void set_zxuno_tbblue_rasterctrl(z80_byte valor)
+{
+	if (MACHINE_IS_ZXUNO) zxuno_ports[0x0d]=valor;
+	//suponemos tbblue
+	else tbblue_registers[34]=valor;
+}
+
+z80_byte get_zxuno_tbblue_rasterline(void)
+{
+	if (MACHINE_IS_ZXUNO) return zxuno_ports[0x0c];
+	//suponemos tbblue
+	else return tbblue_registers[35];
+}
+
+void zxuno_tbblue_handle_raster_interrupts()
+{
+
+/*
+TBBUE y ZXUNO gestionan la interrupcion raster de la misma manera
+
+
+ZXUNO
+
+$0C RASTERLINE Lectura/Escritura	Almacena los 8 bits menos significativos de la línea de pantalla en la que se desea provocar
+un disparo de una interrupción enmascarable. Un valor 0 para este registro (con LINE8 también igual a 0) establece que la
+interrupción ráster se disparará, si está habilitada, justo al comenzar el borde derecho de la línea anterior a la primera
+ línea de pantalla en la que comienza la zona de "paper". Dicho en otras palabras: el conteo de líneas de esta interrupción
+  asume que una línea de pantalla se compone de: borde derecho + intervalo de blanking horizontal + borde izquierdo + zona
+	 de paper. Si se asume de esta forma, el disparo de la interrupción se haría al comienzo de la línea seleccionada.
+Un valor para RASTERLINE igual a 192 (con LINE8 igual a 0) dispara la interrupción ráster al comienzo del borde inferior.
+ Los números de línea para el fin del borde inferior y comienzo del borde superior dependen de los timings empleados.
+  El mayor valor posible en la práctiva para RASTERLINE corresponde a una interrupción ráster disparada en
+	 la última línea del borde superior (ver RASTERCTRL)
+
+$0D	RASTERCTRL	Lectura/Escritura	Registro de control y estado de la interrupción ráster. Se definen los siguientes bits.
+INT	0	0	0	0	DISVINT	ENARINT	LINE8
+INT: este bit sólo está disponible en lectura. Vale 1 durante 32 ciclos de reloj a partir del momento en que se dispara la interrupción ráster. Este bit está disponible aunque el procesador tenga las interrupciones deshabilitadas. No está disponible si el bit ENARINT vale 0.
+DISVINT: a 1 para deshabilitar las interrupciones enmascarables por retrazo vertical (las originales de la ULA). Tras un reset, este bit vale 0.
+ENARINT: a 1 para habilitar las interrupciones enmascarables por línea ráster. Tras un reset, este bit vale 0.
+LINE8: guarda el bit 8 del valor de RASTERLINE, para poder definir cualquier valor entre 0 y 511, aunque en la práctica, el mayor valor está limitado por el número de líneas generadas por la ULA (311 en modo 48K, 310 en modo 128K, 319 en modo Pentagon). Si se establece un número de línea superior al límite, la interrupción ráster no se producirá.
+
+
+TBBLUE:
+
+	(R/W) 34 => Raster line interrupt control
+	  bit 7 = (R) INT flag, 1=During INT (even if the processor has interrupt disabled)
+	  bits 6-3 = Reserved, must be 0
+	  bit 2 = If 1 disables original ULA interrupt (Reset to 0 after a reset)
+	  bit 1 = If 1 enables Raster line interrupt (Reset to 0 after a reset)
+	  bit 0 = MSB of Raster line interrupt value (Reset to 0 after a reset)
+
+	(R/W) 35 => Raster line interrupt value LSB
+	  bits 7-0 = Raster line value LSB (0-255)(Reset to 0 after a reset)
+
+*/
+
+					if (iff1.v==1 && (get_zxuno_tbblue_rasterctrl() & 2) ) {
+						//interrupciones raster habilitadas
+						//printf ("interrupciones raster habilitadas en %d\n",zxuno_ports[0x0c] + (256 * (zxuno_ports[0x0d]&1) ));
+
+
+						//Ver si estamos entre estado 128 y 128+32
+						int estados_en_linea=t_estados & screen_testados_linea;
+
+						if (estados_en_linea>=128 && estados_en_linea<128+32) {
+							//Si no se ha disparado la interrupcion
+							if (zxuno_tbblue_disparada_raster.v==0) {
+								//Comprobar la linea definida
+								//El contador de lineas considera que la línea 0 es la primera línea de paper, la linea 192 por tanto es la primera línea de borde inferior.
+								// El último valor del contador es 311 si estamos en un 48K, 310 si estamos en 128K, o 319 si estamos en Pentagon, y coincidiría con la última línea del borde superior.
+								//se dispara justo al comenzar el borde derecho de la línea anterior a aquella que has seleccionado
+								int linea_raster=get_zxuno_tbblue_rasterline() + (256 * (get_zxuno_tbblue_rasterctrl()&1) );
+
+								int disparada_raster=0;
+
+
+								//se dispara en linea antes... ?
+								/*if (linea_raster>0) linea_raster--;
+								else {
+									linea_raster=screen_scanlines-1;
+								}*/
+
+
+								//es zona de vsync y borde superior
+								//Aqui el contador raster tiene valor (192+56 en adelante)
+								//contador de scanlines del core, entre 0 y screen_indice_inicio_pant ,
+								if (t_scanline<screen_indice_inicio_pant) {
+									if (t_scanline==linea_raster-192-screen_total_borde_inferior) disparada_raster=1;
+								}
+
+								//Esto es zona de paper o borde inferior
+								//Aqui el contador raster tiene valor 0 .. <(192+56)
+								//contador de scanlines del core, entre screen_indice_inicio_pant y screen_testados_total
+								else {
+									if (t_scanline-screen_indice_inicio_pant==linea_raster) disparada_raster=1;
+								}
+
+								if (disparada_raster) {
+									//Disparar interrupcion
+									zxuno_tbblue_disparada_raster.v=1;
+									interrupcion_maskable_generada.v=1;
+
+									//printf ("Generando interrupcion raster en scanline %d, raster: %d , estados en linea: %d, t_estados %d\n",
+									//	t_scanline,linea_raster+1,estados_en_linea,t_estados);
+
+									//Activar bit INT
+									z80_byte valor=get_zxuno_tbblue_rasterctrl();
+									valor |=128;
+									set_zxuno_tbblue_rasterctrl(valor);
+								}
+
+								else {
+									//Resetear bit INT
+									//zxuno_ports[0x0d] &=(255-128);
+								}
+							}
+						}
+
+						//Cualquier otra zona de t_estados, meter a 0
+						else {
+							zxuno_tbblue_disparada_raster.v=0;
+							//Resetear bit INT
+							z80_byte valor=get_zxuno_tbblue_rasterctrl();
+							valor &=(255-128);
+							set_zxuno_tbblue_rasterctrl(valor);
+						}
+
+					}
+
+
+
+}

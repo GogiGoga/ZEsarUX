@@ -1221,19 +1221,22 @@ void zxuno_flush_flash_to_disk(void)
 
 
 
-z80_bit zxuno_disparada_raster={0};
+//z80_bit zxuno_disparada_raster={0};
 				//Soporte interrupciones raster zxuno
+
+				/*
+
 void zxuno_handle_raster_interrupts()
 {
 
-/*
-$0D	RASTERCTRL	Lectura/Escritura	Registro de control y estado de la interrupción ráster. Se definen los siguientes bits.
-INT	0	0	0	0	DISVINT	ENARINT	LINE8
-INT: este bit sólo está disponible en lectura. Vale 1 durante 32 ciclos de reloj a partir del momento en que se dispara la interrupción ráster. Este bit está disponible aunque el procesador tenga las interrupciones deshabilitadas. No está disponible si el bit ENARINT vale 0.
-DISVINT: a 1 para deshabilitar las interrupciones enmascarables por retrazo vertical (las originales de la ULA). Tras un reset, este bit vale 0.
-ENARINT: a 1 para habilitar las interrupciones enmascarables por línea ráster. Tras un reset, este bit vale 0.
-LINE8: guarda el bit 8 del valor de RASTERLINE, para poder definir cualquier valor entre 0 y 511, aunque en la práctica, el mayor valor está limitado por el número de líneas generadas por la ULA (311 en modo 48K, 310 en modo 128K, 319 en modo Pentagon). Si se establece un número de línea superior al límite, la interrupción ráster no se producirá.
-*/
+
+//$0D	RASTERCTRL	Lectura/Escritura	Registro de control y estado de la interrupción ráster. Se definen los siguientes bits.
+//INT	0	0	0	0	DISVINT	ENARINT	LINE8
+//INT: este bit sólo está disponible en lectura. Vale 1 durante 32 ciclos de reloj a partir del momento en que se dispara la interrupción ráster. Este bit está disponible aunque el procesador tenga las interrupciones deshabilitadas. No está disponible si el bit ENARINT vale 0.
+//DISVINT: a 1 para deshabilitar las interrupciones enmascarables por retrazo vertical (las originales de la ULA). Tras un reset, este bit vale 0.
+//ENARINT: a 1 para habilitar las interrupciones enmascarables por línea ráster. Tras un reset, este bit vale 0.
+//LINE8: guarda el bit 8 del valor de RASTERLINE, para poder definir cualquier valor entre 0 y 511, aunque en la práctica, el mayor valor está limitado por el número de líneas generadas por la ULA (311 en modo 48K, 310 en modo 128K, 319 en modo Pentagon). Si se establece un número de línea superior al límite, la interrupción ráster no se producirá.
+
 
 					if (iff1.v==1 && (zxuno_ports[0x0d] & 2) ) {
 						//interrupciones raster habilitadas
@@ -1256,10 +1259,10 @@ LINE8: guarda el bit 8 del valor de RASTERLINE, para poder definir cualquier val
 
 
 								//se dispara en linea antes... ?
-								/*if (linea_raster>0) linea_raster--;
-								else {
-									linea_raster=screen_scanlines-1;
-								}*/
+								//if (linea_raster>0) linea_raster--;
+								//else {
+								//	linea_raster=screen_scanlines-1;
+								//}
 
 
 								//es zona de vsync y borde superior
@@ -1307,3 +1310,4 @@ LINE8: guarda el bit 8 del valor de RASTERLINE, para poder definir cualquier val
 
 
 }
+*/

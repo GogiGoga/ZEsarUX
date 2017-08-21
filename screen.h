@@ -571,4 +571,10 @@ extern int get_rgb8_color (z80_byte color);
 extern void screen_tsconf_refresca_pantalla(void);
 
 
+
+extern z80_bit zxuno_tbblue_disparada_raster;
+extern z80_byte get_zxuno_tbblue_rasterctrl(void);
+extern void zxuno_tbblue_handle_raster_interrupts();
+
+
 #endif

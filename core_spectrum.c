@@ -329,7 +329,7 @@ void cpu_core_loop_spectrum(void)
 
 
 				//Soporte interrupciones raster zxuno
-				if (MACHINE_IS_ZXUNO) zxuno_handle_raster_interrupts();
+				if (MACHINE_IS_ZXUNO || MACHINE_IS_TBBLUE) zxuno_tbblue_handle_raster_interrupts();
 
 
 
@@ -473,14 +473,14 @@ void cpu_core_loop_spectrum(void)
 					if ( MACHINE_IS_TIMEX_TS2068 && ( timex_port_ff & 64) ) interrupcion_maskable_generada.v=0;
 
 					//En ZXuno, ver bit disvint
-                                	if (MACHINE_IS_ZXUNO) {
+                                	if (MACHINE_IS_ZXUNO || MACHINE_IS_TBBLUE) {
 
-	                                        if (zxuno_ports[0x0d] & 4) {
+	                                        if (get_zxuno_tbblue_rasterctrl() & 4) {
         	                                        //interrupciones normales deshabilitadas
                 	                                //printf ("interrupciones normales deshabilitadas\n");
 							//Pero siempre que no se haya disparado una maskable generada por raster
 
-							if (zxuno_disparada_raster.v==0) interrupcion_maskable_generada.v=0;
+							if (zxuno_tbblue_disparada_raster.v==0) interrupcion_maskable_generada.v=0;
                         	                }
                                 	}
 
