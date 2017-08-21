@@ -1318,7 +1318,7 @@ void scr_tsconf_refresca_pantalla_zxmode_no_rainbow_comun(void)
 			 //temp_cc++;
 
 
-			 printf ("refresca modo 0. vram: %d\n",vram_page);
+			 //printf ("refresca modo 0. vram: %d\n",vram_page);
 			 screen=tsconf_ram_mem_table[vram_page];
 			 //temp
 			 //screen=tsconf_ram_mem_table[tsconf_af_ports[1]];
@@ -1576,7 +1576,7 @@ void scr_tsconf_putpixel_zoom_rainbow_text_mode(unsigned color,z80_int *puntero_
 void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_int *puntero_rainbow,int ancho_rainbow)
 {
 
-        z80_byte color;
+        z80_int color;
         z80_byte bit;
         z80_byte line;
         z80_byte byte_leido;
@@ -1603,7 +1603,7 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit i
                 byte_leido=(byte_leido&127)<<1;
 
 								//Para modo texto se aplica paleta??
-								//color=TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color);
+								color=TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color);
 
 								if (puntero_rainbow!=NULL) {
 
