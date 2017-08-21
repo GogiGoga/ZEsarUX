@@ -480,7 +480,7 @@ And saying the accent on the final syllable
 You can also play zesarux.mp3 to hear how it sounds
 
 Q: What is the origin of the name of the emulator?
-A: Well... ZEsarUX comes from:
+A: ZEsarUX comes from:
 ZX Second-Emulator And Released for UniX.
 I write second-emulator with a hyphen because I changed the order of the two words to have the final name... If not, name would be:
 ZsEarUX :P
@@ -489,6 +489,8 @@ http://sourceforge.net/projects/zxspectr/
 Why the capital letters? Because one of the first names I thought was ZEUX, but it seems this name was already taken... I don't remember well but I think ZEUX it's another spectrum emulator.
 Then I thought some name like mine (Cesar) and adding letters zx (for zx spectrum) and also UX for UNIX/Linux, so Linux was the first supported platform. Then I simply joined all these letters and have a translation for every letter to a word, on a phrase with sense: 
 ZX Second-Emulator And Released for UniX.
+It's important to write lowercase and uppercase characters correctly. Uppercase letters refer to the most important part of the name: "ZX", "Emulator", "UniX"
+And lowercase letters refer to the less important part : "second", "and", "released"
 
 
 Q: Can this emulator run on MS-DOS?
