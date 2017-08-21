@@ -102,7 +102,7 @@ O quizá setting configurable
 *layer priorities
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
-*nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1
+*nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 
 -FAQ esxdos handler. Comentar mayúsculas etc
 
