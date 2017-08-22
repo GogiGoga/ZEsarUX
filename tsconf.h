@@ -34,7 +34,7 @@
 #define TSCONF_DISPLAY_WIDTH 720
 #define TSCONF_DISPLAY_HEIGHT 576
 
-#define TSCONF_FMAPS_SIZE (1024+256)
+#define TSCONF_FMAPS_SIZE 1024
 
 extern z80_byte tsconf_last_port_eff7;
 extern z80_byte tsconf_last_port_dff7;
