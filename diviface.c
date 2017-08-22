@@ -140,6 +140,18 @@ refresh cycle of the instruction fetch from so called off-area, which is
 		}
 	}
 
+	//Si en tsconf y rom menu. Esto es un parchecillo y habria que ver si realmente funciona bien. TODO
+
+	if (MACHINE_IS_TSCONF) {
+		//printf ("antes\n");
+		if ((tsconf_get_memconfig()&8)==0) {
+			if (tsconf_get_rom_bank()==0) return;
+		}
+		//printf ("despues\n");
+		//&& tsconf_in_system_rom() ) return;
+	}
+
+
 	//Traps que paginan memoria y saltan despues de leer instruccion
 	switch (reg_pc) {
 		case 0x0000:
