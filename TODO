@@ -94,6 +94,8 @@ O quizá setting configurable
 
 
 -tbblue:
+*lores layer
+*radasjim mode
 *registros scanline tbblue (30,31)
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
@@ -126,24 +128,12 @@ else if (menu_event_remote_protocol_enterstep.v) {
 No sale de ese bucle while y se cierra todo emulador
 
 -tsconf: 
--paleta tsconf y colores cram para modos texto, zx. 
+-revisar mapeo rom mediante 32765 porque parece que no hay manera de iniciar la rom del 128kb. creo que ahora mismo el puerto 32765 esta totalmente desactivado
 
 
 *parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
 ->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
 *quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
-*modo texto, estandard zx (sin rainbow) ok
-*faltan modos 16c, 256c. Ver TS.doc. Info del foro:
-256c.
-Bits 7..0 are index to CRAM.
-Each line address is aligned to 512.
-GXOffs and GYOffs add offset to X and Y start address in pixels.
-
-16c.
-Bits are index to CRAM, where PalSel.GPAL is 4 MSBs and the pixel are 4 LSBs of the index.
-Pixels are bits7..4 - left, bits3..0 - right.
-Each line address is aligned to 256.
-GXOffs and GYOffs add offset to X and Y start address in pixels.
 
 -320 lineas
 
