@@ -155,6 +155,20 @@ No sale de ese bucle while y se cierra todo emulador
 +               to++;
           continue;
         }
+-tsconf funciona con:
+I only see some images on a few demos/games, like:
+-bomberman: only part of the menu "text start/options/about"
+-ny17: appears only the snow man, nothing more (I think this demo uses sprites)
+-chess: only the top/half part of the screen
+-caleidoscope: runs perfect
+-zendloops: show the girl at the beginning and pressing a key turns to black
+-socoban: show the image at the beginning and pressing a key turns to black
+-keftale: seems to run ok
+-fire:seems to run ok
+
+And some text demo modes seems to run ok (copter, txtdemo)
+
+
 
 
 
