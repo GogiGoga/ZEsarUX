@@ -8847,11 +8847,6 @@ void menu_audio_settings(MENU_ITEM_PARAMETERS)
 					menu_add_item_menu_shortcut(array_menu_audio_settings,'p');
 
 
-
-
-
-
-
                 //menu_add_item_menu(array_menu_audio_settings,"",MENU_OPCION_SEPARADOR,NULL,NULL);
 
 

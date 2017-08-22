@@ -1943,7 +1943,8 @@ set_visualmembuffer(dir);
 			z80_int tsconf_fmaps_start=tsconf_af_ports[0x15]&0xF;
 			tsconf_fmaps_start=tsconf_fmaps_start<<12;
 
-			z80_int tsconf_fmaps_end=tsconf_fmaps_start+TSCONF_FMAPS_SIZE-1;
+			//Si escribe en zona fmaps, y permitir 256 mas para escritura en tsconf registros
+			z80_int tsconf_fmaps_end=tsconf_fmaps_start+TSCONF_FMAPS_SIZE+256-1;
 
 			if (dir>=tsconf_fmaps_start && dir<=tsconf_fmaps_end) {
 
@@ -1951,18 +1952,21 @@ set_visualmembuffer(dir);
 				printf ("Escribiendo fmaps dir: %04XH valor: %02XH offset: %d\n",dir,valor,tsconf_fmaps_offset);
 				if (tsconf_fmaps_offset<0x200) {
 					printf ("Zona tsconf cram\n");
+					tsconf_fmaps[tsconf_fmaps_offset]=valor;
 				}
 
 				if (tsconf_fmaps_offset>0x200 && tsconf_fmaps_offset<0x400) {
 					printf ("Zona tsconf sprites\n");
+					tsconf_fmaps[tsconf_fmaps_offset]=valor;
 				}
 
 				if (tsconf_fmaps_offset>0x400 && tsconf_fmaps_offset<0x500) {
 					printf ("Zona tsconf registers\n");
-					tsconf_af_ports[tsconf_fmaps_offset-0x400]=valor;
+					//Solo escribe en regustro tsconf. no en ram fmaps
+					tsconf_write_af_port(tsconf_fmaps_offset-0x400,valor);
 				}
 
-				tsconf_fmaps[tsconf_fmaps_offset]=valor;
+
 			}
 
 

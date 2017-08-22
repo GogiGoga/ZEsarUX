@@ -1510,6 +1510,8 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 *** Core CPU ***
 
+-Trap door. rutina de carga propia, aunque uses un tap. Se confunde los traps a rom y no carga bien. Poniendo como real tape si que carga
+
 -Desensamblado mediante ejecución de código. Que desensamble solo lo que ejecute y lógicamente evite repetidos
 
 -funcion strcasestr da warning al compilar en linux
