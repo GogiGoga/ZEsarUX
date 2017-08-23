@@ -720,6 +720,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
 
 	{"get-machines",NULL,NULL,"Returns list of emulated machines"},
+	{"get-memory-zones",NULL,NULL,"Returns list of memory zones of this machine"},
 	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
   {"get-registers","|gr",NULL,"Get CPU registers"},
@@ -861,6 +862,23 @@ void remote_get_breakpoints(int misocket)
     escribir_socket(misocket,"\n");
 
   }
+}
+
+
+void remote_get_memory_zones(int misocket)
+{
+  int i;
+	char zone_name[1024];
+	int readwrite;
+	int size;
+
+	for (i=0;i<MACHINE_MAX_MEMORY_ZONES;i++) {
+		size=machine_get_memory_zone(i, zone_name, &readwrite);
+		if (size>=0) {
+			escribir_socket_format(misocket,"Zone: %d Name: %s Size: %d R/W: %d\n",i,zone_name,size,readwrite);
+		}
+	}
+
 }
 
 void remote_get_breakpointsactions(int misocket)
@@ -2954,6 +2972,10 @@ char buffer_retorno[2048];
 
 	else if (!strcmp(comando_sin_parametros,"get-machines")) {
 		escribir_socket (misocket,string_machines_list_description);
+	}
+
+	else if (!strcmp(comando_sin_parametros,"get-memory-zones")) {
+		remote_get_memory_zones(misocket);
 	}
 
 	else if (!strcmp(comando_sin_parametros,"get-ocr")) {

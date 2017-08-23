@@ -8534,3 +8534,96 @@ int util_write_pbm_file(char *archivo, int ancho, int alto, z80_byte *source)
 
   return 0;
 }
+
+
+
+//Retorna tamanyo de zona y actualiza puntero a memoria indicada
+//Si es <0, no existe
+
+int machine_get_memory_zone(int zone, char *name, int *readwrite)
+{
+
+  int size=-1;
+
+  //Zona 0, ram speccy
+  switch (zone) {
+    case 0:
+
+      strcpy(name,"Machine RAM");
+
+      *readwrite=3; //1 read, 2 write
+
+      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
+        size=131072;
+      }
+      //Caso normal 48k como fallback
+      else {
+        size=49152;
+      }
+
+    break;
+
+
+    case 1:
+
+      strcpy(name,"Machine ROM");
+
+      *readwrite=1; //1 read, 2 write
+
+      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
+        size=32768; //TODO!!!!
+      }
+      //Caso normal 48k como fallback
+      else {
+        size=16384;
+      }
+
+    break;
+
+  }
+
+  return size;
+
+}
+
+
+z80_byte *machine_get_memory_zone_pointer(int zone, int address)
+{
+
+  //Zona 0, ram speccy
+  switch (zone) {
+    case 0:
+
+
+      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
+        return &memoria_spectrum[address];
+      }
+
+      //Caso normal 48k como fallback
+      else {
+        return &memoria_spectrum[address+16384];
+      }
+
+    break;
+
+
+
+    case 1:
+
+
+      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
+        return &memoria_spectrum[address];
+      }
+
+      //Caso normal 48k como fallback
+      else {
+        return &memoria_spectrum[address];
+      }
+
+    break;
+
+  }
+
+  return NULL;
+
+}

@@ -559,4 +559,9 @@ extern int get_file_date_from_name(char *nombre,int *hora,int *minuto,int *segun
 
 extern int get_file_date_from_stat(struct stat *buf_stat,int *hora,int *minuto,int *segundo,int *dia,int *mes,int *anyo);
 
+#define MACHINE_MAX_MEMORY_ZONES 1000
+
+extern z80_byte *machine_get_memory_zone_pointer(int zone, int address);
+extern int machine_get_memory_zone(int zone, char *name, int *readwrite);
+
 #endif
