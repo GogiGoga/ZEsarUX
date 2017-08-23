@@ -44,6 +44,8 @@ z80_bit diviface_paginacion_automatica_activa={0};
 
 z80_byte diviface_control_register=0;
 
+z80_bit diviface_allow_automatic_paging={0};
+
 
 //Si esta la paginacion manual de diviface activa
 //z80_bit diviface_paginacion_manual_activa={0};
@@ -152,6 +154,9 @@ refresh cycle of the instruction fetch from so called off-area, which is
 	}
 
 
+
+
+	if (diviface_allow_automatic_paging.v) {
 	//Traps que paginan memoria y saltan despues de leer instruccion
 	switch (reg_pc) {
 		case 0x0000:
@@ -175,14 +180,15 @@ refresh cycle of the instruction fetch from so called off-area, which is
         }
 
 
+	}
+
 
 	if (diviface_salta_trap_antes && diviface_paginacion_automatica_activa.v==0) {
 		//printf ("Saltado trap de paginacion antes pc actual: %d\n",reg_pc);
 		diviface_paginacion_automatica_activa.v=1;
         }
-
-
 }
+
 
 
 void diviface_post_opcode_fetch(void)
@@ -557,6 +563,7 @@ void diviface_enable(char *romfile)
 	diviface_control_register&=(255-128);
 	diviface_paginacion_automatica_activa.v=0;
 	diviface_enabled.v=1;
+	diviface_allow_automatic_paging.v=1;
 
 }
 
@@ -573,4 +580,5 @@ void diviface_disable(void)
 
 
         diviface_enabled.v=0;
+				diviface_allow_automatic_paging.v=0;
 }

@@ -1121,14 +1121,24 @@ void tbblue_set_emulator_setting_divmmc(void)
 			bit 7 = Enable turbo mode (0 = disabled, 1 = enabled)
 			bit 6 = DAC chip mode (0 = I2S, 1 = JAP)
 			bit 5 = Enable Lightpen  (1 = enabled)
-			bit 4 = Enable DivMMC (1 = enabled)
+			bit 4 = Enable DivMMC (1 = enabled) -> divmmc automatic paging. divmmc memory is supported
 		*/
         //z80_byte diven=tbblue_config2&4;
 				z80_byte diven=tbblue_registers[6]&16;
         debug_printf (VERBOSE_INFO,"Apply config.divmmc change: %s",(diven ? "enabled" : "disabled") );
         //printf ("Apply config2.divmmc change: %s\n",(diven ? "enabled" : "disabled") );
-        if (diven) divmmc_diviface_enable();
-        else divmmc_diviface_disable();
+
+				if (diven) {
+					//printf ("Activando diviface automatic paging\n");
+					divmmc_diviface_enable();
+					diviface_allow_automatic_paging.v=1;
+				}
+
+        //else divmmc_diviface_disable();
+				else {
+					//printf ("Desactivando diviface automatic paging\n");
+					diviface_allow_automatic_paging.v=0;
+				}
 
 }
 
@@ -1165,7 +1175,7 @@ void tbblue_set_emulator_setting_turbo(void)
 	else if (t==1) cpu_turbo_speed=2;
 	else if (t==2) cpu_turbo_speed=4;
 	else cpu_turbo_speed=8;
-	
+
 
 	//printf ("Setting turbo: %d\n",cpu_turbo_speed);
 
