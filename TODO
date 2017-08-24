@@ -35,6 +35,8 @@ The format of each table entry is as follows:
 
 IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
 
+-comando ZRCP que muestre paginas de memoria mapeadas. similar a menu debug, las zonas de memoria y las rams/roms mapeadas
+
 
 -Documentar minimamente como funciona refresco de pantall
 

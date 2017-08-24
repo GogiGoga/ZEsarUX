@@ -77,8 +77,8 @@ It makes the emulator use a bit more CPU power)
 
 
 (On raspberry-raspbian, I recommend:
-export CFLAGS=-O3
-export LDFLAGS=-O3
+export CFLAGS=-O2
+export LDFLAGS=-O2
 
 ./configure --enable-raspberry
 and not enable memptr, visualmem or cpustats

@@ -1624,9 +1624,31 @@ void tbblue_set_value_port(z80_byte value)
 
 }
 
+int tbblue_get_raster_line(void)
+{
+	/*
+	Line 0 is first video line. In truth the line is the Y counter, Video is from 0 to 191, borders and hsync is >192
+Same this page: http://www.zxdesign.info/vertcontrol.shtml
+
+
+Row	Start	Row End	Length	Description
+0		191	192	Video Display
+192	247	56	Bottom Border
+248	255	8	Vertical Sync
+256	312	56	Top Border
+
+*/
+	if (t_scanline>=screen_indice_inicio_pant) return t_scanline-screen_indice_inicio_pant;
+	else return t_scanline+192+screen_total_borde_inferior;
+
+
+}
+
 
 z80_byte tbblue_get_value_port_register(z80_byte registro)
 {
+
+	int linea_raster;
 
 	//Casos especiales
 	/*
@@ -1641,6 +1663,30 @@ z80_byte tbblue_get_value_port_register(z80_byte registro)
 
 		case 1:
 			return 0x16;
+		break;
+
+		/*
+
+
+
+
+		(R) 0x1E (30) => Active video line (MSB)
+  bits 7-1 = Reserved, always 0
+  bit 0 = Active line MSB (Reset to 0 after a reset)
+
+(R) 0x1F (31) = Active video line (LSB)
+  bits 7-0 = Active line LSB (0-255)(Reset to 0 after a reset)
+		*/
+
+		case 30:
+			linea_raster=tbblue_get_raster_line();
+			linea_raster=linea_raster >> 8;
+			return (linea_raster&1);
+		break;
+
+		case 31:
+			linea_raster=tbblue_get_raster_line();
+			return (linea_raster&0xFF);
 		break;
 
 	}
