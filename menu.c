@@ -278,6 +278,8 @@ void menu_cpu_core_loop(void);
 void menu_reset_counters_tecla_repeticion(void);
 void menu_textspeech_send_text(char *texto);
 
+z80_byte menu_debug_get_mapped_byte(int direccion);
+
 //si hay recuadro activo, y cuales son sus coordenadas y color
 
 int cuadrado_activo=0;
@@ -2524,6 +2526,9 @@ void menu_textspeech_send_text(char *texto)
 }
 
 
+//siempre empieza con 1 espacio de separacion excepto algunas ventanas que requieren mas ancho, como hexdump
+int menu_escribe_linea_startx=1;
+
 //escribe opcion de linea de texto
 //coordenadas y relativa al interior de la ventana (0=inicio)
 //opcion_actual indica que numero de linea es la seleccionada
@@ -2579,7 +2584,8 @@ void menu_escribe_linea_opcion(z80_byte y,int opcion_actual,int opcion_activada,
 	for (i=0;i<ventana_ancho;i++) menu_escribe_texto_ventana(i,y,0,papel," ");
 
 	//y texto propiamente
-        menu_escribe_texto_ventana(1,y,tinta,papel,texto);
+				int startx=menu_escribe_linea_startx;
+        menu_escribe_texto_ventana(startx,y,tinta,papel,texto);
 
 	//si el driver de video no tiene colores o si el estilo de gui lo indica, indicamos opcion activa con un cursor
 	if (!scr_tiene_colores || ESTILO_GUI_MUESTRA_CURSOR) {
@@ -4811,13 +4817,54 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 		if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
 			byte_leido=memoria_spectrum[direccion++];
 		}
-		else byte_leido=peek_byte_z80_moto(direccion++);
+		else {
+			//byte_leido=peek_byte_z80_moto(direccion);
+			byte_leido=menu_debug_get_mapped_byte(direccion);
+			direccion++;
+		}
 
 		sprintf (&texto[puntero],"%02X",byte_leido);
 
 		puntero+=2;
 
 	}
+}
+
+int menu_debug_hexdump_show_memory_zones=0;
+int menu_debug_hexdump_memory_zone=-1;
+int menu_debug_hexdump_memory_zone_size=0;
+
+void menu_debug_set_memory_zone_attr(void)
+{
+
+	int readwrite;
+
+	//Primero ver si zona actual no esta disponible, fallback a 0 que siempre esta
+	 menu_debug_hexdump_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_hexdump_memory_zone,&readwrite);
+	if (menu_debug_hexdump_memory_zone_size<0) {
+		menu_debug_hexdump_memory_zone=0;
+		menu_debug_hexdump_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_hexdump_memory_zone,&readwrite);
+	}
+}
+
+//Muestra byte mapeado de ram normal o de zona de menu mapeada
+z80_byte menu_debug_get_mapped_byte(int direccion)
+{
+
+
+
+	//Mostrar memoria normal
+	if (menu_debug_hexdump_show_memory_zones==0) return peek_byte_z80_moto(direccion);
+
+
+	//Mostrar zonas mapeadas
+	menu_debug_set_memory_zone_attr();
+
+	direccion=direccion % menu_debug_hexdump_memory_zone_size;
+	return *(machine_get_memory_zone_pointer(menu_debug_hexdump_memory_zone,direccion));
+
+
+
 }
 
 //Vuelca contenido ascii de memoria de spectrum en cadena de texto
@@ -4836,7 +4883,11 @@ void menu_debug_registers_dump_ascii(char *texto,menu_z80_moto_int direccion,int
                         byte_leido=memoria_spectrum[direccion++];
                 }
 
-                else byte_leido=peek_byte_z80_moto(direccion++);
+                else {
+									//byte_leido=peek_byte_z80_moto(direccion);
+									byte_leido=menu_debug_get_mapped_byte(direccion);
+									direccion++;
+								}
 
 
 
@@ -5983,7 +6034,7 @@ int menu_debug_hexdump_change_pointer(int p)
 
 void menu_debug_hexdump_ventana(void)
 {
-        menu_dibuja_ventana(0,1,32,21,"Hex Dump");
+        menu_dibuja_ventana(0,1,32,22,"Hex Dump");
 }
 
 int menu_debug_hexdump_with_ascii_modo_ascii=0;
@@ -6011,6 +6062,8 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 
 	//printf ("%s\n",dumpmemoria);
 }
+
+
 
 void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 {
@@ -6048,7 +6101,11 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 		char dumpmemoria[32];
 
+		//Hacer que texto ventana empiece pegado a la izquierda
+		menu_escribe_linea_startx=0;
+
 				char textoshow[32];
+
 				sprintf (textoshow,"Showing %d bytes per page:",bytes_por_ventana);
                                 menu_escribe_linea_opcion(linea++,-1,1,textoshow);
                                 menu_escribe_linea_opcion(linea++,-1,1,"");
@@ -6059,26 +6116,12 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 			direccion=adjust_address_space_cpu(direccion);
 			menu_debug_hexdump_with_ascii(dumpmemoria,dir_leida,bytes_por_linea);
 
-			/*
-
-			sprintf (dumpmemoria,"%04X",dir_leida);
-			//cambiamos el 0 final por un espacio
-			dumpmemoria[4]=' ';
-
-			menu_debug_registers_dump_hex(&dumpmemoria[5],dir_leida,bytes_por_linea);
-
-			//metemos espacio
-			int offset=5+bytes_por_linea*2;
-			dumpmemoria[offset]=' ';
-
-			menu_debug_registers_dump_ascii(&dumpmemoria[offset+1],dir_leida,bytes_por_linea,menu_debug_hexdump_with_ascii_modo_ascii);
-			*/
 
 			menu_escribe_linea_opcion(linea,-1,1,dumpmemoria);
 		}
 
 
-                                menu_escribe_linea_opcion(linea++,-1,1,"");
+        menu_escribe_linea_opcion(linea++,-1,1,"");
 
 				char buffer_linea[40];
 				if (menu_debug_hexdump_with_ascii_modo_ascii==0) {
@@ -6099,6 +6142,20 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 					if (menu_debug_hex_shows_inves_low_ram.v) menu_escribe_linea_opcion(linea++,-1,1,"L: Hide Inves Low RAM");
 					else menu_escribe_linea_opcion(linea++,-1,1,"L: Show Inves Low RAM");
 				}
+
+				char memory_zone_text[33];
+				if (menu_debug_hexdump_show_memory_zones==0) {
+					sprintf (memory_zone_text,"Z: Mem zone (mapped memory)");
+				}
+				else {
+					//printf ("Info zona %d\n",menu_debug_hexdump_memory_zone);
+					char buffer_name[256];
+					int readwrite;
+					machine_get_memory_zone_name(menu_debug_hexdump_memory_zone,buffer_name);
+					sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_hexdump_memory_zone,buffer_name);
+					//printf ("Despues zona %d\n",menu_debug_hexdump_memory_zone);
+				}
+				menu_escribe_linea_opcion(linea++,-1,1,memory_zone_text);
 
 				if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
@@ -6145,6 +6202,20 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 						menu_debug_hex_shows_inves_low_ram.v ^=1;
 					break;
 
+					case 'z':
+						if (menu_debug_hexdump_show_memory_zones==0) menu_debug_hexdump_show_memory_zones=1;
+
+						//Si se ha habilitado en el if anterior, entrara aqui
+						if (menu_debug_hexdump_show_memory_zones) {
+							menu_debug_hexdump_memory_zone++;
+							menu_debug_hexdump_memory_zone=machine_get_next_available_memory_zone(menu_debug_hexdump_memory_zone);
+							if (menu_debug_hexdump_memory_zone<0)  {
+								menu_debug_hexdump_memory_zone=-1;
+								menu_debug_hexdump_show_memory_zones=0;
+							}
+						}
+						break;
+
 					//Salir con ESC
 					case 2:
 						salir=1;
@@ -6155,6 +6226,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
         } while (salir==0);
 
 	cls_menu_overlay();
+	menu_escribe_linea_startx=1;
 
 }
 

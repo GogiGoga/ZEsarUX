@@ -38,7 +38,7 @@ IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
 -comando ZRCP que muestre paginas de memoria mapeadas. similar a menu debug, las zonas de memoria y las rams/roms mapeadas
 
 
--Documentar minimamente como funciona refresco de pantall
+-Documentar minimamente como funciona refresco de pantalla
 
 Documentar mínimamente cómo va refresco de pantalla:
 
@@ -100,7 +100,6 @@ O quizá setting configurable
 -tbblue:
 *lores layer
 *radasjim mode
-*registros scanline tbblue (30,31)
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h

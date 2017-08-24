@@ -873,8 +873,9 @@ void remote_get_memory_zones(int misocket)
 	int size;
 
 	for (i=0;i<MACHINE_MAX_MEMORY_ZONES;i++) {
-		size=machine_get_memory_zone(i, zone_name, &readwrite);
+		size=machine_get_memory_zone_attrib(i, &readwrite);
 		if (size>=0) {
+			machine_get_memory_zone_name(i, zone_name);
 			escribir_socket_format(misocket,"Zone: %d Name: %s Size: %d R/W: %d\n",i,zone_name,size,readwrite);
 		}
 	}

@@ -24,6 +24,9 @@
 
 #include "cpu.h"
 
+#define DIVIFACE_FIRMWARE_KB 8
+#define DIVIFACE_FIRMWARE_ALLOCATED_KB 64
+#define DIVIFACE_RAM_ALLOCATED_KB 512
 
 extern z80_bit diviface_enabled;
 

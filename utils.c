@@ -8540,16 +8540,17 @@ int util_write_pbm_file(char *archivo, int ancho, int alto, z80_byte *source)
 //Retorna tamanyo de zona y actualiza puntero a memoria indicada
 //Si es <0, no existe
 
-int machine_get_memory_zone(int zone, char *name, int *readwrite)
+int machine_get_memory_zone_attrib(int zone, int *readwrite)
 {
 
+  //Por defecto
   int size=-1;
+
 
   //Zona 0, ram speccy
   switch (zone) {
     case 0:
 
-      strcpy(name,"Machine RAM");
 
       *readwrite=3; //1 read, 2 write
 
@@ -8566,7 +8567,6 @@ int machine_get_memory_zone(int zone, char *name, int *readwrite)
 
     case 1:
 
-      strcpy(name,"Machine ROM");
 
       *readwrite=1; //1 read, 2 write
 
@@ -8578,6 +8578,13 @@ int machine_get_memory_zone(int zone, char *name, int *readwrite)
         size=16384;
       }
 
+    break;
+
+    case 2:
+      if (diviface_enabled.v) {
+        *readwrite=3;
+        size=(DIVIFACE_FIRMWARE_ALLOCATED_KB+get_diviface_total_ram())*1024;
+      }
     break;
 
   }
@@ -8622,8 +8629,69 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 
     break;
 
+    case 2:
+      if (diviface_enabled.v) {
+        return &diviface_memory_pointer[address];
+      }
+    break;
+
   }
 
   return NULL;
+
+}
+
+
+void machine_get_memory_zone_name(int zone, char *name)
+{
+
+  //Por defecto
+  int size=-1;
+
+  strcpy(name,"Unknown zone");
+
+  //Zona 0, ram speccy
+  switch (zone) {
+    case 0:
+
+      strcpy(name,"Machine RAM");
+
+
+    break;
+
+
+    case 1:
+
+      strcpy(name,"Machine ROM");
+
+
+    break;
+
+    case 2:
+      if (diviface_enabled.v) {
+        strcpy(name,"Diviface");
+      }
+    break;
+
+  }
+
+
+}
+
+
+
+int machine_get_next_available_memory_zone(int zone)
+{
+  //Dado una zona actual, busca primera disponible. Si llega al final, retorna -1
+  //char nombre[1024];
+  int readwrite;
+
+  do {
+    //printf ("Zone: %d\n",zone);
+    if (zone>=MACHINE_MAX_MEMORY_ZONES) return -1;
+    int size=machine_get_memory_zone_attrib(zone,&readwrite);
+    if (size>=0) return zone;
+    zone++;
+  } while (1);
 
 }

@@ -60,9 +60,7 @@ z80_byte *diviface_ram_memory_pointer;
 
 z80_bit diviface_eprom_write_jumper={0};
 
-#define DIVIFACE_FIRMWARE_KB 8
-#define DIVIFACE_FIRMWARE_ALLOCATED_KB 64
-#define DIVIFACE_RAM_ALLOCATED_KB 512
+
 
 //puntero a cpu core normal sin diviface
 //void (*cpu_core_loop_no_diviface) (void);
