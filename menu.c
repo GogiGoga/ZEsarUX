@@ -4812,7 +4812,8 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 	int puntero=0;
 
 	for (;longitud>0;longitud--) {
-		direccion=adjust_address_space_cpu(direccion);
+		//direccion=adjust_address_space_cpu(direccion);
+		direccion=ajust_address_memory_size(direccion);
 		//Si mostramos RAM oculta de Inves
 		if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
 			byte_leido=memoria_spectrum[direccion++];
@@ -4832,7 +4833,7 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 
 int menu_debug_hexdump_show_memory_zones=0;
 int menu_debug_hexdump_memory_zone=-1;
-int menu_debug_hexdump_memory_zone_size=0;
+int menu_debug_hexdump_memory_zone_size=65536;
 
 void menu_debug_set_memory_zone_attr(void)
 {
@@ -4854,7 +4855,11 @@ z80_byte menu_debug_get_mapped_byte(int direccion)
 
 
 	//Mostrar memoria normal
-	if (menu_debug_hexdump_show_memory_zones==0) return peek_byte_z80_moto(direccion);
+	if (menu_debug_hexdump_show_memory_zones==0) {
+		menu_debug_hexdump_memory_zone_size=65536;
+		if (MACHINE_IS_QL) menu_debug_hexdump_memory_zone_size=QL_MEM_LIMIT+1;
+		return peek_byte_z80_moto(direccion);
+	}
 
 
 	//Mostrar zonas mapeadas
@@ -4875,9 +4880,12 @@ void menu_debug_registers_dump_ascii(char *texto,menu_z80_moto_int direccion,int
         z80_byte byte_leido;
 
         int puntero=0;
+				printf ("dir ascii: %d\n",direccion);
 
         for (;longitud>0;longitud--) {
-							direccion=adjust_address_space_cpu(direccion);
+							//direccion=adjust_address_space_cpu(direccion);
+							direccion=ajust_address_memory_size(direccion);
+
                 //Si mostramos RAM oculta de Inves
                 if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
                         byte_leido=memoria_spectrum[direccion++];
@@ -6041,12 +6049,19 @@ int menu_debug_hexdump_with_ascii_modo_ascii=0;
 
 void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida,int bytes_por_linea)
 {
-	dir_leida=adjust_address_space_cpu(dir_leida);
+	//dir_leida=adjust_address_space_cpu(dir_leida);
+	dir_leida=ajust_address_memory_size(dir_leida);
 	int longitud_direccion=4;
 	if (CPU_IS_MOTOROLA) longitud_direccion=5;
 
 	if (CPU_IS_MOTOROLA) sprintf (dumpmemoria,"%05X",dir_leida);
 	else sprintf (dumpmemoria,"%04X",dir_leida);
+
+	if (menu_debug_hexdump_memory_zone_size>65536) {
+		longitud_direccion=5;
+		sprintf (dumpmemoria,"%05X",dir_leida);
+	}
+
 	//cambiamos el 0 final por un espacio
 
 
@@ -6065,6 +6080,16 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 
 
 menu_z80_moto_int menu_debug_hexdump_direccion=0;
+
+int ajust_address_memory_size(int direccion)
+{
+	if (direccion>=menu_debug_hexdump_memory_zone_size) {
+		printf ("ajustamos direccion %d a %d\n",direccion,menu_debug_hexdump_memory_zone_size);
+		direccion=direccion % menu_debug_hexdump_memory_zone_size;
+	}
+
+	return direccion;
+}
 
 void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 {
@@ -6090,7 +6115,12 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
         do {
 
 					//Si maquina no es QL, direccion siempre entre 0 y 65535
-					menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
+					//menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
+					menu_debug_hexdump_direccion=ajust_address_memory_size(menu_debug_hexdump_direccion);
+					/*if (menu_debug_hexdump_direccion>=menu_debug_hexdump_memory_zone_size) {
+						printf ("ajustamos direccion %d a %d\n",menu_debug_hexdump_direccion,menu_debug_hexdump_memory_zone_size)
+						menu_debug_hexdump_direccion=menu_debug_hexdump_direccion % menu_debug_hexdump_memory_zone_size;
+					}*/
 
 				int linea=0;
 
@@ -6114,7 +6144,8 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 		for (;lineas_hex<lineas_total;lineas_hex++,linea++) {
 
 			menu_z80_moto_int dir_leida=menu_debug_hexdump_direccion+lineas_hex*bytes_por_linea;
-			menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
+			//menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
+			menu_debug_hexdump_direccion=ajust_address_memory_size(menu_debug_hexdump_direccion);
 
 			if (menu_debug_hexdump_show_memory_zones) {
 				if (dir_leida>menu_debug_hexdump_memory_zone_size) {
@@ -6130,6 +6161,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 			menu_escribe_linea_opcion(linea,-1,1,dumpmemoria);
 		}
 
+printf ("zone size: %d dir: %d\n",menu_debug_hexdump_memory_zone_size,menu_debug_hexdump_direccion);
 
         menu_escribe_linea_opcion(linea++,-1,1,"");
 
