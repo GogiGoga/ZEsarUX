@@ -6064,6 +6064,7 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 }
 
 
+menu_z80_moto_int menu_debug_hexdump_direccion=0;
 
 void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 {
@@ -6075,7 +6076,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
         z80_byte tecla=0;
 
 	//z80_int direccion=reg_pc;
-	menu_z80_moto_int direccion=get_pc_register();
+	//menu_z80_moto_int menu_debug_hexdump_direccion=get_pc_register();
 
 	int salir=0;
 
@@ -6089,7 +6090,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
         do {
 
 					//Si maquina no es QL, direccion siempre entre 0 y 65535
-					direccion=adjust_address_space_cpu(direccion);
+					menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
 
 				int linea=0;
 
@@ -6112,9 +6113,18 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 		for (;lineas_hex<lineas_total;lineas_hex++,linea++) {
 
-			menu_z80_moto_int dir_leida=direccion+lineas_hex*bytes_por_linea;
-			direccion=adjust_address_space_cpu(direccion);
+			menu_z80_moto_int dir_leida=menu_debug_hexdump_direccion+lineas_hex*bytes_por_linea;
+			menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
+
+			if (menu_debug_hexdump_show_memory_zones) {
+				if (dir_leida>menu_debug_hexdump_memory_zone_size) {
+					dir_leida -=menu_debug_hexdump_memory_zone_size;
+				}
+			}
+
 			menu_debug_hexdump_with_ascii(dumpmemoria,dir_leida,bytes_por_linea);
+
+
 
 
 			menu_escribe_linea_opcion(linea,-1,1,dumpmemoria);
@@ -6170,26 +6180,26 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 					case 11:
 						//arriba
-						direccion -=bytes_por_linea;
+						menu_debug_hexdump_direccion -=bytes_por_linea;
 					break;
 
 					case 10:
 						//abajo
-						direccion +=bytes_por_linea;
+						menu_debug_hexdump_direccion +=bytes_por_linea;
 					break;
 
 					case 24:
 						//PgUp
-						direccion -=bytes_por_ventana;
+						menu_debug_hexdump_direccion -=bytes_por_ventana;
 					break;
 
 					case 25:
 						//PgDn
-						direccion +=bytes_por_ventana;
+						menu_debug_hexdump_direccion +=bytes_por_ventana;
 					break;
 
 					case 'm':
-						direccion=menu_debug_hexdump_change_pointer(direccion);
+						menu_debug_hexdump_direccion=menu_debug_hexdump_change_pointer(menu_debug_hexdump_direccion);
 						menu_debug_hexdump_ventana();
 					break;
 
