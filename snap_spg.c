@@ -156,7 +156,8 @@ void load_spg_snapshot(char *filename)
       tsconf_set_sizes_display();
 
   		z80_byte *data = &hdr10->data;
-  		for (z80_byte i = 0; i < hdr10->n_blk; i++)
+      z80_byte i;
+  		for (i = 0; i < hdr10->n_blk; i++)
   		{
   			z80_int size = ((hdr10->blocks[i].size & 0x1F) + 1) * 512;
   			z80_byte page = hdr10->blocks[i].page;

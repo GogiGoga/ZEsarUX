@@ -131,7 +131,8 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	  }
 	  if( code == 3 ) offset = 0xffe0 + dehrust_getBits( 5 );
 
-	  for( z80_byte i = 0; i < 2; ++i ) {
+		z80_byte i;
+	  for( i = 0; i < 2; ++i ) {
 			*to = to[offset];
 			to++;
 		}
@@ -158,7 +159,8 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	  if( dehrust_getBit() )
 	  {
 		z80_byte noBytes = 6 + dehrust_getBits(4);
-		for( z80_byte i = 0; i < 2*noBytes; ++i ) *to++ = dehrust_getByte();
+		z80_byte i;
+		for( i = 0; i < 2*noBytes; ++i ) *to++ = dehrust_getByte();
 		continue;
 	  }
 
@@ -208,7 +210,8 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 	  offset += dehrust_getByte();
 	}
 
-	for( z80_int i = 0; i < len; ++i ) {
+	z80_int i;
+	for( i = 0; i < len; ++i ) {
 		*to = to[offset];
 		to++;
 	}
@@ -253,7 +256,8 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 		void repeat(z80_long_int disp, int num)
 		{
-			for(int i = 0; i < num; i++)
+			int i;
+			for(i = 0; i < num; i++)
 			{
 				z80_byte val = *(to - disp);
 				put_byte(val);
