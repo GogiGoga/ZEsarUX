@@ -677,10 +677,21 @@ int menu_debug_show_memory_zones=0;
 int menu_debug_memory_zone=-1;
 menu_z80_moto_int menu_debug_memory_zone_size=65536;
 
+
+//
+// Inicio funciones de gestion de zonas de memoria
+//
+
 void menu_debug_set_memory_zone_attr(void)
 {
 
 	int readwrite;
+
+	if (menu_debug_show_memory_zones==0) {
+		menu_debug_memory_zone_size=65536;
+		if (MACHINE_IS_QL) menu_debug_memory_zone_size=QL_MEM_LIMIT+1;
+		return;
+	}
 
 	//Primero ver si zona actual no esta disponible, fallback a 0 que siempre esta
 	 menu_debug_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_memory_zone,&readwrite);
@@ -698,8 +709,6 @@ z80_byte menu_debug_get_mapped_byte(int direccion)
 
 	//Mostrar memoria normal
 	if (menu_debug_show_memory_zones==0) {
-		menu_debug_memory_zone_size=65536;
-		if (MACHINE_IS_QL) menu_debug_memory_zone_size=QL_MEM_LIMIT+1;
 		return peek_byte_z80_moto(direccion);
 	}
 
@@ -734,7 +743,25 @@ menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 }
 
 
+void menu_debug_change_memory_zone(void)
+{
 
+if (menu_debug_show_memory_zones==0) menu_debug_show_memory_zones=1;
+
+//Si se ha habilitado en el if anterior, entrara aqui
+if (menu_debug_show_memory_zones) {
+	menu_debug_memory_zone++;
+	menu_debug_memory_zone=machine_get_next_available_memory_zone(menu_debug_memory_zone);
+	if (menu_debug_memory_zone<0)  {
+		menu_debug_memory_zone=-1;
+		menu_debug_show_memory_zones=0;
+	}
+}
+}
+
+//
+// Fin funciones de gestion de zonas de memoria
+//
 
 //Cambia a directorio donde estan los archivos de instalacion (en share o en ..Resources)
 
@@ -6161,14 +6188,13 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 		//Hacer que texto ventana empiece pegado a la izquierda
 		menu_escribe_linea_startx=0;
 
+		//Antes de escribir, normalizar zona memoria
+		menu_debug_set_memory_zone_attr();
+
 				char textoshow[32];
 
 				sprintf (textoshow,"Showing %d bytes per page:",bytes_por_ventana);
         menu_escribe_linea_opcion(linea++,-1,1,textoshow);
-
-				sprintf (textoshow,"Mem size: %d (%d KB)",menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
-        menu_escribe_linea_opcion(linea++,-1,1,textoshow);
-
 
                                 menu_escribe_linea_opcion(linea++,-1,1,"");
 
@@ -6234,9 +6260,10 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 
 				//truncar texto a 32 por si acaso
 				memory_zone_text[32]=0;
-
-
 				menu_escribe_linea_opcion(linea++,-1,1,memory_zone_text);
+
+				sprintf (textoshow,"   Size: %d (%d KB)",menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
+				menu_escribe_linea_opcion(linea++,-1,1,textoshow);
 
 				if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
@@ -6286,17 +6313,9 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 					break;
 
 					case 'z':
-						if (menu_debug_show_memory_zones==0) menu_debug_show_memory_zones=1;
 
-						//Si se ha habilitado en el if anterior, entrara aqui
-						if (menu_debug_show_memory_zones) {
-							menu_debug_memory_zone++;
-							menu_debug_memory_zone=machine_get_next_available_memory_zone(menu_debug_memory_zone);
-							if (menu_debug_memory_zone<0)  {
-								menu_debug_memory_zone=-1;
-								menu_debug_show_memory_zones=0;
-							}
-						}
+						menu_debug_change_memory_zone();
+
 						break;
 
 					//Salir con ESC
@@ -6316,9 +6335,10 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 
 
 #define SPRITES_X 1
-#define SPRITES_Y 2
+#define SPRITES_Y 0
 #define SPRITES_ANCHO 30
-#define SPRITES_ALTO 20
+#define SPRITES_ALTO 14
+#define SPRITES_ALTO_VENTANA (SPRITES_ALTO+9)
 
 menu_z80_moto_int view_sprites_direccion=0x3d00;
 
@@ -6360,7 +6380,10 @@ void menu_debug_draw_sprites(void)
 	if (view_sprites_tbblue==0) {
 		for (y=0;y<view_sprites_alto_sprite;y++) {
 			for (x=0;x<view_sprites_ancho_sprite;x++) {
-				byte_leido=peek_byte_z80_moto(puntero);
+				//byte_leido=peek_byte_z80_moto(puntero);
+				puntero=adjust_address_memory_size(puntero);
+				byte_leido=menu_debug_get_mapped_byte(puntero);
+
 //extern z80_byte *tsconf_ram_mem_table[];
 	//			byte_leido=*(tsconf_ram_mem_table[temp_pagina]+puntero);
 
@@ -6445,7 +6468,7 @@ menu_z80_moto_int menu_debug_view_sprites_change_pointer(menu_z80_moto_int p)
 void menu_debug_view_sprites_ventana(void)
 {
 
-	menu_dibuja_ventana(SPRITES_X,SPRITES_Y,SPRITES_ANCHO,SPRITES_ALTO+1,"Sprites");
+	menu_dibuja_ventana(SPRITES_X,SPRITES_Y,SPRITES_ANCHO,SPRITES_ALTO_VENTANA,"Sprites");
 
 }
 
@@ -6554,16 +6577,20 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 		else {
 			bytes_por_linea=view_sprites_ancho_sprite;
 			bytes_por_ventana=view_sprites_ancho_sprite*view_sprites_alto_sprite;
-			view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
+			//view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
+			view_sprites_direccion=adjust_address_memory_size(view_sprites_direccion);
+
 			if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Address: %05X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
 			else sprintf (buffer_texto,"Address: %04X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
 		}
 
-
-
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_texto);
 
-		linea=SPRITES_ALTO-3;
+
+
+
+
+		linea=SPRITES_ALTO+3;
 
 		char buffer_primera_linea[64]; //dar espacio de mas para poder alojar el ~de los atajos
 		char buffer_segunda_linea[64];
@@ -6590,6 +6617,33 @@ menu_writing_inverse_color.v=1;
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_primera_linea);
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_segunda_linea);
+
+
+
+		char textoshow[33];
+
+		char memory_zone_text[64]; //espacio temporal mas grande por si acaso
+		if (menu_debug_show_memory_zones==0) {
+			sprintf (memory_zone_text,"Z: Mem zone (mapped memory)");
+		}
+		else {
+			//printf ("Info zona %d\n",menu_debug_memory_zone);
+			char buffer_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
+			int readwrite;
+			machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
+			sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
+			printf ("size: %X\n",menu_debug_memory_zone_size);
+			//printf ("Despues zona %d\n",menu_debug_memory_zone);
+		}
+
+		//truncar texto a 32 por si acaso
+		memory_zone_text[32]=0;
+		menu_escribe_linea_opcion(linea++,-1,1,memory_zone_text);
+
+		sprintf (textoshow,"   Size: %d (%d KB)",menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
+		menu_escribe_linea_opcion(linea++,-1,1,textoshow);
+
+
 
 //Restaurar comportamiento atajos
 menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
@@ -6643,6 +6697,11 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 																							view_sprites_inverse.v ^=1;
 																				break;
 
+																				case 'z':
+																					menu_debug_change_memory_zone();
+
+																					break;
+
 																				case 's':
 																							if (MACHINE_IS_TBBLUE && view_sprites_tbblue) {
 
@@ -6678,7 +6737,7 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
                                         break;
 
                                         case 'a':
-                                                if (view_sprites_alto_sprite<(SPRITES_ALTO-6)*8)  view_sprites_alto_sprite++;
+                                                if (view_sprites_alto_sprite<(SPRITES_ALTO)*8)  view_sprites_alto_sprite++;
                                         break;
 
 																				case 'c':
