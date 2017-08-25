@@ -8553,33 +8553,36 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 
 
       *readwrite=3; //1 read, 2 write
+      //como fallback, por defecto en spectrum 48kb ram
+      size=49152;
 
       if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
         size=131072;
       }
-      //Caso normal 48k como fallback
-      else {
-        size=49152;
-      }
+
 
     break;
 
-
+    //Zona rom
     case 1:
 
 
       *readwrite=1; //1 read, 2 write
+      //como fallback por defecto en spectrum 16kb rom
+      size=16384;
 
-      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
-        size=32768; //TODO!!!!
+      if (MACHINE_IS_SPECTRUM_128_P2) {
+        size=32768;
       }
-      //Caso normal 48k como fallback
-      else {
-        size=16384;
+
+      if (MACHINE_IS_SPECTRUM_P2A) {
+        size=65536;
       }
+
 
     break;
 
+    //diviface rom
     case 2:
       if (diviface_enabled.v) {
         *readwrite=3;
@@ -8587,7 +8590,7 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
       }
     break;
 
-
+    //diviface ram
     case 3:
       if (diviface_enabled.v) {
         *readwrite=3;
@@ -8605,47 +8608,56 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 {
 
+  z80_byte *p=NULL;
+
   //Zona 0, ram speccy
   switch (zone) {
     case 0:
 
+    //Caso normal 48k como fallback
+          p=&memoria_spectrum[address+16384];
 
-      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
-        return &memoria_spectrum[address];
+
+
+
+      if (MACHINE_IS_SPECTRUM_128_P2) {
+        //Saltar los 32kb de rom
+        p=&memoria_spectrum[address+32768];
       }
 
-      //Caso normal 48k como fallback
-      else {
-        return &memoria_spectrum[address+16384];
+      if (MACHINE_IS_SPECTRUM_P2A) {
+        //Saltar los 64kb de rom
+        p=&memoria_spectrum[address+65536];
       }
+
+
 
     break;
 
 
-
+    //Zona 1, rom speccy
     case 1:
 
-
-      if (MACHINE_IS_SPECTRUM_128_P2_P2A) {
-        return &memoria_spectrum[address];
-      }
-
       //Caso normal 48k como fallback
-      else {
-        return &memoria_spectrum[address];
-      }
+      p=&memoria_spectrum[address];
+
+      //En resto de maquinas suele tambien estar al principio del puntero memoria_spectrum... en INVES TODO!
+
 
     break;
 
+
+    //diviface rom
     case 2:
       if (diviface_enabled.v) {
-        return &diviface_memory_pointer[address];
+        p=&diviface_memory_pointer[address];
       }
     break;
 
+    //diviface ram
     case 3:
       if (diviface_enabled.v) {
-        return &diviface_ram_memory_pointer[address];
+        p=&diviface_ram_memory_pointer[address];
       }
     break;
 
@@ -8653,7 +8665,7 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 
   }
 
-  return NULL;
+  return p;
 
 }
 
