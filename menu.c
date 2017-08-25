@@ -6152,7 +6152,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 				int lineas_hex=0;
 		const int bytes_por_linea=8;
-		const int lineas_total=14;
+		const int lineas_total=13;
 
 		int bytes_por_ventana=bytes_por_linea*lineas_total;
 
@@ -6164,8 +6164,15 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 				char textoshow[32];
 
 				sprintf (textoshow,"Showing %d bytes per page:",bytes_por_ventana);
-                                menu_escribe_linea_opcion(linea++,-1,1,textoshow);
+        menu_escribe_linea_opcion(linea++,-1,1,textoshow);
+
+				sprintf (textoshow,"Mem size: %d (%d KB)",menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
+        menu_escribe_linea_opcion(linea++,-1,1,textoshow);
+
+
                                 menu_escribe_linea_opcion(linea++,-1,1,"");
+
+
 
 		for (;lineas_hex<lineas_total;lineas_hex++,linea++) {
 

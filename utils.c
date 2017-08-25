@@ -8560,6 +8560,12 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
         size=131072;
       }
 
+      //Vigilar condiciones que pueden cumplir mas de una maquina a la vez
+
+      if (MACHINE_IS_ZXUNO) {
+        size=ZXUNO_SRAM_PAGES*16384;
+      }
+
 
     break;
 
@@ -8577,6 +8583,12 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 
       if (MACHINE_IS_SPECTRUM_P2A) {
         size=65536;
+      }
+
+      //Vigilar condiciones que pueden cumplir mas de una maquina a la vez
+
+      if (MACHINE_IS_ZXUNO) {
+        size=16384;
       }
 
 
@@ -8630,6 +8642,13 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
         p=&memoria_spectrum[address+65536];
       }
 
+      //Vigilar condiciones que pueden cumplir mas de una maquina a la vez
+
+      if (MACHINE_IS_ZXUNO) {
+        //saltar los primeros 16 kb de la rom del zxuno
+        p=&memoria_spectrum[address+16384];
+
+      }
 
 
     break;
