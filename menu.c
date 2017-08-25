@@ -280,6 +280,8 @@ void menu_textspeech_send_text(char *texto);
 
 z80_byte menu_debug_get_mapped_byte(int direccion);
 
+menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion);
+
 //si hay recuadro activo, y cuales son sus coordenadas y color
 
 int cuadrado_activo=0;
@@ -668,6 +670,68 @@ struct s_generic_message_tooltip_return {
 typedef struct s_generic_message_tooltip_return generic_message_tooltip_return;
 
 void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar_cursor, generic_message_tooltip_return *retorno, const char * texto_format , ...);
+
+
+
+int menu_debug_show_memory_zones=0;
+int menu_debug_memory_zone=-1;
+menu_z80_moto_int menu_debug_memory_zone_size=65536;
+
+void menu_debug_set_memory_zone_attr(void)
+{
+
+	int readwrite;
+
+	//Primero ver si zona actual no esta disponible, fallback a 0 que siempre esta
+	 menu_debug_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_memory_zone,&readwrite);
+	if (!menu_debug_memory_zone_size) {
+		menu_debug_memory_zone=0;
+		menu_debug_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_memory_zone,&readwrite);
+	}
+}
+
+//Muestra byte mapeado de ram normal o de zona de menu mapeada
+z80_byte menu_debug_get_mapped_byte(int direccion)
+{
+
+
+
+	//Mostrar memoria normal
+	if (menu_debug_show_memory_zones==0) {
+		menu_debug_memory_zone_size=65536;
+		if (MACHINE_IS_QL) menu_debug_memory_zone_size=QL_MEM_LIMIT+1;
+		return peek_byte_z80_moto(direccion);
+	}
+
+
+	//Mostrar zonas mapeadas
+	menu_debug_set_memory_zone_attr();
+
+	direccion=direccion % menu_debug_memory_zone_size;
+	return *(machine_get_memory_zone_pointer(menu_debug_memory_zone,direccion));
+
+
+
+}
+
+
+menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
+{
+
+	//Si modo mapeo normal
+	if (menu_debug_show_memory_zones==0) {
+		return adjust_address_space_cpu(direccion);
+	}
+
+	//Si zonas memoria mapeadas
+	if (direccion>=menu_debug_memory_zone_size) {
+		printf ("ajustamos direccion %x a %x\n",direccion,menu_debug_memory_zone_size);
+		direccion=direccion & (menu_debug_memory_zone_size-1);
+	}
+
+	return direccion;
+}
+
 
 
 
@@ -4813,7 +4877,7 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 
 	for (;longitud>0;longitud--) {
 		//direccion=adjust_address_space_cpu(direccion);
-		direccion=ajust_address_memory_size(direccion);
+		direccion=adjust_address_memory_size(direccion);
 		//Si mostramos RAM oculta de Inves
 		if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
 			byte_leido=memoria_spectrum[direccion++];
@@ -4831,46 +4895,6 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 	}
 }
 
-int menu_debug_hexdump_show_memory_zones=0;
-int menu_debug_hexdump_memory_zone=-1;
-int menu_debug_hexdump_memory_zone_size=65536;
-
-void menu_debug_set_memory_zone_attr(void)
-{
-
-	int readwrite;
-
-	//Primero ver si zona actual no esta disponible, fallback a 0 que siempre esta
-	 menu_debug_hexdump_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_hexdump_memory_zone,&readwrite);
-	if (menu_debug_hexdump_memory_zone_size<0) {
-		menu_debug_hexdump_memory_zone=0;
-		menu_debug_hexdump_memory_zone_size=machine_get_memory_zone_attrib(menu_debug_hexdump_memory_zone,&readwrite);
-	}
-}
-
-//Muestra byte mapeado de ram normal o de zona de menu mapeada
-z80_byte menu_debug_get_mapped_byte(int direccion)
-{
-
-
-
-	//Mostrar memoria normal
-	if (menu_debug_hexdump_show_memory_zones==0) {
-		menu_debug_hexdump_memory_zone_size=65536;
-		if (MACHINE_IS_QL) menu_debug_hexdump_memory_zone_size=QL_MEM_LIMIT+1;
-		return peek_byte_z80_moto(direccion);
-	}
-
-
-	//Mostrar zonas mapeadas
-	menu_debug_set_memory_zone_attr();
-
-	direccion=direccion % menu_debug_hexdump_memory_zone_size;
-	return *(machine_get_memory_zone_pointer(menu_debug_hexdump_memory_zone,direccion));
-
-
-
-}
 
 //Vuelca contenido ascii de memoria de spectrum en cadena de texto
 //modoascii: 0: normal. 1:zx80. 2:zx81
@@ -4880,11 +4904,11 @@ void menu_debug_registers_dump_ascii(char *texto,menu_z80_moto_int direccion,int
         z80_byte byte_leido;
 
         int puntero=0;
-				printf ("dir ascii: %d\n",direccion);
+				//printf ("dir ascii: %d\n",direccion);
 
         for (;longitud>0;longitud--) {
 							//direccion=adjust_address_space_cpu(direccion);
-							direccion=ajust_address_memory_size(direccion);
+							direccion=adjust_address_memory_size(direccion);
 
                 //Si mostramos RAM oculta de Inves
                 if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
@@ -6050,14 +6074,14 @@ int menu_debug_hexdump_with_ascii_modo_ascii=0;
 void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida,int bytes_por_linea)
 {
 	//dir_leida=adjust_address_space_cpu(dir_leida);
-	dir_leida=ajust_address_memory_size(dir_leida);
+	dir_leida=adjust_address_memory_size(dir_leida);
 	int longitud_direccion=4;
 	if (CPU_IS_MOTOROLA) longitud_direccion=5;
 
 	if (CPU_IS_MOTOROLA) sprintf (dumpmemoria,"%05X",dir_leida);
 	else sprintf (dumpmemoria,"%04X",dir_leida);
 
-	if (menu_debug_hexdump_memory_zone_size>65536) {
+	if (menu_debug_memory_zone_size>65536) {
 		longitud_direccion=5;
 		sprintf (dumpmemoria,"%05X",dir_leida);
 	}
@@ -6081,15 +6105,7 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 
 menu_z80_moto_int menu_debug_hexdump_direccion=0;
 
-int ajust_address_memory_size(int direccion)
-{
-	if (direccion>=menu_debug_hexdump_memory_zone_size) {
-		printf ("ajustamos direccion %d a %d\n",direccion,menu_debug_hexdump_memory_zone_size);
-		direccion=direccion % menu_debug_hexdump_memory_zone_size;
-	}
 
-	return direccion;
-}
 
 void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 {
@@ -6116,10 +6132,10 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 					//Si maquina no es QL, direccion siempre entre 0 y 65535
 					//menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
-					menu_debug_hexdump_direccion=ajust_address_memory_size(menu_debug_hexdump_direccion);
-					/*if (menu_debug_hexdump_direccion>=menu_debug_hexdump_memory_zone_size) {
-						printf ("ajustamos direccion %d a %d\n",menu_debug_hexdump_direccion,menu_debug_hexdump_memory_zone_size)
-						menu_debug_hexdump_direccion=menu_debug_hexdump_direccion % menu_debug_hexdump_memory_zone_size;
+					menu_debug_hexdump_direccion=adjust_address_memory_size(menu_debug_hexdump_direccion);
+					/*if (menu_debug_hexdump_direccion>=menu_debug_memory_zone_size) {
+						printf ("ajustamos direccion %d a %d\n",menu_debug_hexdump_direccion,menu_debug_memory_zone_size)
+						menu_debug_hexdump_direccion=menu_debug_hexdump_direccion % menu_debug_memory_zone_size;
 					}*/
 
 				int linea=0;
@@ -6145,13 +6161,13 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 			menu_z80_moto_int dir_leida=menu_debug_hexdump_direccion+lineas_hex*bytes_por_linea;
 			//menu_debug_hexdump_direccion=adjust_address_space_cpu(menu_debug_hexdump_direccion);
-			menu_debug_hexdump_direccion=ajust_address_memory_size(menu_debug_hexdump_direccion);
+			menu_debug_hexdump_direccion=adjust_address_memory_size(menu_debug_hexdump_direccion);
 
-			if (menu_debug_hexdump_show_memory_zones) {
-				if (dir_leida>menu_debug_hexdump_memory_zone_size) {
-					dir_leida -=menu_debug_hexdump_memory_zone_size;
+			/*if (menu_debug_show_memory_zones) {
+				if (dir_leida>menu_debug_memory_zone_size) { //(int) para que no se queje el compilador
+					dir_leida -=menu_debug_memory_zone_size;
 				}
-			}
+			}*/
 
 			menu_debug_hexdump_with_ascii(dumpmemoria,dir_leida,bytes_por_linea);
 
@@ -6161,7 +6177,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 			menu_escribe_linea_opcion(linea,-1,1,dumpmemoria);
 		}
 
-printf ("zone size: %d dir: %d\n",menu_debug_hexdump_memory_zone_size,menu_debug_hexdump_direccion);
+printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump_direccion);
 
         menu_escribe_linea_opcion(linea++,-1,1,"");
 
@@ -6186,16 +6202,17 @@ printf ("zone size: %d dir: %d\n",menu_debug_hexdump_memory_zone_size,menu_debug
 				}
 
 				char memory_zone_text[33];
-				if (menu_debug_hexdump_show_memory_zones==0) {
+				if (menu_debug_show_memory_zones==0) {
 					sprintf (memory_zone_text,"Z: Mem zone (mapped memory)");
 				}
 				else {
-					//printf ("Info zona %d\n",menu_debug_hexdump_memory_zone);
+					//printf ("Info zona %d\n",menu_debug_memory_zone);
 					char buffer_name[256];
 					int readwrite;
-					machine_get_memory_zone_name(menu_debug_hexdump_memory_zone,buffer_name);
-					sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_hexdump_memory_zone,buffer_name);
-					//printf ("Despues zona %d\n",menu_debug_hexdump_memory_zone);
+					machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
+					sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
+					printf ("size: %X\n",menu_debug_memory_zone_size);
+					//printf ("Despues zona %d\n",menu_debug_memory_zone);
 				}
 				menu_escribe_linea_opcion(linea++,-1,1,memory_zone_text);
 
@@ -6245,15 +6262,15 @@ printf ("zone size: %d dir: %d\n",menu_debug_hexdump_memory_zone_size,menu_debug
 					break;
 
 					case 'z':
-						if (menu_debug_hexdump_show_memory_zones==0) menu_debug_hexdump_show_memory_zones=1;
+						if (menu_debug_show_memory_zones==0) menu_debug_show_memory_zones=1;
 
 						//Si se ha habilitado en el if anterior, entrara aqui
-						if (menu_debug_hexdump_show_memory_zones) {
-							menu_debug_hexdump_memory_zone++;
-							menu_debug_hexdump_memory_zone=machine_get_next_available_memory_zone(menu_debug_hexdump_memory_zone);
-							if (menu_debug_hexdump_memory_zone<0)  {
-								menu_debug_hexdump_memory_zone=-1;
-								menu_debug_hexdump_show_memory_zones=0;
+						if (menu_debug_show_memory_zones) {
+							menu_debug_memory_zone++;
+							menu_debug_memory_zone=machine_get_next_available_memory_zone(menu_debug_memory_zone);
+							if (menu_debug_memory_zone<0)  {
+								menu_debug_memory_zone=-1;
+								menu_debug_show_memory_zones=0;
 							}
 						}
 						break;

@@ -562,7 +562,7 @@ extern int get_file_date_from_stat(struct stat *buf_stat,int *hora,int *minuto,i
 #define MACHINE_MAX_MEMORY_ZONES 1000
 
 extern z80_byte *machine_get_memory_zone_pointer(int zone, int address);
-extern int machine_get_memory_zone_attrib(int zone, int *readwrite);
+extern unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite);
 extern void machine_get_memory_zone_name(int zone, char *name);
 extern int machine_get_next_available_memory_zone(int zone);
 

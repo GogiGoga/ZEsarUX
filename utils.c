@@ -8538,13 +8538,13 @@ int util_write_pbm_file(char *archivo, int ancho, int alto, z80_byte *source)
 
 
 //Retorna tamanyo de zona y actualiza puntero a memoria indicada
-//Si es <0, no existe
+//Si es 0, no existe
 
-int machine_get_memory_zone_attrib(int zone, int *readwrite)
+unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 {
 
   //Por defecto
-  int size=-1;
+  int size=0;
 
 
   //Zona 0, ram speccy
@@ -8689,8 +8689,8 @@ int machine_get_next_available_memory_zone(int zone)
   do {
     //printf ("Zone: %d\n",zone);
     if (zone>=MACHINE_MAX_MEMORY_ZONES) return -1;
-    int size=machine_get_memory_zone_attrib(zone,&readwrite);
-    if (size>=0) return zone;
+    unsigned int size=machine_get_memory_zone_attrib(zone,&readwrite);
+    if (size>0) return zone;
     zone++;
   } while (1);
 
