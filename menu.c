@@ -6334,9 +6334,9 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 
 
 
-#define SPRITES_X 1
+#define SPRITES_X 0
 #define SPRITES_Y 0
-#define SPRITES_ANCHO 30
+#define SPRITES_ANCHO 32
 #define SPRITES_ALTO 14
 #define SPRITES_ALTO_VENTANA (SPRITES_ALTO+9)
 
@@ -6565,7 +6565,8 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 
 
 
-
+					//Antes de escribir, normalizar zona memoria
+					menu_debug_set_memory_zone_attr();
 
 
 
