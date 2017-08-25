@@ -8583,7 +8583,15 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
     case 2:
       if (diviface_enabled.v) {
         *readwrite=3;
-        size=(DIVIFACE_FIRMWARE_ALLOCATED_KB+get_diviface_total_ram())*1024;
+        size=DIVIFACE_FIRMWARE_KB*1024;
+      }
+    break;
+
+
+    case 3:
+      if (diviface_enabled.v) {
+        *readwrite=3;
+        size=(get_diviface_total_ram())*1024;
       }
     break;
 
@@ -8635,6 +8643,14 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       }
     break;
 
+    case 3:
+      if (diviface_enabled.v) {
+        return &diviface_ram_memory_pointer[address];
+      }
+    break;
+
+
+
   }
 
   return NULL;
@@ -8669,7 +8685,13 @@ void machine_get_memory_zone_name(int zone, char *name)
 
     case 2:
       if (diviface_enabled.v) {
-        strcpy(name,"Diviface");
+        strcpy(name,"Diviface eeprom");
+      }
+    break;
+
+    case 3:
+      if (diviface_enabled.v) {
+        strcpy(name,"Diviface ram");
       }
     break;
 

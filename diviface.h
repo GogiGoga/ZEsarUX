@@ -52,6 +52,7 @@ extern int diviface_current_ram_memory_bits;
 extern z80_bit diviface_eprom_write_jumper;
 
 extern z80_byte *diviface_memory_pointer;
+extern z80_byte *diviface_ram_memory_pointer;
 
 extern z80_bit diviface_allow_automatic_paging;
 

@@ -726,7 +726,8 @@ menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 	//Si zonas memoria mapeadas
 	if (direccion>=menu_debug_memory_zone_size) {
 		printf ("ajustamos direccion %x a %x\n",direccion,menu_debug_memory_zone_size);
-		direccion=direccion & (menu_debug_memory_zone_size-1);
+		direccion=direccion % menu_debug_memory_zone_size;
+		printf ("resultado ajustado: %x\n",direccion);
 	}
 
 	return direccion;
@@ -6105,7 +6106,16 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 
 menu_z80_moto_int menu_debug_hexdump_direccion=0;
 
+//Ajustar cuando se pulsa hacia arriba por debajo de direccion 0.
+//Debe poner el puntero hacia el final de la zona de memoria
+menu_z80_moto_int menu_debug_hexdump_adjusta_en_negativo(menu_z80_moto_int dir,int linesize)
+{
+	if (dir>=menu_debug_memory_zone_size) {
+		dir=menu_debug_memory_zone_size-linesize;
+	}
 
+	return dir;
+}
 
 void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 {
@@ -6201,19 +6211,24 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 					else menu_escribe_linea_opcion(linea++,-1,1,"L: Show Inves Low RAM");
 				}
 
-				char memory_zone_text[33];
+				char memory_zone_text[64]; //espacio temporal mas grande por si acaso
 				if (menu_debug_show_memory_zones==0) {
 					sprintf (memory_zone_text,"Z: Mem zone (mapped memory)");
 				}
 				else {
 					//printf ("Info zona %d\n",menu_debug_memory_zone);
-					char buffer_name[256];
+					char buffer_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
 					int readwrite;
 					machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 					sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
 					printf ("size: %X\n",menu_debug_memory_zone_size);
 					//printf ("Despues zona %d\n",menu_debug_memory_zone);
 				}
+
+				//truncar texto a 32 por si acaso
+				memory_zone_text[32]=0;
+
+
 				menu_escribe_linea_opcion(linea++,-1,1,memory_zone_text);
 
 				if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
@@ -6230,6 +6245,7 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 					case 11:
 						//arriba
 						menu_debug_hexdump_direccion -=bytes_por_linea;
+						menu_debug_hexdump_direccion=menu_debug_hexdump_adjusta_en_negativo(menu_debug_hexdump_direccion,bytes_por_linea);
 					break;
 
 					case 10:
@@ -6240,6 +6256,7 @@ printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump
 					case 24:
 						//PgUp
 						menu_debug_hexdump_direccion -=bytes_por_ventana;
+						menu_debug_hexdump_direccion=menu_debug_hexdump_adjusta_en_negativo(menu_debug_hexdump_direccion,bytes_por_ventana);
 					break;
 
 					case 25:
