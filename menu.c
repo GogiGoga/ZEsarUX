@@ -1849,6 +1849,8 @@ int menu_cpu_use_num_cpus=1;
 long menu_get_cpu_use_idle(void)
 {
 
+	printf ("llamando a menu_get_cpu_use_idle\n");
+
 //En Mac OS X, obtenemos consumo cpu de este proceso
 #if defined(__APPLE__)
 
@@ -17954,6 +17956,11 @@ void menu_interface_autoframeskip(MENU_ITEM_PARAMETERS)
 	autoframeskip.v ^=1;
 }
 
+void menu_interface_show_cpu_usage(MENU_ITEM_PARAMETERS)
+{
+	screen_show_cpu_usage.v ^=1;
+}
+
 void menu_interface_settings(MENU_ITEM_PARAMETERS)
 {
         menu_item *array_menu_interface_settings;
@@ -18001,6 +18008,11 @@ void menu_interface_settings(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_show_splash_texts,NULL,"Show splash texts: %s",(screen_show_splash_texts.v ? "Yes" : "No") );
 		menu_add_item_menu_tooltip(array_menu_interface_settings,"Show on display some splash texts, like display mode change");
 		menu_add_item_menu_ayuda(array_menu_interface_settings,"Show on display some splash texts, like display mode change");
+
+		//Uso cpu no se ve en windows
+		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_show_cpu_usage,NULL,"Show CPU usage: %s",(screen_show_cpu_usage.v ? "Yes" : "No") );
+		menu_add_item_menu_tooltip(array_menu_interface_settings,"Show CPU usage on footer");
+		menu_add_item_menu_ayuda(array_menu_interface_settings,"It tells you how much cpu machine is using ZEsarUX. So it's better to have it low. Higher values mean you need a faster host machine to use ZEsarUX");
 
 
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_tooltip,NULL,"Tooltips: %s",(tooltip_enabled.v ? "Enabled" : "Disabled") );

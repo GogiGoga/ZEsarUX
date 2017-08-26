@@ -479,6 +479,7 @@ extern int putpixel_max_y, putpixel_min_y;
 
 //extern void screen_print_splash_text(z80_byte y,z80_byte tinta,z80_byte papel,char *texto);
 extern z80_bit screen_show_splash_texts;
+extern z80_bit screen_show_cpu_usage;
 extern void screen_set_parameters_slow_machines(void);
 
 extern z80_bit mouse_pointer_shown;

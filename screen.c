@@ -78,6 +78,9 @@ int screen_text_accept_ansi=0;
 //no confundir con el mensaje de bienvenida
 z80_bit screen_show_splash_texts={1};
 
+//mostrar uso de cpu en footer
+z80_bit screen_show_cpu_usage={0};
+
 //Rutinas de pantalla
 void (*scr_refresca_pantalla) (void);
 void (*scr_refresca_pantalla_solo_driver) (void);
