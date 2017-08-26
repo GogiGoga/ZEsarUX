@@ -5002,11 +5002,11 @@ void menu_debug_registers_print_register_aux_moto(char *textoregistros,int *line
 int menu_debug_registers_print_registers(void)
 {
 	int linea=0;
-	char textoregistros[32];
+	char textoregistros[33];
 
-	char dumpmemoria[32];
+	char dumpmemoria[33];
 
-	char dumpassembler[32];
+	char dumpassembler[33];
 
 	size_t longitud_opcode;
 
@@ -5164,6 +5164,9 @@ int menu_debug_registers_print_registers(void)
 
 		if (menu_debug_registers_mostrando==3 || menu_debug_registers_mostrando==4) {
 
+			//Hacer que texto ventana empiece pegado a la izquierda
+			menu_escribe_linea_startx=0;
+
 			int limite=15;
 			int longitud_linea=8;
 			if (menu_debug_registers_mostrando==3) limite=9;
@@ -5173,7 +5176,10 @@ int menu_debug_registers_print_registers(void)
 					//menu_debug_registers_dump_hex(dumpassembler,copia_reg_pc,longitud_linea);
 					menu_escribe_linea_opcion(linea++,-1,1,dumpassembler);
 					copia_reg_pc +=longitud_linea;
-				}
+			}
+
+			//Restaurar comportamiento texto ventana
+			menu_escribe_linea_startx=1;
 
 		}
 
@@ -6108,28 +6114,43 @@ int menu_debug_hexdump_with_ascii_modo_ascii=0;
 void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida,int bytes_por_linea)
 {
 	//dir_leida=adjust_address_space_cpu(dir_leida);
+
+	menu_debug_set_memory_zone_attr();
+	//primero meter 6 espacios
+	sprintf (dumpmemoria,"      ");
+
 	dir_leida=adjust_address_memory_size(dir_leida);
-	int longitud_direccion=4;
-	if (CPU_IS_MOTOROLA) longitud_direccion=5;
+	int longitud_direccion=6;
 
-	if (CPU_IS_MOTOROLA) sprintf (dumpmemoria,"%05X",dir_leida);
-	else sprintf (dumpmemoria,"%04X",dir_leida);
+	//Obtener cuantos digitos hexa se necesitan
+	char temp_digitos[20];
+	sprintf (temp_digitos,"%X",menu_debug_memory_zone_size-1);
+	int digitos=strlen(temp_digitos);
 
-	if (menu_debug_memory_zone_size>65536) {
-		longitud_direccion=5;
-		sprintf (dumpmemoria,"%05X",dir_leida);
-	}
+	//Obtener posicion inicial a escribir direccion. Suponemos maximo 6
+	int posicion_inicial_digitos=6-digitos;
+
+	//Escribir desde ahi hasta 6-1, ceros
+	//int i;
+	//for (i=posicion_inicial_digitos;i<longitud_direccion;i++) dumpmemoria[i]='K';
+
+
+	//Escribimos direccion
+	sprintf (&dumpmemoria[posicion_inicial_digitos],"%0*X",digitos,dir_leida);
 
 	//cambiamos el 0 final por un espacio
-
-
 	dumpmemoria[longitud_direccion]=' ';
 
 	menu_debug_registers_dump_hex(&dumpmemoria[longitud_direccion+1],dir_leida,bytes_por_linea);
 
+	//01234567890123456789012345678901
+	//000FFF ABCDABCDABCDABCD 12345678
+
 	//metemos espacio
-	int offset=5+bytes_por_linea*2;
-	if (!CPU_IS_MOTOROLA) dumpmemoria[offset]=' ';
+	int offset=longitud_direccion+1+bytes_por_linea*2;
+
+	dumpmemoria[offset]=' ';
+	//dumpmemoria[offset]='X';
 
 	menu_debug_registers_dump_ascii(&dumpmemoria[offset+1],dir_leida,bytes_por_linea,menu_debug_hexdump_with_ascii_modo_ascii);
 
@@ -6189,7 +6210,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 		int bytes_por_ventana=bytes_por_linea*lineas_total;
 
-		char dumpmemoria[32];
+		char dumpmemoria[33];
 
 		//Hacer que texto ventana empiece pegado a la izquierda
 		menu_escribe_linea_startx=0;
@@ -6197,7 +6218,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 		//Antes de escribir, normalizar zona memoria
 		menu_debug_set_memory_zone_attr();
 
-				char textoshow[32];
+				char textoshow[33];
 
 				sprintf (textoshow,"Showing %d bytes per page:",bytes_por_ventana);
         menu_escribe_linea_opcion(linea++,-1,1,textoshow);
@@ -6219,6 +6240,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 			}*/
 
 			menu_debug_hexdump_with_ascii(dumpmemoria,dir_leida,bytes_por_linea);
+			printf ("hexa: %s\n",dumpmemoria);
 
 
 

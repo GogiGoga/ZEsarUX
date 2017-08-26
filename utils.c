@@ -8613,6 +8613,14 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
       }
     break;
 
+    //zxuno flash
+    case 4:
+      if (MACHINE_IS_ZXUNO) {
+        *readwrite=3;
+        size=ZXUNO_SPI_SIZE*1024;
+      }
+    break;
+
   }
 
   return size;
@@ -8683,6 +8691,14 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       }
     break;
 
+    //zxuno flash
+    case 4:
+      if (MACHINE_IS_ZXUNO) {
+        p=&memoria_spectrum[ (ZXUNO_ROM_SIZE+ZXUNO_SRAM_SIZE)*1024 + address ];
+      }
+    break;
+
+
 
 
   }
@@ -8691,13 +8707,12 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 
 }
 
+//ZXUNO_SPI_SIZE
 
 void machine_get_memory_zone_name(int zone, char *name)
 {
 
   //Por defecto
-  int size=-1;
-
   strcpy(name,"Unknown zone");
 
   //Zona 0, ram speccy
@@ -8726,6 +8741,13 @@ void machine_get_memory_zone_name(int zone, char *name)
     case 3:
       if (diviface_enabled.v) {
         strcpy(name,"Diviface ram");
+      }
+    break;
+
+    //zxuno flash
+    case 4:
+      if (MACHINE_IS_ZXUNO) {
+        strcpy(name,"ZX-Uno flash");
       }
     break;
 
