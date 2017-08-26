@@ -1851,7 +1851,7 @@ int menu_cpu_use_num_cpus=1;
 long menu_get_cpu_use_idle(void)
 {
 
-	printf ("llamando a menu_get_cpu_use_idle\n");
+	//printf ("llamando a menu_get_cpu_use_idle\n");
 
 //En Mac OS X, obtenemos consumo cpu de este proceso
 #if defined(__APPLE__)
@@ -2305,7 +2305,9 @@ void draw_footer(void)
                 menu_draw_cpu_temp();
 #endif
 
-        menu_draw_cpu_use();
+				if (screen_show_cpu_usage.v) {
+        	menu_draw_cpu_use();
+				}
         menu_draw_fps();
 
 
@@ -17961,6 +17963,7 @@ void menu_interface_autoframeskip(MENU_ITEM_PARAMETERS)
 void menu_interface_show_cpu_usage(MENU_ITEM_PARAMETERS)
 {
 	screen_show_cpu_usage.v ^=1;
+	if (!screen_show_cpu_usage.v) menu_init_footer();
 }
 
 
@@ -18059,7 +18062,8 @@ void menu_interface_settings(MENU_ITEM_PARAMETERS)
 #ifndef MINGW
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_show_cpu_usage,NULL,"Show CPU usage: %s",(screen_show_cpu_usage.v ? "Yes" : "No") );
 		menu_add_item_menu_tooltip(array_menu_interface_settings,"Show CPU usage on footer");
-		menu_add_item_menu_ayuda(array_menu_interface_settings,"It tells you how much cpu machine is using ZEsarUX. So it's better to have it low. Higher values mean you need a faster host machine to use ZEsarUX");
+		menu_add_item_menu_ayuda(array_menu_interface_settings,"It tells you how much host cpu machine is using ZEsarUX. So it's better to have it low. "
+														"Higher values mean you need a faster host machine to use ZEsarUX");
 #endif
 
 

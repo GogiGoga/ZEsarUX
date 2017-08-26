@@ -1348,6 +1348,9 @@ printf (
 		"--disablefooter            Disable window footer\n"
 		"--disablemultitaskmenu     Disable multitasking menu\n"
 		"--nosplash                 Disable all splash texts\n"
+#ifndef MINGW
+		"--cpu-usage                Show host CPU usage on footer\n"
+#endif
 		"--nowelcomemessage         Disable welcome message\n"
 		"--red                      Force display mode with red colour\n"
 		"--green                    Force display mode with green colour\n"
@@ -5115,6 +5118,10 @@ void parse_cmdline_options(void) {
 
 			else if (!strcmp(argv[puntero_parametro],"--nosplash")) {
                                 screen_show_splash_texts.v=0;
+			}
+
+			else if (!strcmp(argv[puntero_parametro],"--cpu-usage")) {
+																screen_show_cpu_usage.v=1;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--nowelcomemessage")) {
