@@ -51,6 +51,16 @@ Or using sdl2:
 ./configure --enable-memptr --enable-visualmem --enable-cpustats --enable-sdl2
 
 
+Note: sometimes the configure script on Windows stops with an error like:
+"./configure.compile.c.o: No such file or directory"
+or
+"rm: cannot lstat './configure.compile.c.o': Permission denied"
+
+Seems to be some kind of issue with Windows and bash.... don't worry, just run the command again and it will now finish without errors
+
+
+
+Then:
 make
 
 

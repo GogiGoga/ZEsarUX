@@ -18010,9 +18010,11 @@ void menu_interface_settings(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_ayuda(array_menu_interface_settings,"Show on display some splash texts, like display mode change");
 
 		//Uso cpu no se ve en windows
+#ifndef MINGW
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_show_cpu_usage,NULL,"Show CPU usage: %s",(screen_show_cpu_usage.v ? "Yes" : "No") );
 		menu_add_item_menu_tooltip(array_menu_interface_settings,"Show CPU usage on footer");
 		menu_add_item_menu_ayuda(array_menu_interface_settings,"It tells you how much cpu machine is using ZEsarUX. So it's better to have it low. Higher values mean you need a faster host machine to use ZEsarUX");
+#endif
 
 
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_tooltip,NULL,"Tooltips: %s",(tooltip_enabled.v ? "Enabled" : "Disabled") );
