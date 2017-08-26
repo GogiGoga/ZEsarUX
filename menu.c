@@ -21570,7 +21570,7 @@ void menu_settings_storage(MENU_ITEM_PARAMETERS)
         int retorno_menu;
         do {
 
-                char string_spi_flash_file_shown[13]; //,string_mmc_file_shown[13];
+                char string_spi_flash_file_shown[12]; //,string_mmc_file_shown[13];
 
 
 
@@ -21600,15 +21600,15 @@ void menu_settings_storage(MENU_ITEM_PARAMETERS)
 						if (MACHINE_IS_ZXUNO) {
 						menu_add_item_menu(array_menu_settings_storage,"",MENU_OPCION_SEPARADOR,NULL,NULL);
 										if (zxuno_flash_spi_name[0]==0) sprintf (string_spi_flash_file_shown,"Default");
-										else menu_tape_settings_trunc_name(zxuno_flash_spi_name,string_spi_flash_file_shown,13);
+										else menu_tape_settings_trunc_name(zxuno_flash_spi_name,string_spi_flash_file_shown,12);
 
-										menu_add_item_menu_format(array_menu_settings_storage,MENU_OPCION_NORMAL,menu_zxuno_spi_flash_file,NULL,"ZX-Uno ~~SPI File: %s",string_spi_flash_file_shown);
-										menu_add_item_menu_shortcut(array_menu_settings_storage,'s');
+										menu_add_item_menu_format(array_menu_settings_storage,MENU_OPCION_NORMAL,menu_zxuno_spi_flash_file,NULL,"ZX-Uno ~~Flash File: %s",string_spi_flash_file_shown);
+										menu_add_item_menu_shortcut(array_menu_settings_storage,'f');
 										menu_add_item_menu_tooltip(array_menu_settings_storage,"File used for the ZX-Uno SPI Flash");
 										menu_add_item_menu_ayuda(array_menu_settings_storage,"File used for the ZX-Uno SPI Flash");
 
 
-										menu_add_item_menu_format(array_menu_settings_storage,MENU_OPCION_NORMAL,menu_zxuno_spi_write_enable,NULL,"ZX-Uno SPI Disk ~~Write: %s",
+										menu_add_item_menu_format(array_menu_settings_storage,MENU_OPCION_NORMAL,menu_zxuno_spi_write_enable,NULL,"ZX-Uno Flash ~~Write: %s",
 										(zxuno_flash_write_to_disk_enable.v ? "Yes" : "No") );
 										menu_add_item_menu_shortcut(array_menu_settings_storage,'w');
 										menu_add_item_menu_tooltip(array_menu_settings_storage,"Tells if ZX-Uno SPI Flash writes are saved to disk");
