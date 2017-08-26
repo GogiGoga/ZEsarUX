@@ -85,6 +85,8 @@
 #include "scmp.h"
 #include "mk14.h"
 #include "esxdos_handler.h"
+#include "tbblue.h"
+#include "tsconf.h"
 
 //Archivo usado para entrada de teclas
 FILE *ptr_input_file_keyboard;
@@ -8569,6 +8571,14 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
         size=ZXUNO_SRAM_PAGES*16384;
       }
 
+      if (MACHINE_IS_TBBLUE) {
+        size=1024*1024;
+      }
+
+      if (MACHINE_IS_TSCONF) {
+        size=TSCONF_RAM_PAGES*16384;
+      }
+
 
     break;
 
@@ -8592,6 +8602,14 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 
       if (MACHINE_IS_ZXUNO) {
         size=16384;
+      }
+
+      if (MACHINE_IS_TBBLUE) {
+        size=8192;
+      }
+
+      if (MACHINE_IS_TSCONF) {
+        size=TSCONF_ROM_PAGES*16384;
       }
 
 
@@ -8661,6 +8679,15 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 
       }
 
+      if (MACHINE_IS_TBBLUE) {
+        p=&memoria_spectrum[address];
+      }
+
+      if (MACHINE_IS_TSCONF) {
+        z80_byte *start=tsconf_ram_mem_table[0];
+        p=&start[address];
+      }
+
 
     break;
 
@@ -8673,6 +8700,9 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 
       //En resto de maquinas suele tambien estar al principio del puntero memoria_spectrum... en INVES TODO!
 
+      if (MACHINE_IS_TBBLUE) {
+        p=&tbblue_fpga_rom[address];
+      }
 
     break;
 

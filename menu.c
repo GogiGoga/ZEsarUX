@@ -6240,7 +6240,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 			}*/
 
 			menu_debug_hexdump_with_ascii(dumpmemoria,dir_leida,bytes_por_linea);
-			printf ("hexa: %s\n",dumpmemoria);
+			//printf ("hexa: %s\n",dumpmemoria);
 
 
 
@@ -6248,7 +6248,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 			menu_escribe_linea_opcion(linea,-1,1,dumpmemoria);
 		}
 
-printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump_direccion);
+//printf ("zone size: %x dir: %x\n",menu_debug_memory_zone_size,menu_debug_hexdump_direccion);
 
         menu_escribe_linea_opcion(linea++,-1,1,"");
 

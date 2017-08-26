@@ -35,6 +35,8 @@
 #define TSCONF_DISPLAY_HEIGHT 576
 
 #define TSCONF_FMAPS_SIZE 1024
+#define TSCONF_ROM_PAGES 32
+#define TSCONF_RAM_PAGES 256
 
 extern z80_byte tsconf_last_port_eff7;
 extern z80_byte tsconf_last_port_dff7;

@@ -296,12 +296,12 @@ void tsconf_init_memory_tables(void)
 	puntero=memoria_spectrum;
 
 	int i;
-	for (i=0;i<32;i++) {
+	for (i=0;i<TSCONF_ROM_PAGES;i++) {
 		tsconf_rom_mem_table[i]=puntero;
 		puntero +=16384;
 	}
 
-	for (i=0;i<256;i++) {
+	for (i=0;i<TSCONF_RAM_PAGES;i++) {
 		tsconf_ram_mem_table[i]=puntero;
 		puntero +=16384;
 	}
