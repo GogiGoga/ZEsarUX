@@ -581,6 +581,8 @@ int settings_config_file_opcion_seleccionada=0;
 int ay_player_opcion_seleccionada=0;
 int esxdos_traps_opcion_seleccionada=0;
 
+int colour_settings_opcion_seleccionada=0;
+
 
 //Indica que esta el splash activo o cualquier otro texto de splash, como el de cambio de modo de video
 z80_bit menu_splash_text_active;
@@ -17961,6 +17963,50 @@ void menu_interface_show_cpu_usage(MENU_ITEM_PARAMETERS)
 	screen_show_cpu_usage.v ^=1;
 }
 
+
+
+void menu_colour_settings(MENU_ITEM_PARAMETERS)
+{
+        menu_item *array_menu_colour_settings;
+        menu_item item_seleccionado;
+        int retorno_menu;
+        do {
+
+
+
+		menu_add_item_menu_inicial_format(&array_menu_colour_settings,MENU_OPCION_NORMAL,menu_interface_red,NULL,"Red display: %s",(screen_gray_mode & 4 ? "On" : "Off") );
+		menu_add_item_menu_format(array_menu_colour_settings,MENU_OPCION_NORMAL,menu_interface_green,NULL,"Green display: %s",(screen_gray_mode & 2 ? "On" : "Off") );
+		menu_add_item_menu_format(array_menu_colour_settings,MENU_OPCION_NORMAL,menu_interface_blue,NULL,"Blue display: %s",(screen_gray_mode & 1 ? "On" : "Off") );
+
+		menu_add_item_menu_format(array_menu_colour_settings,MENU_OPCION_NORMAL,menu_interface_inverse_video,NULL,"Inverse video: %s",(inverse_video.v==1 ? "On" : "Off") );
+		menu_add_item_menu_tooltip(array_menu_colour_settings,"Inverse Color Palette");
+		menu_add_item_menu_ayuda(array_menu_colour_settings,"Inverses all the colours used on the emulator, including menu");
+
+
+
+                menu_add_item_menu(array_menu_colour_settings,"",MENU_OPCION_SEPARADOR,NULL,NULL);
+                //menu_add_item_menu(array_menu_colour_settings,"ESC Back",MENU_OPCION_NORMAL|MENU_OPCION_ESC,NULL,NULL);
+		menu_add_ESC_item(array_menu_colour_settings);
+
+                retorno_menu=menu_dibuja_menu(&colour_settings_opcion_seleccionada,&item_seleccionado,array_menu_colour_settings,"Colour Settings" );
+
+                cls_menu_overlay();
+
+                if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {
+                        //llamamos por valor de funcion
+                        if (item_seleccionado.menu_funcion!=NULL) {
+                                //printf ("actuamos por funcion\n");
+                                item_seleccionado.menu_funcion(item_seleccionado.valor_opcion);
+                                cls_menu_overlay();
+                        }
+                }
+
+        } while ( (item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu!=MENU_RETORNO_ESC && !salir_todos_menus);
+
+}
+
+
+
 void menu_interface_settings(MENU_ITEM_PARAMETERS)
 {
         menu_item *array_menu_interface_settings;
@@ -18055,6 +18101,7 @@ void menu_interface_settings(MENU_ITEM_PARAMETERS)
 						"ESC means abort next executions on queue.\n"
 						"Enter means run pending execution.\n");
 
+/*
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_red,NULL,"Red display: %s",(screen_gray_mode & 4 ? "On" : "Off") );
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_green,NULL,"Green display: %s",(screen_gray_mode & 2 ? "On" : "Off") );
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_blue,NULL,"Blue display: %s",(screen_gray_mode & 1 ? "On" : "Off") );
@@ -18062,7 +18109,9 @@ void menu_interface_settings(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_interface_inverse_video,NULL,"Inverse video: %s",(inverse_video.v==1 ? "On" : "Off") );
 		menu_add_item_menu_tooltip(array_menu_interface_settings,"Inverse Color Palette");
 		menu_add_item_menu_ayuda(array_menu_interface_settings,"Inverses all the colours used on the emulator, including menu");
+		*/
 
+		menu_add_item_menu_format(array_menu_interface_settings,MENU_OPCION_NORMAL,menu_colour_settings,NULL,"Colour settings");
 
 		//Con driver cocoa, no permitimos cambiar a otro driver
 		if (strcmp(scr_driver_name,"cocoa")) {
