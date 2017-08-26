@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
+
 IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
 
 -comando ZRCP que muestre paginas de memoria mapeadas. similar a menu debug, las zonas de memoria y las rams/roms mapeadas

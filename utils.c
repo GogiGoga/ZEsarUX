@@ -8639,6 +8639,12 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
       }
     break;
 
+    case 5:
+      if (MACHINE_IS_TSCONF) {
+        size=TSCONF_FMAPS_SIZE;
+      }
+    break;
+
   }
 
   return size;
@@ -8728,6 +8734,12 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       }
     break;
 
+    case 5:
+      if (MACHINE_IS_TSCONF) {
+        p=&tsconf_fmaps[address];
+      }
+    break;
+
 
 
 
@@ -8778,6 +8790,12 @@ void machine_get_memory_zone_name(int zone, char *name)
     case 4:
       if (MACHINE_IS_ZXUNO) {
         strcpy(name,"ZX-Uno flash");
+      }
+    break;
+
+    case 5:
+      if (MACHINE_IS_TSCONF) {
+        strcpy(name,"TSConf Fmaps");
       }
     break;
 
