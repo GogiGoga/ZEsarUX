@@ -8579,6 +8579,10 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
         size=TSCONF_RAM_PAGES*16384;
       }
 
+      if (MACHINE_IS_QL) {
+        size=QL_MEM_LIMIT+1-131072;
+      }
+
 
     break;
 
@@ -8610,6 +8614,10 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 
       if (MACHINE_IS_TSCONF) {
         size=TSCONF_ROM_PAGES*16384;
+      }
+
+      if (MACHINE_IS_QL) {
+        size=49152;
       }
 
 
@@ -8692,6 +8700,10 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       if (MACHINE_IS_TSCONF) {
         z80_byte *start=tsconf_ram_mem_table[0];
         p=&start[address];
+      }
+
+      if (MACHINE_IS_QL) {
+        p=&memoria_spectrum[address+131072];
       }
 
 

@@ -736,9 +736,9 @@ menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 
 	//Si zonas memoria mapeadas
 	if (direccion>=menu_debug_memory_zone_size) {
-		printf ("ajustamos direccion %x a %x\n",direccion,menu_debug_memory_zone_size);
+		//printf ("ajustamos direccion %x a %x\n",direccion,menu_debug_memory_zone_size);
 		direccion=direccion % menu_debug_memory_zone_size;
-		printf ("resultado ajustado: %x\n",direccion);
+		//printf ("resultado ajustado: %x\n",direccion);
 	}
 
 	return direccion;
@@ -5735,6 +5735,10 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 	valor_contador_segundo_anterior=contador_segundo;
 
 
+	//Inicializar info de tamanyo zona
+	menu_debug_set_memory_zone_attr();
+
+
 	//Ver si hemos entrado desde un breakpoint
 	if (menu_breakpoint_exception.v) menu_debug_registers_gestiona_breakpoint();
 
@@ -6123,9 +6127,9 @@ int menu_debug_hexdump_change_pointer(int p)
 {
 
 
-        char string_address[8];
+        char string_address[33];
 
-        sprintf (string_address,"%04XH",p);
+        sprintf (string_address,"%XH",p);
 
 
         //menu_ventana_scanf("Address? (in hex)",string_address,6);
@@ -6320,7 +6324,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 					int readwrite;
 					machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 					sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
-					printf ("size: %X\n",menu_debug_memory_zone_size);
+					//printf ("size: %X\n",menu_debug_memory_zone_size);
 					//printf ("Despues zona %d\n",menu_debug_memory_zone);
 				}
 
@@ -6699,7 +6703,7 @@ menu_writing_inverse_color.v=1;
 			int readwrite;
 			machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 			sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
-			printf ("size: %X\n",menu_debug_memory_zone_size);
+			//printf ("size: %X\n",menu_debug_memory_zone_size);
 			//printf ("Despues zona %d\n",menu_debug_memory_zone);
 		}
 
@@ -6865,6 +6869,7 @@ menu_z80_moto_int menu_debug_disassemble_subir(menu_z80_moto_int dir_inicial)
 	else dir=dir_inicial-10;
 
 	do {
+		//printf ("dir: %X\n",dir);
 		//dir=adjust_address_space_cpu(dir);
 		debugger_disassemble(buffer,30,&longitud_opcode,dir);
 		if (dir+longitud_opcode>=dir_inicial) return dir;
@@ -6895,7 +6900,7 @@ void menu_debug_dissassemble_una_instruccion(char *dumpassembler,menu_z80_moto_i
 
 
 	//Direccion
-	dir=adjust_address_space_cpu(dir);
+	//dir=adjust_address_space_cpu(dir);
 	dir=adjust_address_memory_size(dir);
 	/*int final_address=4;
 	if (CPU_IS_MOTOROLA) {
@@ -6945,6 +6950,10 @@ void menu_debug_dissassemble_una_instruccion(char *dumpassembler,menu_z80_moto_i
 void menu_debug_disassemble(MENU_ITEM_PARAMETERS)
 {
         menu_espera_no_tecla();
+
+				//Inicializar info de tamanyo zona
+				menu_debug_set_memory_zone_attr();
+
         menu_debug_disassemble_ventana();
 
         menu_reset_counters_tecla_repeticion();
