@@ -773,6 +773,28 @@ int menu_get_current_memory_zone_name_number(char *s)
 }
 
 
+//Escribe una direccion en texto, en hexa, teniendo en cuenta zona memoria (rellenando espacios segun tamanyo zona)
+void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address)
+{
+	//primero meter 6 espacios
+	sprintf (texto,"      ");
+
+	address=adjust_address_memory_size(address);
+	int longitud_direccion=6;
+
+	//Obtener cuantos digitos hexa se necesitan
+	char temp_digitos[20];
+	sprintf (temp_digitos,"%X",menu_debug_memory_zone_size-1);
+	int digitos=strlen(temp_digitos);
+
+	//Obtener posicion inicial a escribir direccion. Suponemos maximo 6
+	int posicion_inicial_digitos=6-digitos;
+
+
+	//Escribimos direccion
+	sprintf (&texto[posicion_inicial_digitos],"%0*X",digitos,address);
+}
+
 
 //
 // Fin funciones de gestion de zonas de memoria
@@ -6129,7 +6151,13 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 	//dir_leida=adjust_address_space_cpu(dir_leida);
 
 	menu_debug_set_memory_zone_attr();
-	//primero meter 6 espacios
+
+
+	int longitud_direccion=6;
+
+	menu_debug_print_address_memory_zone(dumpmemoria,dir_leida);
+
+	/*
 	sprintf (dumpmemoria,"      ");
 
 	dir_leida=adjust_address_memory_size(dir_leida);
@@ -6143,13 +6171,10 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 	//Obtener posicion inicial a escribir direccion. Suponemos maximo 6
 	int posicion_inicial_digitos=6-digitos;
 
-	//Escribir desde ahi hasta 6-1, ceros
-	//int i;
-	//for (i=posicion_inicial_digitos;i<longitud_direccion;i++) dumpmemoria[i]='K';
-
 
 	//Escribimos direccion
 	sprintf (&dumpmemoria[posicion_inicial_digitos],"%0*X",digitos,dir_leida);
+	*/
 
 	//cambiamos el 0 final por un espacio
 	dumpmemoria[longitud_direccion]=' ';
@@ -6865,25 +6890,31 @@ void menu_debug_dissassemble_una_instruccion(char *dumpassembler,menu_z80_moto_i
 
 	//Metemos 30 espacios
 	strcpy(dumpassembler,
+	//123456789012345678901234567890
 	 "                               ");
 
 
 	//Direccion
 	dir=adjust_address_space_cpu(dir);
-	int final_address=4;
+	dir=adjust_address_memory_size(dir);
+	/*int final_address=4;
 	if (CPU_IS_MOTOROLA) {
 		sprintf(dumpassembler,"%05X",dir);
 		final_address=5;
 	}
 
-	else sprintf(dumpassembler,"%04X",dir);
+	else sprintf(dumpassembler,"%04X",dir);*/
+
+	menu_debug_print_address_memory_zone(dumpassembler,dir);
+
+	int longitud_direccion=6;
 
 	//metemos espacio en 0 final
-	dumpassembler[final_address]=' ';
+	dumpassembler[longitud_direccion]=' ';
 
 
 	//Assembler
-	debugger_disassemble(&dumpassembler[final_address+10],17,&longitud_opcode,dir);
+	debugger_disassemble(&dumpassembler[longitud_direccion+8+2],17,&longitud_opcode,dir);
 
 		//Volcado hexa
 		char volcado_hexa[256];
@@ -6892,13 +6923,13 @@ void menu_debug_dissassemble_una_instruccion(char *dumpassembler,menu_z80_moto_i
 
 	//Copiar texto volcado hexa hasta llegar a maximo 8
 	int final_hexa_limite=longitud_opcode*2;
-	if (final_hexa_limite>8) {
+	if (final_hexa_limite>10) {
 		final_hexa_limite=8;
-		dumpassembler[final_address+1+8]='+';
+		dumpassembler[longitud_direccion+1+8]='+';
 	}
 
 	int i;
-	for (i=0;i<final_hexa_limite;i++) dumpassembler[final_address+1+i]=volcado_hexa[i];
+	for (i=0;i<final_hexa_limite;i++) dumpassembler[longitud_direccion+1+i]=volcado_hexa[i];
 
 	//Poner espacio en 0 final
 	//dumpassembler[5+longitud_opcode*2]=' ';
@@ -6933,7 +6964,7 @@ void menu_debug_disassemble(MENU_ITEM_PARAMETERS)
 
                 //int bytes_por_ventana=bytes_por_linea*lineas_total;
 
-                char dumpassembler[32];
+                char dumpassembler[64];
 
 		int longitud_opcode;
 		int longitud_opcode_primera_linea;
