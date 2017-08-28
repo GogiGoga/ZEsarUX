@@ -721,7 +721,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
 
 	{"get-machines",NULL,NULL,"Returns list of emulated machines"},
-	{"get-memory-zones",NULL,NULL,"Returns list of memory zones of this machine"},
+	{"get-memory-zones","|gmz",NULL,"Returns list of memory zones of this machine"},
 	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
   {"get-registers","|gr",NULL,"Get CPU registers"},
@@ -1051,6 +1051,9 @@ int remote_get_opcode_length(unsigned int direccion)
 
 void remote_disassemble(int misocket,unsigned int direccion,int lineas,int mostrar_direccion)
 {
+
+	menu_debug_set_memory_zone_attr();
+
   char buffer_retorno[1024];
 	//char buffer_codigo_fuente[1024];
 	//char posible_siguiente_linea[1024]="";
@@ -1090,20 +1093,23 @@ void remote_disassemble(int misocket,unsigned int direccion,int lineas,int mostr
 
 		int pos=0;
   	if (mostrar_direccion) {
-			if (CPU_IS_MOTOROLA) {
+			/*if (CPU_IS_MOTOROLA) {
 				sprintf(buffer_retorno,"%05X ",direccion);
 				pos+=6;
 			}
   		else {
 				sprintf(buffer_retorno,"%04X ",direccion);
 				pos +=5;
-			}
+			}*/
+
+			menu_debug_print_address_memory_zone(buffer_retorno, direccion);
+			pos +=7;
 
 			//Quitar 0 del final
 			//buffer_retorno[pos]=' ';
   	}
 
-		escribir_socket_format(misocket,"%s",buffer_retorno);
+		escribir_socket_format(misocket,"%s ",buffer_retorno);
 		pos=0;
 
   	debugger_disassemble(&buffer_retorno[pos],100,&longitud_opcode,direccion);
@@ -2991,7 +2997,7 @@ char buffer_retorno[2048];
 		escribir_socket (misocket,string_machines_list_description);
 	}
 
-	else if (!strcmp(comando_sin_parametros,"get-memory-zones")) {
+	else if (!strcmp(comando_sin_parametros,"get-memory-zones") || !strcmp(comando_sin_parametros,"gmz")) {
 		remote_get_memory_zones(misocket);
 	}
 
