@@ -307,8 +307,9 @@ extern int si_valid_char(z80_byte caracter);
 
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \
-"[REGISTER][CONDITION][VALUE] [OPERATOR] [REGISTER][CONDITION][VALUE] [OPERATOR] .... where: \n" \
-"[REGISTER] can be a CPU register or some pseudo variables: A,B,C,D,E,F,H,L,I,R,BC,DE,HL,SP,PC,IX,IY," \
+"[VARIABLE][CONDITION][VALUE] [OPERATOR] [VARIABLE][CONDITION][VALUE] [OPERATOR] .... where: \n" \
+"[VARIABLE] can be a CPU register or some pseudo variables: A,B,C,D,E,F,H,L,I,R,BC,DE,HL,SP,PC,IX,IY\n" \
+"FS,FZ,FP,FV,FH,FN,FC: Flags\n" \
 "(BC),(DE),(HL),(SP),(PC),(IX),(IY), (NN), IFF1, IFF2, OPCODE,\n" \
 "RAM: RAM mapped on 49152-65535 on Spectrum 128 or Prism,\n" \
 "ROM: ROM mapped on 0-16383 on Spectrum 128,\n" \
