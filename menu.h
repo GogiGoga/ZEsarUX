@@ -304,6 +304,12 @@ extern int salir_todos_menus;
 
 extern int si_valid_char(z80_byte caracter);
 
+extern int menu_debug_memory_zone;
+
+extern menu_z80_moto_int menu_debug_memory_zone_size;
+
+extern int menu_debug_show_memory_zones;
+
 
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \
@@ -338,6 +344,7 @@ extern int si_valid_char(z80_byte caracter);
 "[OPERATOR] must be one of the following: and, or, xor\n" \
 "Examples of conditions:\n" \
 "SP<32768 : it will match when SP register is below 32768\n" \
+"FS=1: it will match when flag S is set\n" \
 "A=10 and BC<33 : it will match when A register is 10 and BC is below 33\n" \
 "OPCODE=ED4AH : it will match when running opcode ADC HL,BC\n" \
 "OPCODE=21H : it will match when running opcode LD HL,NN\n" \

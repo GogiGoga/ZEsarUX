@@ -715,6 +715,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-breakpointsactions","|gba",NULL,"Get breakpoints actions list"},
 	{"get-cpu-core-name",NULL,NULL,"Get emulation cpu core name"},
   {"get-current-machine","|gcm",NULL,"Returns current machine name"},
+	{"get-current-memory-zone","|gcmz",NULL,"Returns current memory zone"},
 	{"get-debug-settings","|gds",NULL,"Get debug settings on remote command protocol. See command set-debug-settings"},
 
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
@@ -767,6 +768,7 @@ struct s_items_ayuda items_ayuda[]={
 				"Bit 2: Do not add a L preffix when searching source code labels.\n"
 				"Bit 3: Show bytes when debugging opcodes"},
 	{"set-machine","|sm","machine_name","Set machine"},
+	{"set-memory-zone","|smz","zone","Set memory zone number"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
 	{"set-window-zoom",NULL,"zoom","Sets window zoom"},
@@ -871,6 +873,8 @@ void remote_get_memory_zones(int misocket)
 	char zone_name[1024];
 	int readwrite;
 	int size;
+
+	escribir_socket(misocket,"Zone: -1 Name: Mapped memory\n");
 
 	for (i=0;i<MACHINE_MAX_MEMORY_ZONES;i++) {
 		size=machine_get_memory_zone_attrib(i, &readwrite);
@@ -2958,6 +2962,18 @@ char buffer_retorno[2048];
     escribir_socket (misocket,get_machine_name(current_machine_type));
   }
 
+	else if (!strcmp(comando_sin_parametros,"get-current-memory-zone") || !strcmp(comando_sin_parametros,"gcmz")) {
+		menu_debug_set_memory_zone_attr();
+
+		char zone_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
+		int zone=menu_get_current_memory_zone_name_number(zone_name);
+		//machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
+
+		escribir_socket_format (misocket,"Zone number: %d Name: %s Size: %d (%d KB)", zone,zone_name,
+			menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
+
+	}
+
 	else if (!strcmp(comando_sin_parametros,"get-debug-settings") || !strcmp(comando_sin_parametros,"gds")) {
 		sprintf(buffer_retorno,"%d",remote_debug_settings);
 		escribir_socket(misocket,buffer_retorno);
@@ -3254,6 +3270,39 @@ else if (!strcmp(comando_sin_parametros,"set-machine") || !strcmp(comando_sin_pa
 		}
 
 		remote_cpu_exit_step(misocket);
+	}
+
+}
+
+else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_sin_parametros,"smz") ) {
+	if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+	else {
+
+		int readwrite;
+
+		int zone=parse_string_to_number(parametros);
+
+		if (zone==-1) {
+			menu_debug_show_memory_zones=0;
+			menu_debug_memory_zone=-1;
+		}
+
+		else {
+
+			menu_debug_show_memory_zones=1;
+
+			unsigned int size=machine_get_memory_zone_attrib(zone,&readwrite);
+			if (size<=0) {
+						 //Error.
+						escribir_socket_format(misocket,"ERROR. Unknown zone %d",zone);
+					}
+
+			else {
+				//escribir_socket_format(misocket,"Setting zone to %d\n",zone);
+				menu_debug_memory_zone=zone;
+			}
+		}
+
 	}
 
 }

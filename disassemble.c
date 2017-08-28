@@ -50,7 +50,11 @@ z80_byte disassemble_array[DISASSEMBLE_ARRAY_LENGTH];
 
 z80_byte disassemble_peek_byte(z80_int address)
 {
-	if (disassemble_peek_si_spectrum_ram.v==1) return peek_byte_no_time(address);
+	if (disassemble_peek_si_spectrum_ram.v==1) {
+		address=adjust_address_memory_size(address);
+		return menu_debug_get_mapped_byte(address);
+		//return peek_byte_no_time(address);
+	}
 	else return disassemble_array[address];
 }
 

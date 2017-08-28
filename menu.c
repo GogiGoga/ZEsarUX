@@ -761,6 +761,19 @@ if (menu_debug_show_memory_zones) {
 }
 }
 
+int menu_get_current_memory_zone_name_number(char *s)
+{
+	if (menu_debug_show_memory_zones==0) {
+		strcpy(s,"Mapped memory");
+		return -1;
+	}
+
+	machine_get_memory_zone_name(menu_debug_memory_zone,s);
+	return menu_debug_memory_zone;
+}
+
+
+
 //
 // Fin funciones de gestion de zonas de memoria
 //
