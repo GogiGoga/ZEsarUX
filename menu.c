@@ -6430,6 +6430,43 @@ int view_sprite_incremento=1;
 
 //z80_byte temp_pagina=0xF7;
 
+//pixeles por cada byte. Puede ser 8, 4, 2 o 1
+int view_sprites_ppb=8;
+//en 8ppb (1 bpp), primer color rotar 7, luego 6, luego 5, .... 0 (8-(pos actual+1)*bpp). mascara 1
+//en 4ppb (2 bpp), primer color rotar 6, luego 4, luego 2, luego 0 (8-(pos actual+1)*bpp). mascara 3
+//en 2ppb (4 bpp), primer color rotar 4, luego 0  (8-(pos actual+1)*bpp). mascara 15
+//en 1ppb (8 bpp), rotar 0 . mascara 255  (8-(pos actual+1)*bpp). mascara 255
+
+
+//bits per pixel. Puede ser 1, 2, 4, 8
+int view_sprites_bpp=1; 
+
+
+void menu_debug_sprites_change_bpp(void)
+{
+//pixeles por cada byte. Puede ser 8, 4, 2 o 1
+//int view_sprites_ppb=8;
+//en 8ppb (1 bpp), primer color rotar 7, luego 6, luego 5, .... 0 (8-(pos actual+1)*bpp). mascara 1
+//en 4ppb (2 bpp), primer color rotar 6, luego 4, luego 2, luego 0 (8-(pos actual+1)*bpp). mascara 3
+//en 2ppb (4 bpp), primer color rotar 4, luego 0  (8-(pos actual+1)*bpp). mascara 15
+//en 1ppb (8 bpp), rotar 0 . mascara 255  (8-(pos actual+1)*bpp). mascara 255
+
+
+//bits per pixel. Puede ser 1, 2, 4, 8
+//int view_sprites_bpp=1;
+	view_sprites_bpp=view_sprites_bpp <<1;
+	view_sprites_ppb=view_sprites_ppb >>1;
+
+	if (view_sprites_bpp>8) {
+		view_sprites_bpp=1;
+		view_sprites_ppb=8;
+	}
+
+
+	printf ("bpp: %d ppb: %d\n",view_sprites_bpp,view_sprites_ppb);
+}
+	
+
 void menu_debug_draw_sprites(void)
 {
 
@@ -6459,8 +6496,10 @@ void menu_debug_draw_sprites(void)
 
 				puntero +=view_sprite_incremento;
 
-				for (bit=0;bit<8;bit++) {
-					if (view_sprites_inverse.v) {
+				int incx=0;
+
+				for (bit=0;bit<view_sprites_ppb;bit+=view_sprites_bpp,incx++) {
+					/*if (view_sprites_inverse.v) {
 						byte_leido ^=128;
 					}
 
@@ -6468,9 +6507,47 @@ void menu_debug_draw_sprites(void)
 					else color=ESTILO_GUI_TINTA_NORMAL;
 
 					byte_leido <<=1;
+					*/
+
+					int dis=(8-(incx+1)*view_sprites_bpp);
+
+					//printf ("incx: %d dis: %d\n",incx,dis);
+
+					color=byte_leido >> dis;
+					z80_byte mascara;
+					switch (view_sprites_bpp) {
+						case 1:
+							mascara=1;
+						break;
+
+						case 2:
+							mascara=3;
+						break;
+
+						case 4:
+							mascara=15;
+						break;
+
+						case 8:
+							mascara=255;
+						break;
+					}
+
+					color=color & mascara;
+
+				//en 8ppb (1 bpp), primer color rotar 7, luego 6, luego 5, .... 0 (8-(pos actual+1)*bpp). mascara 1
+				//en 4ppb (2 bpp), primer color rotar 6, luego 4, luego 2, luego 0 (8-(pos actual+1)*bpp). mascara 3
+				//en 2ppb (4 bpp), primer color rotar 4, luego 0  (8-(pos actual+1)*bpp). mascara 15
+				//en 1ppb (8 bpp), rotar 0 . mascara 255  (8-(pos actual+1)*bpp). mascara 255
+
+				//Caso 1 bpp
+				if (view_sprites_bpp==1) {
+                                        if ( color ==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
+                                        else color=ESTILO_GUI_TINTA_NORMAL;
+				}
 
               		//dibujamos valor actual
-		            scr_putpixel_zoom(xorigen+x*8+bit,yorigen+y,color);
+		            scr_putpixel_zoom(xorigen+x*8+incx,yorigen+y,color);
 							}
 						}
 		}
@@ -6759,6 +6836,10 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
                                                 view_sprites_direccion=menu_debug_view_sprites_change_pointer(view_sprites_direccion);
 																								menu_debug_view_sprites_ventana();
                                         break;
+
+					case 'b':
+						menu_debug_sprites_change_bpp();
+					break;
 
 																				case 'h':
 																								if (MACHINE_IS_TBBLUE) view_sprites_tbblue ^=1;
