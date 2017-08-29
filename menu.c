@@ -6474,7 +6474,10 @@ void menu_debug_draw_sprites(void)
 
         //int ancho=(SPRITES_ANCHO-2)*8;
         //int alto=(SPRITES_ALTO-4)*8;
-        int xorigen=(SPRITES_X+1)*8;
+				int sx=SPRITES_X+1;
+				if (view_sprites_ancho_sprite/8>=SPRITES_ANCHO-2) sx--;
+
+        int xorigen=sx*8;
         int yorigen=(SPRITES_Y+3)*8;
 
 
@@ -6497,11 +6500,14 @@ void menu_debug_draw_sprites(void)
 //extern z80_byte *tsconf_ram_mem_table[];
 	//			byte_leido=*(tsconf_ram_mem_table[temp_pagina]+puntero);
 
+								//printf ("x: %d puntero: %d \n",x,puntero);
 				puntero +=view_sprite_incremento;
+
+
 
 				int incx=0;
 
-				for (bit=0;bit<view_sprites_ppb;bit+=view_sprites_bpp,incx++,finalx++,x++) {
+				for (bit=0;bit<8;bit+=view_sprites_bpp,incx++,finalx++,x++) {
 					/*if (view_sprites_inverse.v) {
 						byte_leido ^=128;
 					}
@@ -6886,7 +6892,7 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 					break;
 
 					case 'p':
-						if (view_sprites_ancho_sprite<(SPRITES_ANCHO-3)*8) view_sprites_ancho_sprite +=view_sprites_ppb;
+						if (view_sprites_ancho_sprite<SPRITES_ANCHO*8) view_sprites_ancho_sprite +=view_sprites_ppb;
 					break;
 
                                         case 'q':
