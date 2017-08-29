@@ -6473,6 +6473,10 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 			return RGB8_INDEX_FIRST_COLOR+tbsprite_palette[color];
 		break;
 
+		case 4:
+			return CPC_INDEX_FIRST_COLOR+cpc_palette_table[color%16];
+		break;
+
 	}
 
 	return color;
@@ -6481,7 +6485,7 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 void menu_debug_sprites_change_palette(void)
 {
 	view_sprites_palette++;
-	if (view_sprites_palette==4) view_sprites_palette=0;
+	if (view_sprites_palette==5) view_sprites_palette=0;
 }
 
 void menu_debug_sprites_get_palette_name(int paleta, char *s)
@@ -6502,6 +6506,11 @@ void menu_debug_sprites_get_palette_name(int paleta, char *s)
 		case 3:
 			strcpy(s,"NextSprite");
 		break;
+
+		case 4:
+			strcpy(s,"CPC");
+		break;
+
 
 		default:
 			strcpy(s,"UNKNOWN");

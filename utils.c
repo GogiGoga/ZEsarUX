@@ -8583,6 +8583,10 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
         size=QL_MEM_LIMIT+1-131072;
       }
 
+      if (MACHINE_IS_CPC_464) {
+        size=65536;
+      }
+
 
     break;
 
@@ -8618,6 +8622,10 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 
       if (MACHINE_IS_QL) {
         size=49152;
+      }
+
+      if (MACHINE_IS_CPC_464) {
+        size=32768;
       }
 
 
@@ -8705,6 +8713,12 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       if (MACHINE_IS_QL) {
         p=&memoria_spectrum[address+131072];
       }
+
+      if (MACHINE_IS_CPC_464) {
+        z80_byte *start=cpc_ram_mem_table[0];
+        p=&start[address];
+      }
+
 
 
     break;
