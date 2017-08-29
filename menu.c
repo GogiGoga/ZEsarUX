@@ -6465,6 +6465,10 @@ int menu_debug_sprites_return_color_palette(int paleta, int color)
 			return ULAPLUS_INDEX_FIRST_COLOR+index;
 		break;
 
+		case 2:
+			return TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
+		break;
+
 	}
 
 	return color;
@@ -6560,16 +6564,16 @@ void menu_debug_draw_sprites(void)
 								//printf ("x: %d puntero: %d \n",x,puntero);
 				puntero +=view_sprite_incremento;
 
-
+				if (view_sprites_inverse.v) {
+					byte_leido ^=255;
+				}
 
 				int incx=0;
 
 				for (bit=0;bit<8;bit+=view_sprites_bpp,incx++,finalx++,x++) {
-					/*if (view_sprites_inverse.v) {
-						byte_leido ^=128;
-					}
 
-					if ( (byte_leido & 128)==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
+
+					/*if ( (byte_leido & 128)==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
 					else color=ESTILO_GUI_TINTA_NORMAL;
 
 					byte_leido <<=1;
