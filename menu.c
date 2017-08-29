@@ -6449,7 +6449,7 @@ int view_sprites_bpp=1;
 int view_sprites_palette=0;
 
 //Retorna valor de color asociado a la paleta actual
-int menu_debug_sprites_return_color_palette(int paleta, int color)
+int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 {
 
 	int index;
@@ -6469,6 +6469,10 @@ int menu_debug_sprites_return_color_palette(int paleta, int color)
 			return TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
 		break;
 
+		case 3:
+			return RGB8_INDEX_FIRST_COLOR+tbsprite_palette[color];
+		break;
+
 	}
 
 	return color;
@@ -6477,7 +6481,7 @@ int menu_debug_sprites_return_color_palette(int paleta, int color)
 void menu_debug_sprites_change_palette(void)
 {
 	view_sprites_palette++;
-	if (view_sprites_palette==3) view_sprites_palette=0;
+	if (view_sprites_palette==4) view_sprites_palette=0;
 }
 
 void menu_debug_sprites_get_palette_name(int paleta, char *s)
@@ -6493,6 +6497,10 @@ void menu_debug_sprites_get_palette_name(int paleta, char *s)
 
 		case 2:
 			strcpy(s,"TSConf");
+		break;
+
+		case 3:
+			strcpy(s,"NextSprite");
 		break;
 
 		default:
