@@ -6484,8 +6484,11 @@ void menu_debug_draw_sprites(void)
 	menu_z80_moto_int puntero=view_sprites_direccion;
 	z80_byte color;
 
+	int finalx;
+
 	if (view_sprites_tbblue==0) {
 		for (y=0;y<view_sprites_alto_sprite;y++) {
+			finalx=xorigen;
 			for (x=0;x<view_sprites_ancho_sprite;x++) {
 				//byte_leido=peek_byte_z80_moto(puntero);
 				puntero=adjust_address_memory_size(puntero);
@@ -6498,7 +6501,7 @@ void menu_debug_draw_sprites(void)
 
 				int incx=0;
 
-				for (bit=0;bit<view_sprites_ppb;bit+=view_sprites_bpp,incx++) {
+				for (bit=0;bit<view_sprites_ppb;bit+=view_sprites_bpp,incx++,finalx++) {
 					/*if (view_sprites_inverse.v) {
 						byte_leido ^=128;
 					}
@@ -6547,7 +6550,8 @@ void menu_debug_draw_sprites(void)
 				}
 
               		//dibujamos valor actual
-		            scr_putpixel_zoom(xorigen+x*8+incx,yorigen+y,color);
+		            //scr_putpixel_zoom(xorigen+x*view_sprites_ppb+incx,yorigen+y,color);
+		            scr_putpixel_zoom(finalx,yorigen+y,color);
 							}
 						}
 		}
