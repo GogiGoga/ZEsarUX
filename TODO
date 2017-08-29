@@ -37,8 +37,6 @@ IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de a
 
 IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
 
--view sprites poder personalizar bits por pixel, paleta colores usada
-
 -opcion ver paleta colores: ulaplus, otros
 
 -comando ZRCP que muestre paginas de memoria mapeadas. similar a menu debug, las zonas de memoria y las rams/roms mapeadas
