@@ -6412,8 +6412,8 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 
 menu_z80_moto_int view_sprites_direccion=0x3d00;
 
-//ancho en bytes
-z80_int view_sprites_ancho_sprite=1;
+//ancho en pixeles
+z80_int view_sprites_ancho_sprite=8;
 
 //alto en pixeles
 z80_int view_sprites_alto_sprite=8*6;
@@ -6439,7 +6439,7 @@ int view_sprites_ppb=8;
 
 
 //bits per pixel. Puede ser 1, 2, 4, 8
-int view_sprites_bpp=1; 
+int view_sprites_bpp=1;
 
 
 void menu_debug_sprites_change_bpp(void)
@@ -6465,7 +6465,7 @@ void menu_debug_sprites_change_bpp(void)
 
 	printf ("bpp: %d ppb: %d\n",view_sprites_bpp,view_sprites_ppb);
 }
-	
+
 
 void menu_debug_draw_sprites(void)
 {
@@ -6489,7 +6489,7 @@ void menu_debug_draw_sprites(void)
 	if (view_sprites_tbblue==0) {
 		for (y=0;y<view_sprites_alto_sprite;y++) {
 			finalx=xorigen;
-			for (x=0;x<view_sprites_ancho_sprite;x++) {
+			for (x=0;x<view_sprites_ancho_sprite;) {
 				//byte_leido=peek_byte_z80_moto(puntero);
 				puntero=adjust_address_memory_size(puntero);
 				byte_leido=menu_debug_get_mapped_byte(puntero);
@@ -6501,7 +6501,7 @@ void menu_debug_draw_sprites(void)
 
 				int incx=0;
 
-				for (bit=0;bit<view_sprites_ppb;bit+=view_sprites_bpp,incx++,finalx++) {
+				for (bit=0;bit<view_sprites_ppb;bit+=view_sprites_bpp,incx++,finalx++,x++) {
 					/*if (view_sprites_inverse.v) {
 						byte_leido ^=128;
 					}
@@ -6625,7 +6625,7 @@ void menu_debug_view_sprites_ventana(void)
 
 
 
-void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alto, int incremento)
+void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alto, int ppb, int incremento)
 {
 
 	char file_save[PATH_MAX];
@@ -6669,7 +6669,7 @@ void menu_debug_view_sprites_save(menu_z80_moto_int direccion,int ancho, int alt
 					direccion +=incremento;
 				}
 
-				util_write_pbm_file(file_save,ancho,alto,buf_temp);
+				util_write_pbm_file(file_save,ancho,alto,ppb,buf_temp);
 
 				free(buf_temp);
 		}
@@ -6709,7 +6709,7 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
         do {
 
 					int linea=0;
-					char buffer_texto[32];
+					char buffer_texto[33];
 
 					int bytes_por_linea;
 					int bytes_por_ventana;
@@ -6719,6 +6719,8 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 					//Antes de escribir, normalizar zona memoria
 					menu_debug_set_memory_zone_attr();
 
+					int restoancho=view_sprites_ancho_sprite % view_sprites_ppb;
+					if (view_sprites_ancho_sprite-restoancho>0) view_sprites_ancho_sprite-=restoancho;
 
 
 		if (view_sprites_tbblue) {
@@ -6727,13 +6729,13 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 			sprintf (buffer_texto,"Pattern: %02d Size: 16X%d",view_sprites_direccion&63,view_sprites_alto_sprite);
 		}
 		else {
-			bytes_por_linea=view_sprites_ancho_sprite;
+			bytes_por_linea=view_sprites_ancho_sprite/view_sprites_ppb;
 			bytes_por_ventana=view_sprites_ancho_sprite*view_sprites_alto_sprite;
 			//view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
 			view_sprites_direccion=adjust_address_memory_size(view_sprites_direccion);
 
-			if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Address: %05X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
-			else sprintf (buffer_texto,"Address: %04X Size: %dX%d",view_sprites_direccion,view_sprites_ancho_sprite*8,view_sprites_alto_sprite);
+			if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Memptr:%05X Size:%dX%d %dBPP",view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_bpp);
+			else sprintf (buffer_texto,"Memptr:%04X Size:%dX%d %dBPP",view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_bpp);
 		}
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_texto);
@@ -6758,12 +6760,12 @@ menu_writing_inverse_color.v=1;
 				strcpy(buffer_segunda_linea, "~~Inverse ~~Hardware");
 			}
 			else {
-				sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size",view_sprite_incremento);
+				sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size ~~BPP",view_sprite_incremento);
 				strcpy(buffer_segunda_linea, "~~Inverse ~~Save ~~Hardware");
 			}
 		}
 		else {
-			  sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size",view_sprite_incremento);
+			  sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size ~~BPP",view_sprite_incremento);
 			  strcpy(buffer_segunda_linea, "~~Inverse ~~Save");
 		}
 
@@ -6869,8 +6871,7 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 																								set_menu_overlay_function(normal_overlay_texto_menu);
 
 
-
-																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprite_incremento);
+																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_ppb,view_sprite_incremento);
 
 																								cls_menu_overlay();
 
@@ -6881,11 +6882,11 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 																				break;
 
 					case 'o':
-						if (view_sprites_ancho_sprite>1) view_sprites_ancho_sprite--;
+						if (view_sprites_ancho_sprite>view_sprites_ppb) view_sprites_ancho_sprite -=view_sprites_ppb;
 					break;
 
 					case 'p':
-						if (view_sprites_ancho_sprite<SPRITES_ANCHO-3) view_sprites_ancho_sprite++;
+						if (view_sprites_ancho_sprite<(SPRITES_ANCHO-3)*8) view_sprites_ancho_sprite +=view_sprites_ppb;
 					break;
 
                                         case 'q':
