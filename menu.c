@@ -6408,7 +6408,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 #define SPRITES_Y 0
 #define SPRITES_ANCHO 32
 #define SPRITES_ALTO 14
-#define SPRITES_ALTO_VENTANA (SPRITES_ALTO+9)
+#define SPRITES_ALTO_VENTANA (SPRITES_ALTO+10)
 
 menu_z80_moto_int view_sprites_direccion=0x3d00;
 
@@ -6442,6 +6442,63 @@ int view_sprites_ppb=8;
 int view_sprites_bpp=1;
 
 
+//Paletas:
+//0: normal spectrum y en adelante
+//1: la que esté mapeada en ulaplus
+//2: la mapeada en tsconf
+int view_sprites_palette=0;
+
+//Retorna valor de color asociado a la paleta actual
+int menu_debug_sprites_return_color_palette(int paleta, int color)
+{
+
+	int index;
+
+	switch (paleta) {
+		case 0:
+			return color;
+		break;
+
+		case 1:
+			//ulaplus limitado a 64 colores la paleta
+			index=ulaplus_palette_table[color%64];
+			return ULAPLUS_INDEX_FIRST_COLOR+index;
+		break;
+
+	}
+
+	return color;
+}
+
+void menu_debug_sprites_change_palette(void)
+{
+	view_sprites_palette++;
+	if (view_sprites_palette==3) view_sprites_palette=0;
+}
+
+void menu_debug_sprites_get_palette_name(int paleta, char *s)
+{
+	switch (paleta) {
+		case 0:
+			strcpy(s,"Speccy");
+		break;
+
+		case 1:
+			strcpy(s,"ULAPlus");
+		break;
+
+		case 2:
+			strcpy(s,"TSConf");
+		break;
+
+		default:
+			strcpy(s,"UNKNOWN");
+		break;
+
+	}
+}
+
+
 void menu_debug_sprites_change_bpp(void)
 {
 //pixeles por cada byte. Puede ser 8, 4, 2 o 1
@@ -6463,7 +6520,7 @@ void menu_debug_sprites_change_bpp(void)
 	}
 
 
-	printf ("bpp: %d ppb: %d\n",view_sprites_bpp,view_sprites_ppb);
+	//printf ("bpp: %d ppb: %d\n",view_sprites_bpp,view_sprites_ppb);
 }
 
 
@@ -6485,7 +6542,7 @@ void menu_debug_draw_sprites(void)
 	z80_byte byte_leido;
 
 	menu_z80_moto_int puntero=view_sprites_direccion;
-	z80_byte color;
+	int color;
 
 	int finalx;
 
@@ -6553,6 +6610,9 @@ void menu_debug_draw_sprites(void)
 				if (view_sprites_bpp==1) {
                                         if ( color ==0 ) color=ESTILO_GUI_PAPEL_NORMAL;
                                         else color=ESTILO_GUI_TINTA_NORMAL;
+				}
+				else {
+					color=menu_debug_sprites_return_color_palette(view_sprites_palette,color);
 				}
 
               		//dibujamos valor actual
@@ -6755,10 +6815,18 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 		char buffer_primera_linea[64]; //dar espacio de mas para poder alojar el ~de los atajos
 		char buffer_segunda_linea[64];
 
+		char buffer_tercera_linea[64];
+
 //Forzar a mostrar atajos
 z80_bit antes_menu_writing_inverse_color;
 antes_menu_writing_inverse_color.v=menu_writing_inverse_color.v;
 menu_writing_inverse_color.v=1;
+
+	char nombre_paleta[33];
+	menu_debug_sprites_get_palette_name(view_sprites_palette,nombre_paleta);
+
+	sprintf(buffer_tercera_linea,"Pa~~lette: %s",nombre_paleta);
+
 
 		if (MACHINE_IS_TBBLUE) {
 			if (view_sprites_tbblue) {
@@ -6777,6 +6845,8 @@ menu_writing_inverse_color.v=1;
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_primera_linea);
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_segunda_linea);
+
+		menu_escribe_linea_opcion(linea++,-1,1,buffer_tercera_linea);
 
 
 
@@ -6851,6 +6921,11 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 
 					case 'b':
 						menu_debug_sprites_change_bpp();
+					break;
+
+
+					case 'l':
+						menu_debug_sprites_change_palette();
 					break;
 
 																				case 'h':
