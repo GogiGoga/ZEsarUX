@@ -54,7 +54,7 @@ extern void menu_init_footer(void);
 extern void menu_footer_z88(void);
 
 struct s_overlay_screen {
-	z80_byte tinta,papel;
+	z80_byte tinta,papel,parpadeo;
 	z80_byte caracter;
 };
 

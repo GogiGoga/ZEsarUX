@@ -1484,17 +1484,25 @@ void reset_menu_overlay_function(void)
 	menu_overlay_activo=0;
 }
 
+//funcion para escribir un caracter en el buffer de overlay
+//tinta y/o papel pueden tener brillo (color+8)
+void putchar_menu_overlay_parpadeo(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel,z80_byte parpadeo)
+{
+	int pos_array=y*32+x;
+	overlay_screen_array[pos_array].tinta=tinta;
+	overlay_screen_array[pos_array].papel=papel;
+	overlay_screen_array[pos_array].parpadeo=parpadeo;
+
+	if (ESTILO_GUI_SOLO_MAYUSCULAS) overlay_screen_array[pos_array].caracter=letra_mayuscula(caracter);
+	else overlay_screen_array[pos_array].caracter=caracter;
+}
+
 
 //funcion para escribir un caracter en el buffer de overlay
 //tinta y/o papel pueden tener brillo (color+8)
 void putchar_menu_overlay(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel)
 {
-	int pos_array=y*32+x;
-	overlay_screen_array[pos_array].tinta=tinta;
-	overlay_screen_array[pos_array].papel=papel;
-
-	if (ESTILO_GUI_SOLO_MAYUSCULAS) overlay_screen_array[pos_array].caracter=letra_mayuscula(caracter);
-	else overlay_screen_array[pos_array].caracter=caracter;
+	putchar_menu_overlay_parpadeo(x,y,caracter,tinta,papel,0); //sin parpadeo
 }
 
 
@@ -2380,7 +2388,7 @@ void normal_overlay_texto_menu(void)
 {
 
 	int x,y;
-	z80_byte tinta,papel,caracter;
+	z80_byte tinta,papel,caracter,parpadeo;
 	int pos_array=0;
 
 
@@ -2394,6 +2402,9 @@ void normal_overlay_texto_menu(void)
 				if (si_valid_char(caracter) ) {
 					tinta=overlay_screen_array[pos_array].tinta;
 					papel=overlay_screen_array[pos_array].papel;
+					parpadeo=overlay_screen_array[pos_array].parpadeo;
+					if (parpadeo && estado_parpadeo.v) caracter=' '; //si hay parpadeo y toca, meter espacio tal cual (se oculta)
+
 					scr_putchar_menu(x,y,caracter,tinta,papel);
 				}
 
