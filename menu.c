@@ -495,7 +495,7 @@ int menu_tooltip_counter;
 #define TOOLTIP_SECONDS 4
 
 int menu_window_splash_counter;
-#define WINDOW_SPLASH_SECONDS 2
+#define WINDOW_SPLASH_SECONDS 3
 
 z80_bit tooltip_enabled;
 
@@ -5762,12 +5762,12 @@ void menu_debug_registers_change_memory_zone(void)
 
 	menu_debug_set_memory_zone_attr();
 
-	char textofinal[64];
+	char textofinal[200];
 	char zone_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
 	int zone=menu_get_current_memory_zone_name_number(zone_name);
 	//machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 
-	sprintf (textofinal,"Zone number: %d Name: %s\nSize: %d (%d KB)", zone,zone_name,
+	sprintf (textofinal,"Zone number: %d\nName: %s\nSize: %d (%d KB)", zone,zone_name,
 		menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
 
 	menu_generic_message_splash("Memory Zone",textofinal);
