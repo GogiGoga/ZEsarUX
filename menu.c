@@ -6567,10 +6567,16 @@ void menu_debug_draw_sprites(void)
 
 	int finalx;
 
+	menu_z80_moto_int puntero_inicio_linea;
+
 	if (view_sprites_tbblue==0) {
+
+		int tamanyo_linea=view_sprites_ancho_sprite/view_sprites_ppb;
+
 		for (y=0;y<view_sprites_alto_sprite;y++) {
+			puntero_inicio_linea=puntero;
 			finalx=xorigen;
-			for (x=0;x<view_sprites_ancho_sprite;) {
+			for (x=0;x<view_sprites_ancho_sprite && x<256;) {
 				//byte_leido=peek_byte_z80_moto(puntero);
 				puntero=adjust_address_memory_size(puntero);
 				byte_leido=menu_debug_get_mapped_byte(puntero);
@@ -6639,8 +6645,12 @@ void menu_debug_draw_sprites(void)
               		//dibujamos valor actual
 		            //scr_putpixel_zoom(xorigen+x*view_sprites_ppb+incx,yorigen+y,color);
 		            scr_putpixel_zoom(finalx,yorigen+y,color);
-							}
-						}
+			   }
+			}
+
+			puntero=puntero_inicio_linea;
+			puntero +=tamanyo_linea;
+//			printf ("puntero en la siguiente linea: %d\n",puntero);
 		}
 	}
 
@@ -6988,7 +6998,8 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 					break;
 
 					case 'p':
-						if (view_sprites_ancho_sprite<SPRITES_ANCHO*8) view_sprites_ancho_sprite +=view_sprites_ppb;
+						//if (view_sprites_ancho_sprite<SPRITES_ANCHO*8) view_sprites_ancho_sprite +=view_sprites_ppb;
+						if (view_sprites_ancho_sprite<512) view_sprites_ancho_sprite +=view_sprites_ppb;
 					break;
 
                                         case 'q':
