@@ -160,6 +160,7 @@ Como quedan los textos:
 
 
 extern void putchar_menu_overlay(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel);
+extern void putchar_menu_overlay_parpadeo(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel,z80_byte parpadeo);
 //extern void putchar_menu_second_overlay(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel);
 extern void menu_putchar_footer(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel);
 extern void menu_putstring_footer(int x,int y,char *texto,z80_byte tinta,z80_byte papel);

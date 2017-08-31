@@ -1343,7 +1343,8 @@ void menu_scanf_print_string(char *string,int offset_string,int max_length_shown
 		string++;
 	}
 
-        menu_escribe_texto(x,y,tinta,papel,"_");
+        //menu_escribe_texto(x,y,tinta,papel,"_");
+				putchar_menu_overlay_parpadeo(x,y,'_',tinta,papel,1);
         x++;
 
 
@@ -2403,7 +2404,9 @@ void normal_overlay_texto_menu(void)
 					tinta=overlay_screen_array[pos_array].tinta;
 					papel=overlay_screen_array[pos_array].papel;
 					parpadeo=overlay_screen_array[pos_array].parpadeo;
-					if (parpadeo && estado_parpadeo.v) caracter=' '; //si hay parpadeo y toca, meter espacio tal cual (se oculta)
+
+					//Si esta multitask, si es caracter con parpadeo y si el estado del contador del parpadeo indica parpadear
+					if (menu_multitarea && parpadeo && estado_parpadeo.v) caracter=' '; //si hay parpadeo y toca, meter espacio tal cual (se oculta)
 
 					scr_putchar_menu(x,y,caracter,tinta,papel);
 				}
