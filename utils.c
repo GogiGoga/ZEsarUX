@@ -2925,6 +2925,8 @@ int util_write_configfile(void)
   if (mouse_pointer_shown.v==0)               ADD_STRING_CONFIG,"--hidemousepointer");
   if (mouse_menu_disabled.v)                  ADD_STRING_CONFIG,"--disablemenumouse");
 
+  if (kempston_mouse_emulation.v)             ADD_STRING_CONFIG,"--enablekempstonmouse");
+
   if (menu_footer==0)                         ADD_STRING_CONFIG,"--disablefooter");
   if (menu_multitarea==0)                     ADD_STRING_CONFIG,"--disablemultitaskmenu");
 

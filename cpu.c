@@ -1380,6 +1380,8 @@ printf (
                 "                           Key must be ascii character numbers or a character included in escaped quotes, like: 97 (for 'a') or \\'q\\'\n"
                 "                           (the escaped quotes are used only in command line; on configuration file, they are normal quotes '')\n"
 
+
+
 		);
 
 
@@ -1395,6 +1397,7 @@ printf (
 
 		printf (
 		"\n"
+								"--enablekempstonmouse      Enable kempston mouse emulation\n"
                 "\n"
                 "Memory Settings\n"
                 "-----------------\n"
@@ -4604,6 +4607,11 @@ void parse_cmdline_options(void) {
 					exit(1);
 				}
 			}
+
+			else if (!strcmp(argv[puntero_parametro],"--enablekempstonmouse")) {
+				kempston_mouse_emulation.v=1;
+			}
+
 
 			else if (!strcmp(argv[puntero_parametro],"--def-f-function")) {
 				siguiente_parametro_argumento();
