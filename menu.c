@@ -495,7 +495,7 @@ int menu_tooltip_counter;
 #define TOOLTIP_SECONDS 4
 
 int menu_window_splash_counter;
-#define WINDOW_SPLASH_SECONDS 3
+#define WINDOW_SPLASH_SECONDS 2
 
 z80_bit tooltip_enabled;
 
@@ -5767,7 +5767,7 @@ void menu_debug_registers_change_memory_zone(void)
 	int zone=menu_get_current_memory_zone_name_number(zone_name);
 	//machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 
-	sprintf (textofinal,"Zone number: %d Name: %s Size: %d (%d KB)", zone,zone_name,
+	sprintf (textofinal,"Zone number: %d Name: %s\nSize: %d (%d KB)", zone,zone_name,
 		menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
 
 	menu_generic_message_splash("Memory Zone",textofinal);
@@ -5832,7 +5832,7 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 			        char mensaje_esc_back[32];
 				//sprintf (mensaje_esc_back,"B: Breakpoints %s Back",esc_key_message);
 																// 012345678901234567890123456789
-				sprintf (mensaje_esc_back,"B: Breakp. W: Watch Z: MemZone");
+				sprintf (mensaje_esc_back,"B: Brkp. W: Watch Z: MZone %d",menu_debug_memory_zone);
 
 
                         	menu_escribe_linea_opcion(linea++,-1,1,mensaje_esc_back);
@@ -5890,6 +5890,7 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 
 																if (tecla=='z') {
 																	menu_debug_registers_change_memory_zone();
+																	menu_debug_registers_ventana();
 
 																	//menu_debug_change_memory_zone();
 																}
