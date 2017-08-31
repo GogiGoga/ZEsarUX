@@ -494,6 +494,9 @@ void menu_add_item_menu_valor_opcion(menu_item *m,int valor_opcion);
 int menu_tooltip_counter;
 #define TOOLTIP_SECONDS 4
 
+int menu_window_splash_counter;
+#define WINDOW_SPLASH_SECONDS 3
+
 z80_bit tooltip_enabled;
 
 
@@ -661,6 +664,7 @@ void menu_error_message(char *texto);
 
 void menu_generic_message(char *titulo, const char * texto);
 void menu_generic_message_format(char *titulo, const char * format , ...);
+void menu_generic_message_splash(char *titulo, const char * texto);
 
 
 struct s_generic_message_tooltip_return {
@@ -671,7 +675,7 @@ struct s_generic_message_tooltip_return {
 
 typedef struct s_generic_message_tooltip_return generic_message_tooltip_return;
 
-void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar_cursor, generic_message_tooltip_return *retorno, const char * texto_format , ...);
+void menu_generic_message_tooltip(char *titulo, int volver_timeout, int tooltip_enabled, int mostrar_cursor, generic_message_tooltip_return *retorno, const char * texto_format , ...);
 
 
 
@@ -3245,6 +3249,26 @@ void menu_espera_tecla_timeout_tooltip(void)
 }
 
 
+void menu_espera_tecla_timeout_window_splash(void)
+{
+	//printf ("espera splash\n");
+
+        //Esperar a pulsar una tecla o timeout de window splash
+        z80_byte acumulado;
+
+        do {
+                menu_cpu_core_loop();
+
+
+                acumulado=menu_da_todas_teclas();
+
+		//printf ("menu_espera_tecla_timeout_tooltip acumulado: %d\n",acumulado);
+		//printf ("contador splash: %d\n",menu_window_splash_counter);
+
+	} while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) ==MENU_PUERTO_TECLADO_NINGUNA && menu_window_splash_counter<WINDOW_SPLASH_SECONDS);
+
+}
+
 void menu_espera_tecla(void)
 {
 
@@ -4137,7 +4161,7 @@ int menu_dibuja_menu(int *opcion_inicial,menu_item *item_seleccionado,menu_item 
 				//printf ("mostramos tooltip\n");
 				//Forzar que siempre suene
 				menu_speech_tecla_pulsada=0;
-				menu_generic_message_tooltip("Tooltip",1,0,NULL,"%s",texto_tooltip);
+				menu_generic_message_tooltip("Tooltip",0,1,0,NULL,"%s",texto_tooltip);
 
 
 				//Esperar no tecla
@@ -5731,6 +5755,29 @@ void menu_debug_registers_next_view(void)
 	if (menu_debug_registers_mostrando==5) menu_debug_registers_mostrando=0;
 }
 
+void menu_debug_registers_change_memory_zone(void)
+{
+	menu_debug_change_memory_zone();
+
+
+	menu_debug_set_memory_zone_attr();
+
+	char textofinal[64];
+	char zone_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
+	int zone=menu_get_current_memory_zone_name_number(zone_name);
+	//machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
+
+	sprintf (textofinal,"Zone number: %d Name: %s Size: %d (%d KB)", zone,zone_name,
+		menu_debug_memory_zone_size,menu_debug_memory_zone_size/1024);
+
+	menu_generic_message_splash("Memory Zone",textofinal);
+
+
+
+	//menu_escribe_texto(0,0,3,4,"Zone");
+	//screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"hola");
+}
+
 
 void menu_debug_registers(MENU_ITEM_PARAMETERS)
 {
@@ -5784,7 +5831,8 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 
 			        char mensaje_esc_back[32];
 				//sprintf (mensaje_esc_back,"B: Breakpoints %s Back",esc_key_message);
-				sprintf (mensaje_esc_back,"B: Breakpoints W: Watch");
+																// 012345678901234567890123456789
+				sprintf (mensaje_esc_back,"B: Breakp. W: Watch Z: MemZone");
 
 
                         	menu_escribe_linea_opcion(linea++,-1,1,mensaje_esc_back);
@@ -5839,6 +5887,13 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
                                 //printf ("tecla: %d\n",tecla);
 
                                 if (tecla=='s') cpu_step_mode.v=1;
+
+																if (tecla=='z') {
+																	menu_debug_registers_change_memory_zone();
+
+																	//menu_debug_change_memory_zone();
+																}
+
 
 				if (tecla=='d') {
 					cls_menu_overlay();
@@ -10260,7 +10315,7 @@ void menu_z88_slot_card_browser(MENU_ITEM_PARAMETERS)
                 return;
         }
 
-        menu_generic_message_tooltip("Card browser", 0, 1, NULL, "%s", texto_buffer);
+        menu_generic_message_tooltip("Card browser", 0, 0, 1, NULL, "%s", texto_buffer);
 
 }
 
@@ -10284,7 +10339,7 @@ void menu_z88_slot_copy_from_eprom(MENU_ITEM_PARAMETERS)
 
 	//printf ("archivos: %s\n",texto_buffer);
 	generic_message_tooltip_return retorno_archivo;
-	menu_generic_message_tooltip("Select file", 0, 1, &retorno_archivo, "%s", texto_buffer);
+	menu_generic_message_tooltip("Select file", 0, 0, 1, &retorno_archivo, "%s", texto_buffer);
 
 	//Si se sale con ESC
 	if (retorno_archivo.estado_retorno==0) return;
@@ -14872,7 +14927,7 @@ void menu_tape_browser(MENU_ITEM_PARAMETERS)
 	}
 
 	texto_browser[indice_buffer]=0;
-	menu_generic_message_tooltip("Tape browser", 0, 1, NULL, "%s", texto_browser);
+	menu_generic_message_tooltip("Tape browser", 0, 0, 1, NULL, "%s", texto_browser);
 
 	//int util_tape_tap_get_info(z80_byte *tape,char *texto)
 
@@ -20787,7 +20842,7 @@ void menu_simple_ventana(char *titulo,char *texto)
 
 
 //Muestra un mensaje en ventana troceando el texto en varias lineas de texto de maximo 25 caracteres
-void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar_cursor, generic_message_tooltip_return *retorno, const char * texto_format , ...)
+void menu_generic_message_tooltip(char *titulo, int volver_timeout, int tooltip_enabled, int mostrar_cursor, generic_message_tooltip_return *retorno, const char * texto_format , ...)
 {
 
 	//Buffer de entrada
@@ -20799,6 +20854,7 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 	va_end (args);
 
 
+	if (volver_timeout) menu_window_splash_counter=0;
 	//linea cursor en el caso que se muestre cursor
 	int linea_cursor=0;
 
@@ -21026,10 +21082,19 @@ void menu_generic_message_tooltip(char *titulo, int tooltip_enabled, int mostrar
 
 
         all_interlace_scr_refresca_pantalla();
-        menu_espera_tecla();
 
+
+							if (volver_timeout) {
+								menu_espera_tecla_timeout_window_splash();
+							}
+							else {
+								menu_espera_tecla(); //no se porque dos veces. pero esto esta asi desde hace mucho
                 menu_espera_tecla();
+							}
+
+
                 tecla=menu_get_pressed_key();
+								if (volver_timeout) tecla=13;
 
 								if (mouse_movido) {
 												//printf ("mouse x: %d y: %d menu mouse x: %d y: %d\n",mouse_x,mouse_y,menu_mouse_x,menu_mouse_y);
@@ -21349,7 +21414,7 @@ void menu_generic_message_format(char *titulo, const char * texto_format , ...)
         va_end (args);
 
 
-	menu_generic_message_tooltip(titulo, 0, 0, NULL, "%s", texto);
+	menu_generic_message_tooltip(titulo, 0, 0, 0, NULL, "%s", texto);
 
 
 	//En Linux esto funciona bien sin tener que hacer las funciones va_ previas:
@@ -21360,7 +21425,14 @@ void menu_generic_message_format(char *titulo, const char * texto_format , ...)
 void menu_generic_message(char *titulo, const char * texto)
 {
 
-        menu_generic_message_tooltip(titulo, 0, 0, NULL, "%s", texto);
+        menu_generic_message_tooltip(titulo, 0, 0, 0, NULL, "%s", texto);
+}
+
+
+void menu_generic_message_splash(char *titulo, const char * texto)
+{
+
+        menu_generic_message_tooltip(titulo, 1, 0, 0, NULL, "%s", texto);
 }
 
 

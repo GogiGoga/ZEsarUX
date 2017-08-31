@@ -525,6 +525,9 @@ void timer_check_interrupt(void)
 				//Temporizador para tooltip
 				if (tooltip_enabled.v) menu_tooltip_counter++;
 
+				//Temporizador para ventanas splash
+				menu_window_splash_counter++;
+
 
                                 //resetear texto splash
                                 reset_splash_text();

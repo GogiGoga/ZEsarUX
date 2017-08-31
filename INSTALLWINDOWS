@@ -25,7 +25,8 @@ msys-bash
 
 -Download SDL 1.2 library, from https://www.libsdl.org/download-1.2.php,
 and get SDL-devel-1.2.15-mingw32.tar.gz (Mingw32). 
-Yoy may also try SDL2
+
+SDL2 is supported, but doesn't work well, so I recommend to use SDL 1.2
 
 Unzip and copy all contents to c:\mingw\sdl\
 (or c:\mingw\sdl2\)
