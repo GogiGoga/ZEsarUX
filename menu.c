@@ -6921,6 +6921,16 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 
                                 switch (tecla) {
 
+																	case 8:
+																					//izquierda
+																					view_sprites_direccion--;
+																	break;
+
+																	case 9:
+																					//derecha
+																					view_sprites_direccion++;
+																	break;
+
                                         case 11:
                                                 //arriba
                                                 view_sprites_direccion -=bytes_por_linea;
