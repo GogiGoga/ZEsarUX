@@ -3031,6 +3031,8 @@ int util_write_configfile(void)
   if (superupgrade_rom_file_name[0]!=0)       ADD_STRING_CONFIG,"--superupgrade-flash \"%s\"",superupgrade_rom_file_name);
   if (superupgrade_enabled.v)                 ADD_STRING_CONFIG,"--enable-superupgrade");
 
+  if (debug_breakpoints_enabled.v)            ADD_STRING_CONFIG,"--enable-breakpoints");
+
 
   for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
 		if (debug_breakpoints_conditions_array[i][0]!=0)

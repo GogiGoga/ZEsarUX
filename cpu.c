@@ -1157,14 +1157,16 @@ void cpu_help_expert(void)
 		"at least one parameter on command line, or this parameter on command line or on configuration file. \n"
 #endif
 
+	  "--enable-breakpoints       Enable breakpoints handling.\n"
+
 );
 
 printf(
-		"--set-breakpoint n s       Set breakpoint with string s at position n. n must be between 1 and %d. string s must be written in \"\" if has spaces\n",MAX_BREAKPOINTS_CONDITIONS
+		"--set-breakpoint n s       Set breakpoint with string s at position n. n must be between 1 and %d. string s must be written in \"\" if has spaces. Used normally with --enable-breakpoints\n",MAX_BREAKPOINTS_CONDITIONS
 );
 
 printf(
-		"--set-breakpointaction n s Set breakpoint action with string s at position n. n must be between 1 and %d. string s must be written in \"\" if has spaces\n",MAX_BREAKPOINTS_CONDITIONS
+		"--set-breakpointaction n s Set breakpoint action with string s at position n. n must be between 1 and %d. string s must be written in \"\" if has spaces. Used normally with --enable-breakpoints\n",MAX_BREAKPOINTS_CONDITIONS
 );
 
 printf (
@@ -5453,7 +5455,7 @@ void parse_cmdline_options(void) {
 
 			 debug_set_breakpoint(valor,argv[puntero_parametro]);
 
-			 command_line_set_breakpoints.v=1;
+
 
 		 }
 
@@ -5472,8 +5474,12 @@ void parse_cmdline_options(void) {
 
 			 debug_set_breakpoint_action(valor,argv[puntero_parametro]);
 
-			 command_line_set_breakpoints.v=1;
 
+
+		 }
+
+		 else if (!strcmp(argv[puntero_parametro],"--enable-breakpoints")) {
+		 			 command_line_set_breakpoints.v=1;
 		 }
 
 		 else if (!strcmp(argv[puntero_parametro],"--hardware-debug-ports")) {
