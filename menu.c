@@ -6936,12 +6936,12 @@ menu_writing_inverse_color.v=1;
 			}
 			else {
 				sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size ~~BPP",view_sprite_incremento);
-				strcpy(buffer_segunda_linea, "~~Inverse ~~Save ~~Hardware");
+				sprintf(buffer_segunda_linea, "~~Inverse %s ~~Hardware",(view_sprites_bpp==1 ? "~~Save" : "") );
 			}
 		}
 		else {
 			  sprintf(buffer_primera_linea,"~~Memptr In~~c+%d ~~O~~P~~Q~~A:Size ~~BPP",view_sprite_incremento);
-			  strcpy(buffer_segunda_linea, "~~Inverse ~~Save");
+			  sprintf(buffer_segunda_linea, "~~Inverse %s",(view_sprites_bpp==1 ? "~~Save" : ""));
 		}
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_primera_linea);
@@ -7053,22 +7053,28 @@ menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 																					break;
 
 																				case 's':
+
+
 																							if (MACHINE_IS_TBBLUE && view_sprites_tbblue) {
 
 																							}
 
 																							else {
-																								//restauramos modo normal de texto de menu, sino, el selector de archivos se vera
-																								//con el sprite encima
-																								set_menu_overlay_function(normal_overlay_texto_menu);
+
+																									//Solo graba sprites de 1bpp (monocromos)
+																								if (view_sprites_bpp==1) {
+																									//restauramos modo normal de texto de menu, sino, el selector de archivos se vera
+																									//con el sprite encima
+																									set_menu_overlay_function(normal_overlay_texto_menu);
 
 
-																								menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_ppb,view_sprite_incremento);
+																									menu_debug_view_sprites_save(view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_ppb,view_sprite_incremento);
 
-																								cls_menu_overlay();
+																									cls_menu_overlay();
 
-																								menu_debug_view_sprites_ventana();
-																								set_menu_overlay_function(menu_debug_draw_sprites);
+																									menu_debug_view_sprites_ventana();
+																									set_menu_overlay_function(menu_debug_draw_sprites);
+																								}
 
 																							}
 																				break;
@@ -23406,7 +23412,7 @@ void menu_inicio(void)
 			//restaurar estado multitarea
 
 			menu_multitarea=antes_menu_multitarea;
-			
+
       cls_menu_overlay();
 
 
