@@ -315,6 +315,18 @@ extern int menu_debug_show_memory_zones;
 
 #define MAX_LENGTH_ADDRESS_MEMORY_ZONE 6
 
+extern int menu_get_current_memory_zone_name_number(char *s);
+
+extern void menu_debug_set_memory_zone_attr(void);
+
+extern z80_byte menu_debug_get_mapped_byte(int direccion);
+
+extern void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address);
+
+extern void menu_debug_write_mapped_byte(int direccion,z80_byte valor);
+
+extern menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion);
+
 
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \

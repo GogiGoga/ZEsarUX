@@ -33,6 +33,7 @@
 #include "m68k.h"
 #include "utils.h"
 #include "scmp.h"
+#include "menu.h"
 
 //Indica 1 al desensamblador que el peek_byte debe usar direcciones de memoria de spectrum. modo normal
 //Indica 0 al desensamblador que debe usar direcciones del array de desensamblaje, usado en cpu statistics

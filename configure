@@ -1329,10 +1329,10 @@ snap_zx8081.o: snap_zx8081.c snap_zx8081.h cpu.h debug.h operaciones.h zx8081.h 
 snap_rzx.o: snap_rzx.c snap_rzx.h snap.h cpu.h debug.h operaciones.h utils.h menu.h screen.h
 	\$(CC) \$(CFLAGS) -c snap_rzx.c
 
-menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h tape.h audio.h timer.h snap.h operaciones.h disassemble.h utils.h contend.h joystick.h ula.h printers.h realjoystick.h scrstdout.h z88.h ulaplus.h autoselectoptions.h zxuno.h charset.h chardetect.h textspeech.h  mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h timex.h chloe.h cpc.h prism.h sam.h if1.h pd765.h atomlite.h tbblue.h dandanator.h multiface.h superupgrade.h m68k.h remote.h snap_rzx.h chrome.h tsconf.h scmp.h
+menu.o: menu.c menu.h screen.h cpu.h debug.h zx8081.h ay38912.h compileoptions.h tape.h audio.h timer.h snap.h operaciones.h disassemble.h utils.h contend.h joystick.h ula.h printers.h realjoystick.h scrstdout.h z88.h ulaplus.h autoselectoptions.h zxuno.h charset.h chardetect.h textspeech.h  mmc.h ide.h divmmc.h divide.h diviface.h zxpand.h spectra.h spritechip.h jupiterace.h timex.h chloe.h cpc.h prism.h sam.h if1.h pd765.h atomlite.h tbblue.h dandanator.h multiface.h superupgrade.h m68k.h remote.h snap_rzx.h multiface.h scmp.h esxdos_handler.h tsconf.h
 	\$(CC) \$(CFLAGS) -c menu.c
 
-disassemble.o: disassemble.c disassemble.h cpu.h operaciones.h debug.h ql.h utils.h scmp.h
+disassemble.o: disassemble.c disassemble.h cpu.h operaciones.h debug.h ql.h utils.h scmp.h menu.h
 	\$(CC) \$(CFLAGS) -c disassemble.c
 
 utils.o: utils.c utils.h cpu.h debug.h joystick.h compileoptions.h tape.h snap.h screen.h realjoystick.h menu.h z88.h playtzx.h tape_tzx.h operaciones.h zx8081.h autoselectoptions.h ulaplus.h ay38912.h textspeech.h spectra.h zxuno.h spritechip.h timex.h cpc.h sam.h divmmc.h divide.h superupgrade.h chardetect.h zx8081.h jupiterace.h mmc.h ide.h zxpand.h diviface.h divmmc.h divide.h dandanator.h ql.h m68k.h remote.h ula.h snap_rzx.h scmp.h mk14.h esxdos_handler.h tbblue.h tsconf.h
@@ -1383,7 +1383,7 @@ divmmc.o: divmmc.c divmmc.h divide.h diviface.h cpu.h debug.h utils.h
 divide.o: divide.c divide.h divmmc.h diviface.h cpu.h debug.h utils.h
 	\$(CC) \$(CFLAGS) -c divide.c
 
-diviface.o: diviface.c diviface.h cpu.h debug.h utils.h menu.h screen.h operaciones.h zxuno.h contend.h prism.h tbblue.h
+diviface.o: diviface.c diviface.h cpu.h debug.h utils.h menu.h screen.h operaciones.h zxuno.h contend.h prism.h tbblue.h tsconf.h
 	\$(CC) \$(CFLAGS) -c diviface.c
 
 if1.o: if1.c if1.h cpu.h debug.h utils.h operaciones.h menu.h

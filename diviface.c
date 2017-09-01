@@ -35,6 +35,7 @@
 #include "contend.h"
 #include "prism.h"
 #include "tbblue.h"
+#include "tsconf.h"
 
 z80_bit diviface_enabled={0};
 

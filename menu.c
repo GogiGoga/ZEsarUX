@@ -85,6 +85,7 @@
 #include "multiface.h"
 #include "scmp.h"
 #include "esxdos_handler.h"
+#include "tsconf.h"
 
 
 #if defined(__APPLE__)
@@ -278,9 +279,9 @@ void menu_cpu_core_loop(void);
 void menu_reset_counters_tecla_repeticion(void);
 void menu_textspeech_send_text(char *texto);
 
-z80_byte menu_debug_get_mapped_byte(int direccion);
 
-menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion);
+
+
 
 //si hay recuadro activo, y cuales son sus coordenadas y color
 
@@ -808,7 +809,7 @@ void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address
 	sprintf (texto,"      ");
 
 	address=adjust_address_memory_size(address);
-	int longitud_direccion=MAX_LENGTH_ADDRESS_MEMORY_ZONE;
+	//int longitud_direccion=MAX_LENGTH_ADDRESS_MEMORY_ZONE;
 
 	//Obtener cuantos digitos hexa se necesitan
 	char temp_digitos[20];
@@ -6415,7 +6416,7 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 				else {
 					//printf ("Info zona %d\n",menu_debug_memory_zone);
 					char buffer_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
-					int readwrite;
+					//int readwrite;
 					machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 					sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
 					//printf ("size: %X\n",menu_debug_memory_zone_size);
@@ -6988,7 +6989,7 @@ menu_writing_inverse_color.v=1;
 		else {
 			//printf ("Info zona %d\n",menu_debug_memory_zone);
 			char buffer_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
-			int readwrite;
+			//int readwrite;
 			machine_get_memory_zone_name(menu_debug_memory_zone,buffer_name);
 			sprintf (memory_zone_text,"Z: Mem zone (%d %s)",menu_debug_memory_zone,buffer_name);
 			//printf ("size: %X\n",menu_debug_memory_zone_size);

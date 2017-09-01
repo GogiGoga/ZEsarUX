@@ -5795,7 +5795,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 	z80_byte videomode=tsconf_get_video_mode_display();
 
 
-	int posicion_array_pixeles_atributos=0;
+	//int posicion_array_pixeles_atributos=0;
 
 	if (videomode==3) {
 		//modo texto
@@ -5807,7 +5807,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 		z80_byte *screen;
 		screen=tsconf_ram_mem_table[tsconf_get_vram_page() ];
 
-		int ancho_linea_caracteres=256;
+		//int ancho_linea_caracteres=256;
 		int x=0;
 		int y=scanline_copia;
 		puntero=fila*256;
@@ -5817,7 +5817,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 		z80_byte *puntero_fuente;
 		puntero_fuente=tsconf_ram_mem_table[font_page];
 
-		z80_int puntero_orig=puntero;
+		//z80_int puntero_orig=puntero;
 
 		z80_byte caracter,caracter_text;
 

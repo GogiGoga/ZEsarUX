@@ -71,5 +71,13 @@ extern z80_byte tsconf_get_memconfig(void);
 
 extern z80_byte tsconf_get_vram_page(void);
 
+extern z80_int tsconf_return_cram_color(z80_byte color);
+
+extern z80_byte tsconf_return_cram_palette_offset(void);
+
+extern void tsconf_set_sizes_display(void);
+
+extern z80_byte tsconf_get_rom_bank(void);
+
 
 #endif

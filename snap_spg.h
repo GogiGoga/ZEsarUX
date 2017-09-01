@@ -87,4 +87,6 @@ struct hdrSPG0_2 {
 };
 
 
+extern void load_spg_snapshot(char *filename);
+
 #endif
