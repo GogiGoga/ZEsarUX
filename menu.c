@@ -23396,11 +23396,17 @@ void menu_inicio(void)
 		if (debug_if_breakpoint_action_menu(catch_breakpoint_index)) {
 
 			//menu_espera_no_tecla();
-      //y desactivamos multitarea
+      //desactivamos multitarea, guardando antes estado multitarea
+			int antes_menu_multitarea=menu_multitarea;
       menu_multitarea=0;
 			menu_generic_message_format("Breakpoint","Catch Breakpoint: %s",catch_breakpoint_message);
 
 			menu_debug_registers(0);
+
+			//restaurar estado multitarea
+
+			menu_multitarea=antes_menu_multitarea;
+			
       cls_menu_overlay();
 
 

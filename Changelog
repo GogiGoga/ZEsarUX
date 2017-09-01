@@ -30,6 +30,8 @@ Improved menu interface:
 Improved debugger: now you can look at all memory zones, for example: full 128kb ram, 64kb rom of +2A, divmmc ram, etc
 Improved debugger: you can now set conditions for all flags, written as: FS,FZ,FP,FV,FH,FN,FC
 Improved debugger: now breakpoints are evaluated before running the current opcode (instead of after). So breakpoints like "PC=0" and doing a reset from menu, now works
+Improved debugger: now you can set breakpoints from command line/config file but not enabled by default. You need --enable-breakpoints setting
+Improved debugger: now the multitask setting is not lost when a breakpoint is fired
 Improved TBBlue emulation: 1 MB RAM
 Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
 Improved Sprite Viewer: Save sprite, TBBlue sprite viewer, inverse sprite, set bpp (8,4,2,1), set palette
