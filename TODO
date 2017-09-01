@@ -33,6 +33,10 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-zxuno: ret nmi 
+cierto...pero lo hago para que sea lo más parecido a la fpga. En la fpga se cambia a bootm=0 cuando se ejecuta cualquier opcode en 69H, independientemente de la instrucción que sea, según dice Antonio
+Yo le agregaré una condición mas, y es que esa instrucción tiene que ser RETN, que es mas lógico (y realmente queda mejor pues es un trozo de código dentro de la emulación de esa instrucción, y no algo a meter en el loop principal)
+
 -agregar paleta prism a sprite view
 
 -memory zones en otros comandos de menu: poke byte, save binary, load binary etc. Ver tambien los similares en ZRCP
