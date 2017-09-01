@@ -730,6 +730,29 @@ z80_byte menu_debug_get_mapped_byte(int direccion)
 }
 
 
+//Escribe byte mapeado de ram normal o de zona de menu mapeada
+void menu_debug_write_mapped_byte(int direccion,z80_byte valor)
+{
+
+
+
+	//Mostrar memoria normal
+	if (menu_debug_show_memory_zones==0) {
+		return poke_byte_z80_moto(direccion,valor);
+	}
+
+
+	//Mostrar zonas mapeadas
+	menu_debug_set_memory_zone_attr();
+
+	direccion=direccion % menu_debug_memory_zone_size;
+	*(machine_get_memory_zone_pointer(menu_debug_memory_zone,direccion))=valor;
+
+
+
+}
+
+
 menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 {
 
@@ -776,7 +799,7 @@ int menu_get_current_memory_zone_name_number(char *s)
 	return menu_debug_memory_zone;
 }
 
-#define MAX_LENGTH_ADDRESS_MEMORY_ZONE 6
+
 
 //Escribe una direccion en texto, en hexa, teniendo en cuenta zona memoria (rellenando espacios segun tamanyo zona)
 void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address)

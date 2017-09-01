@@ -313,6 +313,8 @@ extern menu_z80_moto_int menu_debug_memory_zone_size;
 
 extern int menu_debug_show_memory_zones;
 
+#define MAX_LENGTH_ADDRESS_MEMORY_ZONE 6
+
 
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \

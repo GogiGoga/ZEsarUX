@@ -729,7 +729,7 @@ struct s_items_ayuda items_ayuda[]={
 	  {"get-version",NULL,NULL,"Shows emulator version"},
   {"hard-reset-cpu",NULL,NULL,"Hard resets the machine"},
   {"help","|?","[command]","Shows help screen or command help"},
-	{"hexdump","|h","pointer lenght","Dumps mapped memory at address, showing hex and ascii."},
+	{"hexdump","|h","pointer lenght","Dumps memory at address, showing hex and ascii."},
 	{"hexdump-internal",NULL,"pointer lenght [offset]","Dumps internal memory (hexadecimal and ascii) for a given memory pointer. "
 							"Pointer can be:\n"
 							"diviface_memory: where divide/divmmc firmware and ram is located\n"
@@ -743,8 +743,8 @@ struct s_items_ayuda items_ayuda[]={
 	{"ls",NULL,NULL,"Minimal command list"},
 	{"noop",NULL,NULL,"This command does nothing"},
   {"quit","|exit|logout",NULL,"Closes connection"},
-	{"read-mapped-memory",NULL,"[address] [length]","Dumps mapped memory at address. "
-																				"It not specify address, dumps all memory: 64 KB for Z80 based machines, and all memory for Motorola based machines. "
+	{"read-memory",NULL,"[address] [length]","Dumps memory at address. "
+																				"It not specify address, dumps all memory for current memory zone: 64 KB for mapped memory on Z80, 16 kb for Spectrum 48KB ROM, etc. "
 																				"If specify address but not lenght, only 1 byte is read"
 	},
   {"reset-cpu",NULL,NULL,"Resets CPU"},
@@ -781,8 +781,8 @@ struct s_items_ayuda items_ayuda[]={
  {"tsconf-get-nvram",NULL,"index","Get TSConf NVRAM value at index"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
-	{"write-mapped-memory","|wmm","address value","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be separed by one space"},
-	{"write-mapped-memory-raw",NULL,"address values","Writes a sequence of bytes starting at desired address on mapped memory. Bytes must be in hexadecimal and not separed"},
+	{"write-memory","|wm","address value","Writes a sequence of bytes starting at desired address on memory. Bytes must be separed by one space"},
+	{"write-memory-raw",NULL,"address values","Writes a sequence of bytes starting at desired address on memory. Bytes must be in hexadecimal and not separed"},
 
 
   {NULL,NULL,NULL,NULL}
@@ -790,20 +790,18 @@ struct s_items_ayuda items_ayuda[]={
 
 
 //Si longitud=0, devuelve toda la memoria
-void remote_get_mapped_memory(int misocket,unsigned int inicio,unsigned int longitud)
+void remote_get_memory(int misocket,unsigned int inicio,unsigned int longitud)
 {
 
+	menu_debug_set_memory_zone_attr();
 
 	if (longitud==0) {
-  	longitud=65536;
-  	if (CPU_IS_MOTOROLA) {
-    	longitud=QL_MEM_LIMIT+1;
-  	}
-
+  	longitud=menu_debug_memory_zone_size;
 	}
 
 	while (longitud--) {
-		escribir_socket_format(misocket,"%02X",peek_byte_z80_moto(inicio++));
+		//escribir_socket_format(misocket,"%02X",peek_byte_z80_moto(inicio++));
+		escribir_socket_format(misocket,"%02X",menu_debug_get_mapped_byte(inicio++));
 	}
 
 
@@ -2657,8 +2655,13 @@ void remote_hexdump(int misocket,int inicio,int longitud)
 	//printf ("%p %p\n",inicio,memoria_spectrum);
 	//inicio +=offset;
 
+	menu_debug_set_memory_zone_attr();
+
 	for (;longitud>0;longitud -=16) {
-		escribir_socket_format(misocket,"%XH ",inicio);
+		char buffer_direccion[MAX_LENGTH_ADDRESS_MEMORY_ZONE+1];
+		menu_debug_print_address_memory_zone(buffer_direccion,inicio);
+
+		escribir_socket_format(misocket,"%sH ",buffer_direccion);
 		//offset +=16;
 
 		//escribir_socket_format(misocket,"%d ",longitud);
@@ -2671,7 +2674,8 @@ void remote_hexdump(int misocket,int inicio,int longitud)
 		puntero_linea=inicio;
 		//Volcar 16 bytes hexa
 		for (;longitud_parcial>0;longitud_parcial--) {
-			escribir_socket_format(misocket,"%02X ",peek_byte_z80_moto(puntero_linea));
+			//escribir_socket_format(misocket,"%02X ",peek_byte_z80_moto(puntero_linea));
+			escribir_socket_format(misocket,"%02X ",menu_debug_get_mapped_byte(puntero_linea));
 			puntero_linea++;
 		}
 		//z80_byte c=(z80_byte)*memoria_spectrum;
@@ -2695,7 +2699,8 @@ void remote_hexdump(int misocket,int inicio,int longitud)
 
 		//Volcar 16 bytes ascii
 		for (;longitud_parcial>0;longitud_parcial--) {
-			unsigned char c=peek_byte_z80_moto(puntero_linea);
+			//unsigned char c=peek_byte_z80_moto(puntero_linea);
+			unsigned char c=menu_debug_get_mapped_byte(puntero_linea);
 			if (c<32 || c>127) c='.';
 			escribir_socket_format(misocket,"%c",c);
 			puntero_linea++;
@@ -3100,7 +3105,7 @@ char buffer_retorno[2048];
 		//No hacer absolutamente nada
 	}
 
-	else if (!strcmp(comando_sin_parametros,"read-mapped-memory")) {
+	else if (!strcmp(comando_sin_parametros,"read-memory")) {
 		unsigned int inicio=0;
 		unsigned int longitud=0;
 
@@ -3113,8 +3118,13 @@ char buffer_retorno[2048];
       if (*s) longitud=parse_string_to_number(s);
 
 		}
-		remote_get_mapped_memory(misocket,inicio,longitud);
+		remote_get_memory(misocket,inicio,longitud);
 
+	}
+
+
+	else if (!strcmp(comando_sin_parametros,"read-mapped-memory")) {
+		escribir_socket(misocket,"This command is no longer supported. Use read-memory command and set memory zone if needed");
 	}
 
   else if (!strcmp(comando_sin_parametros,"reset-cpu")) {
@@ -3516,7 +3526,7 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 como generar volcado hexadecimal de archivo binario:
 hexdump -v -e '16/1 "%02xH " " "'
 */
-else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comando_sin_parametros,"wmm")) {
+else if (!strcmp(comando_sin_parametros,"write-memory") || !strcmp(comando_sin_parametros,"wm")) {
 	unsigned int direccion;
 	z80_byte valor;
 	if (parametros[0]==0) {
@@ -3526,11 +3536,17 @@ else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comand
 	else {
 
 		direccion=parse_string_to_number(parametros);
+
+		menu_debug_set_memory_zone_attr();
+
 		//Ver si hay espacio
 		char *s=find_space_or_end(parametros);
 		while (*s) {
 			valor=parse_string_to_number(s);
-			poke_byte_z80_moto(direccion++,valor);
+			//poke_byte_z80_moto(direccion++,valor);
+			//printf ("poke addr %X value %x\n",direccion,valor);
+			menu_debug_write_mapped_byte(direccion++,valor);
+
 			s=find_space_or_end(s);
 		}
 		/*else {
@@ -3541,8 +3557,15 @@ else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comand
 
 }
 
+else if (!strcmp(comando_sin_parametros,"write-mapped-memory") || !strcmp(comando_sin_parametros,"wmm")) {
+	escribir_socket(misocket,"This command is no longer supported. Use write-memory command and set memory zone if needed");
+}
 
 else if (!strcmp(comando_sin_parametros,"write-mapped-memory-raw") ) {
+	escribir_socket(misocket,"This command is no longer supported. Use write-memory-raw command and set memory zone if needed");
+}
+
+else if (!strcmp(comando_sin_parametros,"write-memory-raw") ) {
 	unsigned int direccion;
 	z80_byte valor;
 	if (parametros[0]==0) {
@@ -3552,6 +3575,9 @@ else if (!strcmp(comando_sin_parametros,"write-mapped-memory-raw") ) {
 	else {
 
 		direccion=parse_string_to_number(parametros);
+
+		menu_debug_set_memory_zone_attr();
+
 		//Ver si hay espacio
 		char *s=find_space_or_end(parametros);
 		while (*s) {
@@ -3563,7 +3589,8 @@ else if (!strcmp(comando_sin_parametros,"write-mapped-memory-raw") ) {
 			//printf ("%s\n",buffer_valor);
 			valor=parse_string_to_number(buffer_valor);
 			//printf ("valor: %d\n",valor);
-			poke_byte_z80_moto(direccion++,valor);
+			//poke_byte_z80_moto(direccion++,valor);
+			menu_debug_write_mapped_byte(direccion++,valor);
 
 			s++;
 			if (*s) s++;
