@@ -1498,9 +1498,10 @@ z80_byte debug_watches_y_position=0;
 int debug_nested_id_core;
 z80_byte cpu_core_loop_debug(z80_int dir GCC_UNUSED, z80_byte value GCC_UNUSED)
 {
-	//Llamamos al core normal
-	debug_nested_core_call_previous(debug_nested_id_core);
-	//cpu_core_loop_no_debug();
+
+
+
+  //Evaluamos condiciones debug
 
 	//Condiciones enterrom y exitrom
 /*
@@ -1544,9 +1545,9 @@ int debug_exitrom=0;
 		}
 	}
 
+  //Llamamos al core normal
+	debug_nested_core_call_previous(debug_nested_id_core);
 
-	//temp
-	//printf ("debug_enterrom=%d debug_exitrom=%d\n",debug_enterrom,debug_exitrom);
 
 	//Para que no se queje el compilador, aunque este valor de retorno no lo usamos
 	return 0;

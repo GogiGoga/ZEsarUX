@@ -3,7 +3,6 @@ Version 5.1. 24 July 2017 - Gunfright edition
 Added machine Chrome (Italian ZX Spectrum Clone)
 Added machine ZX-Evolution TS-Conf
 Added machine MK14
-Added menu movement with mouse
 Added Visualmem, Poke, Find, Save binary menus also for Sinclair QL
 Added setting to test configuration
 Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom, get-ocr, TBBlue-get-sprite, TBBlue-get-pattern, TBBlue-get-palette, send-keys-ascii, send-keys-string, tsconf-get-af-port, tsconf-get-vram, get-stack-backtrace
@@ -21,13 +20,20 @@ Added ZXUno Radasoffset and Radaspadding registers, to do hardware scrolling
 Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files. Examples can be found on extras/media/spectrum/esxdos_handler/. "Classic" mmc/ide emulation by using virtual mmc/ide files can also be used
 Moved folders: docs, media, snap_tests to a "ZEsarUX-extras" package. These folders have been separated from the emulator main distributed file, and the main download have been reduced to 5 MB aprox. The git repository still holds all the files (extras have been moved to folder "extras"), but maybe in the future I will remove them also from the repo.
 Moved mmc/ide files location to extras/media/disk_images folder
+
+Improved menu interface:
+*menu movement with mouse
+*colours are greyscaled when multitask disabled
+*allow blinking text, like the input cursor
+*new Splash window type which disappears automatically (needs multitask on)
+
 Improved debugger: now you can look at all memory zones, for example: full 128kb ram, 64kb rom of +2A, divmmc ram, etc
 Improved debugger: you can now set conditions for all flags, written as: FS,FZ,FP,FV,FH,FN,FC
+Improved debugger: now breakpoints are evaluated before running the current opcode (instead of after). So breakpoints like "PC=0" and doing a reset from menu, now works
 Improved TBBlue emulation: 1 MB RAM
 Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
 Improved Sprite Viewer: Save sprite, TBBlue sprite viewer, inverse sprite, set bpp (8,4,2,1), set palette
 Improved write-mapped-memory remote command to allow up to 64kb
-Improved a bit menu drawing: now colours are greyscaled when multitask disabled
 Improved stdout driver. Now can show ansi colours
 Improved messages windows. Can now find text using f and n
 Improved footer. Host CPU usage % on footer is not enabled by default to avoid confussion with emulated CPU speed. You can enable it with a setting. Host CPU usage % is not show on Windows.
