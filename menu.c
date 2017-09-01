@@ -776,6 +776,7 @@ int menu_get_current_memory_zone_name_number(char *s)
 	return menu_debug_memory_zone;
 }
 
+#define MAX_LENGTH_ADDRESS_MEMORY_ZONE 6
 
 //Escribe una direccion en texto, en hexa, teniendo en cuenta zona memoria (rellenando espacios segun tamanyo zona)
 void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address)
@@ -784,7 +785,7 @@ void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address
 	sprintf (texto,"      ");
 
 	address=adjust_address_memory_size(address);
-	int longitud_direccion=6;
+	int longitud_direccion=MAX_LENGTH_ADDRESS_MEMORY_ZONE;
 
 	//Obtener cuantos digitos hexa se necesitan
 	char temp_digitos[20];
@@ -6227,7 +6228,7 @@ void menu_debug_hexdump_with_ascii(char *dumpmemoria,menu_z80_moto_int dir_leida
 	menu_debug_set_memory_zone_attr();
 
 
-	int longitud_direccion=6;
+	int longitud_direccion=MAX_LENGTH_ADDRESS_MEMORY_ZONE;
 
 	menu_debug_print_address_memory_zone(dumpmemoria,dir_leida);
 
@@ -6901,8 +6902,12 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 			//view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
 			view_sprites_direccion=adjust_address_memory_size(view_sprites_direccion);
 
-			if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Memptr:%05X Size:%dX%d %dBPP",view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_bpp);
-			else sprintf (buffer_texto,"Memptr:%04X Size:%dX%d %dBPP",view_sprites_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_bpp);
+			char buffer_direccion[MAX_LENGTH_ADDRESS_MEMORY_ZONE+1];
+			menu_debug_print_address_memory_zone(buffer_direccion,view_sprites_direccion);
+
+
+			if (CPU_IS_MOTOROLA) sprintf (buffer_texto,"Memptr:%s Size:%dX%d %dBPP",buffer_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_bpp);
+			else sprintf (buffer_texto,"Memptr:%s Size:%dX%d %dBPP",buffer_direccion,view_sprites_ancho_sprite,view_sprites_alto_sprite,view_sprites_bpp);
 		}
 
 		menu_escribe_linea_opcion(linea++,-1,1,buffer_texto);
@@ -7197,7 +7202,7 @@ void menu_debug_dissassemble_una_instruccion(char *dumpassembler,menu_z80_moto_i
 
 	menu_debug_print_address_memory_zone(dumpassembler,dir);
 
-	int longitud_direccion=6;
+	int longitud_direccion=MAX_LENGTH_ADDRESS_MEMORY_ZONE;
 
 	//metemos espacio en 0 final
 	dumpassembler[longitud_direccion]=' ';
