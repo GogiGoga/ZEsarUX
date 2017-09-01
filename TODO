@@ -35,6 +35,8 @@ The format of each table entry is as follows:
 
 -agregar paleta prism a sprite view
 
+-memory zones en otros comandos de menu: poke byte, save binary, load binary etc. Ver tambien los similares en ZRCP
+
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 
 IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
