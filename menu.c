@@ -6571,15 +6571,31 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 		break;
 
 		case 2:
-			return TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
+			return SPECTRA_INDEX_FIRST_COLOR+(color%64);
 		break;
 
 		case 3:
-			return RGB8_INDEX_FIRST_COLOR+tbsprite_palette[color];
+			return CPC_INDEX_FIRST_COLOR+cpc_palette_table[color%16];
 		break;
 
 		case 4:
-			return CPC_INDEX_FIRST_COLOR+cpc_palette_table[color%16];
+			return PRISM_INDEX_FIRST_COLOR+prism_palette_zero[color%256];
+		break;
+
+		case 5:
+			return PRISM_INDEX_FIRST_COLOR+prism_palette_two[color%256];
+		break;
+
+		case 6:
+			return SAM_INDEX_FIRST_COLOR+  (  (sam_palette[color&15]) & 127) ;
+		break;
+
+		case 7:
+			return RGB8_INDEX_FIRST_COLOR+tbsprite_palette[color];
+		break;
+
+		case 8:
+			return TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
 		break;
 
 	}
@@ -6590,7 +6606,7 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 void menu_debug_sprites_change_palette(void)
 {
 	view_sprites_palette++;
-	if (view_sprites_palette==5) view_sprites_palette=0;
+	if (view_sprites_palette==9) view_sprites_palette=0;
 }
 
 void menu_debug_sprites_get_palette_name(int paleta, char *s)
@@ -6605,21 +6621,39 @@ void menu_debug_sprites_get_palette_name(int paleta, char *s)
 		break;
 
 		case 2:
-			strcpy(s,"TSConf");
+			strcpy(s,"Spectra");
 		break;
 
 		case 3:
-			strcpy(s,"NextSprite");
+			strcpy(s,"CPC");
 		break;
 
 		case 4:
-			strcpy(s,"CPC");
+			strcpy(s,"Prism Zero");
+		break;
+
+		case 5:
+			strcpy(s,"Prism Two");
+		break;
+
+		case 6:
+			strcpy(s,"Sam Coupe");
+		break;
+
+		case 7:
+			strcpy(s,"NextSprite");
+		break;
+
+		case 8:
+			strcpy(s,"TSConf");
 		break;
 
 
 		default:
 			strcpy(s,"UNKNOWN");
 		break;
+
+
 
 	}
 }
@@ -19561,7 +19595,7 @@ void menu_display_settings(MENU_ITEM_PARAMETERS)
 		}
 
 
-			menu_add_item_menu(array_menu_display_settings,"View ~~Colours Palettes",MENU_OPCION_NORMAL,menu_display_total_palette,NULL);
+			menu_add_item_menu(array_menu_display_settings,"View ~~Colour Palettes",MENU_OPCION_NORMAL,menu_display_total_palette,NULL);
 			menu_add_item_menu_shortcut(array_menu_display_settings,'c');
 
     /*            char string_vofile_shown[10];
