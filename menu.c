@@ -801,6 +801,14 @@ int menu_get_current_memory_zone_name_number(char *s)
 }
 
 
+//Retorna el numero de digitos para representar un numero en hexadecimal
+int menu_debug_get_total_digits(int valor)
+{
+	char temp_digitos[20];
+	sprintf (temp_digitos,"%X",valor);
+	return strlen(temp_digitos);
+}
+
 
 //Escribe una direccion en texto, en hexa, teniendo en cuenta zona memoria (rellenando espacios segun tamanyo zona)
 void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address)
@@ -812,9 +820,11 @@ void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address
 	//int longitud_direccion=MAX_LENGTH_ADDRESS_MEMORY_ZONE;
 
 	//Obtener cuantos digitos hexa se necesitan
-	char temp_digitos[20];
-	sprintf (temp_digitos,"%X",menu_debug_memory_zone_size-1);
-	int digitos=strlen(temp_digitos);
+	//char temp_digitos[20];
+	//sprintf (temp_digitos,"%X",menu_debug_memory_zone_size-1);
+	//int digitos=strlen(temp_digitos);
+
+	int digitos=menu_debug_get_total_digits(menu_debug_memory_zone_size-1);
 
 	//Obtener posicion inicial a escribir direccion. Suponemos maximo 6
 	int posicion_inicial_digitos=6-digitos;
@@ -19270,6 +19280,18 @@ void menu_display_inves_ula_bright_error(MENU_ITEM_PARAMETERS)
 }
 
 
+void menu_dibuja_rectangulo_relleno(int x, int y, int ancho, int alto, int color)
+{
+	int x1,y1;
+
+	for (y1=y;y1<y+alto;y1++) {
+		for (x1=x;x1<=x+ancho;x1++) {
+			scr_putpixel_zoom(x1,y1,color);
+		}
+	}
+}
+
+
 #define TOTAL_PALETTE_WINDOW_X 0
 #define TOTAL_PALETTE_WINDOW_Y 1
 #define TOTAL_PALETTE_WINDOW_ANCHO 32
@@ -19284,6 +19306,66 @@ void menu_display_total_palette_ventana(void)
 int menu_display_total_palette_current_palette=0;
 int menu_display_total_palette_current_colour=0;
 
+
+//Muestra lista de colores o barras de colores
+int menu_display_total_palette_lista_colores(int linea,int si_barras)
+{
+
+	char dumpmemoria[33];
+
+	int linea_color;
+
+	for (linea_color=0;linea_color<16 &&
+			menu_display_total_palette_current_colour+linea_color<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores;
+			linea_color++) {
+
+			int current_color=menu_display_total_palette_current_colour+linea_color;
+			int indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
+			int indice_color_final_rgb=indice_paleta+current_color;
+			int color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+
+			sprintf (dumpmemoria,"%5d: RGB %06XH",current_color,color_final_rgb);
+
+			//int digitos_color=menu_debug_get_total_digits
+
+			//sprintf (&texto[posicion_inicial_digitos],"%0*X",digitos,address);
+
+			int longitud_texto=strlen(dumpmemoria);
+
+			int posicion_barra_color_x=TOTAL_PALETTE_WINDOW_X+longitud_texto+2;
+			int posicion_barra_color_y=TOTAL_PALETTE_WINDOW_Y+4+linea_color;
+
+			//dibujar la barra de color
+			if (si_barras) {
+				menu_dibuja_rectangulo_relleno(posicion_barra_color_x*8,posicion_barra_color_y*8,
+											8*(TOTAL_PALETTE_WINDOW_ANCHO-longitud_texto-3),8,indice_color_final_rgb);
+			}
+
+			else {
+
+			//overlay_screen_array[posicion_barra_color_y*32+posicion_barra_color_x].caracter='K';
+
+			//#define TOTAL_PALETTE_WINDOW_X 0
+			//#define TOTAL_PALETTE_WINDOW_Y 1
+			//#define TOTAL_PALETTE_WINDOW_ANCHO 32
+			//#define TOTAL_PALETTE_WINDOW_ALTO 22
+
+			menu_escribe_linea_opcion(linea++,-1,1,dumpmemoria);
+			}
+	}
+
+	return linea;
+}
+
+void menu_display_total_palette_draw_barras(void)
+{
+        normal_overlay_texto_menu();
+
+				if (si_complete_video_driver()) {
+					menu_display_total_palette_lista_colores(0,1);
+				}
+}
+
 void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 {
         menu_espera_no_tecla();
@@ -19297,6 +19379,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 	int salir=0;
 
 
+			set_menu_overlay_function(menu_display_total_palette_draw_barras);
 
         do {
 
@@ -19321,20 +19404,8 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
         menu_escribe_linea_opcion(linea++,-1,1,"");
 
+				linea=menu_display_total_palette_lista_colores(linea,0);
 
-
-		for (linea_color=0;linea_color<16;linea_color++) {
-				int current_color=menu_display_total_palette_current_colour+linea_color;
-				int indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
-				int indice_color_final_rgb=indice_paleta+current_color;
-				int color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
-
-	      sprintf (dumpmemoria,"Color %d: RGB %06XH",current_color,color_final_rgb);
-
-
-
-			menu_escribe_linea_opcion(linea++,-1,1,dumpmemoria);
-		}
 
 //printf ("zone size: %x dir: %x\n",menu_display_memory_zone_size,menu_display_total_palette_direccion);
 
@@ -19361,12 +19432,21 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 					case 11:
 						//arriba
+						if (menu_display_total_palette_current_colour>0) {
+							menu_display_total_palette_current_colour--;
+							menu_display_total_palette_ventana();
+						}
 						//menu_display_total_palette_direccion -=bytes_por_linea;
 						//menu_display_total_palette_direccion=menu_display_total_palette_adjusta_en_negativo(menu_display_total_palette_direccion,bytes_por_linea);
 					break;
 
 					case 10:
 						//abajo
+						if (menu_display_total_palette_current_colour<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores-1) {
+							menu_display_total_palette_current_colour++;
+							menu_display_total_palette_ventana();
+						}
+						//menu_display_total_palette_current_colour+linea_color<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores
 						//menu_display_total_palette_direccion +=bytes_por_linea;
 					break;
 
@@ -19381,7 +19461,24 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 						//menu_display_total_palette_direccion +=bytes_por_ventana;
 					break;
 
-					case 'm':
+					case 'q':
+						if (menu_display_total_palette_current_palette>0) {
+							menu_display_total_palette_current_palette--;
+							menu_display_total_palette_current_colour=0;
+						}
+
+						menu_display_total_palette_ventana();
+						//menu_display_total_palette_direccion=menu_display_total_palette_change_pointer(menu_display_total_palette_direccion);
+						//menu_display_total_palette_ventana();
+					break;
+
+					case 'a':
+						if (menu_display_total_palette_current_palette<TOTAL_PALETAS_COLORES-1) {
+							menu_display_total_palette_current_palette++;
+							menu_display_total_palette_current_colour=0;
+						}
+
+						menu_display_total_palette_ventana();
 						//menu_display_total_palette_direccion=menu_display_total_palette_change_pointer(menu_display_total_palette_direccion);
 						//menu_display_total_palette_ventana();
 					break;
@@ -19400,7 +19497,11 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
         } while (salir==0);
 
-	cls_menu_overlay();
+				//restauramos modo normal de texto de menu
+        set_menu_overlay_function(normal_overlay_texto_menu);
+
+
+cls_menu_overlay();
 	//menu_escribe_linea_startx=1;
 
 }

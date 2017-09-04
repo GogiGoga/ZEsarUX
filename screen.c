@@ -152,7 +152,7 @@ int putpixel_min_y=99999;
 
 
 
-#define TOTAL_PALETAS_COLORES 3
+
 
 total_palette_colours total_palette_colours_array[TOTAL_PALETAS_COLORES]={
 	{"Speccy","16 colour standard",0,SPECCY_TOTAL_PALETTE_COLOURS},
