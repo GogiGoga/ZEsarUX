@@ -19429,7 +19429,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 				char buffer_linea[40];
 
-				linea=TOTAL_PALETTE_WINDOW_Y+TOTAL_PALETTE_COLORS_PER_WINDOW+3;
+				linea=TOTAL_PALETTE_WINDOW_Y+TOTAL_PALETTE_COLORS_PER_WINDOW+4;
 
 															// 01234567890123456789012345678901
 					sprintf (buffer_linea,"Move: Cursors,Q,A,PgUp,PgDn");
@@ -19561,7 +19561,7 @@ void menu_display_settings(MENU_ITEM_PARAMETERS)
 		}
 
 
-			menu_add_item_menu(array_menu_display_settings,"View total ~~Colours",MENU_OPCION_NORMAL,menu_display_total_palette,NULL);
+			menu_add_item_menu(array_menu_display_settings,"View ~~Colours Palettes",MENU_OPCION_NORMAL,menu_display_total_palette,NULL);
 			menu_add_item_menu_shortcut(array_menu_display_settings,'c');
 
     /*            char string_vofile_shown[10];

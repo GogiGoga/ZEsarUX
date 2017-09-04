@@ -8,6 +8,7 @@ Added setting to test configuration
 Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom, get-ocr, TBBlue-get-sprite, TBBlue-get-pattern, TBBlue-get-palette, send-keys-ascii, send-keys-string, tsconf-get-af-port, tsconf-get-vram, get-stack-backtrace
 Added QL GUI Style
 Added menu to find and set lives in games
+Added menu to view color palettes
 Added actions commands to breakpoints, so you can run some actions when a breakpoint is fired
 Added up to three AY Chips
 Added emulation of other DAC chips appart from Specdrum: Covox, etc
