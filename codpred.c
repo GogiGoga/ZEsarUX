@@ -24,6 +24,7 @@
 #include "debug.h"
 
 #include "contend.h"
+#include "zxuno.h"
 
 void invalid_opcode_ed(char *s) 
 {
@@ -421,6 +422,12 @@ void instruccion_ed_69 ()
 	//RETN
 	iff1.v=iff2.v;
 	reg_pc=pop_valor();
+
+	//Si se vuelve de una nmi especial
+	if (MACHINE_IS_ZXUNO && reg_pc==0x72) {
+                //meter BOOTM a 0 (bit 0)
+                zxuno_ports[0] &=(255-1);
+	}
 
 
 }

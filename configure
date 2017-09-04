@@ -1158,7 +1158,7 @@ scrnull.o: scrnull.c scrnull.h debug.h screen.h cpu.h
 codprddfd.o: codprddfd.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h
 	\$(CC) \$(CFLAGS) -c codprddfd.c
 
-codpred.o: codpred.c cpu.h operaciones.h debug.h contend.h
+codpred.o: codpred.c cpu.h operaciones.h debug.h contend.h zxuno.h
 	\$(CC) \$(CFLAGS) -c codpred.c
 
 codsinpr.o: codsinpr.c cpu.h operaciones.h debug.h contend.h utils.h compileoptions.h z88.h snap_rzx.h esxdos_handler.h
