@@ -94,6 +94,10 @@ z80_byte *zxuno_bootm_memory_paged[4];
 z80_byte *zxuno_no_bootm_memory_paged[4];
 
 
+//Direcciones actuales mapeadas, modo nuevo sin tener que distinguir entre bootm a 0 o 1 
+z80_byte *zxuno_memory_paged_new[4];
+
+
 int zxuno_flash_must_flush_to_disk=0;
 
 
