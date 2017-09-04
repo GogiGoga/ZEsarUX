@@ -19293,9 +19293,10 @@ void menu_dibuja_rectangulo_relleno(int x, int y, int ancho, int alto, int color
 
 
 #define TOTAL_PALETTE_WINDOW_X 0
-#define TOTAL_PALETTE_WINDOW_Y 1
+#define TOTAL_PALETTE_WINDOW_Y 0
 #define TOTAL_PALETTE_WINDOW_ANCHO 32
-#define TOTAL_PALETTE_WINDOW_ALTO 22
+#define TOTAL_PALETTE_WINDOW_ALTO 23
+#define TOTAL_PALETTE_COLORS_PER_WINDOW 16
 
 void menu_display_total_palette_ventana(void)
 {
@@ -19315,7 +19316,7 @@ int menu_display_total_palette_lista_colores(int linea,int si_barras)
 
 	int linea_color;
 
-	for (linea_color=0;linea_color<16 &&
+	for (linea_color=0;linea_color<TOTAL_PALETTE_COLORS_PER_WINDOW &&
 			menu_display_total_palette_current_colour+linea_color<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores;
 			linea_color++) {
 
@@ -19366,6 +19367,21 @@ void menu_display_total_palette_draw_barras(void)
 				}
 }
 
+void menu_display_total_palette_cursor_arriba(void)
+{
+	if (menu_display_total_palette_current_colour>0) {
+		menu_display_total_palette_current_colour--;
+	}
+}
+
+void menu_display_total_palette_cursor_abajo(void)
+{
+	if (menu_display_total_palette_current_colour<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores-1) {
+		menu_display_total_palette_current_colour++;
+	}
+
+}
+
 void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 {
         menu_espera_no_tecla();
@@ -19396,7 +19412,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 				char textoshow[33];
 
-				sprintf (textoshow,"Palette %d: %s",menu_display_total_palette_current_colour,total_palette_colours_array[menu_display_total_palette_current_palette].nombre_paleta);
+				sprintf (textoshow,"Palette %d: %s",menu_display_total_palette_current_palette,total_palette_colours_array[menu_display_total_palette_current_palette].nombre_paleta);
         menu_escribe_linea_opcion(linea++,-1,1,textoshow);
 
 				sprintf (textoshow,"%s",total_palette_colours_array[menu_display_total_palette_current_palette].descripcion_paleta);
@@ -19413,7 +19429,10 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 				char buffer_linea[40];
 
-					sprintf (buffer_linea,"M: Change pointer C: ASCII");
+				linea=TOTAL_PALETTE_WINDOW_Y+TOTAL_PALETTE_COLORS_PER_WINDOW+3;
+
+															// 01234567890123456789012345678901
+					sprintf (buffer_linea,"Move: Cursors,Q,A,PgUp,PgDn");
 
 				menu_escribe_linea_opcion(linea++,-1,1,buffer_linea);
 
@@ -19428,37 +19447,46 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
                                 menu_espera_no_tecla_con_repeticion();
 
+				int aux_pgdnup;
+
 				switch (tecla) {
 
 					case 11:
 						//arriba
-						if (menu_display_total_palette_current_colour>0) {
-							menu_display_total_palette_current_colour--;
-							menu_display_total_palette_ventana();
-						}
+						menu_display_total_palette_cursor_arriba();
+
+						menu_display_total_palette_ventana();
 						//menu_display_total_palette_direccion -=bytes_por_linea;
 						//menu_display_total_palette_direccion=menu_display_total_palette_adjusta_en_negativo(menu_display_total_palette_direccion,bytes_por_linea);
 					break;
 
 					case 10:
 						//abajo
-						if (menu_display_total_palette_current_colour<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores-1) {
-							menu_display_total_palette_current_colour++;
-							menu_display_total_palette_ventana();
-						}
+						menu_display_total_palette_cursor_abajo();
+
+						menu_display_total_palette_ventana();
+
 						//menu_display_total_palette_current_colour+linea_color<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores
 						//menu_display_total_palette_direccion +=bytes_por_linea;
 					break;
 
 					case 24:
 						//PgUp
+						for (aux_pgdnup=0;aux_pgdnup<TOTAL_PALETTE_COLORS_PER_WINDOW;aux_pgdnup++) {
+							menu_display_total_palette_cursor_arriba();
+						}
+						menu_display_total_palette_ventana();
+
 						//menu_display_total_palette_direccion -=bytes_por_ventana;
 						//menu_display_total_palette_direccion=menu_display_total_palette_adjusta_en_negativo(menu_display_total_palette_direccion,bytes_por_ventana);
 					break;
 
 					case 25:
 						//PgDn
-						//menu_display_total_palette_direccion +=bytes_por_ventana;
+						for (aux_pgdnup=0;aux_pgdnup<TOTAL_PALETTE_COLORS_PER_WINDOW;aux_pgdnup++) {
+							menu_display_total_palette_cursor_abajo();
+						}
+						menu_display_total_palette_ventana();
 					break;
 
 					case 'q':
@@ -19483,10 +19511,6 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 						//menu_display_total_palette_ventana();
 					break;
 
-					case 'c':
-						//menu_display_total_palette_with_ascii_modo_ascii++;
-						//if (menu_display_total_palette_with_ascii_modo_ascii==3) menu_display_total_palette_with_ascii_modo_ascii=0;
-					break;
 
 					//Salir con ESC
 					case 2:
