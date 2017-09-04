@@ -19270,6 +19270,143 @@ void menu_display_inves_ula_bright_error(MENU_ITEM_PARAMETERS)
 }
 
 
+#define TOTAL_PALETTE_WINDOW_X 0
+#define TOTAL_PALETTE_WINDOW_Y 1
+#define TOTAL_PALETTE_WINDOW_ANCHO 32
+#define TOTAL_PALETTE_WINDOW_ALTO 22
+
+void menu_display_total_palette_ventana(void)
+{
+        menu_dibuja_ventana(TOTAL_PALETTE_WINDOW_X,TOTAL_PALETTE_WINDOW_Y,TOTAL_PALETTE_WINDOW_ANCHO,TOTAL_PALETTE_WINDOW_ALTO,"Total Palette");
+}
+
+
+int menu_display_total_palette_current_palette=0;
+int menu_display_total_palette_current_colour=0;
+
+void menu_display_total_palette(MENU_ITEM_PARAMETERS)
+{
+        menu_espera_no_tecla();
+	menu_display_total_palette_ventana();
+
+	menu_reset_counters_tecla_repeticion();
+
+        z80_byte tecla=0;
+
+
+	int salir=0;
+
+
+
+        do {
+
+							int linea=0;
+							int linea_color;
+
+
+		char dumpmemoria[33];
+
+		//Hacer que texto ventana empiece pegado a la izquierda
+		//menu_escribe_linea_startx=0;
+
+
+
+				char textoshow[33];
+
+				sprintf (textoshow,"Palette %d: %s",menu_display_total_palette_current_colour,total_palette_colours_array[menu_display_total_palette_current_palette].nombre_paleta);
+        menu_escribe_linea_opcion(linea++,-1,1,textoshow);
+
+				sprintf (textoshow,"%s",total_palette_colours_array[menu_display_total_palette_current_palette].descripcion_paleta);
+				menu_escribe_linea_opcion(linea++,-1,1,textoshow);
+
+        menu_escribe_linea_opcion(linea++,-1,1,"");
+
+
+
+		for (linea_color=0;linea_color<16;linea_color++) {
+				int current_color=menu_display_total_palette_current_colour+linea_color;
+				int indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
+				int indice_color_final_rgb=indice_paleta+current_color;
+				int color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+
+	      sprintf (dumpmemoria,"Color %d: RGB %06XH",current_color,color_final_rgb);
+
+
+
+			menu_escribe_linea_opcion(linea++,-1,1,dumpmemoria);
+		}
+
+//printf ("zone size: %x dir: %x\n",menu_display_memory_zone_size,menu_display_total_palette_direccion);
+
+        menu_escribe_linea_opcion(linea++,-1,1,"");
+
+				char buffer_linea[40];
+
+					sprintf (buffer_linea,"M: Change pointer C: ASCII");
+
+				menu_escribe_linea_opcion(linea++,-1,1,buffer_linea);
+
+
+
+				if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
+
+
+                                menu_espera_tecla();
+
+                                tecla=menu_get_pressed_key();
+
+                                menu_espera_no_tecla_con_repeticion();
+
+				switch (tecla) {
+
+					case 11:
+						//arriba
+						//menu_display_total_palette_direccion -=bytes_por_linea;
+						//menu_display_total_palette_direccion=menu_display_total_palette_adjusta_en_negativo(menu_display_total_palette_direccion,bytes_por_linea);
+					break;
+
+					case 10:
+						//abajo
+						//menu_display_total_palette_direccion +=bytes_por_linea;
+					break;
+
+					case 24:
+						//PgUp
+						//menu_display_total_palette_direccion -=bytes_por_ventana;
+						//menu_display_total_palette_direccion=menu_display_total_palette_adjusta_en_negativo(menu_display_total_palette_direccion,bytes_por_ventana);
+					break;
+
+					case 25:
+						//PgDn
+						//menu_display_total_palette_direccion +=bytes_por_ventana;
+					break;
+
+					case 'm':
+						//menu_display_total_palette_direccion=menu_display_total_palette_change_pointer(menu_display_total_palette_direccion);
+						//menu_display_total_palette_ventana();
+					break;
+
+					case 'c':
+						//menu_display_total_palette_with_ascii_modo_ascii++;
+						//if (menu_display_total_palette_with_ascii_modo_ascii==3) menu_display_total_palette_with_ascii_modo_ascii=0;
+					break;
+
+					//Salir con ESC
+					case 2:
+						salir=1;
+					break;
+				}
+
+
+        } while (salir==0);
+
+	cls_menu_overlay();
+	//menu_escribe_linea_startx=1;
+
+}
+
+
+
 //menu display settings
 void menu_display_settings(MENU_ITEM_PARAMETERS)
 {
@@ -19297,6 +19434,10 @@ void menu_display_settings(MENU_ITEM_PARAMETERS)
 			menu_add_item_menu_inicial(&array_menu_display_settings,"~~View Screen",MENU_OPCION_NORMAL,menu_view_screen,NULL);
 			menu_add_item_menu_shortcut(array_menu_display_settings,'v');
 		}
+
+
+			menu_add_item_menu(array_menu_display_settings,"View total ~~Colours",MENU_OPCION_NORMAL,menu_display_total_palette,NULL);
+			menu_add_item_menu_shortcut(array_menu_display_settings,'c');
 
     /*            char string_vofile_shown[10];
                 menu_tape_settings_trunc_name(vofilename,string_vofile_shown,10);

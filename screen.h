@@ -472,7 +472,20 @@ extern void screen_switch_rainbow_buffer(void);
 #define TSCONF_TOTAL_PALETTE_COLOURS 32768
 
 //16 colores normales spectrum, 16 grises de modo scanline, 256 de gigascreen, 4 de z88, 256 de ulaplus, 64 de spectra, 32 de CPC, 4096 de Prism, 128 de SAM, 256 de RGB8, 32768 de TSCONF
+//actualizar aqui y tambien estructura de total_palette_colours_array
 #define EMULATOR_TOTAL_PALETTE_COLOURS (SPECCY_TOTAL_PALETTE_COLOURS+SPECCY_GREY_SCANLINE_TOTAL_PALETTE_COLOURS+GIGASCREEN_TOTAL_PALETTE_COLOURS+Z88_TOTAL_PALETTE_COLOURS+ULAPLUS_TOTAL_PALETTE_COLOURS+SPECTRA_TOTAL_PALETTE_COLOURS+CPC_TOTAL_PALETTE_COLOURS+PRISM_TOTAL_PALETTE_COLOURS+SAM_TOTAL_PALETTE_COLOURS+RGB8_TOTAL_PALETTE_COLOURS+TSCONF_TOTAL_PALETTE_COLOURS)
+
+
+struct s_total_palette_colours {
+        char nombre_paleta[17];
+				char descripcion_paleta[32];
+				int indice_inicial;
+				int total_colores;
+};
+
+typedef struct s_total_palette_colours total_palette_colours;
+
+extern total_palette_colours total_palette_colours_array[];
 
 //macro usado en paletas de colores (opciones --red, --green, --blue)
 #define VALOR_GRIS_A_R_G_B \

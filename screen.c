@@ -152,6 +152,16 @@ int putpixel_min_y=99999;
 
 
 
+#define TOTAL_PALETAS_COLORES 3
+
+total_palette_colours total_palette_colours_array[TOTAL_PALETAS_COLORES]={
+	{"Speccy","16 colour standard",0,SPECCY_TOTAL_PALETTE_COLOURS},
+	{"Z88","Z88 4 colour",Z88_PXCOLON,Z88_TOTAL_PALETTE_COLOURS},
+	{"ULAPlus","ULAPlus RGB8 palette",ULAPLUS_INDEX_FIRST_COLOR,ULAPLUS_TOTAL_PALETTE_COLOURS}
+};
+
+
+
 
 //simular modo video zx80/81 en spectrum
 z80_bit simulate_screen_zx8081;
