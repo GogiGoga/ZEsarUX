@@ -5007,7 +5007,7 @@ void menu_debug_registers_get_mem_page_zxuno_bootm(z80_byte segmento,char *texto
 
 
 //Si se muestra ram baja de Inves
-z80_bit menu_debug_hex_shows_inves_low_ram={0};
+//z80_bit menu_debug_hex_shows_inves_low_ram={0};
 
 //Vuelca contenido hexa de memoria de spectrum en cadena de texto, finalizando con 0 la cadena de texto
 void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int longitud)
@@ -5021,14 +5021,14 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 		//direccion=adjust_address_space_cpu(direccion);
 		direccion=adjust_address_memory_size(direccion);
 		//Si mostramos RAM oculta de Inves
-		if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
-			byte_leido=memoria_spectrum[direccion++];
-		}
-		else {
+		//if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
+		//	byte_leido=memoria_spectrum[direccion++];
+		//}
+		//else {
 			//byte_leido=peek_byte_z80_moto(direccion);
 			byte_leido=menu_debug_get_mapped_byte(direccion);
 			direccion++;
-		}
+		//}
 
 		sprintf (&texto[puntero],"%02X",byte_leido);
 
@@ -5053,15 +5053,15 @@ void menu_debug_registers_dump_ascii(char *texto,menu_z80_moto_int direccion,int
 							direccion=adjust_address_memory_size(direccion);
 
                 //Si mostramos RAM oculta de Inves
-                if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
-                        byte_leido=memoria_spectrum[direccion++];
-                }
+                //if (MACHINE_IS_INVES && menu_debug_hex_shows_inves_low_ram.v) {
+                //        byte_leido=memoria_spectrum[direccion++];
+                //}
 
-                else {
+                //else {
 									//byte_leido=peek_byte_z80_moto(direccion);
 									byte_leido=menu_debug_get_mapped_byte(direccion);
 									direccion++;
-								}
+								//}
 
 
 
@@ -6414,10 +6414,10 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 				//menu_escribe_linea_opcion(linea++,-1,1,"M: Change pointer C:");
 				menu_escribe_linea_opcion(linea++,-1,1,buffer_linea);
 
-				if (MACHINE_IS_INVES) {
-					if (menu_debug_hex_shows_inves_low_ram.v) menu_escribe_linea_opcion(linea++,-1,1,"L: Hide Inves Low RAM");
-					else menu_escribe_linea_opcion(linea++,-1,1,"L: Show Inves Low RAM");
-				}
+				//if (MACHINE_IS_INVES) {
+				//	if (menu_debug_hex_shows_inves_low_ram.v) menu_escribe_linea_opcion(linea++,-1,1,"L: Hide Inves Low RAM");
+				//	else menu_escribe_linea_opcion(linea++,-1,1,"L: Show Inves Low RAM");
+				//}
 
 				char memory_zone_text[64]; //espacio temporal mas grande por si acaso
 				if (menu_debug_show_memory_zones==0) {
@@ -6483,9 +6483,9 @@ void menu_debug_hexdump(MENU_ITEM_PARAMETERS)
 						if (menu_debug_hexdump_with_ascii_modo_ascii==3) menu_debug_hexdump_with_ascii_modo_ascii=0;
 					break;
 
-					case 'l':
-						menu_debug_hex_shows_inves_low_ram.v ^=1;
-					break;
+					//case 'l':
+					//	menu_debug_hex_shows_inves_low_ram.v ^=1;
+					//break;
 
 					case 'z':
 

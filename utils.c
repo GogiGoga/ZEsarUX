@@ -8591,6 +8591,10 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
         size=65536;
       }
 
+      if (MACHINE_IS_INVES) {
+	size=65536;
+      }
+
 
     break;
 
@@ -8723,6 +8727,10 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
         p=&start[address];
       }
 
+      if (MACHINE_IS_INVES) {
+	p=&memoria_spectrum[address];
+      }	
+
 
 
     break;
@@ -8734,10 +8742,14 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       //Caso normal 48k como fallback
       p=&memoria_spectrum[address];
 
-      //En resto de maquinas suele tambien estar al principio del puntero memoria_spectrum... en INVES TODO!
+      //En resto de maquinas suele tambien estar al principio del puntero memoria_spectrum
 
       if (MACHINE_IS_TBBLUE) {
         p=&tbblue_fpga_rom[address];
+      }
+
+      if (MACHINE_IS_INVES) {
+	p=&memoria_spectrum[65536+address];
       }
 
     break;
