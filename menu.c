@@ -4999,7 +4999,7 @@ void menu_debug_registers_get_mem_page_zxuno(z80_byte segmento,char *texto_pagin
 
         else {
                 //RAM
-                sprintf (texto_pagina,"RAM%02d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
+                sprintf (texto_pagina,"RA%02d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
         }
 
 }
@@ -5415,9 +5415,11 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                                 for (pagina=0;pagina<4;pagina++) {
                                         menu_debug_registers_get_mem_page_zxuno(pagina,texto_paginas[pagina]);
                                 }
-																if (ZXUNO_BOOTM_ENABLED) sprintf (texto_paginas[0],"%s","ROM");
+																if (ZXUNO_BOOTM_ENABLED) sprintf (texto_paginas[0],"%s","RO");
 
-                                sprintf (textoregistros,"%s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3]);
+                                //sprintf (textoregistros,"%s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3]);
+																sprintf (textoregistros,"%s %s %s %s SCR%d %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3],
+																																( (puerto_32765&8) ? 7 : 5) ,  ( (puerto_32765&32) ? "PDI" : "PEN"  ) );
 
 //D5
 

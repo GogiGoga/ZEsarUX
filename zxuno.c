@@ -925,37 +925,13 @@ void zxuno_p2a_write_page_port(z80_int puerto, z80_byte value)
 		//Paginacion desactivada por puertos de zxuno DEVCONTROL. DI1FFD
 		if (zxuno_ports[0x0E]&8) return;
 
-		//Modo paginacion especial RAM en ROM
-		if (value & 1) {
-			puerto_8189=value;
-			debug_printf (VERBOSE_DEBUG,"Paging RAM in ROM");
-			//zxuno_mem_page_ram_rom();
-			zxuno_set_memory_pages();
 
-			return;
-		}
+		puerto_8189=value;
 
-		else {
-			//valor de puerto indica paginado normal
-			//miramos si se vuelve de paginado especial RAM in ROM
-			if ((puerto_8189&1)==1) {
-				debug_printf (VERBOSE_DEBUG,"Going back from paging RAM in ROM");
-				//zxuno_mem_set_normal_pages_p2a();
-				//mem_set_normal_pages_zxuno();
-				//asignar ram
-				//zxuno_mem_page_ram_p2a();
-			}
-			puerto_8189=value;
+		zxuno_set_memory_pages();
 
-			//asignar rom
-			//zxuno_mem_page_rom_p2a();
+		return;
 
-			zxuno_set_memory_pages();
-
-			//printf ("temp. paging rom value: %d\n",value);
-
-			return;
-		}
 	}
 }
 
@@ -1294,6 +1270,69 @@ z80_byte  zxuno_get_ram_page(void)
 void zxuno_set_memory_pages_ram_rom(void)
 {
 
+		z80_byte page_type;
+
+		z80_byte pagina0, pagina1, pagina2, pagina3;
+
+		page_type=(puerto_8189 >>1) & 3;
+
+		switch (page_type) {
+			case 0:
+
+				debug_printf (VERBOSE_DEBUG,"Pages 0,1,2,3");
+				pagina0=0;
+				pagina1=1;
+				pagina2=2;
+				pagina3=3;
+
+				break;
+
+			case 1:
+				debug_printf (VERBOSE_DEBUG,"Pages 4,5,6,7");
+				pagina0=4;
+				pagina1=5;
+				pagina2=6;
+				pagina3=7;
+
+				break;
+
+			case 2:
+				debug_printf (VERBOSE_DEBUG,"Pages 4,5,6,3");
+				pagina0=4;
+				pagina1=5;
+				pagina2=6;
+				pagina3=3;
+
+				break;
+
+			case 3:
+				debug_printf (VERBOSE_DEBUG,"Pages 4,7,6,3");
+				pagina0=4;
+				pagina1=7;
+				pagina2=6;
+				pagina3=3;
+
+				break;
+
+		}
+
+		zxuno_memory_paged_new[0]=zxuno_sram_mem_table_new[pagina0];
+		zxuno_memory_paged_new[1]=zxuno_sram_mem_table_new[pagina1];
+		zxuno_memory_paged_new[2]=zxuno_sram_mem_table_new[pagina2];
+		zxuno_memory_paged_new[3]=zxuno_sram_mem_table_new[pagina3];
+
+		contend_pages_actual[0]=contend_pages_128k_p2a[pagina0];
+		contend_pages_actual[1]=contend_pages_128k_p2a[pagina1];
+		contend_pages_actual[2]=contend_pages_128k_p2a[pagina2];
+		contend_pages_actual[3]=contend_pages_128k_p2a[pagina3];
+
+		zxuno_debug_paginas_memoria_mapeadas_new[0]=pagina0;
+		zxuno_debug_paginas_memoria_mapeadas_new[1]=pagina1;
+		zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
+		zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;
+
+
+
 }
 
 void zxuno_set_memory_pages(void)
@@ -1327,11 +1366,6 @@ void zxuno_set_memory_pages(void)
 		zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
 		zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;
 
-		//Usado esto???
-		//debug_paginas_memoria_mapeadas[0]=128+pagina0;
-		//debug_paginas_memoria_mapeadas[1]=pagina1;
-		//debug_paginas_memoria_mapeadas[2]=pagina2;
-		//debug_paginas_memoria_mapeadas[3]=pagina3;
 
 	}
 
@@ -1370,13 +1404,6 @@ void zxuno_set_memory_pages(void)
 			zxuno_debug_paginas_memoria_mapeadas_new[1]=pagina1;
 			zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
 			zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;
-
-			//Usado esto???
-
-			//debug_paginas_memoria_mapeadas[0]=128+pagina0;
-			//debug_paginas_memoria_mapeadas[1]=pagina1;
-			//debug_paginas_memoria_mapeadas[2]=pagina2;
-			//debug_paginas_memoria_mapeadas[3]=pagina3;
 
 
 		}
