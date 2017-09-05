@@ -568,6 +568,9 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 				//Si 0, masterconf
 				debug_printf (VERBOSE_DEBUG,"Write Masterconf. BOOTM=%d",value&1);
 
+				//ver cambio en bit bootm
+				//TODO
+
 				//ver cambio en bit diven
 				 z80_byte diven=zxuno_ports[0]&2;
                                 if ( (anterior_masterconf&2) != diven) {
@@ -1225,93 +1228,31 @@ void zxuno_flush_flash_to_disk(void)
 
 
 
-//z80_bit zxuno_disparada_raster={0};
-				//Soporte interrupciones raster zxuno
 
-				/*
+//Nuevas funciones de MMU
 
-void zxuno_handle_raster_interrupts()
+
+void zxuno_init_memory_tables(void)
 {
 
+                int puntero=16384; //saltamos los primeros 16kb de rom del bootloader
+                int i;
 
-//$0D	RASTERCTRL	Lectura/Escritura	Registro de control y estado de la interrupción ráster. Se definen los siguientes bits.
-//INT	0	0	0	0	DISVINT	ENARINT	LINE8
-//INT: este bit sólo está disponible en lectura. Vale 1 durante 32 ciclos de reloj a partir del momento en que se dispara la interrupción ráster. Este bit está disponible aunque el procesador tenga las interrupciones deshabilitadas. No está disponible si el bit ENARINT vale 0.
-//DISVINT: a 1 para deshabilitar las interrupciones enmascarables por retrazo vertical (las originales de la ULA). Tras un reset, este bit vale 0.
-//ENARINT: a 1 para habilitar las interrupciones enmascarables por línea ráster. Tras un reset, este bit vale 0.
-//LINE8: guarda el bit 8 del valor de RASTERLINE, para poder definir cualquier valor entre 0 y 511, aunque en la práctica, el mayor valor está limitado por el número de líneas generadas por la ULA (311 en modo 48K, 310 en modo 128K, 319 en modo Pentagon). Si se establece un número de línea superior al límite, la interrupción ráster no se producirá.
-
-
-					if (iff1.v==1 && (zxuno_ports[0x0d] & 2) ) {
-						//interrupciones raster habilitadas
-						//printf ("interrupciones raster habilitadas en %d\n",zxuno_ports[0x0c] + (256 * (zxuno_ports[0x0d]&1) ));
+                //Paginas SRAM de zxuno
+                for (i=0;i<ZXUNO_SRAM_PAGES;i++) {
+                        zxuno_sram_mem_table[i]=&memoria_spectrum[puntero];
+                        puntero +=16384;
+                }
+}
 
 
-						//Ver si estamos entre estado 128 y 128+32
-						int estados_en_linea=t_estados & screen_testados_linea;
+void zxuno_set_memory_pages(void)
+{
 
-						if (estados_en_linea>=128 && estados_en_linea<128+32) {
-							//Si no se ha disparado la interrupcion
-							if (zxuno_disparada_raster.v==0) {
-								//Comprobar la linea definida
-								//El contador de lineas considera que la línea 0 es la primera línea de paper, la linea 192 por tanto es la primera línea de borde inferior.
-								// El último valor del contador es 311 si estamos en un 48K, 310 si estamos en 128K, o 319 si estamos en Pentagon, y coincidiría con la última línea del borde superior.
-								//se dispara justo al comenzar el borde derecho de la línea anterior a aquella que has seleccionado
-								int linea_raster=zxuno_ports[0x0c] + (256 * (zxuno_ports[0x0d]&1) );
+	//Si es bootm a 1, son unas tablas
+	//Si es bootm a 0, son otras tablas
 
-								int disparada_raster=0;
-
-
-								//se dispara en linea antes... ?
-								//if (linea_raster>0) linea_raster--;
-								//else {
-								//	linea_raster=screen_scanlines-1;
-								//}
-
-
-								//es zona de vsync y borde superior
-								//Aqui el contador raster tiene valor (192+56 en adelante)
-								//contador de scanlines del core, entre 0 y screen_indice_inicio_pant ,
-								if (t_scanline<screen_indice_inicio_pant) {
-									if (t_scanline==linea_raster-192-screen_total_borde_inferior) disparada_raster=1;
-								}
-
-								//Esto es zona de paper o borde inferior
-								//Aqui el contador raster tiene valor 0 .. <(192+56)
-								//contador de scanlines del core, entre screen_indice_inicio_pant y screen_testados_total
-								else {
-									if (t_scanline-screen_indice_inicio_pant==linea_raster) disparada_raster=1;
-								}
-
-								if (disparada_raster) {
-									//Disparar interrupcion
-									zxuno_disparada_raster.v=1;
-									interrupcion_maskable_generada.v=1;
-
-									//printf ("Generando interrupcion raster en scanline %d, raster: %d , estados en linea: %d, t_estados %d\n",
-									//	t_scanline,linea_raster+1,estados_en_linea,t_estados);
-
-									//Activar bit INT
-									zxuno_ports[0x0d] |=128;
-								}
-
-								else {
-									//Resetear bit INT
-									//zxuno_ports[0x0d] &=(255-128);
-								}
-							}
-						}
-
-						//Cualquier otra zona de t_estados, meter a 0
-						else {
-							zxuno_disparada_raster.v=0;
-							//Resetear bit INT
-							zxuno_ports[0x0d] &=(255-128);
-						}
-
-					}
-
-
+	//Usar zxuno_memory_paged_new
 
 }
-*/
+

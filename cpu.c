@@ -798,6 +798,8 @@ void reset_cpu(void)
 
 		//indice de mensaje a coreid
 		zxuno_core_id_indice=0;
+
+		zxuno_set_memory_pages();
 	}
 
 	//Modos extendidos ulaplus desactivar, sea en maquina zxuno o no
@@ -2159,14 +2161,9 @@ void malloc_mem_machine(void) {
 		malloc_machine((ZXUNO_ROM_SIZE+ZXUNO_SRAM_SIZE+ZXUNO_SPI_SIZE)*1024);
 		random_ram(memoria_spectrum,(ZXUNO_ROM_SIZE+ZXUNO_SRAM_SIZE+ZXUNO_SPI_SIZE)*1024);
 
-                int puntero=16384; //saltamos los primeros 16kb de rom del bootloader
-                int i;
 
-		//Paginas SRAM de zxuno
-                for (i=0;i<ZXUNO_SRAM_PAGES;i++) {
-                        zxuno_sram_mem_table[i]=&memoria_spectrum[puntero];
-                        puntero +=16384;
-                }
+		zxuno_init_memory_tables();
+		zxuno_set_memory_pages();
 
                 mem_set_normal_pages_zxuno();
 
