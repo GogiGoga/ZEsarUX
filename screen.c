@@ -890,7 +890,7 @@ z80_byte compare_char_step(z80_byte *origen,z80_byte *inverse,int step)
 
 		//Si zxuno sin bootm
 		if (MACHINE_IS_ZXUNO_BOOTM_DISABLED) {
-			offset_ram_5=zxuno_sram_mem_table[5];
+			offset_ram_5=zxuno_sram_mem_table_new[5];
 		}
 
 		else if (MACHINE_IS_CHLOE) {
@@ -927,7 +927,7 @@ z80_byte compare_char_step(z80_byte *origen,z80_byte *inverse,int step)
 
 			if (MACHINE_IS_ZXUNO_BOOTM_DISABLED) {
 				z80_byte *offset_rom3;
-				offset_rom3=zxuno_sram_mem_table[3+8];
+				offset_rom3=zxuno_sram_mem_table_new[3+8];
 				puntero=offset_rom3+dir-16384;
 			}
 
@@ -962,7 +962,7 @@ z80_byte compare_char_step(z80_byte *origen,z80_byte *inverse,int step)
 	                segmento=dir / 16384;
 			z80_int dir_orig=dir;
         	        dir = dir & 16383;
-			if (MACHINE_IS_ZXUNO_BOOTM_DISABLED) puntero=zxuno_no_bootm_memory_paged[segmento];
+			if (MACHINE_IS_ZXUNO_BOOTM_DISABLED) puntero=zxuno_memory_paged_new[segmento];
 			else puntero=memory_paged[segmento];
 
 

@@ -524,7 +524,7 @@ void diviface_enable(char *romfile)
 
 	if (MACHINE_IS_ZXUNO) {
 		//Pagina 12 del ZX-Uno
-		diviface_memory_pointer=zxuno_sram_mem_table[12];
+		diviface_memory_pointer=zxuno_sram_mem_table_new[12];
 		diviface_ram_memory_pointer=&diviface_memory_pointer[DIVIFACE_FIRMWARE_ALLOCATED_KB*1024];
 
 	}

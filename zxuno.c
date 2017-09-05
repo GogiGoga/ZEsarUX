@@ -85,16 +85,17 @@ z80_int zxuno_radasoffset=0;
 //con bootm=0, se comporta como spectrum +2a, y,
 //rams 0-7 de +2a corresponden a las primeras 8 paginas de esta tabla
 //roms 0-3 de +2a corresponden a las siguientes 4 paginas de esta tabla
-z80_byte *zxuno_sram_mem_table[ZXUNO_SRAM_PAGES];
+//z80_byte *zxuno_sram_mem_table[ZXUNO_SRAM_PAGES];
+z80_byte *zxuno_sram_mem_table_new[ZXUNO_SRAM_PAGES];
 
 //Direcciones actuales mapeadas, con modo bootm a 1
-z80_byte *zxuno_bootm_memory_paged[4];
+//z80_byte *zxuno_bootm_memory_paged[4];
 
 //Direcciones actuales mapeadas, con modo bootm a 0
-z80_byte *zxuno_no_bootm_memory_paged[4];
+//z80_byte *zxuno_no_bootm_memory_paged[4];
 
 
-//Direcciones actuales mapeadas, modo nuevo sin tener que distinguir entre bootm a 0 o 1 
+//Direcciones actuales mapeadas, modo nuevo sin tener que distinguir entre bootm a 0 o 1
 z80_byte *zxuno_memory_paged_new[4];
 
 
@@ -111,7 +112,12 @@ char zxuno_flash_spi_name[PATH_MAX]="";
 
 //Paginas mapeadas en cada zona de RAM, en modo bootm=1. Se solamente usa en menu debug y breakpoints, no para el core de emulacion
 //Si numero pagina >=128, numero pagina=numero pagina-128 y se trata de ROM. Si no, es RAM
-z80_byte zxuno_debug_paginas_memoria_mapeadas_bootm[4];
+//z80_byte zxuno_debug_paginas_memoria_mapeadas_bootm[4];
+
+
+//Paginas mapeadas en cada zona de RAM,. Se solamente usa en menu debug y breakpoints, no para el core de emulacion
+//Si numero pagina >=128, numero pagina=numero pagina-128 y se trata de ROM. Si no, es RAM
+z80_byte zxuno_debug_paginas_memoria_mapeadas_new[4];
 
 //Aviso de operacion de flash spi en footer
 int zxuno_flash_operating_counter=0;
@@ -167,7 +173,7 @@ void delete_zxuno_flash_text(void)
 	menu_putstring_footer(WINDOW_FOOTER_ELEMENT_X_FLASH,1,"       ",WINDOW_FOOTER_INK,WINDOW_FOOTER_PAPER);
 }
 
-void mem_set_normal_pages_zxuno(void)
+/*void old_mem_set_normal_pages_zxuno(void)
 {
 
 	//En modo bootm a 1.
@@ -215,7 +221,7 @@ void mem_set_normal_pages_zxuno(void)
 
 
 }
-
+*/
 
 
 void hard_reset_cpu_zxuno(void)
@@ -256,13 +262,15 @@ void hard_reset_cpu_zxuno(void)
 
 
 //Rutina mapeo pagina zxuno con modo bootm=1
-void zxuno_page_ram(z80_byte bank)
+/*
+void old_zxuno_page_ram(z80_byte bank)
 {
 	zxuno_bootm_memory_paged[3]=zxuno_sram_mem_table[bank];
 
 	//contend_pages_actual[3]=contend_pages_128k_p2a[ramentra];
 	zxuno_debug_paginas_memoria_mapeadas_bootm[3]=bank;
 }
+*/
 
 //Escribir 1 byte en la memoria spi
 void zxuno_spi_page_program(int address,z80_byte valor_a_escribir)
@@ -603,6 +611,9 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 			case 1:
 				debug_printf (VERBOSE_DEBUG,"Write Mastermapper. Bank=%d",value&31);
 
+				zxuno_set_memory_pages();
+
+				/*
 				//Si esta en modo ejecucion, no hacer nada
 				if ( (zxuno_ports[0] &1)==0) {
 					debug_printf (VERBOSE_DEBUG,"Write Mastermapper but zxuno is not on boot mode, so it has no effect");
@@ -615,6 +626,7 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 					zxuno_page_ram(bank);
 
 				}
+				*/
 
 				break;
 
@@ -731,7 +743,7 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 }
 
 //Rutinas de puertos paginacion zxuno pero cuando bootm=0, o sea, como plus2a
-void zxuno_mem_page_rom_p2a(void)
+/*void old_zxuno_mem_page_rom_p2a(void)
 {
 
 	//asignar rom
@@ -757,7 +769,7 @@ void zxuno_mem_page_rom_p2a(void)
 }
 
 //Rutinas de puertos paginacion zxuno pero cuando bootm=0, o sea, como plus2a
-void zxuno_mem_page_ram_p2a(void)
+void old_zxuno_mem_page_ram_p2a(void)
 {
 	z80_byte ramentra=puerto_32765&7;
 	//asignar ram
@@ -768,7 +780,7 @@ void zxuno_mem_page_ram_p2a(void)
 }
 
 //Rutinas de puertos paginacion zxuno pero cuando bootm=0, o sea, como plus2a
-void zxuno_mem_page_ram_rom(void)
+void old_zxuno_mem_page_ram_rom(void)
 {
 	z80_byte page_type;
 
@@ -859,7 +871,7 @@ void zxuno_mem_page_ram_rom(void)
 	}
 }
 
-
+*/
 
 
 //Rutinas de puertos paginacion zxuno pero cuando bootm=0, o sea, como plus2a
@@ -887,10 +899,12 @@ void zxuno_p2a_write_page_port(z80_int puerto, z80_byte value)
 		if (zxuno_ports[0x0E]&4) return;
 
 		//asignar ram
-		zxuno_mem_page_ram_p2a();
+		//zxuno_mem_page_ram_p2a();
 
 		//asignar rom
-		zxuno_mem_page_rom_p2a();
+		//zxuno_mem_page_rom_p2a();
+
+		zxuno_set_memory_pages();
 
 		return;
 	}
@@ -912,7 +926,8 @@ void zxuno_p2a_write_page_port(z80_int puerto, z80_byte value)
 		if (value & 1) {
 			puerto_8189=value;
 			debug_printf (VERBOSE_DEBUG,"Paging RAM in ROM");
-			zxuno_mem_page_ram_rom();
+			//zxuno_mem_page_ram_rom();
+			zxuno_set_memory_pages();
 
 			return;
 		}
@@ -923,14 +938,16 @@ void zxuno_p2a_write_page_port(z80_int puerto, z80_byte value)
 			if ((puerto_8189&1)==1) {
 				debug_printf (VERBOSE_DEBUG,"Going back from paging RAM in ROM");
 				//zxuno_mem_set_normal_pages_p2a();
-				mem_set_normal_pages_zxuno();
+				//mem_set_normal_pages_zxuno();
 				//asignar ram
-				zxuno_mem_page_ram_p2a();
+				//zxuno_mem_page_ram_p2a();
 			}
 			puerto_8189=value;
 
 			//asignar rom
-			zxuno_mem_page_rom_p2a();
+			//zxuno_mem_page_rom_p2a();
+
+			zxuno_set_memory_pages();
 
 			//printf ("temp. paging rom value: %d\n",value);
 
@@ -1240,19 +1257,129 @@ void zxuno_init_memory_tables(void)
 
                 //Paginas SRAM de zxuno
                 for (i=0;i<ZXUNO_SRAM_PAGES;i++) {
-                        zxuno_sram_mem_table[i]=&memoria_spectrum[puntero];
+                        zxuno_sram_mem_table_new[i]=&memoria_spectrum[puntero];
                         puntero +=16384;
                 }
 }
 
+z80_byte zxuno_get_rom_page(void)
+{
+
+	//asignar rom
+	//z80_byte rom_entra=((puerto_32765>>4)&1) + ((puerto_8189>>1)&2);
+
+	z80_byte rom1f=(puerto_8189>>1)&2;
+	z80_byte rom7f=(puerto_32765>>4)&1;
+
+	z80_byte dirom1f=((zxuno_ports[0x0E]>>4)^255)&2; //Tiene que ir al bit 1
+	z80_byte dirom7f=((zxuno_ports[0x0E]>>4)^255)&1; //Tiene que ir al bit 0
+
+	z80_byte rom_entra=(rom1f&dirom1f)+(rom7f&dirom7f);
+
+
+	return rom_entra;
+}
+
+//Rutinas de puertos paginacion zxuno pero cuando bootm=0, o sea, como plus2a
+z80_byte  zxuno_get_ram_page(void)
+{
+	return puerto_32765&7;
+}
+
+
+
+void zxuno_set_memory_pages_ram_rom(void)
+{
+
+}
 
 void zxuno_set_memory_pages(void)
 {
 
-	//Si es bootm a 1, son unas tablas
-	//Si es bootm a 0, son otras tablas
 
-	//Usar zxuno_memory_paged_new
+	//Muy facil
+	z80_byte pagina0, pagina1, pagina2, pagina3;
+
+	//Si es bootm a 1, son unas tablas
+	if (ZXUNO_BOOTM_ENABLED) {
+
+
+		pagina0=0;
+		pagina1=5;
+		pagina2=2;
+		pagina3=zxuno_ports[1]&31;
+
+		//Los 16kb de rom del zxuno
+		zxuno_memory_paged_new[0]=memoria_spectrum;
+
+		zxuno_memory_paged_new[1]=zxuno_sram_mem_table_new[pagina1];
+		zxuno_memory_paged_new[2]=zxuno_sram_mem_table_new[pagina2];
+		zxuno_memory_paged_new[3]=zxuno_sram_mem_table_new[pagina3];
+
+		contend_pages_actual[0]=0;
+		contend_pages_actual[1]=contend_pages_128k_p2a[pagina1];
+		contend_pages_actual[2]=contend_pages_128k_p2a[pagina2];
+		contend_pages_actual[3]=contend_pages_128k_p2a[pagina3&7];
+
+		zxuno_debug_paginas_memoria_mapeadas_new[0]=128+pagina0;
+		zxuno_debug_paginas_memoria_mapeadas_new[1]=pagina1;
+		zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
+		zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;
+
+		//Usado esto???
+		//debug_paginas_memoria_mapeadas[0]=128+pagina0;
+		//debug_paginas_memoria_mapeadas[1]=pagina1;
+		//debug_paginas_memoria_mapeadas[2]=pagina2;
+		//debug_paginas_memoria_mapeadas[3]=pagina3;
+
+	}
+
+	//Sin bootm
+	else {
+		//Modo +2A
+		//Si modo de rom en ram
+		if (puerto_8189 & 1) {
+			debug_printf (VERBOSE_DEBUG,"Paging RAM in ROM");
+			zxuno_set_memory_pages_ram_rom();
+		}
+
+		else {
+			//Modo normal
+
+			//Los 16kb de rom del zxuno
+			pagina0=zxuno_get_rom_page();
+			pagina1=5;
+			pagina2=2;
+			pagina3=zxuno_get_ram_page();
+
+
+			zxuno_memory_paged_new[0]=zxuno_sram_mem_table_new[pagina0+8];
+			//En la tabla zxuno_sram_mem_table hay que saltar las 8 primeras, que son las 8 rams del modo 128k
+
+			zxuno_memory_paged_new[1]=zxuno_sram_mem_table_new[pagina1];
+			zxuno_memory_paged_new[2]=zxuno_sram_mem_table_new[pagina2];
+			zxuno_memory_paged_new[3]=zxuno_sram_mem_table_new[pagina3];
+
+			contend_pages_actual[0]=0;
+			contend_pages_actual[1]=contend_pages_128k_p2a[pagina1];
+			contend_pages_actual[2]=contend_pages_128k_p2a[pagina2];
+			contend_pages_actual[3]=contend_pages_128k_p2a[pagina3&7];
+
+			zxuno_debug_paginas_memoria_mapeadas_new[0]=128+pagina0;
+			zxuno_debug_paginas_memoria_mapeadas_new[1]=pagina1;
+			zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
+			zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;
+
+			//Usado esto???
+
+			//debug_paginas_memoria_mapeadas[0]=128+pagina0;
+			//debug_paginas_memoria_mapeadas[1]=pagina1;
+			//debug_paginas_memoria_mapeadas[2]=pagina2;
+			//debug_paginas_memoria_mapeadas[3]=pagina3;
+
+
+		}
+	}
+
 
 }
-

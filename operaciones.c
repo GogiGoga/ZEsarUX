@@ -1327,13 +1327,26 @@ z80_byte peek_byte_spectrum_16k(z80_int dir)
         else return 255;
 }
 
+z80_byte *zxuno_return_segment_memory(z80_int dir)
+{
+	int segmento;
+	z80_byte *puntero;
 
+	segmento=dir/8192;
+	puntero=zxuno_memory_paged_new[segmento];
+	return puntero;
+}
 
 void poke_byte_no_time_zxuno(z80_int dir,z80_byte valor)
 {
 	int segmento;
 	z80_byte *puntero;
-	segmento=dir / 16384;
+	//segmento=dir / 16384;
+
+
+	puntero=zxuno_return_segment_memory(dir);
+
+
 
 	//Modo BOOTM
 
@@ -1342,7 +1355,7 @@ void poke_byte_no_time_zxuno(z80_int dir,z80_byte valor)
 		if (dir>16383) {
 			dir = dir & 16383;
 
-			puntero=zxuno_bootm_memory_paged[segmento]+dir;
+			puntero=puntero+dir;
 			*puntero=valor;
 		}
 	}
@@ -1350,36 +1363,74 @@ void poke_byte_no_time_zxuno(z80_int dir,z80_byte valor)
 	else {
 		//Modo no bootm. como un +2a
 
-		if (dir>16383) {
+		if (dir>16383 || (puerto_8189&1)==1 ) {  //Si en ram, o rom con page RAM in ROM
 #ifdef EMULATE_VISUALMEM
 
 set_visualmembuffer(dir);
 
 #endif
 			dir = dir & 16383;
-			puntero=zxuno_no_bootm_memory_paged[segmento]+dir;
-
-	//              printf ("segmento: %d dir: %d puntero: %p\n",segmento,dir,puntero);
+			puntero=puntero+dir;
 			*puntero=valor;
 		}
 
-		else {
-			//memoria normalmente ROM. Miramos a ver si esta page RAM in ROM
-			if ((puerto_8189&1)==1) {
-				//printf ("Poke en direccion normalmente ROM pero hay RAM. Dir=%d Valor=%d\n",dir,valor);
+
+	}
+
+}
+
+/*void old_peek_byte_no_time_zxuno(z80_int dir,z80_byte valor)
+{
+        int segmento;
+        z80_byte *puntero;
+        segmento=dir / 16384;
+
+        //Modo BOOTM
+
+        if ( (zxuno_ports[0]&1)==1) {
+                //Si no es rom
+                if (dir>16383) {
+                        dir = dir & 16383;
+
+                        puntero=zxuno_bootm_memory_paged[segmento]+dir;
+                        *puntero=valor;
+                }
+        }
+
+        else {
+                //Modo no bootm. como un +2a
+
+                if (dir>16383) {
 #ifdef EMULATE_VISUALMEM
 
 set_visualmembuffer(dir);
 
 #endif
-				puntero=zxuno_no_bootm_memory_paged[0]+dir;
-				*puntero=valor;
-			}
-		}
+                        dir = dir & 16383;
+                        puntero=zxuno_no_bootm_memory_paged[segmento]+dir;
 
-	}
+        //              printf ("segmento: %d dir: %d puntero: %p\n",segmento,dir,puntero);
+                        *puntero=valor;
+                }
+
+                else {
+                        //memoria normalmente ROM. Miramos a ver si esta page RAM in ROM
+                        if ((puerto_8189&1)==1) {
+                                //printf ("Poke en direccion normalmente ROM pero hay RAM. Dir=%d Valor=%d\n",dir,valor);
+#ifdef EMULATE_VISUALMEM
+
+set_visualmembuffer(dir);
+
+#endif
+                                puntero=zxuno_no_bootm_memory_paged[0]+dir;
+                                *puntero=valor;
+															}
+														                 }
+
+														         }
 
 }
+*/
 
 void poke_byte_zxuno(z80_int dir,z80_byte valor)
 {
@@ -1397,9 +1448,10 @@ int segmento;
 }
 
 
-
-z80_byte peek_byte_no_time_zxuno(z80_int dir)
+/*
+z80_byte old_peek_byte_no_time_zxuno(z80_int dir)
 {
+
         int segmento;
         z80_byte *puntero;
         segmento=dir / 16384;
@@ -1420,6 +1472,23 @@ z80_byte peek_byte_no_time_zxuno(z80_int dir)
 //              printf ("segmento: %d dir: %d puntero: %p\n",segmento,dir,puntero);
 		return *puntero;
 	}
+
+}
+*/
+
+z80_byte peek_byte_no_time_zxuno(z80_int dir)
+{
+
+        int segmento;
+        z80_byte *puntero;
+
+				puntero=zxuno_return_segment_memory(dir);
+
+				dir = dir & 16383;
+				puntero=puntero+dir;
+
+				return *puntero;
+
 
 }
 

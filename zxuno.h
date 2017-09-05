@@ -35,14 +35,20 @@ extern z80_byte zxuno_read_port(z80_int puerto);
 extern void zxuno_write_port(z80_int puerto, z80_byte value);
 extern void hard_reset_cpu_zxuno(void);
 
-extern z80_byte *zxuno_sram_mem_table[];
-extern z80_byte *zxuno_bootm_memory_paged[];
-extern z80_byte *zxuno_no_bootm_memory_paged[];
-extern void mem_set_normal_pages_zxuno(void);
+//extern z80_byte *zxuno_sram_mem_table[];
+//extern z80_byte *zxuno_bootm_memory_paged[];
+//extern z80_byte *zxuno_no_bootm_memory_paged[];
+//extern void mem_set_normal_pages_zxuno(void);
+
+extern z80_byte *zxuno_sram_mem_table_new[];
+extern z80_byte *zxuno_memory_paged_new[];
+extern void zxuno_set_memory_pages(void);
+
+
 
 extern z80_byte last_port_FC3B;
 
-extern z80_byte zxuno_debug_paginas_memoria_mapeadas_bootm[];
+extern z80_byte zxuno_debug_paginas_memoria_mapeadas_new[];
 
 #define ZXUNO_BOOTM_DISABLED ( (zxuno_ports[0]&1)==0 )
 #define ZXUNO_BOOTM_ENABLED ( (zxuno_ports[0]&1)==1 )
@@ -89,7 +95,7 @@ extern void delete_zxuno_flash_text(void);
 #define ZXUNO_SPI_WEL 2
 
 
-extern void zxuno_page_ram(z80_byte bank);
+//extern void zxuno_page_ram(z80_byte bank);
 
 extern z80_byte zxuno_spi_bus[];
 extern int last_spi_write_address;
@@ -97,8 +103,10 @@ extern int last_spi_read_address;
 extern z80_byte next_spi_read_byte;
 extern z80_byte zxuno_spi_status_register;
 extern z80_byte zxuno_spi_bus_index;
-extern void zxuno_mem_page_ram_p2a(void);
-extern void zxuno_mem_page_rom_p2a(void);
+
+//extern void zxuno_mem_page_ram_p2a(void);
+//extern void zxuno_mem_page_rom_p2a(void);
+
 extern void zxuno_handle_raster_interrupts();
 //extern z80_bit zxuno_disparada_raster;
 extern int zxuno_core_id_indice;

@@ -4990,16 +4990,16 @@ void menu_debug_registers_get_mem_page(z80_byte segmento,char *texto_pagina)
 }
 
 //Retorna la pagina mapeada para el segmento en zxuno
-void menu_debug_registers_get_mem_page_zxuno_bootm(z80_byte segmento,char *texto_pagina)
+void menu_debug_registers_get_mem_page_zxuno(z80_byte segmento,char *texto_pagina)
 {
-        if (zxuno_debug_paginas_memoria_mapeadas_bootm[segmento] & 128) {
-                //ROM. Solo hay una rom de 16k en zxuno
-                sprintf (texto_pagina,"ROM");
+        if (zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 128) {
+                //ROM.
+                sprintf (texto_pagina,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
         }
 
         else {
                 //RAM
-                sprintf (texto_pagina,"RAM%02d",zxuno_debug_paginas_memoria_mapeadas_bootm[segmento]);
+                sprintf (texto_pagina,"RAM%02d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
         }
 
 }
@@ -5357,7 +5357,7 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                         menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
     //Paginas memoria
-    if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED || MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
+    if (MACHINE_IS_SPECTRUM_128_P2_P2A ||  MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
                                 int pagina;
                                 //4 paginas, texto 5 caracteres max
                                 char texto_paginas[4][5];
@@ -5407,14 +5407,16 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 				menu_escribe_linea_opcion(linea++,-1,1,texto_paginas);
 			}
                         //Paginas memoria
-                        if (MACHINE_IS_ZXUNO_BOOTM_ENABLED ) {
+                        if (MACHINE_IS_ZXUNO ) {
                                 int pagina;
                                 //4 paginas, texto 6 caracteres max
                                 char texto_paginas[4][7];
 
                                 for (pagina=0;pagina<4;pagina++) {
-                                        menu_debug_registers_get_mem_page_zxuno_bootm(pagina,texto_paginas[pagina]);
+                                        menu_debug_registers_get_mem_page_zxuno(pagina,texto_paginas[pagina]);
                                 }
+																if (ZXUNO_BOOTM_ENABLED) sprintf (texto_paginas[0],"%s","ROM");
+
                                 sprintf (textoregistros,"%s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3]);
 
 //D5
@@ -15582,8 +15584,11 @@ void menu_debug_special_nmi(MENU_ITEM_PARAMETERS)
 		//meter BOOTM a 1 (bit 0)
 		zxuno_ports[0] |=1;
 
+		zxuno_set_memory_pages();
+
 		//Mapear sram 13
-		zxuno_page_ram(13);
+		//zxuno_memory_paged_new(13);
+		zxuno_memory_paged_new[3]=zxuno_sram_mem_table_new[13];
 
 		//Valor nmievent
 		zxuno_ports[8]=valor_nmi;
@@ -19947,18 +19952,18 @@ void hotswap_zxuno_to_p2as_set_pages(void)
                 int i;
                 //Punteros a paginas de la ROM
                 for (i=0;i<4;i++) {
-                        rom_mem_table[i]=zxuno_sram_mem_table[i+8];
+                        rom_mem_table[i]=zxuno_sram_mem_table_new[i+8];
                 }
 
                 //Punteros a paginas de la RAM
                 for (i=0;i<8;i++) {
-                        ram_mem_table[i]=zxuno_sram_mem_table[i];
+                        ram_mem_table[i]=zxuno_sram_mem_table_new[i];
                 }
 
 
                 //Paginas mapeadas actuales
                 for (i=0;i<4;i++) {
-                        memory_paged[i]=zxuno_no_bootm_memory_paged[i];
+                        memory_paged[i]=zxuno_memory_paged_new[i];
                 }
 }
 

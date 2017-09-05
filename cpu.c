@@ -791,7 +791,7 @@ void reset_cpu(void)
 	}
 
 	if (MACHINE_IS_ZXUNO) {
-		mem_set_normal_pages_zxuno();
+		//mem_set_normal_pages_zxuno();
 
 		//Desactivar flags interrupciones raster
 		zxuno_ports[0x0d]=0;
@@ -2165,7 +2165,7 @@ void malloc_mem_machine(void) {
 		zxuno_init_memory_tables();
 		zxuno_set_memory_pages();
 
-                mem_set_normal_pages_zxuno();
+                //mem_set_normal_pages_zxuno();
 
 
 

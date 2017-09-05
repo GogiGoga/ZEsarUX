@@ -192,11 +192,11 @@ z80_byte *get_base_mem_pantalla_continue(void)
 	}
 
 	if (MACHINE_IS_ZXUNO) {
-			//no modo bootm
+			
 	                if (puerto_32765 & 8) {
-        	                return zxuno_sram_mem_table[7];
+        	                return zxuno_sram_mem_table_new[7];
                 	}
-	                else return zxuno_sram_mem_table[5];
+	                else return zxuno_sram_mem_table_new[5];
 	}
 
         if (MACHINE_IS_CHLOE) {

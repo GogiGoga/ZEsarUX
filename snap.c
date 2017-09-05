@@ -1699,8 +1699,10 @@ void load_zx_snapshot(char *archivo)
 		puerto_32765=zx_header[48];
 
 		//Paginar RAM y ROM
-                zxuno_mem_page_ram_p2a();
-                zxuno_mem_page_rom_p2a();
+                //zxuno_mem_page_ram_p2a();
+                //zxuno_mem_page_rom_p2a();
+
+                zxuno_set_memory_pages();
 
                 //Leer 2 valores de 24 bits
                 z80_byte buffer_spi_address[6];
@@ -1720,7 +1722,7 @@ void load_zx_snapshot(char *archivo)
 				z80_int longitud=load_zx_snapshot_bytes_generic_read_16bit_number(ptr_zxfile);
                                 debug_printf(VERBOSE_INFO,"Reading %d bytes of compressed data bytes at Block %d",longitud,bloque);
                                 fread(buffer_lectura,1,longitud,ptr_zxfile);
-                                load_zx_snapshot_bytes_generic_16kb(buffer_lectura,longitud,zxuno_sram_mem_table[bloque]);
+                                load_zx_snapshot_bytes_generic_16kb(buffer_lectura,longitud,zxuno_sram_mem_table_new[bloque]);
                         }
                 }
 	}
@@ -4285,7 +4287,7 @@ void save_zx_snapshot(char *filename)
 		//z80_byte *zxuno_sram_mem_table[ZXUNO_SRAM_PAGES];
                 int i;
                 for (i=0;i<ZXUNO_SRAM_PAGES;i++) {
-                        save_zx_generic_block_16kb(ptr_zxfile,buffer_zxuno_save,zxuno_sram_mem_table[i],i);
+                        save_zx_generic_block_16kb(ptr_zxfile,buffer_zxuno_save,zxuno_sram_mem_table_new[i],i);
                 }
 
 

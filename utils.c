@@ -8043,7 +8043,7 @@ int util_poke(z80_byte banco,z80_int direccion,z80_byte valor)
                         //Poke con banco de memoria
                         direccion = direccion & 16383;
                         z80_byte *puntero;
-                        puntero=zxuno_sram_mem_table[banco]+direccion;
+                        puntero=zxuno_sram_mem_table_new[banco]+direccion;
 			debug_printf (VERBOSE_DEBUG,"util_spectrum_poke. pokeing bank %d address %d with value %d",banco,direccion,valor);
                         *puntero=valor;
                 }
@@ -8729,7 +8729,7 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
 
       if (MACHINE_IS_INVES) {
 	p=&memoria_spectrum[address];
-      }	
+      }
 
 
 
