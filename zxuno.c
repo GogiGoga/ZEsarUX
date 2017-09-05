@@ -577,13 +577,16 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 				debug_printf (VERBOSE_DEBUG,"Write Masterconf. BOOTM=%d",value&1);
 
 				//ver cambio en bit bootm
-				//TODO
+				z80_byte bootm=zxuno_ports[0]&1;
+			 if ( (anterior_masterconf&1) != bootm) {
+				 zxuno_set_memory_pages();
+			 }
 
 				//ver cambio en bit diven
 				 z80_byte diven=zxuno_ports[0]&2;
-                                if ( (anterior_masterconf&2) != diven) {
-                                        zxuno_set_emulator_setting_diven();
-                                }
+        if ( (anterior_masterconf&2) != diven) {
+          zxuno_set_emulator_setting_diven();
+        }
 
 				//ver cambios en bits, por ejemplo I2KB
 				z80_byte i2kb=zxuno_ports[0]&8;
@@ -1302,8 +1305,6 @@ void zxuno_set_memory_pages(void)
 
 	//Si es bootm a 1, son unas tablas
 	if (ZXUNO_BOOTM_ENABLED) {
-
-
 		pagina0=0;
 		pagina1=5;
 		pagina2=2;

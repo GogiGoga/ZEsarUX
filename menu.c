@@ -4994,7 +4994,7 @@ void menu_debug_registers_get_mem_page_zxuno(z80_byte segmento,char *texto_pagin
 {
         if (zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 128) {
                 //ROM.
-                sprintf (texto_pagina,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
+                sprintf (texto_pagina,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 127);
         }
 
         else {

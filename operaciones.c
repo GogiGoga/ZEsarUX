@@ -1332,7 +1332,7 @@ z80_byte *zxuno_return_segment_memory(z80_int dir)
 	int segmento;
 	z80_byte *puntero;
 
-	segmento=dir/8192;
+	segmento=dir/16384;
 	puntero=zxuno_memory_paged_new[segmento];
 	return puntero;
 }
@@ -1346,13 +1346,12 @@ void poke_byte_no_time_zxuno(z80_int dir,z80_byte valor)
 
 	puntero=zxuno_return_segment_memory(dir);
 
-
-
 	//Modo BOOTM
 
-	if ( (zxuno_ports[0]&1)==1) {
+	if (ZXUNO_BOOTM_ENABLED) {
 		//Si no es rom
 		if (dir>16383) {
+			//printf ("Poke bootm %X %X\n",dir,valor);
 			dir = dir & 16383;
 
 			puntero=puntero+dir;
