@@ -19489,10 +19489,14 @@ int menu_display_total_palette_lista_colores(int linea,int si_barras)
 
 void menu_display_total_palette_draw_barras(void)
 {
-        normal_overlay_texto_menu();
+
 
 				//Mostrar lista colores
 				menu_display_total_palette_lista_colores(TOTAL_PALETTE_WINDOW_Y+3,0);
+
+				//Esto tiene que estar despues de escribir la lista de colores, para que se refresque y se vea
+				//Si estuviese antes, al mover el cursor hacia abajo dejándolo pulsado, el texto no se vería hasta que no se soltase la tecla
+				normal_overlay_texto_menu();
 
 				if (si_complete_video_driver()) {
 					//Mostrar colores
