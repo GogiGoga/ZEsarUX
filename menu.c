@@ -6557,6 +6557,66 @@ int view_sprites_bpp=1;
 //2: la mapeada en tsconf
 int view_sprites_palette=0;
 
+
+//Retorna total de colores de una paleta
+int menu_debug_sprites_total_colors_palette(int paleta)
+{
+
+	int index;
+
+	switch (paleta) {
+
+		//Speccy
+		case 0:
+			return 16;
+		break;
+
+		//ULAPLUS
+		case 1:
+			return 64;
+		break;
+
+		//Spectra
+		case 2:
+			return 64;
+		break;
+
+		//CPC
+		case 3:
+			return 16;
+		break;
+
+		//Prism zero
+		case 4:
+			return 256;
+		break;
+
+		//Prism two
+		case 5:
+			return 256;
+		break;
+
+		//Sam
+		case 6:
+			return 16;
+		break;
+
+		//RGB8 Tbblue
+		case 7:
+			return 256;
+		break;
+
+		//TSConf
+		case 8:
+			return 256;
+		break;
+
+	}
+
+	return 16;
+}
+
+
 //Retorna valor de color asociado a la paleta actual
 int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 {
@@ -6607,10 +6667,13 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 	return color;
 }
 
+//Usado en ver sprites y ver colores mapeados
+#define MENU_TOTAL_MAPPED_PALETTES 9
+
 void menu_debug_sprites_change_palette(void)
 {
 	view_sprites_palette++;
-	if (view_sprites_palette==9) view_sprites_palette=0;
+	if (view_sprites_palette==MENU_TOTAL_MAPPED_PALETTES) view_sprites_palette=0;
 }
 
 void menu_debug_sprites_get_palette_name(int paleta, char *s)
@@ -19336,65 +19399,90 @@ void menu_dibuja_rectangulo_relleno(int x, int y, int ancho, int alto, int color
 #define TOTAL_PALETTE_WINDOW_X 0
 #define TOTAL_PALETTE_WINDOW_Y 0
 #define TOTAL_PALETTE_WINDOW_ANCHO 32
-#define TOTAL_PALETTE_WINDOW_ALTO 23
+#define TOTAL_PALETTE_WINDOW_ALTO 24
 #define TOTAL_PALETTE_COLORS_PER_WINDOW 16
 
 void menu_display_total_palette_ventana(void)
 {
-        menu_dibuja_ventana(TOTAL_PALETTE_WINDOW_X,TOTAL_PALETTE_WINDOW_Y,TOTAL_PALETTE_WINDOW_ANCHO,TOTAL_PALETTE_WINDOW_ALTO,"Total Palette");
+        menu_dibuja_ventana(TOTAL_PALETTE_WINDOW_X,TOTAL_PALETTE_WINDOW_Y,TOTAL_PALETTE_WINDOW_ANCHO,TOTAL_PALETTE_WINDOW_ALTO,"Colour palettes");
 }
 
 
 int menu_display_total_palette_current_palette=0;
 int menu_display_total_palette_current_colour=0;
 
+//Si se muestra paleta total o paleta mapeada
+int menu_display_total_palette_show_mapped=0;
 
-//Muestra lista de colores o barras de colores
+//Retorna colores totales de una paleta ya sea total o mapeada
+int menu_display_total_palette_get_total_colors(void)
+{
+	int limite;
+
+	if (menu_display_total_palette_show_mapped==0) {
+		limite=total_palette_colours_array[menu_display_total_palette_current_palette].total_colores;
+	}
+	else {
+		limite=menu_debug_sprites_total_colors_palette(menu_display_total_palette_current_palette);
+	}
+
+	return limite;
+}
+
+//Muestra lista de colores o barras de colores, para una paleta total, o para la paleta mapeada
 int menu_display_total_palette_lista_colores(int linea,int si_barras)
 {
 
 	char dumpmemoria[33];
 
 	int linea_color;
+	int limite;
 
-	for (linea_color=0;linea_color<TOTAL_PALETTE_COLORS_PER_WINDOW &&
-			menu_display_total_palette_current_colour+linea_color<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores;
-			linea_color++) {
 
-			int current_color=menu_display_total_palette_current_colour+linea_color;
-			int indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
-			int indice_color_final_rgb=indice_paleta+current_color;
-			int color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+	limite=menu_display_total_palette_get_total_colors();
 
-			sprintf (dumpmemoria,"%5d: RGB %06XH",current_color,color_final_rgb);
+	int current_color;
+	int indice_paleta;
+	int indice_color_final_rgb;
+	int color_final_rgb;
 
-			//int digitos_color=menu_debug_get_total_digits
+		for (linea_color=0;linea_color<TOTAL_PALETTE_COLORS_PER_WINDOW &&
+				menu_display_total_palette_current_colour+linea_color<limite;
+				linea_color++) {
 
-			//sprintf (&texto[posicion_inicial_digitos],"%0*X",digitos,address);
+					current_color=menu_display_total_palette_current_colour+linea_color;
 
-			int longitud_texto=strlen(dumpmemoria);
+					if (menu_display_total_palette_show_mapped==0) {
 
-			int posicion_barra_color_x=TOTAL_PALETTE_WINDOW_X+longitud_texto+2;
-			int posicion_barra_color_y=TOTAL_PALETTE_WINDOW_Y+4+linea_color;
+						indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
+						indice_color_final_rgb=indice_paleta+current_color;
+						color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+					}
 
-			//dibujar la barra de color
-			if (si_barras) {
-				menu_dibuja_rectangulo_relleno(posicion_barra_color_x*8,posicion_barra_color_y*8,
+					else {
+						indice_color_final_rgb=menu_debug_sprites_return_color_palette(menu_display_total_palette_current_palette,current_color);
+						color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+					}
+
+					sprintf (dumpmemoria,"%5d: RGB %06XH",current_color,color_final_rgb);
+
+					int longitud_texto=strlen(dumpmemoria);
+
+					int posicion_barra_color_x=TOTAL_PALETTE_WINDOW_X+longitud_texto+2;
+					int posicion_barra_color_y=TOTAL_PALETTE_WINDOW_Y+4+linea_color;
+
+					//dibujar la barra de color
+					if (si_barras) {
+						menu_dibuja_rectangulo_relleno(posicion_barra_color_x*8,posicion_barra_color_y*8,
 											8*(TOTAL_PALETTE_WINDOW_ANCHO-longitud_texto-3),8,indice_color_final_rgb);
-			}
+					}
 
-			else {
+			 		else {
+						menu_escribe_linea_opcion(linea++,-1,1,dumpmemoria);
+					}
+		}
 
-			//overlay_screen_array[posicion_barra_color_y*32+posicion_barra_color_x].caracter='K';
 
-			//#define TOTAL_PALETTE_WINDOW_X 0
-			//#define TOTAL_PALETTE_WINDOW_Y 1
-			//#define TOTAL_PALETTE_WINDOW_ANCHO 32
-			//#define TOTAL_PALETTE_WINDOW_ALTO 22
-
-			menu_escribe_linea_opcion(linea++,-1,1,dumpmemoria);
-			}
-	}
 
 	return linea;
 }
@@ -19417,7 +19505,10 @@ void menu_display_total_palette_cursor_arriba(void)
 
 void menu_display_total_palette_cursor_abajo(void)
 {
-	if (menu_display_total_palette_current_colour<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores-1) {
+
+	int limite=menu_display_total_palette_get_total_colors();
+
+	if (menu_display_total_palette_current_colour<limite-1) {
 		menu_display_total_palette_current_colour++;
 	}
 
@@ -19453,10 +19544,24 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 				char textoshow[33];
 
-				sprintf (textoshow,"Palette %d: %s",menu_display_total_palette_current_palette,total_palette_colours_array[menu_display_total_palette_current_palette].nombre_paleta);
+				char nombre_paleta[33];
+
+				if (menu_display_total_palette_show_mapped==0) {
+					strcpy(nombre_paleta,total_palette_colours_array[menu_display_total_palette_current_palette].nombre_paleta);
+				}
+				else {
+					menu_debug_sprites_get_palette_name(menu_display_total_palette_current_palette,nombre_paleta);
+				}
+
+				sprintf (textoshow,"Palette %d: %s",menu_display_total_palette_current_palette,nombre_paleta);
         menu_escribe_linea_opcion(linea++,-1,1,textoshow);
 
-				sprintf (textoshow,"%s",total_palette_colours_array[menu_display_total_palette_current_palette].descripcion_paleta);
+				if (menu_display_total_palette_show_mapped==0) {
+					sprintf (textoshow,"%s",total_palette_colours_array[menu_display_total_palette_current_palette].descripcion_paleta);
+				}
+				else {
+					sprintf (textoshow,"Total colours in array: %d",menu_display_total_palette_get_total_colors() );
+				}
 				menu_escribe_linea_opcion(linea++,-1,1,textoshow);
 
         menu_escribe_linea_opcion(linea++,-1,1,"");
@@ -19477,6 +19582,9 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 				menu_escribe_linea_opcion(linea++,-1,1,buffer_linea);
 
+				 sprintf (buffer_linea,"M: Mapped palette: %s",(menu_display_total_palette_show_mapped ? "Yes" : "No") );
+				 menu_escribe_linea_opcion(linea++,-1,1,buffer_linea);
+
 
 
 				if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
@@ -19489,6 +19597,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
                                 menu_espera_no_tecla_con_repeticion();
 
 				int aux_pgdnup;
+				int limite;
 
 				switch (tecla) {
 
@@ -19507,8 +19616,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 						menu_display_total_palette_ventana();
 
-						//menu_display_total_palette_current_colour+linea_color<total_palette_colours_array[menu_display_total_palette_current_palette].total_colores
-						//menu_display_total_palette_direccion +=bytes_por_linea;
+
 					break;
 
 					case 24:
@@ -19542,14 +19650,28 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 					break;
 
 					case 'a':
-						if (menu_display_total_palette_current_palette<TOTAL_PALETAS_COLORES-1) {
+						if (menu_display_total_palette_show_mapped==0) {
+							limite=TOTAL_PALETAS_COLORES;
+						}
+
+						else {
+							limite=MENU_TOTAL_MAPPED_PALETTES;
+						}
+
+						if (menu_display_total_palette_current_palette<limite-1) {
 							menu_display_total_palette_current_palette++;
 							menu_display_total_palette_current_colour=0;
 						}
 
+
 						menu_display_total_palette_ventana();
 						//menu_display_total_palette_direccion=menu_display_total_palette_change_pointer(menu_display_total_palette_direccion);
 						//menu_display_total_palette_ventana();
+					break;
+
+					case 'm':
+						menu_display_total_palette_show_mapped ^=1;
+						menu_display_total_palette_ventana();
 					break;
 
 
@@ -19604,6 +19726,12 @@ void menu_display_settings(MENU_ITEM_PARAMETERS)
 
 			menu_add_item_menu(array_menu_display_settings,"View ~~Colour Palettes",MENU_OPCION_NORMAL,menu_display_total_palette,NULL);
 			menu_add_item_menu_shortcut(array_menu_display_settings,'c');
+			menu_add_item_menu_tooltip(array_menu_display_settings,"View full palettes or mapped palettes");
+			menu_add_item_menu_ayuda(array_menu_display_settings,"You can see in this menu full colour palettes or mapped colour palettes. \n"
+			 									"Full colour palettes means all the colours available for a mode, for example 256 colours on ULAPlus.\n"
+												"Mapped colour palettes means the active palette for a mode, for example 64 colours on ULAPlus."
+
+				);
 
     /*            char string_vofile_shown[10];
                 menu_tape_settings_trunc_name(vofilename,string_vofile_shown,10);
