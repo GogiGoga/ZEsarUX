@@ -19491,7 +19491,11 @@ void menu_display_total_palette_draw_barras(void)
 {
         normal_overlay_texto_menu();
 
+				//Mostrar lista colores
+				menu_display_total_palette_lista_colores(TOTAL_PALETTE_WINDOW_Y+3,0);
+
 				if (si_complete_video_driver()) {
+					//Mostrar colores
 					menu_display_total_palette_lista_colores(0,1);
 				}
 }
@@ -19566,7 +19570,8 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
         menu_escribe_linea_opcion(linea++,-1,1,"");
 
-				linea=menu_display_total_palette_lista_colores(linea,0);
+				//linea=menu_display_total_palette_lista_colores(linea,0);
+				linea +=16;
 
 
 //printf ("zone size: %x dir: %x\n",menu_display_memory_zone_size,menu_display_total_palette_direccion);
