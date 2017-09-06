@@ -666,6 +666,7 @@ void cold_start_cpu_registers(void)
 		zxuno_radasoffset_high_byte.v=0;
 		zxuno_radasoffset=0;
 
+		//radaspadding
 		zxuno_ports[0x42]=0;
 
 	}
@@ -793,8 +794,9 @@ void reset_cpu(void)
 	if (MACHINE_IS_ZXUNO) {
 		//mem_set_normal_pages_zxuno();
 
-		//Desactivar flags interrupciones raster
-		zxuno_ports[0x0d]=0;
+		//interrupciones raster
+		zxuno_ports[0x0c]=0xff;
+		zxuno_ports[0x0d]=1;
 
 		//indice de mensaje a coreid
 		zxuno_core_id_indice=0;
