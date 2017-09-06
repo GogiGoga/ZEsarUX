@@ -21890,6 +21890,11 @@ void menu_about_acknowledgements(MENU_ITEM_PARAMETERS)
         menu_about_read_file("Acknowledgements","ACKNOWLEDGEMENTS");
 }
 
+void menu_about_donate(MENU_ITEM_PARAMETERS)
+{
+        menu_about_read_file("Donate","DONATE");
+}
+
 void menu_about_faq(MENU_ITEM_PARAMETERS)
 {
         menu_about_read_file("FAQ","FAQ");
@@ -22110,6 +22115,9 @@ void menu_about(MENU_ITEM_PARAMETERS)
 
                 menu_add_item_menu(array_menu_about,"A~~cknowledgements",MENU_OPCION_NORMAL,menu_about_acknowledgements,NULL);
 		menu_add_item_menu_shortcut(array_menu_about,'c');
+
+		menu_add_item_menu(array_menu_about,"~~Donate",MENU_OPCION_NORMAL,menu_about_donate,NULL);
+		menu_add_item_menu_shortcut(array_menu_about,'d');
 
 		menu_add_item_menu(array_menu_about,"FA~~Q",MENU_OPCION_NORMAL,menu_about_faq,NULL);
 		menu_add_item_menu_shortcut(array_menu_about,'q');
