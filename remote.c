@@ -1068,7 +1068,9 @@ void remote_disassemble(int misocket,unsigned int direccion,int lineas,int mostr
 
   while (lineas) {
 		//mostrar_codigo_fuente=1;
-    direccion=adjust_address_space_cpu(direccion);
+    //direccion=adjust_address_space_cpu(direccion);
+
+		direccion=adjust_address_memory_size(direccion);
 		//int posicion_final_linea=-1;
 
 		if (remote_tamanyo_archivo_raw_source_code) {

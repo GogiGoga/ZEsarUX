@@ -33,6 +33,16 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-Disassemble a txt
+
+-Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
+Uptime ?
+Media cpu total?
+Info de tamaño ventana. Y tamaño ventana sin zoom
+
+-Logo más visible. En la raíz? Ahora está en carpeta Mac 
+
+
 
 -memory zones en otros comandos de menu: poke byte, save binary, load binary etc. Ver tambien los similares en ZRCP
 

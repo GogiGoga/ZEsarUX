@@ -5034,6 +5034,7 @@ void menu_debug_registers_dump_hex(char *texto,menu_z80_moto_int direccion,int l
 		//else {
 			//byte_leido=peek_byte_z80_moto(direccion);
 			byte_leido=menu_debug_get_mapped_byte(direccion);
+			//printf ("dump hex: %X\n",direccion);
 			direccion++;
 		//}
 
@@ -7415,6 +7416,9 @@ menu_z80_moto_int menu_debug_disassemble_subir(menu_z80_moto_int dir_inicial)
 	if (CPU_IS_MOTOROLA) dir=dir_inicial-30; //En el caso de motorola mejor empezar antes
 	else dir=dir_inicial-10;
 
+	dir=menu_debug_hexdump_adjusta_en_negativo(dir,1);
+
+
 	do {
 		//printf ("dir: %X\n",dir);
 		//dir=adjust_address_space_cpu(dir);
@@ -7423,6 +7427,8 @@ menu_z80_moto_int menu_debug_disassemble_subir(menu_z80_moto_int dir_inicial)
 
 		dir +=longitud_opcode;
 	} while (1);
+
+
 }
 
 
@@ -7456,6 +7462,8 @@ void menu_debug_dissassemble_una_instruccion(char *dumpassembler,menu_z80_moto_i
 	}
 
 	else sprintf(dumpassembler,"%04X",dir);*/
+
+	//printf ("%XH\n",dir);
 
 	menu_debug_print_address_memory_zone(dumpassembler,dir);
 

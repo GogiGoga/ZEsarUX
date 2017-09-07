@@ -49,7 +49,7 @@ int disassemble_ddfd_anidado;
 
 z80_byte disassemble_array[DISASSEMBLE_ARRAY_LENGTH];
 
-z80_byte disassemble_peek_byte(z80_int address)
+z80_byte disassemble_peek_byte(int address)
 {
 	if (disassemble_peek_si_spectrum_ram.v==1) {
 		address=adjust_address_memory_size(address);
@@ -64,40 +64,40 @@ int debugger_output_base=16;
 /* Used to flag whether we're after a DD or FD prefix */
 enum hl_type { USE_HL, USE_IX, USE_IY };
 
-static void disassemble_main( z80_int address, char *buffer,
+static void disassemble_main( int address, char *buffer,
 			      size_t buflen, size_t *length,
 			      enum hl_type use_hl );
-static void disassemble_00xxxxxx( z80_int address, char *buffer,
+static void disassemble_00xxxxxx( int address, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
-static void disassemble_00xxx010( z80_int address, char *buffer,
+static void disassemble_00xxx010( int address, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
-static void disassemble_00xxx110( z80_int address, char *buffer,
+static void disassemble_00xxx110( int address, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
-static void disassemble_11xxxxxx( z80_int address, char *buffer,
+static void disassemble_11xxxxxx( int address, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
 static void disassemble_11xxx001( z80_byte b, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
-static void disassemble_11xxx011( z80_int address, char *buffer,
+static void disassemble_11xxx011( int address, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
-static void disassemble_11xxx101( z80_int address, char *buffer,
+static void disassemble_11xxx101( int address, char *buffer,
 				  size_t buflen, size_t *length,
 				  enum hl_type use_hl );
-static void disassemble_cb( z80_int address, char *buffer,
+static void disassemble_cb( int address, char *buffer,
 			    size_t buflen, size_t *length );
-static void disassemble_ed( z80_int address, char *buffer,
+static void disassemble_ed( int address, char *buffer,
 			    size_t buflen, size_t *length );
-static void disassemble_ddfd_cb( z80_int address, char offset,
+static void disassemble_ddfd_cb( int address, char offset,
 				 enum hl_type use_hl, char *buffer,
 				 size_t buflen, size_t *length );
 
 static void get_byte( char *buffer, size_t buflen, z80_byte b );
-static void get_word( char *buffer, size_t buflen, z80_int address );
+static void get_word( char *buffer, size_t buflen, int address );
 static void get_offset( char *buffer, size_t buflen, z80_int address,
 			z80_byte offset );
 
@@ -106,9 +106,9 @@ static const char *hl_ix_iy( enum hl_type use_hl );
 static void ix_iy_offset( char *buffer, size_t buflen, enum hl_type use_hl,
 			  z80_byte offset );
 
-static int source_reg( z80_int address, enum hl_type use_hl,
+static int source_reg( int address, enum hl_type use_hl,
 		       char *buffer, size_t buflen );
-static int dest_reg( z80_int address, enum hl_type use_hl,
+static int dest_reg( int address, enum hl_type use_hl,
 		     char *buffer, size_t buflen );
 static int single_reg( int i, enum hl_type use_hl, z80_byte offset,
 		       char *buffer, size_t buflen );
@@ -164,7 +164,7 @@ void debugger_disassemble_array (char *buffer, size_t buflen, size_t *length, un
 
 /* Disassemble one instruction */
 static void
-disassemble_main( z80_int address, char *buffer, size_t buflen,
+disassemble_main( int address, char *buffer, size_t buflen,
 		  size_t *length, enum hl_type use_hl )
 {
 
@@ -208,7 +208,7 @@ disassemble_main( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble something of the form 00xxxxxx */
 static void
-disassemble_00xxxxxx( z80_int address, char *buffer, size_t buflen,
+disassemble_00xxxxxx( int address, char *buffer, size_t buflen,
 		      size_t *length, enum hl_type use_hl )
 {
   const char *opcode_00xxx000[] = {
@@ -287,7 +287,7 @@ disassemble_00xxxxxx( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble something of the form 00xxx010 */
 static void
-disassemble_00xxx010( z80_int address, char *buffer, size_t buflen,
+disassemble_00xxx010( int address, char *buffer, size_t buflen,
 		      size_t *length, enum hl_type use_hl )
 {
   char buffer2[40];
@@ -315,7 +315,7 @@ disassemble_00xxx010( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble something of the form 00xxx110 */
 static void
-disassemble_00xxx110( z80_int address, char *buffer, size_t buflen,
+disassemble_00xxx110( int address, char *buffer, size_t buflen,
 		      size_t *length, enum hl_type use_hl )
 {
   char buffer2[40];
@@ -343,7 +343,7 @@ disassemble_00xxx110( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble something of the form 11xxxxxx */
 static void
-disassemble_11xxxxxx( z80_int address, char *buffer, size_t buflen,
+disassemble_11xxxxxx( int address, char *buffer, size_t buflen,
 		      size_t *length, enum hl_type use_hl )
 {
   char buffer2[40];
@@ -420,7 +420,7 @@ disassemble_11xxx001( z80_byte b, char *buffer, size_t buflen,
 
 /* Disassemble something for the form 11xxx011 */
 static void
-disassemble_11xxx011( z80_int address, char *buffer, size_t buflen,
+disassemble_11xxx011( int address, char *buffer, size_t buflen,
 		      size_t *length, enum hl_type use_hl )
 {
   char buffer2[40];
@@ -475,7 +475,7 @@ disassemble_11xxx011( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble something for the form 11xxx101 */
 static void
-disassemble_11xxx101( z80_int address, char *buffer, size_t buflen,
+disassemble_11xxx101( int address, char *buffer, size_t buflen,
 		      size_t *length, enum hl_type use_hl )
 {
   char buffer2[40];
@@ -535,7 +535,7 @@ z80_byte opc=( b >> 3 ) - 0x18;
 
 /* Disassemble an instruction after a CB prefix */
 static void
-disassemble_cb( z80_int address, char *buffer, size_t buflen,
+disassemble_cb( int address, char *buffer, size_t buflen,
 		size_t *length )
 {
   char buffer2[40];
@@ -555,7 +555,7 @@ disassemble_cb( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble an instruction after an ED prefix */
 static void
-disassemble_ed( z80_int address, char *buffer, size_t buflen,
+disassemble_ed( int address, char *buffer, size_t buflen,
 		size_t *length )
 {
   z80_byte b;
@@ -657,7 +657,7 @@ disassemble_ed( z80_int address, char *buffer, size_t buflen,
 
 /* Disassemble an instruction after DD/FD CB prefixes */
 static void
-disassemble_ddfd_cb( z80_int address, char offset,
+disassemble_ddfd_cb( int address, char offset,
 		     enum hl_type use_hl, char *buffer, size_t buflen,
 		     size_t *length )
 {
@@ -705,14 +705,14 @@ get_byte( char *buffer, size_t buflen, z80_byte b )
 
 /* Get a text representation of an (LSB) two-byte number */
 static void
-get_word( char *buffer, size_t buflen, z80_int address )
+get_word( char *buffer, size_t buflen, int address )
 {
   z80_int w;
 
   w  = disassemble_peek_byte( address + 1 ); w <<= 8;
   w += disassemble_peek_byte( address     );
 
-  if (disassemble_show_value.v==1)  snprintf( buffer, buflen, debugger_output_base == 10 ? "%d" : "%04X", w );
+  if (disassemble_show_value.v==1)  snprintf( buffer, buflen, debugger_output_base == 10 ? "%d" : "%04X", w);
   else snprintf( buffer, buflen, "NNNN");
 }
 
@@ -781,7 +781,7 @@ else {
 
 /* Get an 8-bit register, based on bits 0-2 of the opcode at 'address' */
 static int
-source_reg( z80_int address, enum hl_type use_hl, char *buffer,
+source_reg( int address, enum hl_type use_hl, char *buffer,
 	    size_t buflen )
 {
   return single_reg( disassemble_peek_byte( address ) & 0x07, use_hl,
@@ -790,7 +790,7 @@ source_reg( z80_int address, enum hl_type use_hl, char *buffer,
 
 /* Get an 8-bit register, based on bits 3-5 of the opcode at 'address' */
 static int
-dest_reg( z80_int address, enum hl_type use_hl, char *buffer,
+dest_reg( int address, enum hl_type use_hl, char *buffer,
 	  size_t buflen )
 {
   return single_reg( ( disassemble_peek_byte( address ) >> 3 ) & 0x07, use_hl,
