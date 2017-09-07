@@ -1438,6 +1438,19 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 *** Menu  ***
 
+-debugger z80: que sea capaz de mostrar direcciones NNNN correctas (para JR CC DIS) aunque se este debugando con memory zone y direccion alta.
+Por ejemplo:
+estamos en full ram en zxuno, vamos a la direccion donde empieza propiamente la rom 0, a la 131072:
+
+ 20000 F3       DI
+ 20001 01036C   LD BC,6C03
+ 20004 0B       DEC BC
+ 20005 78       LD A,B
+ 20006 B1       OR C
+ 20007 20FB     JR NZ,0004
+
+Este JR NZ deberia aparecer como 20004
+
 -conversor archivos
 
 -Otra mejora: poder mover ventanas menu con ratón 
