@@ -1339,7 +1339,7 @@ z80_byte *zxuno_return_segment_memory(z80_int dir)
 
 void poke_byte_no_time_zxuno(z80_int dir,z80_byte valor)
 {
-	int segmento;
+	//int segmento;
 	z80_byte *puntero;
 	//segmento=dir / 16384;
 
@@ -1478,7 +1478,7 @@ z80_byte old_peek_byte_no_time_zxuno(z80_int dir)
 z80_byte peek_byte_no_time_zxuno(z80_int dir)
 {
 
-        int segmento;
+        //int segmento;
         z80_byte *puntero;
 
 				puntero=zxuno_return_segment_memory(dir);

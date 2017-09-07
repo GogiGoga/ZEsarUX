@@ -43,7 +43,7 @@ extern void hard_reset_cpu_zxuno(void);
 extern z80_byte *zxuno_sram_mem_table_new[];
 extern z80_byte *zxuno_memory_paged_new[];
 extern void zxuno_set_memory_pages(void);
-
+extern void zxuno_init_memory_tables(void);
 
 
 extern z80_byte last_port_FC3B;
