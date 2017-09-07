@@ -35,6 +35,8 @@ The format of each table entry is as follows:
 
 -Disassemble a txt
 
+-licencia tipo letra man soft
+
 -Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
 Uptime ?
 Media cpu total?
@@ -103,7 +105,6 @@ ver que hace zxpand aqui....
 *input, output, teclas, visualizacion leds
 *y posiblemente muchas mas cosas...
 
--agregar el features, etc lista de maquinas nuevas: mk14, tsconf, chrome
 
 -Parámetro change slow que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1
