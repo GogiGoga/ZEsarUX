@@ -6565,8 +6565,8 @@ int view_sprites_bpp=1;
 int view_sprites_palette=0;
 
 
-//Retorna total de colores de una paleta
-int menu_debug_sprites_total_colors_palette(int paleta)
+//Retorna total de colores de una paleta mapeada
+int menu_debug_sprites_total_colors_mapped_palette(int paleta)
 {
 
 	int index;
@@ -6616,6 +6616,64 @@ int menu_debug_sprites_total_colors_palette(int paleta)
 		//TSConf
 		case 8:
 			return 256;
+		break;
+
+	}
+
+	return 16;
+}
+
+//Retorna maximo valor para una paleta mapeada
+int menu_debug_sprites_max_value_mapped_palette(int paleta)
+{
+
+	int index;
+
+	switch (paleta) {
+
+		//Speccy
+		case 0:
+			return SPECCY_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//ULAPLUS
+		case 1:
+			return ULAPLUS_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//Spectra
+		case 2:
+			return SPECTRA_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//CPC
+		case 3:
+			return CPC_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//Prism zero
+		case 4:
+			return PRISM_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//Prism two
+		case 5:
+			return PRISM_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//Sam
+		case 6:
+			return SAM_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//RGB8 Tbblue
+		case 7:
+			return RGB8_TOTAL_PALETTE_COLOURS;
+		break;
+
+		//TSConf
+		case 8:
+			return TSCONF_TOTAL_PALETTE_COLOURS;
 		break;
 
 	}
@@ -19487,7 +19545,7 @@ int menu_display_total_palette_get_total_colors(void)
 		limite=total_palette_colours_array[menu_display_total_palette_current_palette].total_colores;
 	}
 	else {
-		limite=menu_debug_sprites_total_colors_palette(menu_display_total_palette_current_palette);
+		limite=menu_debug_sprites_total_colors_mapped_palette(menu_display_total_palette_current_palette);
 	}
 
 	return limite;
@@ -19516,8 +19574,10 @@ int menu_display_total_palette_lista_colores(int linea,int si_barras)
 
 					current_color=menu_display_total_palette_current_colour+linea_color;
 
-					int digitos_hexa=menu_debug_get_total_digits_hexa(limite-1);
-					int digitos_dec=menu_debug_get_total_digits_dec(limite-1);
+					int digitos_hexa;
+					int digitos_dec;
+
+					digitos_dec=menu_debug_get_total_digits_dec(limite-1);
 
 
 
@@ -19526,6 +19586,9 @@ int menu_display_total_palette_lista_colores(int linea,int si_barras)
 						indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
 						indice_color_final_rgb=indice_paleta+current_color;
 						color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+
+
+
 						sprintf (dumpmemoria,"%*d: RGB %06XH",digitos_dec,current_color,color_final_rgb);
 					}
 
@@ -19533,7 +19596,19 @@ int menu_display_total_palette_lista_colores(int linea,int si_barras)
 						indice_paleta=menu_debug_sprites_return_index_palette(menu_display_total_palette_current_palette, current_color);
 						indice_color_final_rgb=menu_debug_sprites_return_color_palette(menu_display_total_palette_current_palette,current_color);
 						color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
-						sprintf (dumpmemoria,"%*d: %0*XH RGB %06XH",digitos_dec,current_color,digitos_hexa,indice_paleta,color_final_rgb);
+						digitos_hexa=menu_debug_get_total_digits_hexa((menu_debug_sprites_max_value_mapped_palette(menu_display_total_palette_current_palette))-1);
+
+						int no_mostrar_indice=0;
+
+						//Spectra ni speccy base no usan tabla de paleta
+						if (menu_display_total_palette_current_palette==2 || menu_display_total_palette_current_palette==0) no_mostrar_indice=1;
+
+						if (no_mostrar_indice) {
+							sprintf (dumpmemoria,"%*d: RGB %06XH",digitos_dec,indice_paleta,color_final_rgb);
+						}
+						else {
+							sprintf (dumpmemoria,"%*d: %0*XH RGB %06XH",digitos_dec,current_color,digitos_hexa,indice_paleta,color_final_rgb);
+						}
 
 					}
 
@@ -19754,6 +19829,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 					case 'm':
 						menu_display_total_palette_show_mapped ^=1;
 						menu_display_total_palette_current_palette=0;
+						menu_display_total_palette_current_colour=0;
 						menu_display_total_palette_ventana();
 					break;
 
