@@ -802,13 +802,20 @@ int menu_get_current_memory_zone_name_number(char *s)
 
 
 //Retorna el numero de digitos para representar un numero en hexadecimal
-int menu_debug_get_total_digits(int valor)
+int menu_debug_get_total_digits_hexa(int valor)
 {
 	char temp_digitos[20];
 	sprintf (temp_digitos,"%X",valor);
 	return strlen(temp_digitos);
 }
 
+//Retorna el numero de digitos para representar un numero en decimal
+int menu_debug_get_total_digits_dec(int valor)
+{
+	char temp_digitos[20];
+	sprintf (temp_digitos,"%d",valor);
+	return strlen(temp_digitos);
+}
 
 //Escribe una direccion en texto, en hexa, teniendo en cuenta zona memoria (rellenando espacios segun tamanyo zona)
 void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address)
@@ -824,7 +831,7 @@ void menu_debug_print_address_memory_zone(char *texto, menu_z80_moto_int address
 	//sprintf (temp_digitos,"%X",menu_debug_memory_zone_size-1);
 	//int digitos=strlen(temp_digitos);
 
-	int digitos=menu_debug_get_total_digits(menu_debug_memory_zone_size-1);
+	int digitos=menu_debug_get_total_digits_hexa(menu_debug_memory_zone_size-1);
 
 	//Obtener posicion inicial a escribir direccion. Suponemos maximo 6
 	int posicion_inicial_digitos=6-digitos;
@@ -6617,49 +6624,106 @@ int menu_debug_sprites_total_colors_palette(int paleta)
 }
 
 
+//Retorna indice color asociado a la paleta actual
+int menu_debug_sprites_return_index_palette(int paleta, z80_byte color)
+{
+
+
+	switch (paleta) {
+		case 0:
+			//Speccy
+			return color;
+		break;
+
+		case 1:
+			//ULAPlus
+			return ulaplus_palette_table[color%64];
+
+		break;
+
+		case 2:
+			//Spectra
+			return color%64;
+		break;
+
+		case 3:
+			//CPC
+			return cpc_palette_table[color%16];
+		break;
+
+		case 4:
+			//Prism zero
+			return prism_palette_zero[color%256];
+		break;
+
+		case 5:
+			//Prism two
+			return prism_palette_two[color%256];
+		break;
+
+		case 6:
+			//Sam
+			return (  (sam_palette[color&15]) & 127) ;
+		break;
+
+		case 7:
+			//RGB8 TBBlue
+			return tbsprite_palette[color];
+		break;
+
+		case 8:
+			//TSConf
+			return tsconf_return_cram_color(color);
+		break;
+
+	}
+
+	return color;
+}
+
 //Retorna valor de color asociado a la paleta actual
 int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 {
 
 	int index;
 
+	index=menu_debug_sprites_return_index_palette(paleta, color);
+
 	switch (paleta) {
 		case 0:
-			return color;
+			return index;
 		break;
 
 		case 1:
-			//ulaplus limitado a 64 colores la paleta
-			index=ulaplus_palette_table[color%64];
 			return ULAPLUS_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 2:
-			return SPECTRA_INDEX_FIRST_COLOR+(color%64);
+			return SPECTRA_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 3:
-			return CPC_INDEX_FIRST_COLOR+cpc_palette_table[color%16];
+			return CPC_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 4:
-			return PRISM_INDEX_FIRST_COLOR+prism_palette_zero[color%256];
+			return PRISM_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 5:
-			return PRISM_INDEX_FIRST_COLOR+prism_palette_two[color%256];
+			return PRISM_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 6:
-			return SAM_INDEX_FIRST_COLOR+  (  (sam_palette[color&15]) & 127) ;
+			return SAM_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 7:
-			return RGB8_INDEX_FIRST_COLOR+tbsprite_palette[color];
+			return RGB8_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 8:
-			return TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color);
+			return TSCONF_INDEX_FIRST_COLOR+index;
 		break;
 
 	}
@@ -19452,19 +19516,28 @@ int menu_display_total_palette_lista_colores(int linea,int si_barras)
 
 					current_color=menu_display_total_palette_current_colour+linea_color;
 
+					int digitos_hexa=menu_debug_get_total_digits_hexa(limite-1);
+					int digitos_dec=menu_debug_get_total_digits_dec(limite-1);
+
+
+
 					if (menu_display_total_palette_show_mapped==0) {
 
 						indice_paleta=total_palette_colours_array[menu_display_total_palette_current_palette].indice_inicial;
 						indice_color_final_rgb=indice_paleta+current_color;
 						color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+						sprintf (dumpmemoria,"%*d: RGB %06XH",digitos_dec,current_color,color_final_rgb);
 					}
 
 					else {
+						indice_paleta=menu_debug_sprites_return_index_palette(menu_display_total_palette_current_palette, current_color);
 						indice_color_final_rgb=menu_debug_sprites_return_color_palette(menu_display_total_palette_current_palette,current_color);
 						color_final_rgb=spectrum_colortable_normal[indice_color_final_rgb];
+						sprintf (dumpmemoria,"%*d: %0*XH RGB %06XH",digitos_dec,current_color,digitos_hexa,indice_paleta,color_final_rgb);
+
 					}
 
-					sprintf (dumpmemoria,"%5d: RGB %06XH",current_color,color_final_rgb);
+
 
 					int longitud_texto=strlen(dumpmemoria);
 
@@ -19680,6 +19753,7 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
 
 					case 'm':
 						menu_display_total_palette_show_mapped ^=1;
+						menu_display_total_palette_current_palette=0;
 						menu_display_total_palette_ventana();
 					break;
 
