@@ -5372,7 +5372,7 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 		debug_get_memory_pages(textoregistros);
     menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 		//Fin paginas memoria
-		
+
 
 			if (MACHINE_IS_PRISM) {
 				//SI vram aperture prism
@@ -23984,12 +23984,11 @@ void set_splash_zesarux_logo_paso(int paso)
 	debug_printf(VERBOSE_DEBUG,"Drawing ZEsarUX splash logo, step %d",paso);
 
 
-	//Primero todo texto en gris
-	for (y=y_inicial;y<y_inicial+ancho_z*2;y++) {
-		for (x=x_inicial;x<x_inicial+ancho_z*2;x++) {
+	//Primero todo texto en gris. Envolvemos un poco mas
+	for (y=y_inicial-1;y<y_inicial+ancho_z*2+1;y++) {
+		for (x=x_inicial-1;x<x_inicial+ancho_z*2+1;x++) {
 			putchar_menu_overlay_parpadeo(x,y,' ',0,7,0);
 
-			scr_putpixel_zoom(x*8,y*8,2);
 
 		}
 	}
