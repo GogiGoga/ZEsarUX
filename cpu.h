@@ -30,8 +30,8 @@
 #define EMULATOR_VERSION "5.1-SN"
 #define SNAPSHOT_VERSION
 
-#define EMULATOR_DATE "24 July 2017"
-#define EMULATOR_SHORT_DATE "24/07/2017"
+#define EMULATOR_DATE "8 September 2017"
+#define EMULATOR_SHORT_DATE "08/09/2017"
 #define EMULATOR_EDITION_NAME "Gunfright edition"
 
 //8 bits

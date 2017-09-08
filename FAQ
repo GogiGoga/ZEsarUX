@@ -364,7 +364,9 @@ Q: I can't run TBBlue machine. I get the following error: "Erro ao inicializar c
 A: TBBlue machine needs a SD/MMC image to boot. You must select file image "media/disk_images/tbblue.mmc" on Storage->MMC->MMC File.
 Then enable MMC emulation and DivMMC ports (but not DivMMC paging), and do a hard reset
 Or you can select it from the command line with:
-./zesarux --mmc-file media/disk_images/tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
+./zesarux --mmc-file tbblue.mmc --enable-mmc --enable-divmmc-ports --machine tbblue
+
+Note: tbblue.mmc is included on the base package (and not on extras) because it is needed to boot that machine
 
 Q: Why can't enable divmmc paging (or full divmmc emulation) from command line/config file on TBBlue? When exiting emulator, these settings are not saved on configuration file. But... if I force them to enable from command line, TBBlue does not boot, and then doing a hard reset it boots ok
 A: TBBlue needs divmmc paging disabled to boot, if not, divmmc firmware will be activated on the tbblue boot and then it hangs. When you do a hard reset, some internal tbblue registers (reg 6, bit 4) are reset to zero. Resetting this register 6, divmmc paging is disabled and so the boot works ok. But when initializing the emulator the sequence is:

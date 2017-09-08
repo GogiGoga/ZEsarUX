@@ -1466,7 +1466,7 @@ macapp: all
 	cp -a \$(COMMONFILES) macos/zesarux.app/Contents/Resources/
 	rm -f macos/zesarux.dmg
 	rm -f macos/zesarux.dmg.gz
-	hdiutil create -megabytes 400 -fs HFS+ -volname ZEsarUX macos/zesarux.dmg
+	hdiutil create -megabytes 100 -fs HFS+ -volname ZEsarUX macos/zesarux.dmg
 	hdiutil attach -mountpoint macos/tempmount macos/zesarux.dmg
 	cp -R macos/zesarux.app macos/tempmount
 	ln -s /Applications/ macos/tempmount/Applications
