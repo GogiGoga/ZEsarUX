@@ -117,5 +117,12 @@ extern z80_byte tbblue_get_port_layer2_value(void);
 extern void tbblue_out_port_layer2_value(z80_byte value);
 extern int tbblue_is_active_layer2(void);
 
+#define TBBLUE_MACHINE_TYPE ((tbblue_registers[3])&3)
+
+#define TBBLUE_MACHINE_48K (TBBLUE_MACHINE_TYPE==1)
+#define TBBLUE_MACHINE_128_P2 (TBBLUE_MACHINE_TYPE==2)
+#define TBBLUE_MACHINE_P2A (TBBLUE_MACHINE_TYPE==3)
+
+
 
 #endif

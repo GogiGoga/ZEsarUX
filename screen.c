@@ -10357,7 +10357,7 @@ void screen_reset_putpixel_maxmin_y(void)
 }
 
 
-void old_screen_print_splash_text(z80_byte y,z80_byte tinta,z80_byte papel,char *texto)
+/*void old_screen_print_splash_text(z80_byte y,z80_byte tinta,z80_byte papel,char *texto)
 {
 
 	z80_byte x;
@@ -10391,7 +10391,7 @@ void old_screen_print_splash_text(z80_byte y,z80_byte tinta,z80_byte papel,char 
         	menu_splash_segundos=5;
 	}
 
-}
+}*/
 
 
 /*
