@@ -24118,12 +24118,18 @@ void set_splash_zesaurx_logo_reverve_text(int x,int y)
 	overlay_screen_array[y*32+x].caracter=255;
 }
 
+void set_splash_zesaurx_logo_put_space(int x,int y)
+{
+	putchar_menu_overlay_parpadeo(x,y,' ',7,0,0);
+}
+
+
 void set_splash_zesaurx_logo_cuadrado(int x,int y)
 {
-	set_splash_zesaurx_logo_reverve_text(x,y);
-	set_splash_zesaurx_logo_reverve_text(x+1,y);
-	set_splash_zesaurx_logo_reverve_text(x,y+1);
-	set_splash_zesaurx_logo_reverve_text(x+1,y+1);
+	set_splash_zesaurx_logo_put_space(x,y);
+	set_splash_zesaurx_logo_put_space(x+1,y);
+	set_splash_zesaurx_logo_put_space(x,y+1);
+	set_splash_zesaurx_logo_put_space(x+1,y+1);
 }
 
 void set_splash_zesaurx_logo(void)
@@ -24131,23 +24137,44 @@ void set_splash_zesaurx_logo(void)
 	//temp
 	int x,y;
 
-	y=5;
+
+
+
+
+	int ancho_z=6;
+	int alto_z=6;
+
+	int x_inicial=10;
+	int y_inicial=5;
+
+
+	//Primero todo texto en gris
+	for (y=y_inicial;y<y_inicial+ancho_z*2;y++) {
+		for (x=x_inicial;x<x_inicial+ancho_z*2;x++) {
+			putchar_menu_overlay_parpadeo(x,y,' ',0,7,0);
+		}
+	}
+
+
+	y=y_inicial;
 
 	//Linea Arriba Z, Abajo
-	for (x=10;x<10+12;x++) {
-		set_splash_zesaurx_logo_reverve_text(x,y);
-		set_splash_zesaurx_logo_reverve_text(x,y+1);
+	for (x=x_inicial;x<x_inicial+ancho_z*2;x++) {
+		set_splash_zesaurx_logo_put_space(x,y);
+		set_splash_zesaurx_logo_put_space(x,y+1);
 
-		set_splash_zesaurx_logo_reverve_text(x,y+10);
-		set_splash_zesaurx_logo_reverve_text(x,y+11);
+		set_splash_zesaurx_logo_put_space(x,y+alto_z*2-2);
+		set_splash_zesaurx_logo_put_space(x,y+alto_z*2-1);
 	}
 
 	//Cuadrados diagonales
-	set_splash_zesaurx_logo_cuadrado(x-4,y+2);
-	set_splash_zesaurx_logo_cuadrado(x-6,y+4);
-	set_splash_zesaurx_logo_cuadrado(x-8,y+6);
-	set_splash_zesaurx_logo_cuadrado(x-10,y+8);
+	y+=2;
 
+	for (x=x_inicial+(ancho_z-2)*2;x>x_inicial;x-=2,y+=2) {
+		set_splash_zesaurx_logo_cuadrado(x,y);
+	}
+
+	//Y ahora las lineas de colores
 }
 
 
