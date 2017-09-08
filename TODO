@@ -54,8 +54,6 @@ IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de a
 
 IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
 
--comando ZRCP que muestre paginas de memoria mapeadas. similar a menu debug, las zonas de memoria y las rams/roms mapeadas
-
 
 -Documentar minimamente como funciona refresco de pantalla
 

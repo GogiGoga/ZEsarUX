@@ -14,7 +14,7 @@ mkdir -p $INSTALLPREFIX/bin
 mkdir -p $INSTALLPREFIX/share/zesarux/
 
 cp zesarux $INSTALLPREFIX/bin/
-cp *.rom zxuno.flash $INSTALLPREFIX/share/zesarux/
+cp *.rom zxuno.flash tbblue.mmc $INSTALLPREFIX/share/zesarux/
 
 cp mantransfev3.bin $INSTALLPREFIX/share/zesarux/
 

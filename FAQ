@@ -538,6 +538,7 @@ The emulator only really needs the following files to run:
 -rom files: 5 MB
 -Some dll files on Windows version
 -zxuno.flash if running ZX-Uno machine
+-tbblue.mmc if running TBBlue machine
 These three types of files doesn't use more than 10 MB.
 You can even try to delete all the unnecessary files and the emulator will also work. 
 
