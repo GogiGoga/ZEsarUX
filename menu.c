@@ -24113,6 +24113,43 @@ void menu_inicio(void)
 
 }
 
+void set_splash_zesaurx_logo_reverve_text(int x,int y)
+{
+	overlay_screen_array[y*32+x].caracter=255;
+}
+
+void set_splash_zesaurx_logo_cuadrado(int x,int y)
+{
+	set_splash_zesaurx_logo_reverve_text(x,y);
+	set_splash_zesaurx_logo_reverve_text(x+1,y);
+	set_splash_zesaurx_logo_reverve_text(x,y+1);
+	set_splash_zesaurx_logo_reverve_text(x+1,y+1);
+}
+
+void set_splash_zesaurx_logo(void)
+{
+	//temp
+	int x,y;
+
+	y=5;
+
+	//Linea Arriba Z, Abajo
+	for (x=10;x<10+12;x++) {
+		set_splash_zesaurx_logo_reverve_text(x,y);
+		set_splash_zesaurx_logo_reverve_text(x,y+1);
+
+		set_splash_zesaurx_logo_reverve_text(x,y+10);
+		set_splash_zesaurx_logo_reverve_text(x,y+11);
+	}
+
+	//Cuadrados diagonales
+	set_splash_zesaurx_logo_cuadrado(x-4,y+2);
+	set_splash_zesaurx_logo_cuadrado(x-6,y+4);
+	set_splash_zesaurx_logo_cuadrado(x-8,y+6);
+	set_splash_zesaurx_logo_cuadrado(x-10,y+8);
+
+}
+
 
 void set_splash_text(void)
 {
@@ -24125,6 +24162,8 @@ void set_splash_text(void)
 	if (x<0) x=0;
 
 	menu_escribe_texto(x,2,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,texto_welcome);
+
+	set_splash_zesaurx_logo();
 
 
         char texto_edition[40];
