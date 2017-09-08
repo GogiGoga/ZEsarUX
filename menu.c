@@ -24120,7 +24120,7 @@ void set_splash_zesaurx_logo_reverve_text(int x,int y)
 
 void set_splash_zesaurx_logo_put_space(int x,int y)
 {
-	putchar_menu_overlay_parpadeo(x,y,' ',7,0,0);
+	putchar_menu_overlay(x,y,' ',7,0);
 }
 
 
@@ -24130,6 +24130,44 @@ void set_splash_zesaurx_logo_cuadrado(int x,int y)
 	set_splash_zesaurx_logo_put_space(x+1,y);
 	set_splash_zesaurx_logo_put_space(x,y+1);
 	set_splash_zesaurx_logo_put_space(x+1,y+1);
+}
+
+
+
+
+/*
+
+        //y las franjas de color
+        if (ESTILO_GUI_MUESTRA_RAINBOW) {
+                //en el caso de drivers completos, hacerlo real
+                if (si_complete_video_driver() ) {
+                        putchar_menu_overlay(x+ancho-6,y,128,2+8,ESTILO_GUI_PAPEL_TITULO);
+                        putchar_menu_overlay(x+ancho-5,y,128,6+8,2+8);
+                        putchar_menu_overlay(x+ancho-4,y,128,4+8,6+8);
+                        putchar_menu_overlay(x+ancho-3,y,128,5+8,4+8);
+                        putchar_menu_overlay(x+ancho-2,y,128,ESTILO_GUI_PAPEL_TITULO,5+8);
+                }
+
+                //en caso de curses o caca, hacerlo con lineas de colores
+                if (!strcmp(scr_driver_name,"curses") || !strcmp(scr_driver_name,"caca") ) {
+                        putchar_menu_overlay(x+ancho-6,y,'/',2+8,ESTILO_GUI_PAPEL_TITULO);
+                        putchar_menu_overlay(x+ancho-5,y,'/',6+8,ESTILO_GUI_PAPEL_TITULO);
+                        putchar_menu_overlay(x+ancho-4,y,'/',4+8,ESTILO_GUI_PAPEL_TITULO);
+                        putchar_menu_overlay(x+ancho-3,y,'/',5+8,ESTILO_GUI_PAPEL_TITULO);
+                }
+        }
+
+
+*/
+
+void set_splash_zesaurx_franja_color(int x,int y,int tinta, int papel)
+{
+	putchar_menu_overlay(x,y,128,tinta,papel);
+}
+
+void set_splash_zesaurx_cuadrado_color(int x,int y,int color)
+{
+	putchar_menu_overlay(x,y,' ',0,color);
 }
 
 void set_splash_zesaurx_logo(void)
@@ -24144,14 +24182,17 @@ void set_splash_zesaurx_logo(void)
 	int ancho_z=6;
 	int alto_z=6;
 
-	int x_inicial=10;
-	int y_inicial=5;
+	int x_inicial=16-ancho_z;  //Centrado
+	int y_inicial=7;
 
 
 	//Primero todo texto en gris
 	for (y=y_inicial;y<y_inicial+ancho_z*2;y++) {
 		for (x=x_inicial;x<x_inicial+ancho_z*2;x++) {
 			putchar_menu_overlay_parpadeo(x,y,' ',0,7,0);
+
+			scr_putpixel_zoom(x*8,y*8,2);
+
 		}
 	}
 
@@ -24175,6 +24216,57 @@ void set_splash_zesaurx_logo(void)
 	}
 
 	//Y ahora las lineas de colores
+	//Rojo amarillo verde cyan
+	//2      6       4     5
+
+
+
+	/*
+
+    012345678901
+0	 	XXXXXXXXXXXX
+1		XXXXXXXXXXXX
+2		        XX
+3		        XX /
+4	        XX  /
+5			    XX / /
+6	 		  XX  / /
+7				XX / / /
+8			XX  / / /
+9			XX / / / /
+0		XXXXXXXXXXXX
+1		XXXXXXXXXXXX
+
+    012345678901
+	*/
+
+	int j;
+	for (j=0;j<7;j++) {
+		set_splash_zesaurx_franja_color(x_inicial+5+j,y_inicial+9-j,2,7);
+	}
+
+	for (j=0;j<6;j++) {
+		set_splash_zesaurx_cuadrado_color(x_inicial+6+j,y_inicial+9-j,2);
+	}
+
+	for (j=0;j<5;j++) {
+		set_splash_zesaurx_franja_color(x_inicial+7+j,y_inicial+9-j,6,2);
+	}
+
+	for (j=0;j<4;j++) {
+		set_splash_zesaurx_cuadrado_color(x_inicial+8+j,y_inicial+9-j,6);
+	}
+
+	for (j=0;j<3;j++) {
+		set_splash_zesaurx_franja_color(x_inicial+9+j,y_inicial+9-j,4,6);
+	}
+
+	for (j=0;j<2;j++) {
+		set_splash_zesaurx_cuadrado_color(x_inicial+10+j,y_inicial+9-j,4);
+	}
+
+	set_splash_zesaurx_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,5,4);
+	//set_splash_zesaurx_cuadrado_color(x_inicial+ancho_z*2-2,y_inicial+ancho_z*2-3,4);
 }
 
 
