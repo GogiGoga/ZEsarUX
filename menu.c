@@ -21886,6 +21886,14 @@ void menu_generic_message_tooltip(char *titulo, int volver_timeout, int tooltip_
 }
 */
 
+int splash_zesarux_logo_paso=0;
+int splash_zesarux_logo_active=0;
+
+void reset_splash_zesarux_logo(void)
+{
+	splash_zesarux_logo_active=0;
+}
+
 //Esta rutina estaba originalmente en screen.c pero dado que se ha modificado para usar rutinas auxiliares de aqui, mejor que este aqui
 void screen_print_splash_text(z80_byte y,z80_byte tinta,z80_byte papel,char *texto)
 {
@@ -21967,6 +21975,9 @@ void screen_print_splash_text(z80_byte y,z80_byte tinta,z80_byte papel,char *tex
         set_menu_overlay_function(normal_overlay_texto_menu);
         menu_splash_text_active.v=1;
         menu_splash_segundos=5;
+
+				//no queremos que reaparezca el logo, por si no había llegado al final de splash. Improbable? Si. Pero mejor ser precavidos
+				reset_splash_zesarux_logo();
    }
 
 }
@@ -24113,23 +24124,23 @@ void menu_inicio(void)
 
 }
 
-void set_splash_zesaurx_logo_reverve_text(int x,int y)
+/*void set_splash_zesarux_logo_reserve_text(int x,int y)
 {
 	overlay_screen_array[y*32+x].caracter=255;
-}
+}*/
 
-void set_splash_zesaurx_logo_put_space(int x,int y)
+void set_splash_zesarux_logo_put_space(int x,int y)
 {
 	putchar_menu_overlay(x,y,' ',7,0);
 }
 
 
-void set_splash_zesaurx_logo_cuadrado(int x,int y)
+void set_splash_zesarux_logo_cuadrado(int x,int y)
 {
-	set_splash_zesaurx_logo_put_space(x,y);
-	set_splash_zesaurx_logo_put_space(x+1,y);
-	set_splash_zesaurx_logo_put_space(x,y+1);
-	set_splash_zesaurx_logo_put_space(x+1,y+1);
+	set_splash_zesarux_logo_put_space(x,y);
+	set_splash_zesarux_logo_put_space(x+1,y);
+	set_splash_zesarux_logo_put_space(x,y+1);
+	set_splash_zesarux_logo_put_space(x+1,y+1);
 }
 
 
@@ -24160,7 +24171,7 @@ void set_splash_zesaurx_logo_cuadrado(int x,int y)
 
 */
 
-void set_splash_zesaurx_franja_color(int x,int y,int tinta, int papel)
+void set_splash_zesarux_franja_color(int x,int y,int tinta, int papel)
 {
 	if (si_complete_video_driver() ) {
 		putchar_menu_overlay(x,y,128,tinta,papel);
@@ -24170,27 +24181,42 @@ void set_splash_zesaurx_franja_color(int x,int y,int tinta, int papel)
 	}
 }
 
-void set_splash_zesaurx_cuadrado_color(int x,int y,int color)
+void set_splash_zesarux_cuadrado_color(int x,int y,int color)
 {
 	if (si_complete_video_driver() ) {
 		putchar_menu_overlay(x,y,' ',0,color);
 	}
 }
 
-void set_splash_zesaurx_logo(void)
+void set_splash_zesarux_franja_color_repetido(int x,int y,int longitud, int color1, int color2)
 {
-	//temp
+
+	int j;
+	for (j=0;j<longitud;j++) {
+		set_splash_zesarux_franja_color(x+j,y-j,color1,color2);
+	}
+
+}
+
+
+
+//Dibuja el logo pero en diferentes pasos:
+//0: solo la z
+//1: franja roja
+//2: franja roja y amarilla
+//3: franja roja y amarilla y verde
+//4 o mayor: franja roja y amarilla y verde y cyan
+void set_splash_zesarux_logo_paso(int paso)
+{
 	int x,y;
-
-
-
-
 
 	int ancho_z=6;
 	int alto_z=6;
 
 	int x_inicial=16-ancho_z;  //Centrado
 	int y_inicial=7;
+
+	debug_printf(VERBOSE_DEBUG,"Drawing ZEsarUX splash logo, step %d",paso);
 
 
 	//Primero todo texto en gris
@@ -24208,25 +24234,25 @@ void set_splash_zesaurx_logo(void)
 
 	//Linea Arriba Z, Abajo
 	for (x=x_inicial;x<x_inicial+ancho_z*2;x++) {
-		set_splash_zesaurx_logo_put_space(x,y);
-		set_splash_zesaurx_logo_put_space(x,y+1);
+		set_splash_zesarux_logo_put_space(x,y);
+		set_splash_zesarux_logo_put_space(x,y+1);
 
-		set_splash_zesaurx_logo_put_space(x,y+alto_z*2-2);
-		set_splash_zesaurx_logo_put_space(x,y+alto_z*2-1);
+		set_splash_zesarux_logo_put_space(x,y+alto_z*2-2);
+		set_splash_zesarux_logo_put_space(x,y+alto_z*2-1);
 	}
 
 	//Cuadrados diagonales
 	y+=2;
 
 	for (x=x_inicial+(ancho_z-2)*2;x>x_inicial;x-=2,y+=2) {
-		set_splash_zesaurx_logo_cuadrado(x,y);
+		set_splash_zesarux_logo_cuadrado(x,y);
 	}
 
 	//Y ahora las lineas de colores
 	//Rojo amarillo verde cyan
 	//2      6       4     5
 
-
+	if (paso==0) return;
 
 	/*
 
@@ -24248,34 +24274,70 @@ void set_splash_zesaurx_logo(void)
 	*/
 
 	int j;
-	for (j=0;j<7;j++) {
-		set_splash_zesaurx_franja_color(x_inicial+5+j,y_inicial+9-j,2,7);
-	}
+
+	//for (j=0;j<7;j++) {
+	//	set_splash_zesarux_franja_color(x_inicial+5+j,y_inicial+9-j,2,7);
+	//}
+
+	set_splash_zesarux_franja_color_repetido(x_inicial+5,y_inicial+9,7, 2, 7);
 
 	for (j=0;j<6;j++) {
-		set_splash_zesaurx_cuadrado_color(x_inicial+6+j,y_inicial+9-j,2);
+		set_splash_zesarux_cuadrado_color(x_inicial+6+j,y_inicial+9-j,2);
 	}
 
-	for (j=0;j<5;j++) {
-		set_splash_zesaurx_franja_color(x_inicial+7+j,y_inicial+9-j,6,2);
+	if (paso==1) {
+		//for (j=0;j<5;j++) {
+		//	set_splash_zesarux_franja_color(x_inicial+7+j,y_inicial+9-j,7,2);
+		//}
+		set_splash_zesarux_franja_color_repetido(x_inicial+7,y_inicial+9,5, 7, 2);
+		return;
 	}
+
+	//for (j=0;j<5;j++) {
+	//	set_splash_zesarux_franja_color(x_inicial+7+j,y_inicial+9-j,6,2);
+	//}
+
+	set_splash_zesarux_franja_color_repetido(x_inicial+7,y_inicial+9,5, 6, 2);
 
 	for (j=0;j<4;j++) {
-		set_splash_zesaurx_cuadrado_color(x_inicial+8+j,y_inicial+9-j,6);
+		set_splash_zesarux_cuadrado_color(x_inicial+8+j,y_inicial+9-j,6);
 	}
 
-	for (j=0;j<3;j++) {
-		set_splash_zesaurx_franja_color(x_inicial+9+j,y_inicial+9-j,4,6);
+	if (paso==2) {
+		//for (j=0;j<3;j++) {
+		//	set_splash_zesarux_franja_color(x_inicial+9+j,y_inicial+9-j,7,6);
+		//}
+		set_splash_zesarux_franja_color_repetido(x_inicial+9,y_inicial+9,3, 7, 6);
+		return;
 	}
+
+
+	//for (j=0;j<3;j++) {
+	//	set_splash_zesarux_franja_color(x_inicial+9+j,y_inicial+9-j,4,6);
+	//}
+
+	set_splash_zesarux_franja_color_repetido(x_inicial+9,y_inicial+9,3, 4, 6);
 
 	for (j=0;j<2;j++) {
-		set_splash_zesaurx_cuadrado_color(x_inicial+10+j,y_inicial+9-j,4);
+		set_splash_zesarux_cuadrado_color(x_inicial+10+j,y_inicial+9-j,4);
 	}
 
-	set_splash_zesaurx_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,5,4);
-	//set_splash_zesaurx_cuadrado_color(x_inicial+ancho_z*2-2,y_inicial+ancho_z*2-3,4);
+	if (paso==3) {
+		set_splash_zesarux_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,7,4);
+		return;
+	}
+
+	set_splash_zesarux_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,5,4);
+	//set_splash_zesarux_cuadrado_color(x_inicial+ancho_z*2-2,y_inicial+ancho_z*2-3,4);
 }
 
+
+void set_splash_zesarux_logo(void)
+{
+	splash_zesarux_logo_active=1;
+	splash_zesarux_logo_paso=0;
+	set_splash_zesarux_logo_paso(splash_zesarux_logo_paso);
+}
 
 void set_splash_text(void)
 {
@@ -24289,7 +24351,7 @@ void set_splash_text(void)
 
 	menu_escribe_texto(x,2,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,texto_welcome);
 
-	set_splash_zesaurx_logo();
+	set_splash_zesarux_logo();
 
 
         char texto_edition[40];
@@ -24331,6 +24393,7 @@ void reset_splash_text(void)
 
 		menu_splash_segundos--;
 		if (menu_splash_segundos==0) {
+			reset_splash_zesarux_logo();
 			menu_splash_text_active.v=0;
 			cls_menu_overlay();
 			reset_menu_overlay_function();
@@ -24342,8 +24405,16 @@ void reset_splash_text(void)
 				menu_footer_f5_menu();
 				first_time_menu_footer_f5_menu=0; //Solo mostrarlo una sola vez
 			}
-
 		}
+
+		else {
+			if (splash_zesarux_logo_active) {
+				splash_zesarux_logo_paso++;
+				set_splash_zesarux_logo_paso(splash_zesarux_logo_paso);
+			}
+		}
+
+
 	}
 }
 
