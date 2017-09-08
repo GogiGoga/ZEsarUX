@@ -24162,12 +24162,19 @@ void set_splash_zesaurx_logo_cuadrado(int x,int y)
 
 void set_splash_zesaurx_franja_color(int x,int y,int tinta, int papel)
 {
-	putchar_menu_overlay(x,y,128,tinta,papel);
+	if (si_complete_video_driver() ) {
+		putchar_menu_overlay(x,y,128,tinta,papel);
+	}
+	else {
+		putchar_menu_overlay(x,y,'/',tinta,7);
+	}
 }
 
 void set_splash_zesaurx_cuadrado_color(int x,int y,int color)
 {
-	putchar_menu_overlay(x,y,' ',0,color);
+	if (si_complete_video_driver() ) {
+		putchar_menu_overlay(x,y,' ',0,color);
+	}
 }
 
 void set_splash_zesaurx_logo(void)
@@ -24303,7 +24310,7 @@ void set_splash_text(void)
 
 	set_menu_overlay_function(normal_overlay_texto_menu);
 	menu_splash_text_active.v=1;
-	menu_splash_segundos=4;
+	menu_splash_segundos=5;
 
 
 	//Enviar texto de bienvenida tambien a speech
