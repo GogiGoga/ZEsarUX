@@ -5364,6 +5364,10 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 
                         menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
+
+
+
+
     //Paginas memoria
     if (MACHINE_IS_SPECTRUM_128_P2_P2A ||  MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
                                 int pagina;
@@ -5435,17 +5439,14 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                         }
 
 
-			//BANK PAGES y Sonido y Snooze
+			//BANK PAGES
 			if (MACHINE_IS_Z88) {
 				sprintf (textoregistros,"BANK%02X BANK%02X BANK%02X BANK%02X",blink_mapped_memory_banks[0],blink_mapped_memory_banks[1],
 				blink_mapped_memory_banks[2],blink_mapped_memory_banks[3]);
 				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
-
-
-				z80_byte srunsbit=blink_com >> 6;
-				sprintf (textoregistros,"SRUN: %01d SBIT: %01d SNZ: %01d COM: %01d",(srunsbit>>1)&1,srunsbit&1,z88_snooze.v,z88_coma.v);
-				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 			}
+
+
 
 			//Paginas RAM en CHLOE
 			if (MACHINE_IS_CHLOE) {
@@ -5468,7 +5469,7 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 
 			if (MACHINE_IS_PRISM) {
 				//Si modo ram en rom
-                		if (puerto_8189 & 1) {
+        if (puerto_8189 & 1) {
 
 
 
@@ -5485,23 +5486,15 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                                         texto_paginas[4],texto_paginas[5],texto_paginas[6],texto_paginas[7]);
                                 menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
-			}
+				}
 
 
 
 			//Informacion VRAM en PRISM
-			   else {
+			  else {
 				//char texto_vram[32];
 
-				//SI vram aperture
-				if (prism_ula2_registers[1] & 1) sprintf (textoregistros,"VRAM0 VRAM1 aperture");
 
-				else {
-							//       012345678901234567890123456789012
-					sprintf (textoregistros,"VRAM0 SRAM10 SRAM11 not apert.");
-				}
-
-				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
 
 				//Paginas RAM en PRISM
@@ -5519,8 +5512,8 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 							sprintf (texto_paginas[pagina],"VRA");
 						}
 					}
-                                        if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_DOCK) sprintf (texto_paginas[pagina],"%s","DO");
-                                        if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_EX)   sprintf (texto_paginas[pagina],"%s","EX");
+          if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_DOCK) sprintf (texto_paginas[pagina],"%s","DO");
+          if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_EX)   sprintf (texto_paginas[pagina],"%s","EX");
 
 					//Si pagina rom failsafe
 					if (prism_failsafe_mode.v) {
@@ -5563,7 +5556,7 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                                         texto_paginas[4],texto_paginas[5],texto_paginas[6],texto_paginas[7]);
                                 menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
-                          }
+        }
 			}
 
 			  //Paginas RAM en TIMEX
@@ -5626,6 +5619,28 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
                                 menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
 
                         }
+
+
+
+			//Fin paginas ram
+
+			if (MACHINE_IS_PRISM) {
+				//SI vram aperture prism
+				if (prism_ula2_registers[1] & 1) sprintf (textoregistros,"VRAM0 VRAM1 aperture");
+
+				else {
+						//       012345678901234567890123456789012
+						sprintf (textoregistros,"VRAM0 SRAM10 SRAM11 not apert.");
+				}
+
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+			}
+
+			if (MACHINE_IS_Z88) {
+				z80_byte srunsbit=blink_com >> 6;
+				sprintf (textoregistros,"SRUN: %01d SBIT: %01d SNZ: %01d COM: %01d",(srunsbit>>1)&1,srunsbit&1,z88_snooze.v,z88_coma.v);
+				menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+			}
 
 
 

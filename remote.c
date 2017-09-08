@@ -721,6 +721,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
 
 	{"get-machines",NULL,NULL,"Returns list of emulated machines"},
+	{"get-memory-pages","|gmp",NULL,"Returns current state of memory pages"},
 	{"get-memory-zones","|gmz",NULL,"Returns list of memory zones of this machine"},
 	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
@@ -3004,9 +3005,17 @@ char buffer_retorno[2048];
 		escribir_socket (misocket,string_machines_list_description);
 	}
 
+	else if (!strcmp(comando_sin_parametros,"get-memory-pages") || !strcmp(comando_sin_parametros,"gmp")) {
+		char buffer_temporal[MAX_TEXT_DEBUG_GET_MEMORY_PAGES+1];
+		debug_get_memory_pages(buffer_temporal);
+		escribir_socket (misocket,buffer_temporal);
+	}
+
 	else if (!strcmp(comando_sin_parametros,"get-memory-zones") || !strcmp(comando_sin_parametros,"gmz")) {
 		remote_get_memory_zones(misocket);
 	}
+
+
 
 	else if (!strcmp(comando_sin_parametros,"get-ocr")) {
 		char buffer_ocr[4096];

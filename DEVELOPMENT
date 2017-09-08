@@ -8,6 +8,7 @@ activar capture segmentation fault en cpu.c
 activar capture floating point exception en cpu.c
 Cambiar EMULATOR_VERSION en archivo configure 
 Cambiar version en macos/apptemplate/Contents/Info.plist, tag CFBundleVersion
+En changelog, decir qué comandos nuevos de ZRCP, haciendo diff con version anterior
 
 * desactivar simulador joystick
 * desactivar tecla F7 de scrxwindows.c, scrcocoa.m de simulador de joystick

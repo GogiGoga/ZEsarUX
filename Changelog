@@ -5,7 +5,7 @@ Added machine ZX-Evolution TS-Conf
 Added machine MK14
 Added Visualmem, Poke, Find, Save binary menus also for Sinclair QL
 Added setting to test configuration
-Added remote commands: get-audio-buffer-info, get-machines, save-binary-internal, set-machine, set-window-zoom, get-ocr, TBBlue-get-sprite, TBBlue-get-pattern, TBBlue-get-palette, send-keys-ascii, send-keys-string, tsconf-get-af-port, tsconf-get-vram, get-stack-backtrace
+Added lots of new ZEsarUX remote commands (ZRCP). See ZRCP help to know them
 Added QL GUI Style
 Added menu to find and set lives in games
 Added menu to view color palettes
