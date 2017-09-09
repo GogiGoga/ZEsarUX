@@ -24039,9 +24039,6 @@ void set_splash_zesarux_logo_paso(int paso)
 
 	int j;
 
-	//for (j=0;j<7;j++) {
-	//	set_splash_zesarux_franja_color(x_inicial+5+j,y_inicial+9-j,2,7);
-	//}
 
 	set_splash_zesarux_franja_color_repetido(x_inicial+5,y_inicial+9,7, 2, 7);
 
@@ -24049,17 +24046,14 @@ void set_splash_zesarux_logo_paso(int paso)
 		set_splash_zesarux_cuadrado_color(x_inicial+6+j,y_inicial+9-j,2);
 	}
 
+	//Lo que queda a la derecha de esa franja - el udg diagonal con el color de papel igual que tinta anterior, y papel blanco
 	if (paso==1) {
-		//for (j=0;j<5;j++) {
-		//	set_splash_zesarux_franja_color(x_inicial+7+j,y_inicial+9-j,7,2);
-		//}
-		set_splash_zesarux_franja_color_repetido(x_inicial+7,y_inicial+9,5, 7, 2);
+		if (si_complete_video_driver() ) {
+			set_splash_zesarux_franja_color_repetido(x_inicial+7,y_inicial+9,5, 7, 2);
+		}
 		return;
 	}
 
-	//for (j=0;j<5;j++) {
-	//	set_splash_zesarux_franja_color(x_inicial+7+j,y_inicial+9-j,6,2);
-	//}
 
 	set_splash_zesarux_franja_color_repetido(x_inicial+7,y_inicial+9,5, 6, 2);
 
@@ -24067,18 +24061,15 @@ void set_splash_zesarux_logo_paso(int paso)
 		set_splash_zesarux_cuadrado_color(x_inicial+8+j,y_inicial+9-j,6);
 	}
 
+	//Lo que queda a la derecha de esa franja - el udg diagonal con el color de papel igual que tinta anterior, y papel blanco
 	if (paso==2) {
-		//for (j=0;j<3;j++) {
-		//	set_splash_zesarux_franja_color(x_inicial+9+j,y_inicial+9-j,7,6);
-		//}
-		set_splash_zesarux_franja_color_repetido(x_inicial+9,y_inicial+9,3, 7, 6);
+		if (si_complete_video_driver() ) {
+			set_splash_zesarux_franja_color_repetido(x_inicial+9,y_inicial+9,3, 7, 6);
+		}
 		return;
 	}
 
 
-	//for (j=0;j<3;j++) {
-	//	set_splash_zesarux_franja_color(x_inicial+9+j,y_inicial+9-j,4,6);
-	//}
 
 	set_splash_zesarux_franja_color_repetido(x_inicial+9,y_inicial+9,3, 4, 6);
 
@@ -24086,13 +24077,16 @@ void set_splash_zesarux_logo_paso(int paso)
 		set_splash_zesarux_cuadrado_color(x_inicial+10+j,y_inicial+9-j,4);
 	}
 
+	//Lo que queda a la derecha de esa franja - el udg diagonal con el color de papel igual que tinta anterior, y papel blanco
 	if (paso==3) {
-		set_splash_zesarux_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,7,4);
+		if (si_complete_video_driver() ) {
+			set_splash_zesarux_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,7,4);
+		}
 		return;
 	}
 
 	set_splash_zesarux_franja_color(x_inicial+ancho_z*2-1,y_inicial+ancho_z*2-3,5,4);
-	//set_splash_zesarux_cuadrado_color(x_inicial+ancho_z*2-2,y_inicial+ancho_z*2-3,4);
+
 }
 
 
