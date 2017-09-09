@@ -60,7 +60,7 @@ struct s_overlay_screen {
 
 typedef struct s_overlay_screen overlay_screen;
 
-#define MAX_F_FUNCTIONS 15
+#define MAX_F_FUNCTIONS 16
 
 enum defined_f_function_ids {
 	//reset, hard-reset, nmi, open menu, ocr, smartload, osd keyboard, exitemulator.
@@ -72,13 +72,14 @@ enum defined_f_function_ids {
 	F_FUNCION_OPENMENU,
 	F_FUNCION_OCR,
 	F_FUNCION_SMARTLOAD,
-	F_FUNCION_LOADBINARY,
-	F_FUNCION_SAVEBINARY, //10
+	F_FUNCION_QUICKSAVE,
+	F_FUNCION_LOADBINARY, //10
+	F_FUNCION_SAVEBINARY,
 	F_FUNCION_OSDKEYBOARD,
 	F_FUNCION_RELOADMMC,
 	F_FUNCION_DEBUGCPU,
-	F_FUNCION_PAUSE,
- 	F_FUNCION_EXITEMULATOR  //15
+	F_FUNCION_PAUSE,      //15
+ 	F_FUNCION_EXITEMULATOR
 };
 
 //Define teclas F que se pueden mapear a acciones
@@ -380,6 +381,7 @@ extern menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 "printc c: Print character c to console\n" \
 "printe expression: Print expression following the same syntax as watches and evaluate condition\n" \
 "prints string: Prints string to console\n" \
+"quicksave: Saves a quick snapshot\n" \
 "set-register string: Sets register indicated on string. Example: set-register PC=32768\n" \
 "write address value: Write memory address with indicated value\n" \
 

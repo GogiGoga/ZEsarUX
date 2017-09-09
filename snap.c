@@ -85,9 +85,10 @@ z80_bit snap_zx_permitir_versiones_desconocidas={0};
 //Autoguardar un snapshot a intervalos fijos
 z80_bit snapshot_autosave_interval_enabled={0};
 
-char snapshot_autosave_interval_name[PATH_MAX]="autosnap";
 
-char snapshot_autosave_interval_directory[PATH_MAX]="";
+//Prefijos y directorios de autosave y de quicksave
+char snapshot_autosave_interval_quicksave_name[PATH_MAX]="autosnap";
+char snapshot_autosave_interval_quicksave_directory[PATH_MAX]="";
 
 //Cada cuanto se guarda un snapshot
 int snapshot_autosave_interval_seconds=1;
@@ -4899,6 +4900,38 @@ void snapshot_load(void)
 }
 
 
+//Realiza quicksave y retorna nombre en char nombre, siempre que no sea NULL
+void snapshot_quick_save(char *nombre)
+{
+  char final_name[PATH_MAX];
+
+
+  struct timeval tv;
+  struct tm* ptm;
+  //long microseconds;
+
+
+                    // 2015/01/01 11:11:11.999999 "
+                    // 123456789012345678901234567
+  //const int longitud_timestamp=27;
+
+  /* Obtain the time of day, and convert it to a tm struct. */
+  gettimeofday (&tv, NULL);
+  ptm = localtime (&tv.tv_sec);
+  /* Format the date and time, down to a single second. */
+  char time_string[40];
+
+  strftime (time_string, sizeof(time_string), "%Y-%m-%d-%H-%M-%S", ptm);
+
+  if (snapshot_autosave_interval_quicksave_directory[0]==0) sprintf (final_name,"%s-%s.zx",snapshot_autosave_interval_quicksave_name,time_string);
+
+  else sprintf (final_name,"%s/%s-%s.zx",snapshot_autosave_interval_quicksave_directory,snapshot_autosave_interval_quicksave_name,time_string);
+
+  snapshot_save(final_name);
+
+  if (nombre!=NULL) strcpy(nombre,final_name);
+}
+
 void autosave_snapshot_at_fixed_interval(void)
 {
   if (snapshot_autosave_interval_enabled.v==0) return;
@@ -4907,33 +4940,7 @@ void autosave_snapshot_at_fixed_interval(void)
   if (snapshot_autosave_interval_current_counter>=snapshot_autosave_interval_seconds) {
     snapshot_autosave_interval_current_counter=0;
 
-    //snapshot_save(snapshot_autosave_interval_name);
-    //Componer nombre final
+    snapshot_quick_save(NULL);
 
-    char final_name[PATH_MAX];
-
-
-    struct timeval tv;
-    struct tm* ptm;
-    //long microseconds;
-
-
-                      // 2015/01/01 11:11:11.999999 "
-                      // 123456789012345678901234567
-    //const int longitud_timestamp=27;
-
-    /* Obtain the time of day, and convert it to a tm struct. */
-    gettimeofday (&tv, NULL);
-    ptm = localtime (&tv.tv_sec);
-    /* Format the date and time, down to a single second. */
-    char time_string[40];
-
-    strftime (time_string, sizeof(time_string), "%Y-%m-%d-%H-%M-%S", ptm);
-
-    if (snapshot_autosave_interval_directory[0]==0) sprintf (final_name,"%s-%s.zx",snapshot_autosave_interval_name,time_string);
-
-    else sprintf (final_name,"%s/%s-%s.zx",snapshot_autosave_interval_directory,snapshot_autosave_interval_name,time_string);
-
-    snapshot_save(final_name);
   }
 }

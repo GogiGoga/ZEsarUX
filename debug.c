@@ -67,6 +67,8 @@
 #include "cpc.h"
 #include "sam.h"
 
+#include "snap.h"
+
 
 struct timeval debug_timer_antes, debug_timer_ahora;
 
@@ -3349,6 +3351,12 @@ int i;
         debug_printf (VERBOSE_DEBUG,"Running prints command : %s",parametros);
         printf ("%s\n",parametros);
       }
+    }
+
+
+    else if (!strcmp(comando_sin_parametros,"quicksave")) {
+      debug_printf (VERBOSE_DEBUG,"Running quicksave command");
+      snapshot_quick_save(NULL);
     }
 
     else if (!strcmp(comando_sin_parametros,"set-register")) {

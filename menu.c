@@ -135,6 +135,7 @@ defined_f_function defined_f_functions_array[MAX_F_FUNCTIONS]={
 	{"OpenMenu",F_FUNCION_OPENMENU},
 	{"OCR",F_FUNCION_OCR},
 	{"SmartLoad",F_FUNCION_SMARTLOAD},
+	{"Quicksave",F_FUNCION_QUICKSAVE},
 	{"LoadBinary",F_FUNCION_LOADBINARY},
 	{"SaveBinary",F_FUNCION_SAVEBINARY},
 	{"OSDKeyboard",F_FUNCION_OSDKEYBOARD},
@@ -4875,22 +4876,22 @@ void menu_breakpoints(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_ayuda(array_menu_breakpoints,"It tests a condition using the same method as breakpoint conditions below");
 
                 for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
-			char string_condition_shown[13];
-			char string_action_shown[7];
+			char string_condition_shown[14];
+			char string_action_shown[8];
 
 			char string_condition_action[33];
 
 			if (debug_breakpoints_conditions_array[i][0]) {
-				menu_tape_settings_trunc_name(debug_breakpoints_conditions_array[i],string_condition_shown,13);
-				menu_tape_settings_trunc_name(debug_breakpoints_actions_array[i],string_action_shown,7);
+				menu_tape_settings_trunc_name(debug_breakpoints_conditions_array[i],string_condition_shown,14);
+				menu_tape_settings_trunc_name(debug_breakpoints_actions_array[i],string_action_shown,8);
 				if (debug_breakpoints_actions_array[i][0]) sprintf (string_condition_action,"%s->%s",string_condition_shown,string_action_shown);
 				else sprintf (string_condition_action,"%s->menu",string_condition_shown);
 			}
 			else {
 				sprintf(string_condition_action,"None");
 			}
-
-			if (debug_breakpoints_conditions_enabled[i]==0 || debug_breakpoints_enabled.v==0) {
+																																																										//0123456789012345678901234567890
+			if (debug_breakpoints_conditions_enabled[i]==0 || debug_breakpoints_enabled.v==0) {														//Di 12345678901234: 12345678
 				menu_add_item_menu_format(array_menu_breakpoints,MENU_OPCION_NORMAL,menu_breakpoints_conditions_set,menu_breakpoints_cond,"Di %d: %s",i+1,string_condition_action);
 			}
                         else {
@@ -15325,13 +15326,13 @@ void menu_snapshot_autosave_at_interval_prefix(MENU_ITEM_PARAMETERS)
 	char string_prefix[30];
 	//Aunque el limite real es PATH_MAX, lo limito a 30
 
-	sprintf (string_prefix,"%s",snapshot_autosave_interval_name);
+	sprintf (string_prefix,"%s",snapshot_autosave_interval_quicksave_name);
 
 	menu_ventana_scanf("Name prefix: ",string_prefix,30);
 
 	if (string_prefix[0]==0) return;
 
-	strcpy(snapshot_autosave_interval_name,string_prefix);
+	strcpy(snapshot_autosave_interval_quicksave_name,string_prefix);
 }
 
 
@@ -15354,7 +15355,7 @@ void menu_snapshot_autosave_at_interval_directory(MENU_ITEM_PARAMETERS)
 	char nada[PATH_MAX];
 
         //Obtenemos ultimo directorio visitado
-	menu_filesel_chdir(snapshot_autosave_interval_directory);
+	menu_filesel_chdir(snapshot_autosave_interval_quicksave_directory);
 
 
         ret=menu_filesel("Enter dir and press ESC",filtros,nada);
@@ -15363,8 +15364,8 @@ void menu_snapshot_autosave_at_interval_directory(MENU_ITEM_PARAMETERS)
 	//Si sale con ESC
 	if (ret==0) {
 		//Directorio root
-		sprintf (snapshot_autosave_interval_directory,"%s",menu_filesel_last_directory_seen);
-		debug_printf (VERBOSE_DEBUG,"Selected directory: %s",snapshot_autosave_interval_directory);
+		sprintf (snapshot_autosave_interval_quicksave_directory,"%s",menu_filesel_last_directory_seen);
+		debug_printf (VERBOSE_DEBUG,"Selected directory: %s",snapshot_autosave_interval_quicksave_directory);
 
 
 	}
@@ -15382,6 +15383,16 @@ void menu_snapshot_stop_rzx_play(MENU_ITEM_PARAMETERS)
 	eject_rzx_file();
 }
 
+void menu_snapshot_quicksave(MENU_ITEM_PARAMETERS)
+{
+	char final_name[PATH_MAX];
+	snapshot_quick_save(final_name);
+
+
+	menu_generic_message_format("Quicksave","OK. Snapshot name: %s",final_name);
+
+}
+
 void menu_snapshot(MENU_ITEM_PARAMETERS)
 {
 
@@ -15391,10 +15402,10 @@ void menu_snapshot(MENU_ITEM_PARAMETERS)
 
         do {
 					char string_autosave_interval_prefix[16];
-					menu_tape_settings_trunc_name(snapshot_autosave_interval_name,string_autosave_interval_prefix,16);
+					menu_tape_settings_trunc_name(snapshot_autosave_interval_quicksave_name,string_autosave_interval_prefix,16);
 
 					char string_autosave_interval_path[16];
-					menu_tape_settings_trunc_name(snapshot_autosave_interval_directory,string_autosave_interval_path,16);
+					menu_tape_settings_trunc_name(snapshot_autosave_interval_quicksave_directory,string_autosave_interval_path,16);
 
                 menu_add_item_menu_inicial(&array_menu_snapshot,"~~Load snapshot",MENU_OPCION_NORMAL,menu_snapshot_load,NULL);
 		menu_add_item_menu_shortcut(array_menu_snapshot,'l');
@@ -15417,6 +15428,23 @@ void menu_snapshot(MENU_ITEM_PARAMETERS)
 					}
 
 
+					menu_add_item_menu_format(array_menu_snapshot,MENU_OPCION_NORMAL,menu_snapshot_quicksave,NULL,"~~Quicksave");
+					menu_add_item_menu_shortcut(array_menu_snapshot,'q');
+					menu_add_item_menu_tooltip(array_menu_snapshot,"Save a snapshot quickly");
+					menu_add_item_menu_ayuda(array_menu_snapshot,"Save a snapshot quickly. Name prefix and directory to save are indicated on settings below");
+
+
+					menu_add_item_menu_format(array_menu_snapshot,MENU_OPCION_NORMAL,menu_snapshot_autosave_at_interval_prefix,NULL,"Snap Prefix: %s",string_autosave_interval_prefix);
+					menu_add_item_menu_tooltip(array_menu_snapshot,"Name prefix for quicksave and autosave snapshots");
+					menu_add_item_menu_ayuda(array_menu_snapshot,"Name prefix for quicksave and autosave snapshots. The final name will be: prefix-date-hour.zx");
+
+						menu_add_item_menu_format(array_menu_snapshot,MENU_OPCION_NORMAL,menu_snapshot_autosave_at_interval_directory,NULL,"Snap Path: %s",string_autosave_interval_path);
+						menu_add_item_menu_tooltip(array_menu_snapshot,"Path to save quicksave & autosnapshots");
+						menu_add_item_menu_ayuda(array_menu_snapshot,"Path to save quicksave & autosnapshots. If not set, will use current directory");
+
+
+
+
 					menu_add_item_menu_format(array_menu_snapshot,MENU_OPCION_NORMAL,menu_snapshot_autosave_at_interval,NULL,"Autosave at interval: %s",
 									(snapshot_autosave_interval_enabled.v ? "Yes" : "No") );
 					menu_add_item_menu_tooltip(array_menu_snapshot,"Autosave snapshot every fixed interval");
@@ -15426,13 +15454,7 @@ void menu_snapshot(MENU_ITEM_PARAMETERS)
 					menu_add_item_menu_tooltip(array_menu_snapshot,"Save snapshot every desired interval");
 					menu_add_item_menu_ayuda(array_menu_snapshot,"Save snapshot every desired interval");
 
-					menu_add_item_menu_format(array_menu_snapshot,MENU_OPCION_NORMAL,menu_snapshot_autosave_at_interval_prefix,NULL," Name Prefix: %s",string_autosave_interval_prefix);
-					menu_add_item_menu_tooltip(array_menu_snapshot,"Name prefix for the saved snapshots");
-					menu_add_item_menu_ayuda(array_menu_snapshot,"Name prefix for the saved snapshots. The final name will be: prefix-date-hour.zx");
 
-						menu_add_item_menu_format(array_menu_snapshot,MENU_OPCION_NORMAL,menu_snapshot_autosave_at_interval_directory,NULL," Path: %s",string_autosave_interval_path);
-						menu_add_item_menu_tooltip(array_menu_snapshot,"Path to save autosnapshots");
-						menu_add_item_menu_ayuda(array_menu_snapshot,"Path to save autosnapshots. If not set, will use current directory");
 
 
                 menu_add_item_menu(array_menu_snapshot,"",MENU_OPCION_SEPARADOR,NULL,NULL);
@@ -23604,6 +23626,7 @@ void menu_process_f_functions(void)
 
 	//printf ("Menu process Tecla: F%d Accion: %s\n",indice+1,defined_f_functions_array[accion].texto_funcion);
 
+
 	switch (accion)
 	{
 		case F_FUNCION_DEFAULT:
@@ -23634,6 +23657,10 @@ void menu_process_f_functions(void)
 
 		case F_FUNCION_SMARTLOAD:
 			menu_quickload(0);
+		break;
+
+		case F_FUNCION_QUICKSAVE:
+			snapshot_quick_save(NULL);
 		break;
 
 		case F_FUNCION_LOADBINARY:

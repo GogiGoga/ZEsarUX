@@ -48,17 +48,19 @@ extern void autoload_snapshot(void);
 
 extern z80_bit snapshot_autosave_interval_enabled;
 
-extern char snapshot_autosave_interval_name[];
+extern char snapshot_autosave_interval_quicksave_name[];
 
 extern int snapshot_autosave_interval_seconds;
 
 extern int snapshot_autosave_interval_current_counter;
 
-extern char snapshot_autosave_interval_directory[];
+extern char snapshot_autosave_interval_quicksave_directory[];
 
 extern void autosave_snapshot_at_fixed_interval(void);
 
 extern void load_z80_snapshot(char *archivo);
+
+extern void snapshot_quick_save(char *nombre);
 
 
 #endif
