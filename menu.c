@@ -12444,7 +12444,7 @@ void menu_mmc_divmmc(MENU_ITEM_PARAMETERS)
 
 
 			if (divmmc_diviface_enabled.v) {
-				menu_add_item_menu_format(array_menu_mmc_divmmc,MENU_OPCION_NORMAL,menu_storage_diviface_eprom_write_jumper,NULL,"Allow diviface writes: %s",
+				menu_add_item_menu_format(array_menu_mmc_divmmc,MENU_OPCION_NORMAL,menu_storage_diviface_eprom_write_jumper,NULL,"Firmware writeable: %s",
 				(diviface_eprom_write_jumper.v ? "Yes" : "No") );
 				menu_add_item_menu_tooltip(array_menu_mmc_divmmc,"Allows writing to DivIDE/DivMMC eprom");
 				menu_add_item_menu_ayuda(array_menu_mmc_divmmc,"Allows writing to DivIDE/DivMMC eprom. Changes are lost when you exit the emulator");
@@ -12743,7 +12743,7 @@ void menu_ide_divide(MENU_ITEM_PARAMETERS)
 													 menu_add_item_menu_ayuda(array_menu_ide_divide,"Changes DIVIDE firmware eprom file");
 
 													 if (divide_diviface_enabled.v) {
-										 				menu_add_item_menu_format(array_menu_ide_divide,MENU_OPCION_NORMAL,menu_storage_diviface_eprom_write_jumper,NULL,"Allow diviface writes: %s",
+										 				menu_add_item_menu_format(array_menu_ide_divide,MENU_OPCION_NORMAL,menu_storage_diviface_eprom_write_jumper,NULL,"Firmware writeable: %s",
 										 				(diviface_eprom_write_jumper.v ? "Yes" : "No") );
 										 				menu_add_item_menu_tooltip(array_menu_ide_divide,"Allows writing to DivIDE/DivMMC eprom");
 										 				menu_add_item_menu_ayuda(array_menu_ide_divide,"Allows writing to DivIDE/DivMMC eprom. Changes are lost when you exit the emulator");
