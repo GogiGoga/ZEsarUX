@@ -6920,7 +6920,8 @@ void menu_debug_view_sprites(MENU_ITEM_PARAMETERS)
 		}
 		else {
 			bytes_por_linea=view_sprites_ancho_sprite/view_sprites_ppb;
-			bytes_por_ventana=view_sprites_ancho_sprite*view_sprites_alto_sprite;
+			//bytes_por_ventana=view_sprites_ancho_sprite*view_sprites_alto_sprite;
+			bytes_por_ventana=bytes_por_linea*view_sprites_alto_sprite;
 			//view_sprites_direccion=adjust_address_space_cpu(view_sprites_direccion);
 			view_sprites_direccion=adjust_address_memory_size(view_sprites_direccion);
 
