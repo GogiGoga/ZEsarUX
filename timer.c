@@ -666,3 +666,51 @@ void timer_check_interrupt(void)
 
 
 }
+
+
+int timer_get_uptime_seconds(void)
+{
+
+	struct timeval ahora;
+
+	long z80_uptime_difftime, z80_uptime_seconds, z80_uptime_useconds;
+
+	long z80_uptime_total_seconds;
+
+	gettimeofday(&ahora, NULL);
+
+
+				z80_uptime_seconds  = ahora.tv_sec  - zesarux_start_time.tv_sec;
+				z80_uptime_useconds = ahora.tv_usec - zesarux_start_time.tv_usec;
+
+				z80_uptime_difftime = ((z80_uptime_seconds) * 1000000 + z80_uptime_useconds);
+
+		//printf ("useconds: %ld\n",z80_uptime_difftime);
+
+	z80_uptime_total_seconds=z80_uptime_difftime/1000000;
+
+	//printf ("seconds: %ld\n",z80_uptime_total_seconds);
+
+	return z80_uptime_total_seconds;
+
+}
+
+
+void timer_get_texto_time(struct timeval *tv, char *texto)
+{
+
+
+	struct tm* ptm;
+
+
+	/* Obtain the time of day, and convert it to a tm struct. */
+	//gettimeofday (&tv, NULL);
+
+	//convert it to a tm struc
+	ptm = localtime (&tv->tv_sec);
+	/* Format the date and time, down to a single second. */
+	char time_string[40];
+
+	strftime (texto, sizeof(time_string), "%H:%M:%S", ptm);
+
+}

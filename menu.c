@@ -6336,7 +6336,6 @@ int view_sprites_palette=0;
 int menu_debug_sprites_total_colors_mapped_palette(int paleta)
 {
 
-	int index;
 
 	switch (paleta) {
 
@@ -6394,7 +6393,6 @@ int menu_debug_sprites_total_colors_mapped_palette(int paleta)
 int menu_debug_sprites_max_value_mapped_palette(int paleta)
 {
 
-	int index;
 
 	switch (paleta) {
 
@@ -19483,10 +19481,10 @@ void menu_display_total_palette(MENU_ITEM_PARAMETERS)
         do {
 
 							int linea=0;
-							int linea_color;
+							//int linea_color;
 
 
-		char dumpmemoria[33];
+		//char dumpmemoria[33];
 
 		//Hacer que texto ventana empiece pegado a la izquierda
 		//menu_escribe_linea_startx=0;
@@ -22048,10 +22046,17 @@ void menu_about_running_info(MENU_ITEM_PARAMETERS)
 					sprintf(configfile,"Unknown");
 				}
 
+				int uptime_seconds=timer_get_uptime_seconds();
+
+				char hora_inicio[100];
+				timer_get_texto_time(&zesarux_start_time,hora_inicio);
+
 	menu_generic_message_format("Running info",
 		"Video Driver: %s\nAvailable video drivers: %s\n\nAudio Driver: %s\nAvailable audio drivers: %s\n\n"
-		"Configuration file: %s\n",
-		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile);
+		"Configuration file: %s\n\n"
+		"Start time: %s\n"
+		"Uptime %d secs (%d mins)\n",
+		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile,hora_inicio,uptime_seconds,uptime_seconds/60);
 
 
 

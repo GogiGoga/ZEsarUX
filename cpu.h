@@ -222,6 +222,7 @@ extern z80_byte video_zx8081_ula_video_output;
 
 extern struct timeval z80_interrupts_timer_antes, z80_interrupts_timer_ahora;
 extern long z80_timer_difftime, z80_timer_seconds, z80_timer_useconds;
+extern struct timeval zesarux_start_time;
 extern z80_bit interrupcion_timer_generada;
 extern int contador_frames_veces_buffer_audio;
 extern z80_bit esperando_tiempo_final_t_estados;

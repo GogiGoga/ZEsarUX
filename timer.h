@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -24,6 +24,8 @@
 
 #include "cpu.h"
 
+
+
 extern void timer_pause_waiting_end_frame(void);
 extern void timer_check_interrupt(void);
 extern void timer_reset(void);
@@ -40,5 +42,10 @@ extern int top_speed_real_frames;
 extern z80_bit top_speed_timer;
 
 extern z80_bit interrupcion_fifty_generada;
+
+extern int timer_get_uptime_seconds(void);
+
+extern void timer_get_texto_time(struct timeval *tv, char *texto);
+
 
 #endif

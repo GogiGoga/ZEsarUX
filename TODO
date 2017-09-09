@@ -40,7 +40,6 @@ The format of each table entry is as follows:
 -licencia tipo letra man soft
 
 -Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
-Uptime ?
 Media cpu total?
 Info de tamaño ventana. Y tamaño ventana sin zoom
 

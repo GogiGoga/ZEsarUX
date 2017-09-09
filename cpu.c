@@ -202,6 +202,9 @@ int zoom_x=2,zoom_y=2;
 int zoom_x_original,zoom_y_original;
 
 struct timeval z80_interrupts_timer_antes, z80_interrupts_timer_ahora;
+
+struct timeval zesarux_start_time;
+
 long z80_timer_difftime, z80_timer_seconds, z80_timer_useconds;
 
 //Indica si se tiene que probar dispositivos. Solo se hace cuando no se especifica uno concreto por linea de comandos
@@ -6194,6 +6197,10 @@ struct sched_param sparam;
 	start_timer_thread();
 
 	gettimeofday(&z80_interrupts_timer_antes, NULL);
+
+
+	//Apuntar momento de inicio para estadisticas-uptime
+	gettimeofday(&zesarux_start_time, NULL);
 
 
 	//antes de cargar otros snapshots por linea de comandos, ver si hay autocarga
