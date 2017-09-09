@@ -35,6 +35,7 @@ Improved debugger:
 *now breakpoints are evaluated before running the current opcode (instead of after). So breakpoints like "PC=0" and doing a reset from menu, now works
 *now you can set breakpoints from command line/config file but not enabled by default. You need --enable-breakpoints setting
 *now the multitask setting is not lost when a breakpoint is fired
+*now you can repeat last command by pressing enter on ZRCP (requires enabling a debug-setting)
 
 Improved QL emulation: experimental support of LBYTES command, added QL root directory selector for mdv1, mdv2, flp1
 Improved Sprite Viewer: Save sprite, TBBlue sprite viewer, inverse sprite, set bpp (8,4,2,1), set palette

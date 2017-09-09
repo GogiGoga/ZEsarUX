@@ -767,7 +767,9 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-debug-settings","|sds","setting","Set debug settings on remote command protocol. It's a numeric value with bitmask with different meaning: \n"
 				"Bit 0: show all cpu registers on cpu stepping or only pc+opcode.\nBit 1: show 8 next opcodes on cpu stepping.\n"
 				"Bit 2: Do not add a L preffix when searching source code labels.\n"
-				"Bit 3: Show bytes when debugging opcodes"},
+				"Bit 3: Show bytes when debugging opcodes.\n"
+				"Bit 4: Repeat last command only by pressing enter.\n"
+		},
 	{"set-machine","|sm","machine_name","Set machine"},
 	{"set-memory-zone","|smz","zone","Set memory zone number"},
   {"set-register","|sr","register=value","Changes register value. Example: set-register DE=3344H"},
@@ -2746,6 +2748,10 @@ int return_internal_pointer(char *s,z80_byte **puntero)
 
 
 char buffer_lectura_socket[MAX_LENGTH_PROTOCOL_COMMAND];
+
+//para poder repetir comando anterior solo pulsando enter
+char buffer_lectura_socket_anterior[MAX_LENGTH_PROTOCOL_COMMAND]="";
+
 char *parametros;
 
 void interpreta_comando(char *comando,int misocket)
@@ -2754,6 +2760,21 @@ void interpreta_comando(char *comando,int misocket)
 char buffer_retorno[2048];
 
 	debug_printf (VERBOSE_DEBUG,"Remote command: lenght: %d [%s]",strlen(comando),comando);
+
+	//Si enter y setting de repetir comando anterior solo pulsando enter
+	if (  (comando[0]==0  || comando[0]=='\n' || comando[0]=='\r')
+		&&
+		(remote_debug_settings&16)
+		) {
+		strcpy(comando,buffer_lectura_socket_anterior);
+		debug_printf (VERBOSE_DEBUG,"Repeating last command: lenght: %d [%s]",strlen(comando),comando);
+		escribir_socket_format(misocket,"Repeating: %s\n",comando);
+	}
+
+	else {
+		//Si no, copiar a texto comando anterior el actual
+		strcpy(buffer_lectura_socket_anterior,comando);
+	}
 
 	//printf ("%d %d %d %d",comando[0],comando[1],comando[2],comando[3]);
 
