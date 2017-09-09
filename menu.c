@@ -23979,7 +23979,7 @@ void set_splash_zesarux_logo_paso(int paso)
 	int alto_z=6;
 
 	int x_inicial=16-ancho_z;  //Centrado
-	int y_inicial=7;
+	int y_inicial=8;
 
 	debug_printf(VERBOSE_DEBUG,"Drawing ZEsarUX splash logo, step %d",paso);
 
