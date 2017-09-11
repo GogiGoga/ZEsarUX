@@ -1425,7 +1425,7 @@ void remote_cpu_run(int misocket,int verbose,int limite)
     total_instrucciones++;
     if (limite) {
       if (total_instrucciones==limite) {
-        escribir_socket_format(misocket,"Returning after %d opcodes",limite);
+        escribir_socket_format(misocket,"Returning after %d opcodes\n",limite);
         salir=1;
       }
     }
