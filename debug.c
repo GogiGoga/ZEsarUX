@@ -1507,6 +1507,8 @@ int debug_nested_id_core;
 z80_byte cpu_core_loop_debug(z80_int dir GCC_UNUSED, z80_byte value GCC_UNUSED)
 {
 
+  	//Llamamos al core normal
+	debug_nested_core_call_previous(debug_nested_id_core);
 
 
   //Evaluamos condiciones debug
@@ -1553,8 +1555,6 @@ int debug_exitrom=0;
 		}
 	}
 
-  //Llamamos al core normal
-	debug_nested_core_call_previous(debug_nested_id_core);
 
 
 	//Para que no se queje el compilador, aunque este valor de retorno no lo usamos

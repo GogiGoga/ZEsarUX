@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-menu al saltar breakpoint pc esta en direccion siguiente
+
 -quiza redibujar archivo logo tal cual con el boot logo
 
 -Disassemble a txt
