@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-buscar texto con tecla F. parece que si ventana no ocupa toda pantalla, el cursor la primera vez va siempre a la primera linea
+
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
 -quiza redibujar archivo logo tal cual con el boot logo
