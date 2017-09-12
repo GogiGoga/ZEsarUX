@@ -332,7 +332,7 @@ extern menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \
 "[VARIABLE][CONDITION][VALUE] [OPERATOR] [VARIABLE][CONDITION][VALUE] [OPERATOR] .... where: \n" \
-"[VARIABLE] can be a CPU register or some pseudo variables: A,B,C,D,E,F,H,L,I,R,BC,DE,HL,SP,PC,IX,IY\n" \
+"[VARIABLE] can be a CPU register or some pseudo variables: A,B,C,D,E,F,H,L,AF,BC,DE,HL,A',B',C',D',E',F',H',L',AF',BC',DE',HL',I,R,SP,PC,IX,IY\n" \
 "FS,FZ,FP,FV,FH,FN,FC: Flags\n" \
 "(BC),(DE),(HL),(SP),(PC),(IX),(IY), (NN), IFF1, IFF2, OPCODE,\n" \
 "RAM: RAM mapped on 49152-65535 on Spectrum 128 or Prism,\n" \

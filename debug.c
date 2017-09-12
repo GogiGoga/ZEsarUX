@@ -744,9 +744,36 @@ unsigned int cpu_core_loop_debug_registro(char *registro,int *si_cond_opcode)
 	if (!strcasecmp(registro,"i")) return reg_i;
 	if (!strcasecmp(registro,"r")) return (reg_r&127)|(reg_r_bit7&128);
 
+        if (!strcasecmp(registro,"af")) return REG_AF;
         if (!strcasecmp(registro,"bc")) return reg_bc;
         if (!strcasecmp(registro,"de")) return reg_de;
         if (!strcasecmp(registro,"hl")) return reg_hl;
+
+
+/*
+#define REG_AF (value_8_to_16(reg_a,Z80_FLAGS))
+
+#define REG_AF_SHADOW (value_8_to_16(reg_a_shadow,Z80_FLAGS_SHADOW))
+#define REG_HL_SHADOW (value_8_to_16(reg_h_shadow,reg_l_shadow))
+#define REG_BC_SHADOW (value_8_to_16(reg_b_shadow,reg_c_shadow))
+#define REG_DE_SHADOW (value_8_to_16(reg_d_shadow,reg_e_shadow))
+*/
+      if (!strcasecmp(registro,"af'")) return REG_AF_SHADOW;
+      if (!strcasecmp(registro,"bc'")) return REG_BC_SHADOW;
+      if (!strcasecmp(registro,"de'")) return REG_DE_SHADOW;
+      if (!strcasecmp(registro,"hl'")) return REG_HL_SHADOW;
+
+      if (!strcasecmp(registro,"a'")) return reg_a_shadow;
+    	if (!strcasecmp(registro,"b'")) return reg_b_shadow;
+    	if (!strcasecmp(registro,"c'")) return reg_c_shadow;
+    	if (!strcasecmp(registro,"d'")) return reg_d_shadow;
+    	if (!strcasecmp(registro,"e'")) return reg_e_shadow;
+    	if (!strcasecmp(registro,"f'")) return Z80_FLAGS_SHADOW;
+    	if (!strcasecmp(registro,"h'")) return reg_h_shadow;
+    	if (!strcasecmp(registro,"l'")) return reg_l_shadow;
+
+
+
         if (!strcasecmp(registro,"sp")) return reg_sp;
         if (!strcasecmp(registro,"pc")) return reg_pc;
         if (!strcasecmp(registro,"ix")) return reg_ix;
@@ -2729,6 +2756,16 @@ int debug_change_register(char *texto)
                         reg_l=valor_registro;
                         return 0;
                 }
+
+/*
+#define REG_AF_SHADOW ((reg_a_shadow<<8)|Z80_FLAGS_SHADOW)
+#define REG_HL_SHADOW ((reg_h_shadow<<8)|reg_l_shadow)
+#define REG_BC_SHADOW ((reg_b_shadow<<8)|reg_c_shadow)
+#define REG_DE_SHADOW ((reg_d_shadow<<8)|reg_e_shadow)
+*/
+
+
+
 
 		else if (!strcasecmp(texto_registro,"I")) {
                         reg_i=valor_registro;

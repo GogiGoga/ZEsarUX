@@ -98,6 +98,13 @@ extern z80_byte reg_b_shadow,reg_c_shadow;
 extern z80_byte reg_d_shadow,reg_e_shadow;
 extern z80_byte reg_a_shadow;
 
+#define REG_AF (value_8_to_16(reg_a,Z80_FLAGS))
+
+#define REG_AF_SHADOW (value_8_to_16(reg_a_shadow,Z80_FLAGS_SHADOW))
+#define REG_HL_SHADOW (value_8_to_16(reg_h_shadow,reg_l_shadow))
+#define REG_BC_SHADOW (value_8_to_16(reg_b_shadow,reg_c_shadow))
+#define REG_DE_SHADOW (value_8_to_16(reg_d_shadow,reg_e_shadow))
+
 extern void set_machine(char *romfile);
 extern void set_machine_params(void);
 extern void post_set_machine(char *romfile);
