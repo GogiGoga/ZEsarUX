@@ -2707,6 +2707,23 @@ int debug_change_register(char *texto)
                         return 0;
                 }
 
+    else if (!strcasecmp(texto_registro,"AF")) {
+      reg_a=value_16_to_8h(valor_registro);
+      Z80_FLAGS=value_16_to_8l(valor_registro);
+      return 0;
+    }
+
+
+                /*
+                #define REG_AF (value_8_to_16(reg_a,Z80_FLAGS))
+
+                #define REG_AF_SHADOW (value_8_to_16(reg_a_shadow,Z80_FLAGS_SHADOW))
+                #define REG_HL_SHADOW (value_8_to_16(reg_h_shadow,reg_l_shadow))
+                #define REG_BC_SHADOW (value_8_to_16(reg_b_shadow,reg_c_shadow))
+                #define REG_DE_SHADOW (value_8_to_16(reg_d_shadow,reg_e_shadow))
+                */
+
+
 		else if (!strcasecmp(texto_registro,"BC")) {
                         reg_bc=valor_registro;
                         return 0;
@@ -2721,6 +2738,41 @@ int debug_change_register(char *texto)
                         reg_hl=valor_registro;
                         return 0;
                 }
+
+                else if (!strcasecmp(texto_registro,"AF'")) {
+                  reg_a_shadow=value_16_to_8h(valor_registro);
+                  Z80_FLAGS_SHADOW=value_16_to_8l(valor_registro);
+                  return 0;
+                }
+
+                else if (!strcasecmp(texto_registro,"BC'")) {
+                  reg_b_shadow=value_16_to_8h(valor_registro);
+                  reg_c_shadow=value_16_to_8l(valor_registro);
+                  return 0;
+                }
+
+                else if (!strcasecmp(texto_registro,"DE'")) {
+                  reg_d_shadow=value_16_to_8h(valor_registro);
+                  reg_e_shadow=value_16_to_8l(valor_registro);
+                  return 0;
+                }
+
+                else if (!strcasecmp(texto_registro,"HL'")) {
+                  reg_h_shadow=value_16_to_8h(valor_registro);
+                  reg_l_shadow=value_16_to_8l(valor_registro);
+                  return 0;
+                }
+
+
+                            /*
+                            #define REG_AF (value_8_to_16(reg_a,Z80_FLAGS))
+
+                            #define REG_AF_SHADOW (value_8_to_16(reg_a_shadow,Z80_FLAGS_SHADOW))
+                            #define REG_HL_SHADOW (value_8_to_16(reg_h_shadow,reg_l_shadow))
+                            #define REG_BC_SHADOW (value_8_to_16(reg_b_shadow,reg_c_shadow))
+                            #define REG_DE_SHADOW (value_8_to_16(reg_d_shadow,reg_e_shadow))
+                            */
+
 
 		else if (!strcasecmp(texto_registro,"A")) {
                         reg_a=valor_registro;
@@ -2747,6 +2799,11 @@ int debug_change_register(char *texto)
                         return 0;
                 }
 
+                else if (!strcasecmp(texto_registro,"F")) {
+                                    Z80_FLAGS=valor_registro;
+                                    return 0;
+                            }
+
 		else if (!strcasecmp(texto_registro,"H")) {
                         reg_h=valor_registro;
                         return 0;
@@ -2763,6 +2820,47 @@ int debug_change_register(char *texto)
 #define REG_BC_SHADOW ((reg_b_shadow<<8)|reg_c_shadow)
 #define REG_DE_SHADOW ((reg_d_shadow<<8)|reg_e_shadow)
 */
+
+else if (!strcasecmp(texto_registro,"A'")) {
+                    reg_a_shadow=valor_registro;
+                    return 0;
+            }
+
+else if (!strcasecmp(texto_registro,"B'")) {
+                    reg_b_shadow=valor_registro;
+                    return 0;
+            }
+
+else if (!strcasecmp(texto_registro,"C'")) {
+                    reg_c_shadow=valor_registro;
+                    return 0;
+            }
+
+else if (!strcasecmp(texto_registro,"D'")) {
+                    reg_d_shadow=valor_registro;
+                    return 0;
+            }
+
+else if (!strcasecmp(texto_registro,"E'")) {
+                    reg_e_shadow=valor_registro;
+                    return 0;
+            }
+
+            else if (!strcasecmp(texto_registro,"F'")) {
+                                Z80_FLAGS_SHADOW=valor_registro;
+                                return 0;
+                        }
+
+else if (!strcasecmp(texto_registro,"H'")) {
+                    reg_h_shadow=valor_registro;
+                    return 0;
+            }
+
+else if (!strcasecmp(texto_registro,"L'")) {
+                    reg_l_shadow=valor_registro;
+                    return 0;
+            }
+
 
 
 

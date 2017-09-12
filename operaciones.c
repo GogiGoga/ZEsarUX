@@ -6227,7 +6227,8 @@ Port: 10-- ---- ---- --0-
 	{
 		//Para 128k
 		//Puerto tipicamente 32765
-		//The additional memory features of the 128K/+2 are controlled to by writes to port 0x7ffd. As normal on Sinclair hardware, the port address is in fact only partially decoded and the hardware will respond to any port address with bits 1 and 15 reset. However, 0x7ffd should be used if at all possible to avoid conflicts with other hardware.
+		//The additional memory features of the 128K/+2 are controlled to by writes to port 0x7ffd. As normal on Sinclair hardware, the port address is in fact only partially decoded and the hardware will respond to any port address with
+		//bits 1 and 15 reset. However, 0x7ffd should be used if at all possible to avoid conflicts with other hardware.
 
 		if ( (puerto & 32770) == 0 ) {
 
@@ -6262,7 +6263,8 @@ Port: 10-- ---- ---- --0-
 
 
 		//Puerto tipicamente 32765
-		// the hardware will respond only to those port addresses with bit 1 reset, bit 14 set and bit 15 reset (as opposed to just bits 1 and 15 reset on the 128K/+2).
+		// the hardware will respond only to those port addresses
+		//with bit 1 reset, bit 14 set and bit 15 reset (as opposed to just bits 1 and 15 reset on the 128K/+2).
 	        if ( (puerto & 49154) == 16384 ) {
 			mem128_p2a_write_page_port(puerto,value);
 
@@ -6612,7 +6614,8 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 		if (puerto==TBBLUE_VALUE_PORT) tbblue_set_value_port(value);
 
                         //Puerto tipicamente 32765
-                        // the hardware will respond only to those port addresses with bit 1 reset, bit 14 set and bit 15 reset (as opposed to just bits 1 and 15 reset on the 128K/+2).
+                        // the hardware will respond only to those port addresses with
+												//bit 1 reset, bit 14 set and bit 15 reset (as opposed to just bits 1 and 15 reset on the 128K/+2).
                         if ( (puerto & 49154) == 16384 ) {
 				//printf ("TBBLUE changing port 32765 value=0x%02XH\n",value);
                                 puerto_32765=value;
