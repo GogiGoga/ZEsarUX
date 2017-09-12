@@ -43,6 +43,7 @@
 #include "tbblue.h"
 #include "textspeech.h"
 #include "tsconf.h"
+#include "operaciones.h"
 
 
 
@@ -728,6 +729,9 @@ struct s_items_ayuda items_ayuda[]={
   {"get-registers","|gr",NULL,"Get CPU registers"},
 	{"get-stack-backtrace",NULL,NULL,"Get last 5 16-bit values from the stack"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
+#ifdef EMULATE_VISUALMEM
+  {"get-visualmem-dump",NULL,NULL,"Dumps all the visual memory written positions. Then, clear its contents"},
+#endif
   {"hard-reset-cpu",NULL,NULL,"Hard resets the machine"},
   {"help","|?","[command]","Shows help screen or command help"},
 	{"hexdump","|h","pointer lenght","Dumps memory at address, showing hex and ascii."},
@@ -3084,6 +3088,24 @@ char buffer_retorno[2048];
 	else if (!strcmp(comando_sin_parametros,"get-version")) {
 		escribir_socket (misocket,EMULATOR_VERSION);
 	}
+
+#ifdef EMULATE_VISUALMEM
+	else if (!strcmp(comando_sin_parametros,"get-visualmem-dump")) {
+
+		int final_visualmem=65536;
+		if (MACHINE_IS_QL) final_visualmem=QL_MEM_LIMIT+1;
+
+		int digitos_max=menu_debug_get_total_digits_hexa(final_visualmem-1);
+
+		int i;
+		for (i=0;i<final_visualmem;i++) {
+			if (visualmem_buffer[i]) {
+				escribir_socket_format(misocket,"%0*XH\n",digitos_max,i);
+				clear_visualmembuffer(i);
+			}
+		}
+	}
+#endif
 
   else if (!strcmp(comando_sin_parametros,"hard-reset-cpu")) {
           hard_reset_cpu();

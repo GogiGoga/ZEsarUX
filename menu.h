@@ -328,6 +328,8 @@ extern void menu_debug_write_mapped_byte(int direccion,z80_byte valor);
 
 extern menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion);
 
+extern int menu_debug_get_total_digits_hexa(int valor);
+
 
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \

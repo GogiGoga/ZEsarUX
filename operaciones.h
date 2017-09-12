@@ -40,6 +40,7 @@ extern char *visualmem_buffer;
 extern void init_visualmembuffer(void);
 extern void set_visualmembuffer(int dir);
 extern void clear_visualmembuffer(int dir);
+extern int get_visualmem_size(void);
 
 
 #endif

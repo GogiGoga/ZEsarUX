@@ -1470,7 +1470,9 @@ opcion tambien para bajar bit 7 final
 -Mostrar ay piano pero para notas deducidas del beeper (wave form)
 
 
--Visualmem. que muestre por separado escritura y lectura. Quizá no tiene sentido pues la ejecución de código genera lecturas por cada opcode leido
+-Visualmem. que muestre por separado escritura y lectura. Quizá no tiene sentido pues la ejecución de código genera lecturas por cada opcode leido. Mismo para ZRCP
+-Visualmem en ZRCP no solo como lista de direcciones sino como un "cuadrado" en ascii, con X por direccion modificada y espacio en blanco por no modificada
+
 
 -items recientemente abiertos en quickload . Y en otros menus de carga tambien?
 
@@ -1546,6 +1548,8 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 
 *** Core CPU ***
+
+-Visualmem pero que notifique mediante ZRCP de cada operacion de escritura que se realice. Quiza solo se puede hacer cuando este en modo "run" desde ZRCP
 
 -Trap door. rutina de carga propia, aunque uses un tap. Se confunde los traps a rom y no carga bien. Poniendo como real tape si que carga
 

@@ -99,6 +99,13 @@ z80_byte sz53p_table[256];
 
 #ifdef EMULATE_VISUALMEM
 
+
+int get_visualmem_size(void)
+{
+	int visualmem_size=(QL_MEM_LIMIT)+1;
+	return visualmem_size;
+}
+
 //A 1 indica memoria modificada
 //A 0 se establece desde opcion de menu
 //char visualmem_buffer[65536];
@@ -108,7 +115,8 @@ void init_visualmembuffer(void)
 {
 	//int visualmem_size=65536;
 
-	int visualmem_size=(QL_MEM_LIMIT)+1;
+	//int visualmem_size=(QL_MEM_LIMIT)+1;
+	int visualmem_size=get_visualmem_size();
 
 	debug_printf(VERBOSE_INFO,"Allocating %d bytes for visualmem buffer",visualmem_size);
 
