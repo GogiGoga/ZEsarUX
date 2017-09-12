@@ -3356,10 +3356,10 @@ void menu_espera_tecla_o_joystick(void)
 }
 
 
-void menu_espera_no_tecla(void)
+void old_menu_espera_no_tecla(void)
 {
 
-        //Esperar a liberar teclas
+        //Esperar a liberar teclas.
         z80_byte acumulado;
 
         do {
@@ -3367,9 +3367,33 @@ void menu_espera_no_tecla(void)
 
 		acumulado=menu_da_todas_teclas();
 
-	//printf ("menu_espera_no_tecla acumulado: %d\n",acumulado);
+		//printf ("menu_espera_no_tecla pc: %d acumulado %d MENU_PUERTO_TECLADO_NINGUNA %d\n",reg_pc,acumulado,MENU_PUERTO_TECLADO_NINGUNA);
 
         } while ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) != MENU_PUERTO_TECLADO_NINGUNA);
+
+}
+
+void menu_espera_no_tecla(void)
+{
+
+        //Esperar a liberar teclas. No ejecutar ni una instruccion cpu si la tecla esta liberada
+	//con eso evitamos que cuando salte un breakpoint, que llama aqui, no se ejecute una instruccion y el registro PC apunte a la siguiente instruccion
+        z80_byte acumulado;
+	int salir=0;
+
+        do {
+		acumulado=menu_da_todas_teclas();
+		if ( (acumulado & MENU_PUERTO_TECLADO_NINGUNA) == MENU_PUERTO_TECLADO_NINGUNA) {
+			salir=1;
+		}
+
+		else {
+			menu_cpu_core_loop();
+		}
+
+	//printf ("menu_espera_no_tecla acumulado: %d\n",acumulado);
+
+	} while (!salir);
 
 }
 
@@ -23752,6 +23776,8 @@ void menu_inicio(void)
 
 	menu_espera_no_tecla();
 
+	//printf ("after menu_espera_no_tecla\n");
+
 
         if (!strcmp(scr_driver_name,"stdout")) {
 		//desactivar menu multitarea con stdout
@@ -23852,8 +23878,10 @@ void menu_inicio(void)
 			//menu_espera_no_tecla();
       //desactivamos multitarea, guardando antes estado multitarea
 			int antes_menu_multitarea=menu_multitarea;
-      menu_multitarea=0;
-			menu_generic_message_format("Breakpoint","Catch Breakpoint: %s",catch_breakpoint_message);
+      			menu_multitarea=0;
+      			audio_playing.v=0;
+			//printf ("pc: %d\n",reg_pc);
+			menu_generic_message_format("Breakpoint","Breakpoint fired: %s",catch_breakpoint_message);
 
 			menu_debug_registers(0);
 
