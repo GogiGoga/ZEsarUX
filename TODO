@@ -33,7 +33,7 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
--menu al saltar breakpoint pc esta en direccion siguiente
+-revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
 -quiza redibujar archivo logo tal cual con el boot logo
 
@@ -52,8 +52,6 @@ Info de tamaño ventana. Y tamaño ventana sin zoom
 -memory zones en otros comandos de menu: poke byte, save binary, load binary etc. Ver tambien los similares en ZRCP
 
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
-
-IMPORTANTE: tbblue.mmc deberia estar incluido ? o venir con los extras?
 
 
 -Documentar minimamente como funciona refresco de pantalla
@@ -118,7 +116,7 @@ O quizá setting configurable
 *lores layer
 *radasjim mode
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
-*layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga
+*layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga->ya no me preocupa. ulaplus no esta soportado
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
 *TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
 *layer priorities
