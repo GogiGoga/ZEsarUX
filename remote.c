@@ -1358,7 +1358,6 @@ void remote_cpu_after_core_loop(void)
   }
 }
 
-
 void remote_cpu_step(int misocket) {
   //char buffer_retorno[1024];
   //Ejecutar una instruccion
@@ -1372,18 +1371,6 @@ void remote_cpu_step(int misocket) {
   remote_get_regs_disassemble(misocket);
 
 }
-
-void remote_cpu_step_loop(unsigned int direccion_final)
-{
-	int salir=0;
-	while (get_pc_register()!=direccion_final && !salir) {
-	  cpu_core_loop();
-	  if (menu_abierto) salir=1;
-	}
-}
-
-unsigned int zrcp_remote_cpu_loop_direccion_final;
-int zrcp_remote_cpu_loop=0;
 
 void remote_cpu_step_over(int misocket) {
 
@@ -1404,28 +1391,45 @@ void remote_cpu_step_over(int misocket) {
 
   //Parar hasta volver de la instruccion actual o cuando se produzca algun evento de apertura de menu, como un breakpoint
   menu_abierto=0;
-
- #ifdef MINGW
-   zrcp_remote_cpu_loop_direccion_final=direccion_final;
-   zrcp_remote_cpu_loop=1;
-   debug_printf(VERBOSE_DEBUG,"Entering cpu loop from ZRCP to main loop");
-   while (zrcp_remote_cpu_loop) {
-	   //Esto se ejecuta desde menu_event_remote_protocol_enterstep.v
-	   sleep(1);
-   }
-   debug_printf(VERBOSE_DEBUG,"Exiting cpu loop from ZRCP to main loop");
- #else
-  remote_cpu_step_loop(direccion_final);
-
-#endif
-
+  int salir=0;
+  while (get_pc_register()!=direccion_final && !salir) {
+    cpu_core_loop();
+    if (menu_abierto) salir=1;
+  }
   remote_cpu_after_core_loop();
-
 
   remote_get_regs_disassemble(misocket);
 
 
 }
+
+void remote_cpu_run_loop(int misocket,int verbose,int limite)
+{
+
+	int total_instrucciones=0;
+
+	int salir=0;
+	while (!salir) {
+	  if (verbose) {
+	    remote_get_regs_disassemble(misocket);
+	    escribir_socket(misocket,"\n");
+	  }
+	  cpu_core_loop();
+	  total_instrucciones++;
+	  if (limite) {
+	    if (total_instrucciones==limite) {
+	      escribir_socket_format(misocket,"Returning after %d opcodes\n",limite);
+	      salir=1;
+	    }
+	  }
+	  if (menu_abierto) salir=1;
+	}
+}
+
+int   towindows_remote_cpu_run_misocket;
+int towindows_remote_cpu_run_verbose;
+int towindows_remote_cpu_run_limite;
+int towindows_remote_cpu_run_loop=0;
 
 //Ejecutar hasta siguiente punto de paro o cualquier otro evento que abra el menu
 //Variables: verbose: si se muestra desensamblado en cada instruccion,
@@ -1438,12 +1442,29 @@ void remote_cpu_run(int misocket,int verbose,int limite)
     return;
   }
 
-  int total_instrucciones=0;
+
 
 
   //Parar cuando se produzca algun evento de apertura de menu, como un breakpoint
   menu_abierto=0;
-  int salir=0;
+
+ #ifdef MINGW
+  towindows_remote_cpu_run_misocket=misocket;
+  towindows_remote_cpu_run_verbose=verbose;
+  towindows_remote_cpu_run_limite=limite;
+  towindows_remote_cpu_run_loop=1;
+
+	debug_printf (VERBOSE_DEBUG,"Calling remote_cpu_run_loop from ZRCP to main loop");
+  while (towindows_remote_cpu_run_loop)  {
+	  sleep (1);
+  }
+  	debug_printf (VERBOSE_DEBUG,"Exiting remote_cpu_run_loop from ZRCP to main loop");
+ #else
+  remote_cpu_run_loop(misocket,verbose,limite);
+ #endif
+
+
+  /*int salir=0;
   while (!salir) {
     if (verbose) {
       remote_get_regs_disassemble(misocket);
@@ -1458,9 +1479,9 @@ void remote_cpu_run(int misocket,int verbose,int limite)
       }
     }
     if (menu_abierto) salir=1;
-  }
+  }*/
 
-	debug_printf(VERBOSE_DEBUG,"Exiting run command");
+  debug_printf(VERBOSE_DEBUG,"Exiting run command");
 
   remote_cpu_after_core_loop();
   remote_get_regs_disassemble(misocket);

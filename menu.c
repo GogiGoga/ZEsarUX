@@ -23926,9 +23926,9 @@ void menu_inicio(void)
 			sleep(1);
 
 			//Truco para que desde windows se pueda ejecutar el core loop desde aqui cuando zrcp lo llama
-			if (zrcp_remote_cpu_loop) {
-				remote_cpu_step_loop(zrcp_remote_cpu_loop_direccion_final);
-				zrcp_remote_cpu_loop=0;
+			if (towindows_remote_cpu_run_loop) {
+				remote_cpu_run_loop(towindows_remote_cpu_run_misocket,towindows_remote_cpu_run_verbose,towindows_remote_cpu_run_limite);
+				towindows_remote_cpu_run_loop=0;
 			}
 
 		}

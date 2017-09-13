@@ -30,8 +30,10 @@ extern z80_bit remote_ack_enter_cpu_step;
 extern z80_bit remote_calling_end_emulator;
 extern int remote_salir_conexion;
 
-extern unsigned int zrcp_remote_cpu_loop_direccion_final;
-extern int zrcp_remote_cpu_loop;
+extern int   towindows_remote_cpu_run_misocket;
+extern int towindows_remote_cpu_run_verbose;
+extern int towindows_remote_cpu_run_limite;
+extern int towindows_remote_cpu_run_loop;
 
 #define DEFAULT_REMOTE_PROTOCOL_PORT 10000
 
