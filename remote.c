@@ -1448,7 +1448,7 @@ void remote_cpu_run(int misocket,int verbose,int limite)
   //Parar cuando se produzca algun evento de apertura de menu, como un breakpoint
   menu_abierto=0;
 
- #ifdef MINGW
+ /*#ifdef MINGW
   towindows_remote_cpu_run_misocket=misocket;
   towindows_remote_cpu_run_verbose=verbose;
   towindows_remote_cpu_run_limite=limite;
@@ -1461,7 +1461,10 @@ void remote_cpu_run(int misocket,int verbose,int limite)
   	debug_printf (VERBOSE_DEBUG,"Exiting remote_cpu_run_loop from ZRCP to main loop");
  #else
   remote_cpu_run_loop(misocket,verbose,limite);
- #endif
+ #endif*/
+
+
+  remote_cpu_run_loop(misocket,verbose,limite);
 
 
   /*int salir=0;
