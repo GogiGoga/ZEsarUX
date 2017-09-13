@@ -23924,6 +23924,13 @@ void menu_inicio(void)
 		//Mientras no se salga del modo step to step del remote protocol
 		while (menu_event_remote_protocol_enterstep.v) {
 			sleep(1);
+
+			//Truco para que desde windows se pueda ejecutar el core loop desde aqui cuando zrcp lo llama
+			if (zrcp_remote_cpu_loop) {
+				remote_cpu_step_loop(zrcp_remote_cpu_loop_direccion_final);
+				zrcp_remote_cpu_loop=0;
+			}
+
 		}
 
 		debug_printf (VERBOSE_DEBUG,"Exiting remote enter step from menu");
