@@ -5609,10 +5609,10 @@ void emulator_main_loop(void)
 	while (1) {
 		if (menu_abierto==1) menu_inicio();
 
-    //Bucle principal de ejecución de la cpu
-    while (menu_abierto==0) {
-    	cpu_core_loop();
-    }
+    		//Bucle principal de ejecución de la cpu
+    		while (menu_abierto==0) {
+    			cpu_core_loop();
+    		}
 
 
 	}

@@ -21613,53 +21613,54 @@ void menu_generic_message_tooltip(char *titulo, int volver_timeout, int tooltip_
                                         break;
 
 
-																				//Buscar texto
-																				case 'f':
-																				case 'n':
+					//Buscar texto
+					case 'f':
+					case 'n':
 
-																					if (tecla=='f' || ultima_linea_buscada==-1) {
+						if (tecla=='f' || ultima_linea_buscada==-1) {
 
-																						buffer_texto_buscado[0]=0;
-																		        menu_ventana_scanf("Text to find",buffer_texto_buscado,33);
+							buffer_texto_buscado[0]=0;
+			        			menu_ventana_scanf("Text to find",buffer_texto_buscado,33);
 
-																						ultima_linea_buscada=0;
+							ultima_linea_buscada=0;
 
-																					}
+						}
 
-																					int i;
-																					char *encontrado=NULL;
-																					for (i=0;i<indice_linea;i++) {
-																						encontrado=util_strcasestr(buffer_lineas[i], buffer_texto_buscado);
-																						if (encontrado && i>ultima_linea_buscada) {
-																							break;
-																						}
-																					}
+						int i;
+						char *encontrado=NULL;
+						for (i=0;i<indice_linea;i++) {
+							encontrado=util_strcasestr(buffer_lineas[i], buffer_texto_buscado);
+							if (encontrado && i>ultima_linea_buscada) {
+								break;
+							}
+						}
 
-																					if (encontrado) {
-																						ultima_linea_buscada=i;
-																						//mover cursor hasta ahi
-																						primera_linea=0;
-																						linea_cursor=0;
+						if (encontrado) {
+							ultima_linea_buscada=i;
+							//mover cursor hasta ahi
+							primera_linea=0;
+							linea_cursor=0;
 
-																						int contador;
-																						for (contador=0;contador<ultima_linea_buscada;contador++) {
-																								primera_linea=menu_generic_message_cursor_abajo_mostrar_cursor(primera_linea,alto_ventana,indice_linea,mostrar_cursor,&linea_cursor);
-																							}
+							//printf ("mover cursor hasta linea: %d\n",ultima_linea_buscada);
 
-																							//Mostramos cursor para poder indicar en que linea se ha encontrado el texto
-																							mostrar_cursor=1;
+							//Mostramos cursor para poder indicar en que linea se ha encontrado el texto
+							mostrar_cursor=1;
+
+							int contador;
+							for (contador=0;contador<ultima_linea_buscada;contador++) {
+									primera_linea=menu_generic_message_cursor_abajo_mostrar_cursor(primera_linea,alto_ventana,indice_linea,mostrar_cursor,&linea_cursor);
+							}
+
+							//menu_speech_tecla_pulsada=0;
+							//menu_textspeech_send_text(buffer_lineas[ultima_linea_buscada]);
+						}
+
+						else {
+							menu_warn_message("Text not found");
+						}
 
 
-																							//menu_speech_tecla_pulsada=0;
-																							//menu_textspeech_send_text(buffer_lineas[ultima_linea_buscada]);
-																					}
-
-																					else {
-																						menu_warn_message("Text not found");
-																					}
-
-
-																				break;
+					break;
 				}
 
 	//Salir con Enter o ESC o fin de tooltip
