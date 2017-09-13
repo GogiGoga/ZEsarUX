@@ -33,6 +33,23 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+
+Menú con zoom:
+-solo para menú.  No footer
+-función que dice si overlay hay carácter, que divida antes coordenadas entre valor de zoom 
+-que llame a un putpixel especial que aplique el zoom para esos caracteres del menú
+
+Todos los putpixel de menú deberían pasar por mismo sitio: waveform, etc
+
+Hay que hacer otra función scr_putsprite_comun para menu
+
+
+-Archivos recientes. Solo para smartload ?
+
+-Más f funciones. Habrá que hacer lista de funciones con ventana en vez de menú con opciones
+
+-smartloadpath en auto save 
+
 -buscar texto con tecla F. parece que si ventana no ocupa toda pantalla, el cursor la primera vez va siempre a la primera linea
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?

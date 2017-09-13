@@ -17256,13 +17256,17 @@ void menu_find_lives_initial(MENU_ITEM_PARAMETERS)
 
 }
 
+
+//Ultimo valor de vidas seleccionadas
+z80_byte ultimo_menu_find_lives_set=9;
+
 void menu_find_lives_set(MENU_ITEM_PARAMETERS)
 {
 
 
 	char string_lives[4];
 
-	sprintf (string_lives,"0");
+	sprintf (string_lives,"%d",ultimo_menu_find_lives_set);
 
 	menu_ventana_scanf("Lives?",string_lives,4);
 
@@ -17272,6 +17276,8 @@ void menu_find_lives_set(MENU_ITEM_PARAMETERS)
 					debug_printf (VERBOSE_ERR,"Invalid value %d",valor_lives);
 					return;
 	}
+
+	ultimo_menu_find_lives_set=valor_lives;
 
 	poke_byte_z80_moto(menu_find_lives_pointer,valor_lives);
 
