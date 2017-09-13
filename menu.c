@@ -22072,12 +22072,20 @@ void menu_about_running_info(MENU_ITEM_PARAMETERS)
 				char hora_inicio[100];
 				timer_get_texto_time(&zesarux_start_time,hora_inicio);
 
+
+				int tiempo_trabajado_en_zesarux=timer_get_worked_time();
+
+
+
 	menu_generic_message_format("Running info",
-		"Video Driver: %s\nAvailable video drivers: %s\n\nAudio Driver: %s\nAvailable audio drivers: %s\n\n"
+		"Video Driver: %s\nAvailable video drivers: %s\nAudio Driver: %s\nAvailable audio drivers: %s\n\n"
 		"Configuration file: %s\n\n"
 		"Start time: %s\n"
-		"Uptime %d secs (%d mins)\n",
-		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile,hora_inicio,uptime_seconds,uptime_seconds/60);
+		"Uptime %d secs (%d mins)\n\n"
+		"Total time invested on programming ZEsarUX: %d hours\n"
+		,
+		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile,hora_inicio,
+		uptime_seconds,uptime_seconds/60,tiempo_trabajado_en_zesarux);
 
 
 

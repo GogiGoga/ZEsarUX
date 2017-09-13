@@ -47,5 +47,7 @@ extern int timer_get_uptime_seconds(void);
 
 extern void timer_get_texto_time(struct timeval *tv, char *texto);
 
+extern int timer_get_worked_time(void);
+
 
 #endif

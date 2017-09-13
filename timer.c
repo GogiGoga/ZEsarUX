@@ -714,3 +714,43 @@ void timer_get_texto_time(struct timeval *tv, char *texto)
 	strftime (texto, sizeof(time_string), "%H:%M:%S", ptm);
 
 }
+
+
+long timer_get_elapsed_seconds_since_first_version(void)
+{
+
+        struct timeval ahora;
+
+        long z80_total_seconds;
+
+
+
+	//24th September 2013	
+	long first_version=1379973600;
+
+        gettimeofday(&ahora, NULL);
+
+
+        z80_total_seconds  = ahora.tv_sec  - first_version;
+
+	//printf ("segundos desde creacion: %ld\n",z80_uptime_seconds);
+
+	return z80_total_seconds;
+
+}
+
+
+//Devolver tiempo invertido en ZEsarUX. De media 2 horas por dia
+int timer_get_worked_time(void)
+{
+	long total_segundos=timer_get_elapsed_seconds_since_first_version();
+
+	//Pasar a dias
+	long total_dias=total_segundos/60/60/24;
+
+	//Dos horas al dia
+	int total_tiempo_invertido=total_dias*2;
+
+	return total_tiempo_invertido;
+
+}
