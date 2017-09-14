@@ -50,8 +50,6 @@ Hay que hacer otra función scr_putsprite_comun para menu
 
 -smartloadpath en auto save 
 
--buscar texto con tecla F. parece que si ventana no ocupa toda pantalla, el cursor la primera vez va siempre a la primera linea
-
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
 -quiza redibujar archivo logo tal cual con el boot logo
@@ -68,9 +66,10 @@ Info de tamaño ventana. Y tamaño ventana sin zoom
 
 
 
--memory zones en otros comandos de menu: poke byte, save binary, load binary etc. Ver tambien los similares en ZRCP
+-memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
 
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
+Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
 
 -Documentar minimamente como funciona refresco de pantalla

@@ -7422,6 +7422,8 @@ void menu_debug_disassemble(MENU_ITEM_PARAMETERS)
 
 
 
+//No tiene mucho sentido esta funcion pues se puede hacer con las memory zones
+/*
 void menu_debug_poke_128k(MENU_ITEM_PARAMETERS)
 {
 
@@ -7487,6 +7489,7 @@ void menu_debug_poke_128k(MENU_ITEM_PARAMETERS)
 				}
 
 }
+*/
 
 //Ultima direccion pokeada
 int last_debug_poke_dir=16384;
@@ -7497,19 +7500,19 @@ void menu_debug_poke(MENU_ITEM_PARAMETERS)
         int valor_poke,dir,veces;
 
         char string_poke[4];
-        char string_dir[8];
+        char string_dir[20];
 	char string_veces[6];
 
         sprintf (string_dir,"%d",last_debug_poke_dir);
 
-        menu_ventana_scanf("Address",string_dir,8);
+        menu_ventana_scanf("Address",string_dir,20);
 
         dir=parse_string_to_number(string_dir);
 
-        if ( (dir<0 || dir>65535) && MACHINE_IS_SPECTRUM) {
+        /*if ( (dir<0 || dir>65535) && MACHINE_IS_SPECTRUM) {
                 debug_printf (VERBOSE_ERR,"Invalid address %d",dir);
                 return;
-        }
+        }*/
 
 				last_debug_poke_dir=dir;
 
@@ -7540,7 +7543,8 @@ void menu_debug_poke(MENU_ITEM_PARAMETERS)
 	for (;veces;veces--,dir++) {
 
 	        //poke_byte_no_time(dir,valor_poke);
-					poke_byte_z80_moto(dir,valor_poke);
+		//poke_byte_z80_moto(dir,valor_poke);
+		menu_debug_write_mapped_byte(dir,valor_poke);
 
 	}
 
@@ -7726,14 +7730,16 @@ void menu_poke(MENU_ITEM_PARAMETERS)
                 menu_add_item_menu_inicial_format(&array_menu_poke,MENU_OPCION_NORMAL,menu_debug_poke,NULL,"~~Poke");
                 menu_add_item_menu_shortcut(array_menu_poke,'p');
                 menu_add_item_menu_tooltip(array_menu_poke,"Poke address");
-                menu_add_item_menu_ayuda(array_menu_poke,"Poke address for infinite lives, etc...");
+                menu_add_item_menu_ayuda(array_menu_poke,"Poke address for infinite lives, etc... This item follows active memory zone. "
+					"You can also poke on read-only memory, depending on the current memory zone");
 
-		if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED) {
+		//No tiene sentido pues se puede usar las memory zones para esto
+		/*if (MACHINE_IS_SPECTRUM_128_P2_P2A || MACHINE_IS_ZXUNO_BOOTM_DISABLED) {
 			menu_add_item_menu(array_menu_poke,"Poke 128~~k mode",MENU_OPCION_NORMAL,menu_debug_poke_128k,NULL);
 			menu_add_item_menu_shortcut(array_menu_poke,'k');
 			menu_add_item_menu_tooltip(array_menu_poke,"Poke bank & address");
 			menu_add_item_menu_ayuda(array_menu_poke,"Poke bank & address");
-		}
+		}*/
 
 		if (MACHINE_IS_SPECTRUM) {
 			menu_add_item_menu(array_menu_poke,"Poke from .POK ~~file",MENU_OPCION_NORMAL,menu_debug_poke_pok_file,NULL);
