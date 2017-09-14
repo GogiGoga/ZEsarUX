@@ -6034,13 +6034,13 @@ int menu_debug_hexdump_change_pointer(int p)
 {
 
 
-        char string_address[33];
+        char string_address[10];
 
         sprintf (string_address,"%XH",p);
 
 
         //menu_ventana_scanf("Address? (in hex)",string_address,6);
-        menu_ventana_scanf("Address?",string_address,8);
+        menu_ventana_scanf("Address?",string_address,10);
 
 	//p=strtol(string_address, NULL, 16);
 	p=parse_string_to_number(string_address);
@@ -7500,12 +7500,12 @@ void menu_debug_poke(MENU_ITEM_PARAMETERS)
         int valor_poke,dir,veces;
 
         char string_poke[4];
-        char string_dir[20];
+        char string_dir[10];
 	char string_veces[6];
 
-        sprintf (string_dir,"%d",last_debug_poke_dir);
+        sprintf (string_dir,"%XH",last_debug_poke_dir);
 
-        menu_ventana_scanf("Address",string_dir,20);
+        menu_ventana_scanf("Address",string_dir,10);
 
         dir=parse_string_to_number(string_dir);
 
