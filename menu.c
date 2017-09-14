@@ -6800,7 +6800,7 @@ menu_z80_moto_int menu_debug_view_sprites_change_pointer(menu_z80_moto_int p)
        set_menu_overlay_function(normal_overlay_texto_menu);
 
 
-        char string_address[8];
+        char string_address[10];
 
 
 
@@ -6812,7 +6812,7 @@ menu_z80_moto_int menu_debug_view_sprites_change_pointer(menu_z80_moto_int p)
 				}
 				else {
 					util_sprintf_address_hex(p,string_address);
-        	menu_ventana_scanf("Address?",string_address,8);
+        	menu_ventana_scanf("Address?",string_address,10);
 				}
 
         //p=strtol(string_address, NULL, 16);
@@ -15720,21 +15720,21 @@ void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
 
 		cls_menu_overlay();
 
-        	char string_direccion[8];
+        	char string_direccion[10];
 
-		sprintf (string_direccion,"%d",load_binary_last_address);
+		sprintf (string_direccion,"%XH",load_binary_last_address);
 
-	        menu_ventana_scanf("Address: ",string_direccion,8);
+	        menu_ventana_scanf("Address: ",string_direccion,10);
 
 	        int valor_leido_direccion=parse_string_to_number(string_direccion);
 
 					//printf ("valor: %d\n",valor_leido_direccion);
 
-		if (valor_leido_direccion>65535 && MACHINE_IS_SPECTRUM) {
+		/*if (valor_leido_direccion>65535 && MACHINE_IS_SPECTRUM) {
 			debug_printf (VERBOSE_ERR,"Invalid address %d",valor_leido_direccion);
 			//menu_generic_message ("Error","Invalid address");
 			return;
-		}
+		}*/
 
 		load_binary_last_address=valor_leido_direccion;
 
@@ -15789,19 +15789,19 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
 
                 cls_menu_overlay();
 
-                char string_direccion[8];
+                char string_direccion[10];
 
-                sprintf (string_direccion,"%d",save_binary_last_address);
+                sprintf (string_direccion,"%XH",save_binary_last_address);
 
-                menu_ventana_scanf("Address: ",string_direccion,8);
+                menu_ventana_scanf("Address: ",string_direccion,10);
 
                 int valor_leido_direccion=parse_string_to_number(string_direccion);
 
-                if (MACHINE_IS_SPECTRUM && valor_leido_direccion>65535) {
+                /*if (MACHINE_IS_SPECTRUM && valor_leido_direccion>65535) {
                         debug_printf (VERBOSE_ERR,"Invalid address %d",valor_leido_direccion);
 			//menu_generic_message ("Error","Invalid address");
                         return;
-                }
+                }*/
 
 		save_binary_last_address=valor_leido_direccion;
 
