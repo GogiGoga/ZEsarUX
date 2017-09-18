@@ -773,6 +773,7 @@ struct s_items_ayuda items_ayuda[]={
 				"Bit 2: Do not add a L preffix when searching source code labels.\n"
 				"Bit 3: Show bytes when debugging opcodes.\n"
 				"Bit 4: Repeat last command only by pressing enter.\n"
+				"Bit 5: Step over interrupt when running cpu-step, cpu-step-over and run verbose. It's the same setting as Step Over Interrupt on menu\n"
 		},
 	{"set-machine","|sm","machine_name","Set machine"},
 	{"set-memory-zone","|smz","zone","Set memory zone number"},
@@ -1365,7 +1366,14 @@ void remote_cpu_step(int misocket) {
     escribir_socket(misocket,"Error. You must first enter cpu-step mode");
     return;
   }
+  debug_core_lanzado_inter.v=0;
   cpu_core_loop();
+
+  if (debug_core_lanzado_inter.v && (remote_debug_settings&32)) {
+	  debug_run_until_return_interrupt();
+  }
+
+
   remote_cpu_after_core_loop();
 
   remote_get_regs_disassemble(misocket);
@@ -1393,7 +1401,13 @@ void remote_cpu_step_over(int misocket) {
   menu_abierto=0;
   int salir=0;
   while (get_pc_register()!=direccion_final && !salir) {
+    debug_core_lanzado_inter.v=0;
     cpu_core_loop();
+
+    if (debug_core_lanzado_inter.v && (remote_debug_settings&32)) {
+    	debug_run_until_return_interrupt();
+    }
+
     if (menu_abierto) salir=1;
   }
   remote_cpu_after_core_loop();
@@ -1414,7 +1428,11 @@ void remote_cpu_run_loop(int misocket,int verbose,int limite)
 	    remote_get_regs_disassemble(misocket);
 	    escribir_socket(misocket,"\n");
 	  }
+	  debug_core_lanzado_inter.v=0;
 	  cpu_core_loop();
+	  if (debug_core_lanzado_inter.v && (remote_debug_settings&32)) {
+		debug_run_until_return_interrupt();
+	  }
 	  total_instrucciones++;
 	  if (limite) {
 	    if (total_instrucciones==limite) {
@@ -1424,6 +1442,7 @@ void remote_cpu_run_loop(int misocket,int verbose,int limite)
 	  }
 	  if (menu_abierto) salir=1;
 	}
+
 }
 
 int   towindows_remote_cpu_run_misocket;

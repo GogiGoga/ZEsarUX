@@ -5581,7 +5581,8 @@ void menu_watches(MENU_ITEM_PARAMETERS)
 
 void menu_debug_configuration_stepover(MENU_ITEM_PARAMETERS)
 {
-	debug_core_evitamos_inter.v ^=1;
+	//debug_core_evitamos_inter.v ^=1;
+	remote_debug_settings ^=32;
 }
 
 
@@ -5975,22 +5976,9 @@ void menu_debug_registers(MENU_ITEM_PARAMETERS)
 				debug_core_lanzado_inter.v=0;
 				cpu_core_loop();
 				//Ver si se ha disparado interrupcion (nmi o maskable)
-				if (debug_core_lanzado_inter.v && debug_core_evitamos_inter.v) {
-					//Ejecutar hasta que registro PC vuelva a su valor anterior o lleguemos a un limite
-					//873600 instrucciones es 50 frames de instrucciones de 4 t-estados (69888/4*50)
-					int limite_instrucciones=0;
-					int salir=0;
-					while (limite_instrucciones<873600 && salir==0) {
-						if (reg_pc==debug_core_lanzado_inter_retorno_pc_nmi ||
-						reg_pc==debug_core_lanzado_inter_retorno_pc_maskable) {
-							salir=1;
-						}
-						else {
-							debug_printf (VERBOSE_DEBUG,"Running and step over interrupt handler. PC=0x%04X",reg_pc);
-							cpu_core_loop();
-							limite_instrucciones++;
-						}
-					}
+				//if (debug_core_lanzado_inter.v && debug_core_evitamos_inter.v) {
+				if (debug_core_lanzado_inter.v && (remote_debug_settings&32)) {
+					debug_run_until_return_interrupt();
 				}
 			}
 
@@ -23237,7 +23225,7 @@ void menu_settings_debug(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_format(array_menu_settings_debug,MENU_OPCION_NORMAL,menu_debug_verbose,NULL,"Verbose ~~level: %d",verbose_level);
 		menu_add_item_menu_shortcut(array_menu_settings_debug,'l');
 
-		menu_add_item_menu_format(array_menu_settings_debug,MENU_OPCION_NORMAL,menu_debug_configuration_stepover,NULL,"Step over interrupt: %s",(debug_core_evitamos_inter.v ? "Yes" : "No") );
+		menu_add_item_menu_format(array_menu_settings_debug,MENU_OPCION_NORMAL,menu_debug_configuration_stepover,NULL,"Step over interrupt: %s",(remote_debug_settings&32 ? "Yes" : "No") );
 		menu_add_item_menu_tooltip(array_menu_settings_debug,"Avoid step to step or continuous execution of nmi or maskable interrupt routines on debug cpu menu");
 		menu_add_item_menu_ayuda(array_menu_settings_debug,"Avoid step to step or continuous execution of nmi or maskable interrupt routines on debug cpu menu");
 

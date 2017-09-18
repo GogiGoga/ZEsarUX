@@ -274,7 +274,9 @@ unsigned int registro_sr=m68k_get_reg(NULL, M68K_REG_SR);
 
 //Para poder saltar los step-to-step
 //Evitar en step to step las rutinas de interrupciones maskable/nmi
-z80_bit debug_core_evitamos_inter={0};
+//z80_bit debug_core_evitamos_inter={0};
+
+
 //Se ha entrado en una rutina de maskable/nmi
 z80_bit debug_core_lanzado_inter={0};
 
@@ -3841,4 +3843,24 @@ void debug_get_memory_pages(char *texto_final)
 
   texto_memoria[MAX_TEXT_DEBUG_GET_MEMORY_PAGES]=0;
   strcpy(texto_final,texto_memoria);
+}
+
+
+void debug_run_until_return_interrupt(void)
+{
+        //Ejecutar hasta que registro PC vuelva a su valor anterior o lleguemos a un limite
+        //873600 instrucciones es 50 frames de instrucciones de 4 t-estados (69888/4*50)
+        int limite_instrucciones=0;
+        int salir=0;
+        while (limite_instrucciones<873600 && salir==0) {
+                if (reg_pc==debug_core_lanzado_inter_retorno_pc_nmi ||
+                reg_pc==debug_core_lanzado_inter_retorno_pc_maskable) {
+                        salir=1;
+                }
+                else {
+                        debug_printf (VERBOSE_DEBUG,"Running and step over interrupt handler. PC=0x%04X",reg_pc);
+                        cpu_core_loop();
+                        limite_instrucciones++;
+                }
+        }
 }

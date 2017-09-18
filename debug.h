@@ -150,7 +150,7 @@ extern z80_byte debug_watches_y_position;
 extern void debug_get_t_stados_parcial_post(void);
 extern void debug_get_t_stados_parcial_pre(void);
 
-extern z80_bit debug_core_evitamos_inter;
+//extern z80_bit debug_core_evitamos_inter;
 extern z80_bit debug_core_lanzado_inter;
 extern z80_int debug_core_lanzado_inter_retorno_pc_nmi;
 extern z80_int debug_core_lanzado_inter_retorno_pc_maskable;
