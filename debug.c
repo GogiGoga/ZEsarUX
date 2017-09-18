@@ -259,10 +259,10 @@ unsigned int registro_sr=m68k_get_reg(NULL, M68K_REG_SR);
 
   else {
   sprintf (buffer,"PC=%04x SP=%04x BC=%04x A=%02x HL=%04x DE=%04x IX=%04x IY=%04x A'=%02x BC'=%04x HL'=%04x DE'=%04x I=%02x R=%02x  "
-                  "F=%c%c%c%c%c%c%c%c F'=%c%c%c%c%c%c%c%c MEMPTR=%04x %s IM%d VPS: %d ",
+                  "F=%c%c%c%c%c%c%c%c F'=%c%c%c%c%c%c%c%c MEMPTR=%04x %s IM%d VPS: %d TSTATES: %d",
   reg_pc,reg_sp, (reg_b<<8)|reg_c,reg_a,(reg_h<<8)|reg_l,(reg_d<<8)|reg_e,reg_ix,reg_iy,reg_a_shadow,(reg_b_shadow<<8)|reg_c_shadow,
   (reg_h_shadow<<8)|reg_l_shadow,(reg_d_shadow<<8)|reg_e_shadow,reg_i,(reg_r&127)|(reg_r_bit7&128),DEBUG_STRING_FLAGS,
-  DEBUG_STRING_FLAGS_SHADOW,memptr,( iff1.v ? "EI" : "DI"),im_mode,last_vsync_per_second
+  DEBUG_STRING_FLAGS_SHADOW,memptr,( iff1.v ? "EI" : "DI"),im_mode,last_vsync_per_second,t_estados
                         );
   }
 
@@ -3855,10 +3855,11 @@ void debug_run_until_return_interrupt(void)
         while (limite_instrucciones<873600 && salir==0) {
                 if (reg_pc==debug_core_lanzado_inter_retorno_pc_nmi ||
                 reg_pc==debug_core_lanzado_inter_retorno_pc_maskable) {
+                        debug_printf (VERBOSE_DEBUG,"PC=0x%04X is now on the interrupt return address. Returning",reg_pc);
                         salir=1;
                 }
                 else {
-                        debug_printf (VERBOSE_DEBUG,"Running and step over interrupt handler. PC=0x%04X",reg_pc);
+                        debug_printf (VERBOSE_DEBUG,"Running and step over interrupt handler. PC=0x%04X TSTATES=%d",reg_pc,t_estados);
                         cpu_core_loop();
                         limite_instrucciones++;
                 }
