@@ -23925,7 +23925,10 @@ void menu_inicio(void)
 				towindows_remote_cpu_run_loop=0;
 			}*/
 #ifdef MINGW
+			int antes_menu_abierto=menu_abierto;
+			menu_abierto=0; //Para que no aparezca en gris al refrescar
 				scr_refresca_pantalla();
+			menu_abierto=antes_menu_abierto;
 				scr_actualiza_tablas_teclado();
 #endif
 
