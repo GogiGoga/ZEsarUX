@@ -23917,17 +23917,17 @@ void menu_inicio(void)
 		remote_ack_enter_cpu_step.v=1; //Avisar que nos hemos enterado
 		//Mientras no se salga del modo step to step del remote protocol
 		while (menu_event_remote_protocol_enterstep.v) {
-			sleep(1);
+			timer_sleep(100);
 
 			//Truco para que desde windows se pueda ejecutar el core loop desde aqui cuando zrcp lo llama
-			if (towindows_remote_cpu_run_loop) {
+			/*if (towindows_remote_cpu_run_loop) {
 				remote_cpu_run_loop(towindows_remote_cpu_run_misocket,towindows_remote_cpu_run_verbose,towindows_remote_cpu_run_limite);
 				towindows_remote_cpu_run_loop=0;
-			}
-/*#ifdef MINGW
-				//cpu_loop_refresca_pantalla();
+			}*/
+#ifdef MINGW
 				scr_refresca_pantalla();
-#endif*/
+				scr_actualiza_tablas_teclado();
+#endif
 
 		}
 

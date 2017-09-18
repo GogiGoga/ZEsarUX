@@ -1449,10 +1449,10 @@ void remote_cpu_run_loop(int misocket,int verbose,int limite)
 
 }
 
-int   towindows_remote_cpu_run_misocket;
-int towindows_remote_cpu_run_verbose;
-int towindows_remote_cpu_run_limite;
-int towindows_remote_cpu_run_loop=0;
+//int   towindows_remote_cpu_run_misocket;
+//int towindows_remote_cpu_run_verbose;
+//int towindows_remote_cpu_run_limite;
+//int towindows_remote_cpu_run_loop=0;
 
 //Ejecutar hasta siguiente punto de paro o cualquier otro evento que abra el menu
 //Variables: verbose: si se muestra desensamblado en cada instruccion,
@@ -1473,6 +1473,7 @@ void remote_cpu_run(int misocket,int verbose,int limite)
 
 
 //Opcion A. Solo para este caso de run
+/*
  #ifdef MINGW
   towindows_remote_cpu_run_misocket=misocket;
   towindows_remote_cpu_run_verbose=verbose;
@@ -1487,28 +1488,13 @@ void remote_cpu_run(int misocket,int verbose,int limite)
  #else
   remote_cpu_run_loop(misocket,verbose,limite);
  #endif
-
+*/
 
 //Opcion B. Hacemos esto normal y luego en menu, el menu_event_remote_protocol_enterstep refresca la pantalla por si solo cada 1 segundo
-  //remote_cpu_run_loop(misocket,verbose,limite);
+  remote_cpu_run_loop(misocket,verbose,limite);
 
 
-  /*int salir=0;
-  while (!salir) {
-    if (verbose) {
-      remote_get_regs_disassemble(misocket);
-      escribir_socket(misocket,"\n");
-    }
-    cpu_core_loop();
-    total_instrucciones++;
-    if (limite) {
-      if (total_instrucciones==limite) {
-        escribir_socket_format(misocket,"Returning after %d opcodes\n",limite);
-        salir=1;
-      }
-    }
-    if (menu_abierto) salir=1;
-  }*/
+
 
   debug_printf(VERBOSE_DEBUG,"Exiting run command");
 
