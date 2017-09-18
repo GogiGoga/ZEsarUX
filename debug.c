@@ -259,10 +259,10 @@ unsigned int registro_sr=m68k_get_reg(NULL, M68K_REG_SR);
 
   else {
   sprintf (buffer,"PC=%04x SP=%04x BC=%04x A=%02x HL=%04x DE=%04x IX=%04x IY=%04x A'=%02x BC'=%04x HL'=%04x DE'=%04x I=%02x R=%02x  "
-                  "F=%c%c%c%c%c%c%c%c F'=%c%c%c%c%c%c%c%c MEMPTR=%04x %s IM%d VPS: %d TSTATES: %d",
+                  "F=%c%c%c%c%c%c%c%c F'=%c%c%c%c%c%c%c%c MEMPTR=%04x %s IM%d VPS: %d",
   reg_pc,reg_sp, (reg_b<<8)|reg_c,reg_a,(reg_h<<8)|reg_l,(reg_d<<8)|reg_e,reg_ix,reg_iy,reg_a_shadow,(reg_b_shadow<<8)|reg_c_shadow,
   (reg_h_shadow<<8)|reg_l_shadow,(reg_d_shadow<<8)|reg_e_shadow,reg_i,(reg_r&127)|(reg_r_bit7&128),DEBUG_STRING_FLAGS,
-  DEBUG_STRING_FLAGS_SHADOW,memptr,( iff1.v ? "EI" : "DI"),im_mode,last_vsync_per_second,t_estados
+  DEBUG_STRING_FLAGS_SHADOW,memptr,( iff1.v ? "EI" : "DI"),im_mode,last_vsync_per_second
                         );
   }
 

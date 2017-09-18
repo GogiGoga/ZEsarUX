@@ -1311,6 +1311,10 @@ void remote_get_regs_disassemble(int misocket)
 	if (remote_debug_settings&1) {
   	print_registers(buffer_retorno);
   	escribir_socket (misocket,buffer_retorno);
+
+	//Mostrar T-estados
+	escribir_socket_format(misocket," TSTATES: %d",t_estados);
+
   	//Salto linea
   	escribir_socket (misocket,"\n");
 	}
