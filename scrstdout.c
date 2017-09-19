@@ -98,7 +98,7 @@ void scrstdout_menu_print_speech(char *texto)
 
 	if (textspeech_filter_program==NULL) return;
 	if (textspeech_also_send_menu.v==0) return;
-	
+
 	textspeech_print_speech(texto);
 	
 	//scrtextspeech_filter_run_pending();

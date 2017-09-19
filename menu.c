@@ -2521,6 +2521,44 @@ int menu_escribe_texto_si_inverso(char *texto, int indice)
 	return 1;
 }
 
+//Devuelve 1 si hay dos ^^ seguidas en la posicion del indice
+//Sino, 0
+int menu_escribe_texto_si_parpadeo(char *texto, int indice)
+{
+        if (texto[indice++]!='^') return 0;
+        if (texto[indice++]!='^') return 0;
+
+        //Y siguiente caracter no es final de texto
+        if (texto[indice]==0) return 0;
+
+        return 1;
+}
+
+//Quita simbolos ^^y ~~ de un texto. Puede que esta funcion este repetida en algun otro sitio
+void menu_convierte_texto_sin_modificadores(char *texto,char *texto_destino)
+{
+	int origen,destino;
+
+	char c;
+
+	for (origen=0,destino=0;texto[origen];origen++,destino++) {
+		//printf ("origen: %d destino: %d\n",origen,destino);
+		if (menu_escribe_texto_si_inverso(texto,origen) || menu_escribe_texto_si_parpadeo(texto,origen) ) {
+			origen +=2;
+		}	
+		else {
+			c=texto[origen];
+			texto_destino[destino]=c;
+		}
+		//printf ("origen: %d destino: %d\n",origen,destino);
+	}
+
+	texto_destino[destino]=0;
+
+}
+
+
+
 
 //escribe una linea de texto
 //coordenadas relativas al interior de la pantalla de spectrum (0,0=inicio pantalla)
@@ -2532,9 +2570,20 @@ void menu_escribe_texto(z80_byte x,z80_byte y,z80_byte tinta,z80_byte papel,char
         unsigned int i;
 	z80_byte letra;
 
+	int parpadeo=0;
+
         //y luego el texto
         for (i=0;i<strlen(texto);i++) {
 		letra=texto[i];
+
+		//Si dos ^ seguidas, invertir estado parpadeo
+		if (menu_escribe_texto_si_parpadeo(texto,i)) {
+			parpadeo ^=1;
+			//y saltamos esos codigos de negado
+                        i +=2;
+                        letra=texto[i];
+		}
+			
 
 		//ver si dos ~~ seguidas y cuidado al comparar que no nos vayamos mas alla del codigo 0 final
 		if (menu_escribe_texto_si_inverso(texto,i)) {
@@ -2542,11 +2591,11 @@ void menu_escribe_texto(z80_byte x,z80_byte y,z80_byte tinta,z80_byte papel,char
 			i +=2;
 			letra=texto[i];
 
-			if (menu_writing_inverse_color.v) putchar_menu_overlay(x,y,letra,papel,tinta);
-			else putchar_menu_overlay(x,y,letra,tinta,papel);
+			if (menu_writing_inverse_color.v) putchar_menu_overlay_parpadeo(x,y,letra,papel,tinta,parpadeo);
+			else putchar_menu_overlay_parpadeo(x,y,letra,tinta,papel,parpadeo);
 		}
 
-		else putchar_menu_overlay(x,y,letra,tinta,papel);
+		else putchar_menu_overlay_parpadeo(x,y,letra,tinta,papel,parpadeo);
 		x++;
 	}
 
@@ -2581,7 +2630,7 @@ void menu_textspeech_send_text(char *texto)
 	debug_printf (VERBOSE_DEBUG,"Send text to speech: %s",texto);
 
 
-	//Eliminamos las ~~ del texto. Realmente eliminamos cualquier ~ aunque solo haya una
+	//Eliminamos las ~~ o ^^ del texto. Realmente eliminamos cualquier ~ aunque solo haya una
 	//Si hay dos ~~, decir que atajo es al final del texto
 	int orig,dest;
 	orig=dest=0;
@@ -2599,8 +2648,8 @@ void menu_textspeech_send_text(char *texto)
 
 		//printf ("texto orig : %d\n",texto[orig]);
 		//printf ("texto orig char: %c\n",texto[orig]);
-		//Si no es ~, copiar e incrementar destino
-		if (texto[orig]!='~') {
+		//Si no es ~ ni ^, copiar e incrementar destino
+		if (texto[orig]!='~' && texto[orig]!='^') {
 			buf_speech[dest]=texto[orig];
 			dest++;
 		}
@@ -2644,7 +2693,7 @@ void menu_textspeech_send_text(char *texto)
 	}
 
 
-
+	debug_printf (VERBOSE_DEBUG,"Final sent text to speech after processing filters: %s",buf_speech);
 	textspeech_print_speech(buf_speech);
 	//printf ("textspeech_print_speech: %s\n",buf_speech);
 
@@ -3459,7 +3508,7 @@ void menu_view_screen(MENU_ITEM_PARAMETERS)
 }
 
 
-//Quita de la linea los caracteres de atajo ~~
+//Quita de la linea los caracteres de atajo ~~ o ^^
 void menu_dibuja_menu_stdout_texto_sin_atajo(char *origen, char *destino)
 {
 
@@ -3469,6 +3518,10 @@ void menu_dibuja_menu_stdout_texto_sin_atajo(char *origen, char *destino)
 
 	while (origen[indice_orig]) {
 		if (menu_escribe_texto_si_inverso(origen,indice_orig)) {
+			indice_orig +=2;
+		}
+
+		if (menu_escribe_texto_si_parpadeo(origen,indice_orig)) {
 			indice_orig +=2;
 		}
 
@@ -3549,7 +3602,7 @@ int menu_dibuja_menu_stdout(int *opcion_inicial,menu_item *item_seleccionado,men
 					}
 			}
 
-			//Imprimir linea menu pero descartando los ~~ de los atajo de teclado
+			//Imprimir linea menu pero descartando los ~~ de los atajo de teclado o ^^
 			menu_dibuja_menu_stdout_texto_sin_atajo(aux->texto_opcion,texto_linea_sin_shortcut);
 
 
@@ -3913,6 +3966,7 @@ int menu_dibuja_menu(int *opcion_inicial,menu_item *item_seleccionado,menu_item 
 		unsigned int l;
 		for (l=0;l<strlen(aux->texto_opcion);l++) {
 			if (menu_escribe_texto_si_inverso(aux->texto_opcion,l)) ancho_calculado-=2;
+			if (menu_escribe_texto_si_parpadeo(aux->texto_opcion,l)) ancho_calculado-=2;
 		}
 
 		if (ancho_calculado>ancho) ancho=ancho_calculado;
@@ -22035,7 +22089,7 @@ void menu_about_statistics(MENU_ITEM_PARAMETERS)
 
 	menu_generic_message_format("Statistics",
 		"Source code lines: %d\n"
-		"Total time invested on programming ZEsarUX: %d hours (and growing)\n\n"
+		"Total time invested on programming ZEsarUX: ^^%d^^ hours (and growing)\n\n"
 		"Edited with vim and atom\n"
 		"Developed on Debian 8, macOS Sierra, Raspbian and MinGW environment on Windows\n"
 		,LINES_SOURCE,tiempo_trabajado_en_zesarux);

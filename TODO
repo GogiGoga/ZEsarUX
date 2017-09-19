@@ -33,6 +33,8 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-eliminar simbolos ^^ de textspeech. revisar funcion menu_convierte_texto_sin_modificadores ya hecha e incorporarla en scrstdout_menu_print_speech
+
 
 Menú con zoom:
 -solo para menú.  No footer
