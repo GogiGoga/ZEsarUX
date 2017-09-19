@@ -1260,6 +1260,9 @@ void remote_footer_cpu_step_clear(void)
 
 }
 
+//estado multitarea antes de cpu_step
+int menu_multitarea_antes_cpu_step=0;
+
 //Este modo deja la emulacion pausada
 void remote_cpu_enter_step(int misocket)
 {
@@ -1267,6 +1270,9 @@ void remote_cpu_enter_step(int misocket)
 
   //TODO: Pendiente de eliminar esta variable. Tiene sentido???
   //menu_espera_tecla_no_cpu_loop_flag_salir.v=1;
+
+  //guardar estado multitarea
+  menu_multitarea_antes_cpu_step=menu_multitarea;
 
   remote_ack_enter_cpu_step.v=0;
 
@@ -1353,6 +1359,9 @@ void remote_cpu_exit_step(int misocket)
     return;
   }
 	remote_cpu_exit_step_continue();
+
+ //Restaurar estado multitarea
+ menu_multitarea=menu_multitarea_antes_cpu_step;
 }
 
 void remote_cpu_after_core_loop(void)
@@ -3517,16 +3526,21 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
   else if (!strcmp(comando_sin_parametros,"smartload") || !strcmp(comando_sin_parametros,"sl")) {
 
     //Asegurarnos que congelamos el emulador: abrir menu con mutitarea desactivada
+    //Entramos en el mismo modo que cpu-step para poder congelar la emulacion
+    remote_cpu_enter_step(misocket);
+    if (menu_event_remote_protocol_enterstep.v==0) return;
 
-    remote_disable_multitask_enter_menu();
+    //remote_disable_multitask_enter_menu();
 
     if (quickload(parametros)) {
       escribir_socket (misocket,"Error. Unknown file format");
     }
 
-    remote_send_esc_close_menu();
+    //remote_send_esc_close_menu();
 
-	}
+    remote_cpu_exit_step(misocket);
+
+  }
 
     else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {
 
