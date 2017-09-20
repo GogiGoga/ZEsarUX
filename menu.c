@@ -1576,6 +1576,22 @@ void putchar_menu_second_overlay(int x,int y,z80_byte caracter,z80_byte tinta,z8
 }
 */
 
+//con zoom de menu gui
+void menu_scr_putpixel(int x,int y,int color)
+{
+	x *=menu_gui_zoom;
+	y *=menu_gui_zoom;
+
+		//Hacer zoom de ese pixel si conviene
+		int incx,incy;
+		for (incy=0;incy<menu_gui_zoom;incy++) {
+			for (incx=0;incx<menu_gui_zoom;incx++) {
+				scr_putpixel_zoom(x+incx,y+incy,color);
+			}
+		}
+
+
+}
 
 void menu_putchar_footer(int x,int y,z80_byte caracter,z80_byte tinta,z80_byte papel)
 {
@@ -6771,7 +6787,7 @@ void menu_debug_draw_sprites(void)
 
               		//dibujamos valor actual
 		            //scr_putpixel_zoom(xorigen+x*view_sprites_ppb+incx,yorigen+y,color);
-		            scr_putpixel_zoom(finalx,yorigen+y,color);
+		            menu_scr_putpixel(finalx,yorigen+y,color);
 			   }
 			}
 
@@ -6793,7 +6809,7 @@ void menu_debug_draw_sprites(void)
 				index_color=tbsprite_patterns[numero_pattern][offset_sprite];
 				color=tbsprite_palette[index_color];
 				if (view_sprites_inverse.v) color ^=255;
-				scr_putpixel_zoom(xorigen+x,yorigen+y,RGB8_INDEX_FIRST_COLOR+color);
+				menu_scr_putpixel(xorigen+x,yorigen+y,RGB8_INDEX_FIRST_COLOR+color);
 			}
 		}
 	}
@@ -7808,7 +7824,7 @@ void menu_linea(int x,int y1,int y2,int color)
 
 
 	for (;yorigen<=ydestino;yorigen++) {
-		scr_putpixel_zoom(x,yorigen,color);
+		menu_scr_putpixel(x,yorigen,color);
 	}
 }
 
@@ -7980,7 +7996,7 @@ void menu_audio_draw_sound_wave(void)
 
 		//dibujamos valor actual
 		if (si_complete_video_driver() ) {
-			scr_putpixel_zoom(x,y,ESTILO_GUI_COLOR_WAVEFORM);
+			menu_scr_putpixel(x,y,ESTILO_GUI_COLOR_WAVEFORM);
 		}
 
 		else {
@@ -8346,7 +8362,7 @@ void menu_ay_pianokeyboard_draw_graphical_piano_draw_pixel_zoom(int x,int y,int 
 	for (zy=0;zy<PIANO_ZOOM;zy++) {
 		x=xorig;
 		for (zx=0;zx<PIANO_ZOOM;zx++) {
-			scr_putpixel_zoom(x,y,color);
+			menu_scr_putpixel(x,y,color);
 
 			x++;
 
@@ -16035,7 +16051,7 @@ void menu_debug_draw_visualmem(void)
                 //dibujamos valor actual
                 if (si_modificado==1) {
 			if (si_complete_video_driver() ) {
-				scr_putpixel_zoom(x,y,ESTILO_GUI_TINTA_NORMAL);
+				menu_scr_putpixel(x,y,ESTILO_GUI_TINTA_NORMAL);
 			}
 
 			else {
@@ -16046,7 +16062,7 @@ void menu_debug_draw_visualmem(void)
 		//color ficticio para indicar fuera de memoria y por tanto final de ventana... para saber donde acaba
 		else if (si_modificado==2) {
 			if (si_complete_video_driver() ) {
-				scr_putpixel_zoom(x,y,ESTILO_GUI_COLOR_UNUSED_VISUALMEM);
+				menu_scr_putpixel(x,y,ESTILO_GUI_COLOR_UNUSED_VISUALMEM);
 			}
 			else {
 				putchar_menu_overlay(x,y,'-',ESTILO_GUI_COLOR_UNUSED_VISUALMEM,ESTILO_GUI_PAPEL_NORMAL);
@@ -16056,7 +16072,7 @@ void menu_debug_draw_visualmem(void)
 
 		else {
 			if (si_complete_video_driver() ) {
-				scr_putpixel_zoom(x,y,ESTILO_GUI_PAPEL_NORMAL);
+				menu_scr_putpixel(x,y,ESTILO_GUI_PAPEL_NORMAL);
 			}
 			else {
 				putchar_menu_overlay(x,y,' ',ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL);
@@ -19366,7 +19382,7 @@ void menu_dibuja_rectangulo_relleno(int x, int y, int ancho, int alto, int color
 
 	for (y1=y;y1<y+alto;y1++) {
 		for (x1=x;x1<=x+ancho;x1++) {
-			scr_putpixel_zoom(x1,y1,color);
+			menu_scr_putpixel(x1,y1,color);
 		}
 	}
 }
