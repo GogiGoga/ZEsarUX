@@ -3143,6 +3143,9 @@ void menu_calculate_mouse_xy(void)
 	x /=8;
 	y /=8;
 
+	x /= menu_gui_zoom;
+	y /= menu_gui_zoom;
+
 	x -=ventana_x;
 	y -=ventana_y;
 
