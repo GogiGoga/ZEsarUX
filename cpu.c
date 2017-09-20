@@ -3160,6 +3160,14 @@ pero quiza simplemente habria que ver que el tamanyo anterior fuera diferente al
 */
 void post_set_machine_no_rom_load_reopen_window(void)
 {
+
+	//Ajustar zoom del gui. por defecto 1
+	menu_gui_zoom=1;
+
+	if (MACHINE_IS_QL || MACHINE_IS_TSCONF || MACHINE_IS_CPC || MACHINE_IS_PRISM) menu_gui_zoom=2;
+
+	debug_printf (VERBOSE_INFO,"Setting GUI menu zoom to %d",menu_gui_zoom);
+
 	//si se cambia de maquina Z88 o a maquina Z88, redimensionar ventana
 	if (last_machine_type!=255) {
 
