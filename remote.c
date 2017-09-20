@@ -781,6 +781,8 @@ struct s_items_ayuda items_ayuda[]={
 	{"set-verbose-level",NULL,NULL,"Sets verbose level for console output"},
 	{"set-window-zoom",NULL,"zoom","Sets window zoom"},
   {"smartload","|sl","file","Smart-loads a file. Use with care, may produce unexpected behaviour when emulator is doing a machine reset for example"},
+  {"speech-empty-fifo",NULL,NULL,"Empty speech fifo"},
+  {"speech-send",NULL,"message","Sends message to speech"},
 
  {"tbblue-get-palette",NULL,"index","Get palette colour at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
@@ -3541,6 +3543,17 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
     remote_cpu_exit_step(misocket);
 
   }
+
+  else if (!strcmp(comando_sin_parametros,"speech-empty-fifo") ) {
+  	//Vaciamos cola speech
+  	textspeech_empty_speech_fifo();
+  }
+
+  else if (!strcmp(comando_sin_parametros,"speech-send") ) {
+  	textspeech_print_speech(parametros);
+  }
+
+
 
     else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {
 

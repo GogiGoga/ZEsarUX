@@ -6031,7 +6031,7 @@ void util_set_reset_key_continue(enum util_teclas tecla,int pressrelease)
 					puerto_especial1 |=1;
 					cpc_keyboard_table[8] |=4;
 					puerto_teclado_sam_f7f9 |= 32;
-          ql_keyboard_table[1] |= 8;
+                                        ql_keyboard_table[1] |= 8;
 				}
 
 

@@ -43,6 +43,8 @@ extern void scr_stdout_debug_char_table_routines_poke(z80_int dir);
 
 extern void scr_stdout_debug_print_char_routine(void);
 
+extern z80_bit scrstdout_also_send_speech_debug_messages;
+
 
 
 

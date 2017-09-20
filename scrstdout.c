@@ -63,7 +63,8 @@ void scrstdout_menu_kbhit();
 //int z88_escape_caracter_longitud=0;
 
 
-
+//Si se envian a speech tambien messages de debug
+z80_bit scrstdout_also_send_speech_debug_messages={0};
 
 //int stdout_x_position=0;
 
@@ -459,7 +460,7 @@ void scrstdout_messages_debug(char *s)
 	//flush de salida standard. normalmente no hace falta esto, pero si ha finalizado el driver curses, deja la salida que no hace flush
 	fflush(stdout);
 	
-	textspeech_print_speech(s);
+	if (scrstdout_also_send_speech_debug_messages.v) textspeech_print_speech(s);
 	
 }
 

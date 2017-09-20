@@ -2545,7 +2545,7 @@ void menu_convierte_texto_sin_modificadores(char *texto,char *texto_destino)
 		//printf ("origen: %d destino: %d\n",origen,destino);
 		if (menu_escribe_texto_si_inverso(texto,origen) || menu_escribe_texto_si_parpadeo(texto,origen) ) {
 			origen +=2;
-		}	
+		}
 		else {
 			c=texto[origen];
 			texto_destino[destino]=c;
@@ -2583,7 +2583,7 @@ void menu_escribe_texto(z80_byte x,z80_byte y,z80_byte tinta,z80_byte papel,char
                         i +=2;
                         letra=texto[i];
 		}
-			
+
 
 		//ver si dos ~~ seguidas y cuidado al comparar que no nos vayamos mas alla del codigo 0 final
 		if (menu_escribe_texto_si_inverso(texto,i)) {
@@ -17790,6 +17790,14 @@ void menu_textspeech_send_menu(MENU_ITEM_PARAMETERS)
         textspeech_also_send_menu.v ^=1;
 }
 
+
+#ifdef COMPILE_STDOUT
+void menu_display_stdout_send_speech_debug(MENU_ITEM_PARAMETERS)
+{
+	scrstdout_also_send_speech_debug_messages.v ^=1;
+}
+#endif
+
 void menu_textspeech(MENU_ITEM_PARAMETERS)
 {
         menu_item *array_menu_textspeech;
@@ -17861,6 +17869,16 @@ void menu_textspeech(MENU_ITEM_PARAMETERS)
 				menu_add_item_menu_shortcut(array_menu_textspeech,'m');
 				menu_add_item_menu_tooltip(array_menu_textspeech,"Also send text menu entries to Speech program");
 				menu_add_item_menu_ayuda(array_menu_textspeech,"Also send text menu entries to Speech program");
+
+#ifdef COMPILE_STDOUT
+				if (menu_cond_stdout() ) {
+							menu_add_item_menu_format(array_menu_textspeech,MENU_OPCION_NORMAL,menu_display_stdout_send_speech_debug,NULL,"Also send debug messages: %s", (scrstdout_also_send_speech_debug_messages.v==1 ? "On" : "Off"));
+							menu_add_item_menu_tooltip(array_menu_textspeech,"Also send debug messages to speech");
+							menu_add_item_menu_ayuda(array_menu_textspeech,"Also send debug messages to speech");
+
+				}
+
+#endif
 
 			}
 
