@@ -330,6 +330,8 @@ extern menu_z80_moto_int adjust_address_memory_size(menu_z80_moto_int direccion)
 
 extern int menu_debug_get_total_digits_hexa(int valor);
 
+extern int menu_gui_zoom;
+
 
 #define HELP_MESSAGE_CONDITION_BREAKPOINT \
 "A condition breakpoint has the following format: \n" \

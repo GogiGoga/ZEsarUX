@@ -2348,6 +2348,21 @@ void set_putpixel_zoom(void)
 	}
 }
 
+//Hacer un putpixel en la coordenada indicada pero haciendo tan gordo el pixel como diga zoom_level
+void scr_putpixel_gui_zoom(int x,int y,int color,int zoom_level)
+{
+	//Hacer zoom de ese pixel si conviene
+	int incx,incy;
+	for (incy=0;incy<zoom_level;incy++) {
+		for (incx=0;incx<zoom_level;incx++) {
+			if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(x+incx,y+incy,color);
+
+			else scr_putpixel_zoom(x+incx,y+incy,color);
+		}
+	}
+}
+
+
 
 //Muestra un caracter en pantalla, al estilo del spectrum o zx80/81 o jupiter ace
 //entrada: puntero=direccion a tabla del caracter
@@ -2355,7 +2370,8 @@ void set_putpixel_zoom(void)
 //inverse si o no
 //ink, paper
 //si emula fast mode o no
-void scr_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode)
+//y valor de zoom
+void scr_putsprite_comun_zoom(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode,int zoom_level)
 {
 
         z80_byte color;
@@ -2415,14 +2431,46 @@ void scr_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte 
                 byte_leido=(byte_leido&127)<<1;
 
 		//este scr_putpixel_zoom_rainbow tiene en cuenta los timings de la maquina (borde superior, por ejemplo)
-		if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow((x*8)+bit+margenx_izq,y+margeny_arr,color);
 
-                else scr_putpixel_zoom((x*8)+bit,y,color);
+		int xfinal,yfinal;
+
+		if (rainbow_enabled.v==1) {
+			xfinal=(((x*8)+bit)*zoom_level);
+			xfinal +=margenx_izq;
+
+			yfinal=y*zoom_level;
+			yfinal +=margeny_arr;
+		}
+
+		else {
+			xfinal=((x*8)+bit)*zoom_level;
+			yfinal=y*zoom_level;
+		}
+
+
+		//Hacer zoom de ese pixel si conviene
+		scr_putpixel_gui_zoom(xfinal,yfinal,color,zoom_level);
+		/*int incx,incy;
+		for (incy=0;incy<zoom_level;incy++) {
+			for (incx=0;incx<zoom_level;incx++) {
+				if (rainbow_enabled.v==1) scr_putpixel_zoom_rainbow(xfinal+incx,yfinal+incy,color);
+
+				else scr_putpixel_zoom(xfinal+incx,yfinal+incy,color);
+			}
+		}*/
+
+
 
            }
         }
 }
 
+
+//putsprite pero sin zoom
+void scr_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode)
+{
+	scr_putsprite_comun_zoom(puntero,x,y,inverse,tinta,papel,fast_mode,1);
+}
 
 //Muestra un caracter en pantalla, al estilo del zx80/81
 //entrada: puntero=direccion a tabla del caracter
@@ -2640,6 +2688,8 @@ for (y=0;y<192;y+=8) {
 int scr_ver_si_refrescar_por_menu_activo(int x,int fila)
 {
 
+	x /=menu_gui_zoom;
+	fila /=menu_gui_zoom;
 
                         //Ver en casos en que puede que haya menu activo y hay que hacer overlay
                         if (screen_refresh_menu==1) {

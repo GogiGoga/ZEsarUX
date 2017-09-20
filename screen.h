@@ -107,6 +107,10 @@ extern int calcula_offset_screen (int x,int y);
 extern void (*scr_putchar_menu) (int x,int y, z80_byte caracter,z80_byte tinta,z80_byte papel);
 extern void (*scr_putchar_footer) (int x,int y, z80_byte caracter,z80_byte tinta,z80_byte papel);
 extern void scr_putsprite_comun(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode);
+extern void scr_putsprite_comun_zoom(z80_byte *puntero,int x,int y,z80_bit inverse,z80_byte tinta,z80_byte papel,z80_bit fast_mode,int zoom_level);
+
+extern void scr_putpixel_gui_zoom(int x,int y,int color,int zoom_level);
+
 extern int scr_tiene_colores;
 
 #define WINDOW_FOOTER_SIZE (8*3*menu_footer)

@@ -125,6 +125,8 @@ int menu_speech_tecla_pulsada=0;
 //indica que hay funcion activa de overlay o no
 int menu_overlay_activo=0;
 
+//indica si el menu hace zoom. valores validos: 1 en adelante
+int menu_gui_zoom=1;
 
 defined_f_function defined_f_functions_array[MAX_F_FUNCTIONS]={
 	{"Default",F_FUNCION_DEFAULT},
@@ -2903,41 +2905,7 @@ void menu_dibuja_cuadrado(z80_byte x1,z80_byte y1,z80_byte x2,z80_byte y2,z80_by
 	int margeny_arr;
 	menu_retorna_margenes_border(&margenx_izq,&margeny_arr);
 
-/*
-        //margenes de zona interior de pantalla. para modo rainbow
-        int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
-        int margeny_arr=screen_borde_superior*border_enabled.v;
 
-	if (MACHINE_IS_Z88) {
-		//margenes para realvideo
-		margenx_izq=margeny_arr=0;
-	}
-
-
-        else if (MACHINE_IS_CPC) {
-		//margenes para realvideo
-		margenx_izq=CPC_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-                margeny_arr=CPC_TOP_BORDER_NO_ZOOM*border_enabled.v;
-        }
-
-        else if (MACHINE_IS_PRISM) {
-		//margenes para realvideo
-		margenx_izq=PRISM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-                margeny_arr=PRISM_TOP_BORDER_NO_ZOOM*border_enabled.v;
-        }
-
-        else if (MACHINE_IS_SAM) {
-                //margenes para realvideo
-                margenx_izq=SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-                margeny_arr=SAM_TOP_BORDER_NO_ZOOM*border_enabled.v;
-        }
-
-				else if (MACHINE_IS_QL) {
-                //margenes para realvideo
-                margenx_izq=QL_LEFT_BORDER_NO_ZOOM*border_enabled.v;
-                margeny_arr=QL_TOP_BORDER_NO_ZOOM*border_enabled.v;
-        }
-*/
 
 	//solo hacerlo en el caso de drivers completos
 	if (si_complete_video_driver() ) {
@@ -2945,26 +2913,26 @@ void menu_dibuja_cuadrado(z80_byte x1,z80_byte y1,z80_byte x2,z80_byte y2,z80_by
 		if (rainbow_enabled.v==0) {
 
 			//parte inferior
-			for (x=x1;x<=x2;x++) scr_putpixel_zoom(x,y2,color);
+			for (x=x1;x<=x2;x++) scr_putpixel_gui_zoom(x*menu_gui_zoom,y2*menu_gui_zoom,color,menu_gui_zoom);
 
 			//izquierda
-			for (y=y1;y<=y2;y++) scr_putpixel_zoom(x1,y,color);
+			for (y=y1;y<=y2;y++) scr_putpixel_gui_zoom(x1*menu_gui_zoom,y*menu_gui_zoom,color,menu_gui_zoom);
 
 			//derecha
-			for (y=y1;y<=y2;y++) scr_putpixel_zoom(x2,y,color);
+			for (y=y1;y<=y2;y++) scr_putpixel_gui_zoom(x2*menu_gui_zoom,y*menu_gui_zoom,color,menu_gui_zoom);
 
 
 		}
 
 		else {
  	               //parte inferior
-        	        for (x=x1;x<=x2;x++) scr_putpixel_zoom_rainbow(x+margenx_izq,y2+margeny_arr,color);
+        	        for (x=x1;x<=x2;x++) scr_putpixel_gui_zoom(x*menu_gui_zoom+margenx_izq,y2*menu_gui_zoom+margeny_arr,color,menu_gui_zoom);
 
 	                //izquierda
-        	        for (y=y1;y<=y2;y++) scr_putpixel_zoom_rainbow(x1+margenx_izq,y+margeny_arr,color);
+        	        for (y=y1;y<=y2;y++) scr_putpixel_gui_zoom(x1*menu_gui_zoom+margenx_izq,y*menu_gui_zoom+margeny_arr,color,menu_gui_zoom);
 
 	                //derecha
-        	        for (y=y1;y<=y2;y++) scr_putpixel_zoom_rainbow(x2+margenx_izq,y+margeny_arr,color);
+        	        for (y=y1;y<=y2;y++) scr_putpixel_gui_zoom(x2*menu_gui_zoom+margenx_izq,y*menu_gui_zoom+margeny_arr,color,menu_gui_zoom);
 
 		}
 	}
