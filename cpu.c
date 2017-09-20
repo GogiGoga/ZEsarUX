@@ -3164,7 +3164,7 @@ void post_set_machine_no_rom_load_reopen_window(void)
 	//Ajustar zoom del gui. por defecto 1
 	menu_gui_zoom=1;
 
-	if (MACHINE_IS_QL || MACHINE_IS_TSCONF || MACHINE_IS_CPC || MACHINE_IS_PRISM) menu_gui_zoom=2;
+	if (MACHINE_IS_QL || MACHINE_IS_TSCONF || MACHINE_IS_CPC || MACHINE_IS_PRISM || MACHINE_IS_SAM) menu_gui_zoom=2;
 
 	debug_printf (VERBOSE_INFO,"Setting GUI menu zoom to %d",menu_gui_zoom);
 

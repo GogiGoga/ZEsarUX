@@ -25,6 +25,7 @@ Moved folders: docs, media, snap_tests to a "ZEsarUX-extras" package. These fold
 Moved mmc/ide files location to extras/media/disk_images folder
 
 Improved menu interface:
+*menu gui is zoomed when running following machines: QL, TSConf, CPC, Prism, Sam
 *menu movement with mouse
 *colours are greyscaled when multitask disabled
 *allow blinking text, like the input cursor (needs multitask on)

@@ -8050,7 +8050,7 @@ void menu_audio_espectro_sonido(MENU_ITEM_PARAMETERS)
                        if (menu_multitarea==0) all_interlace_scr_refresca_pantalla();
 
 			char buffer_texto_medio[40];
-			sprintf (buffer_texto_medio,"Avg.: %d Min: %d Max: %d",
+			sprintf (buffer_texto_medio,"Av.: %d Min: %d Max: %d",
 				menu_audio_draw_sound_wave_valor_medio,menu_audio_draw_sound_wave_valor_min,menu_audio_draw_sound_wave_valor_max);
 			menu_escribe_linea_opcion(1,-1,1,buffer_texto_medio);
 			sprintf (buffer_texto_medio,"Average freq: %d Hz (%s)",

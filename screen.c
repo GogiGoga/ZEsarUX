@@ -1182,9 +1182,9 @@ void screen_prism_refresca_pantalla_comun_prism(int x,int y,unsigned int color)
 
         int dibujar=0;
 
-        if (x>255) dibujar=1;
-        else if (y>191) dibujar=1;
-        else if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
+        //if (x>255) dibujar=1;
+        //else if (y>191) dibujar=1;
+        if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
 
         if (dibujar) {
 		scr_putpixel_zoom(x,y,color);
@@ -1858,9 +1858,9 @@ void screen_prism_refresca_rainbow(void) {
 				dibujar=0;
 				menu_x=(x-margenx_izq)/8;
 				menu_y=(y-margeny_arr)/8;
-				if (menu_x>31) dibujar=1;
-				else if (menu_y>23) dibujar=1;
-				else if (scr_ver_si_refrescar_por_menu_activo(menu_x,menu_y)) dibujar=1;
+				//if (menu_x>31) dibujar=1;
+				//else if (menu_y>23) dibujar=1;
+				if (scr_ver_si_refrescar_por_menu_activo(menu_x,menu_y)) dibujar=1;
 
                         }
 
@@ -2690,6 +2690,8 @@ int scr_ver_si_refrescar_por_menu_activo(int x,int fila)
 
 	x /=menu_gui_zoom;
 	fila /=menu_gui_zoom;
+
+	if (x>31 || fila>23) return 1;
 
                         //Ver en casos en que puede que haya menu activo y hay que hacer overlay
                         if (screen_refresh_menu==1) {
@@ -7957,7 +7959,7 @@ void screen_z88_dibujar_udg(z88_dir *tabla_caracter,int x,int y,int ancho,int in
                                         xmenu=(x+offsetx)/8;
                                         ymenu=(y+offsety)/8;
 
-                                        if (xmenu>=0 && ymenu>=0 && xmenu<=31 && ymenu<=23) {
+                                        if (xmenu>=0 && ymenu>=0 /*&& xmenu<=31 && ymenu<=23*/) {
                                                 if (scr_ver_si_refrescar_por_menu_activo_z88(xmenu,ymenu)) {
                                                         scr_putpixel_zoom_z88(x+offsetx,y+offsety,colorblanco);
                                                 }
@@ -8012,7 +8014,7 @@ void screen_z88_dibujar_udg(z88_dir *tabla_caracter,int x,int y,int ancho,int in
                         //Ver si esta zona esta ocupada por el menu
                         xmenu=(x+offsetx)/8;
                         ymenu=(y+offsety)/8;
-                        if (xmenu>=0 && ymenu>=0 && xmenu<=31 && ymenu<=23) {
+                        if (xmenu>=0 && ymenu>=0 /*&& xmenu<=31 && ymenu<=23*/) {
                                 if (scr_ver_si_refrescar_por_menu_activo_z88(xmenu,ymenu)) {
                                         scr_putpixel_zoom_z88(x+offsetx,y+offsety,color);
                                 }
@@ -8104,7 +8106,7 @@ void screen_z88_refresca_pantalla_comun(void)
 	                        //Ver si esta zona esta ocupada por el menu
         	                xmenu=x/8;
 	                        ymenu=y/8;
-	                        if (xmenu>=0 && ymenu>=0 && xmenu<=31 && ymenu<=23) {
+	                        if (xmenu>=0 && ymenu>=0 /*&& xmenu<=31 && ymenu<=23*/) {
         	                        if (scr_ver_si_refrescar_por_menu_activo_z88(xmenu,ymenu)) {
 						scr_putpixel_zoom_z88(x,y,Z88_PXCOLSCROFF);
 					}
@@ -8822,9 +8824,9 @@ void cpc_putpixel_zoom(int x,int y,unsigned int color)
 
 	int dibujar=0;
 
-	if (x>255) dibujar=1;
-	else if (y>191) dibujar=1;
-	else if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
+	//if (x>255) dibujar=1;
+	//else if (y>191) dibujar=1;
+	if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
 
 	if (dibujar) {
 		scr_putpixel_zoom(x,y,color);
@@ -9315,9 +9317,9 @@ void sam_putpixel_zoom(int x,int y,unsigned int color)
 
         int dibujar=0;
 
-        if (x>255) dibujar=1;
-        else if (y>191) dibujar=1;
-        else if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
+        //if (x>255) dibujar=1;
+        //else if (y>191) dibujar=1;
+        if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
 
         if (dibujar) {
                 scr_putpixel_zoom(x,y,SAM_INDEX_FIRST_COLOR+  (  (sam_palette[color&15]) & 127) );
@@ -9691,9 +9693,9 @@ void ql_putpixel_zoom(int x,int y,unsigned int color)
 
         int dibujar=0;
 
-        if (x>255) dibujar=1;
-        else if (y>191) dibujar=1;
-        else if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
+        //if (x>255) dibujar=1;
+        //else if (y>191) dibujar=1;
+        if (scr_ver_si_refrescar_por_menu_activo(x/8,y/8)) dibujar=1;
 
 
 				//temp
