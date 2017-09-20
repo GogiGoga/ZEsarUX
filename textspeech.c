@@ -564,7 +564,7 @@ void textspeech_add_speech_fifo_filter_unknown(void)
 
 	for (i=0;buffer_speech[i];i++) {
 		c=buffer_speech[i];
-		if (c<32 || c>127) buffer_speech[i]=' ';
+		if (c<32 || c>127 || c=='^' || c=='~') buffer_speech[i]=' ';
 	}
 }
 
@@ -573,11 +573,13 @@ void textspeech_add_speech_fifo(void)
 
         if (textspeech_filter_program==NULL) return;
 
-				//Filtrar de la cadena de speech caracteres <32 o >127
+				//Filtrar de la cadena de speech caracteres <32 o >127 u otros
 				textspeech_add_speech_fifo_filter_unknown();
 
 
         //printf ("buffer fifo size: %d\n",fifo_buffer_speech_size);
+
+	//printf ("enviando %s\n",buffer_speech);
 
         scrtextspeech_filter_counter=0;
 
