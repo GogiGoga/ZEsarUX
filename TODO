@@ -35,9 +35,10 @@ The format of each table entry is as follows:
 
 
 Menú con zoom:
--solo para menú.  No footer
--función que dice si overlay hay carácter, que divida antes coordenadas entre valor de zoom 
--que llame a un putpixel especial que aplique el zoom para esos caracteres del menú
+-continuarlo para otros drivers. comparar con cocoa:
+putchar menu llama a   scr_putsprite_comun_zoom(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f,menu_gui_zoom);
+putchar_footer llama a scr_putsprite_comun_zoom(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f,1);
+
 
 Todos los putpixel de menú deberían pasar por mismo sitio: waveform, etc
 
