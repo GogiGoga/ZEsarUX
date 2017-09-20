@@ -39,7 +39,7 @@
 
 z80_bit diviface_enabled={0};
 
-//Prueba
+//Si ha entrado pagina divmmc de manera automatica
 z80_bit diviface_paginacion_automatica_activa={0};
 
 

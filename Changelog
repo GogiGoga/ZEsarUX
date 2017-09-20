@@ -48,6 +48,7 @@ Fixed latency problems on all audio drivers
 Fixed AY sound bugs when volume levels where > 15
 Fixed Windows pthreads version
 Fixed TBBlue reset i/o ports when reset and hard reset
+Fixed Windows freeze issues when doing cpu-step on ZRCP
 
 Updated TBBlue boot loader
 

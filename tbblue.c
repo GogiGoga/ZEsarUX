@@ -1121,7 +1121,7 @@ void tbblue_set_emulator_setting_divmmc(void)
 			bit 7 = Enable turbo mode (0 = disabled, 1 = enabled)
 			bit 6 = DAC chip mode (0 = I2S, 1 = JAP)
 			bit 5 = Enable Lightpen  (1 = enabled)
-			bit 4 = Enable DivMMC (1 = enabled) -> divmmc automatic paging. divmmc memory is supported
+			bit 4 = Enable DivMMC (1 = enabled) -> divmmc automatic paging. divmmc memory is supported using manual
 		*/
         //z80_byte diven=tbblue_config2&4;
 				z80_byte diven=tbblue_registers[6]&16;
@@ -1138,6 +1138,8 @@ void tbblue_set_emulator_setting_divmmc(void)
 				else {
 					//printf ("Desactivando diviface automatic paging\n");
 					diviface_allow_automatic_paging.v=0;
+					//Y hacer un page-out si hay alguna pagina activa
+					diviface_paginacion_automatica_activa.v=0;
 				}
 
 }
