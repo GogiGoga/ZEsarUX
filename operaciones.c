@@ -1842,6 +1842,8 @@ set_visualmembuffer(dir);
 			return;
 		}
 
+		//if (dir<16384) printf ("Writing on tbblue rom address %XH value %XH\n",dir,valor);
+
 		z80_byte *puntero;
 		puntero=tbblue_return_segment_memory(dir);
 
@@ -1876,8 +1878,12 @@ z80_byte peek_byte_no_time_tbblue(z80_int dir)
 		z80_byte *puntero;
 		puntero=tbblue_return_segment_memory(dir);
 
+		//printf ("Returning tbblue memory address %X\n",dir);
+
 		dir = dir & 16383;
 		puntero=puntero+dir;
+
+		//printf ("Returning tbblue memory value %X\n",*puntero);
 
 		return *puntero;
 }
@@ -6776,7 +6782,9 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
         	if (!MACHINE_IS_ZXUNO_DIVEN_DISABLED) {
 
 			//printf ("Puerto control paginacion DIVMMC Write: 0x%02x valor: 0x%02X\n",puerto_l,value);
+			//printf ("antes control register: %02XH paginacion automatica: %d\n",diviface_control_register,diviface_paginacion_automatica_activa.v);
 			diviface_write_control_register(value);
+			//printf ("despues control register: %02XH paginacion automatica: %d\n",diviface_control_register,diviface_paginacion_automatica_activa.v);
 		}
 	}
 

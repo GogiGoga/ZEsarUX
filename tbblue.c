@@ -1086,12 +1086,14 @@ which allows you access to all SRAM.
 				//printf ("page on 0-16383: %d offset: %X\n",romram_page,indice);
 				tbblue_memory_paged[0]=&memoria_spectrum[indice];
 				tbblue_low_segment_writable.v=1;
+				//printf ("low segment writable for machine default\n");
 			}
 			else {
 				//In this setting state, the page 0 repeats the content of the ROM 'loader', ie 0-8191 appear memory contents, and repeats 8192-16383
 				//La rom es de 8 kb pero la hemos cargado dos veces
 				tbblue_memory_paged[0]=tbblue_fpga_rom;
 				tbblue_low_segment_writable.v=0;
+				//printf ("low segment NON writable for machine default\n");
 			}
 
 			tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
@@ -1281,6 +1283,7 @@ void tbblue_hard_reset(void)
 	tbblue_port_123b=0;
 
 	tbblue_bootrom.v=1;
+	//printf ("----setting bootrom to 1\n");
 	tbblue_set_memory_pages();
 
 
@@ -1527,6 +1530,7 @@ void tbblue_set_value_port(z80_byte value)
 						if (value&2) {
 							//printf ("Doing hard reset due to writing to port 24D9H\n");
 							tbblue_bootrom.v=1;
+							//printf ("----setting bootrom to 1. when writing register 2 and bit 1\n");
 							tbblue_registers[3]=0;
 							//tbblue_config1=0;
 							tbblue_set_memory_pages();
@@ -1559,6 +1563,8 @@ void tbblue_set_value_port(z80_byte value)
 
 			//last_value=tbblue_config1;
 			tbblue_bootrom.v=0;
+			//printf ("----setting bootrom to 0\n");
+
 			tbblue_set_memory_pages();
 
 
