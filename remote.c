@@ -787,11 +787,17 @@ struct s_items_ayuda items_ayuda[]={
  {"tbblue-get-palette",NULL,"index [items]","Get palette colours at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+
+ {"tbblue-set-palette",NULL,"index value","Sets palette values starting at desired starting index. Values must be separed by one space each one"},
+ {"tbblue-set-pattern",NULL,"index value","Sets pattern values starting at desired pattern index. Values must be separed by one space each one, you can only define one pattern maximum (so 256 values maximum)"},
+ {"tbblue-set-sprite",NULL,"index value","Sets sprite values starting at desired sprite index. Values must be separed by one space each one, you can only define one sprite maximum (so 4 values maximum)"},
+
+
  {"tsconf-get-af-port",NULL,"index","Get TSConf XXAF port value"},
  {"tsconf-get-nvram",NULL,"index","Get TSConf NVRAM value at index"},
 
 	{"view-basic",NULL,NULL,"Gets Basic program listing"},
-	{"write-memory","|wm","address value","Writes a sequence of bytes starting at desired address on memory. Bytes must be separed by one space"},
+	{"write-memory","|wm","address value","Writes a sequence of bytes starting at desired address on memory. Bytes must be separed by one space each one"},
 	{"write-memory-raw",NULL,"address values","Writes a sequence of bytes starting at desired address on memory. Bytes must be in hexadecimal and not separed"},
 
 
@@ -3652,6 +3658,95 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 
 				}
 
+
+
+	else if (!strcmp(comando_sin_parametros,"tbblue-set-palette")) {
+		z80_byte index;
+		z80_byte valor;
+		if (parametros[0]==0) {
+			escribir_socket(misocket,"ERROR. No parameters set");
+		}
+
+		else {
+
+			index=parse_string_to_number(parametros);
+
+			//Ver si hay espacio
+			char *s=find_space_or_end(parametros);
+			while (*s) {
+				valor=parse_string_to_number(s);
+				tbsprite_palette[index++]=valor;
+
+				s=find_space_or_end(s);
+			}
+
+
+		}
+
+	}
+
+
+	else if (!strcmp(comando_sin_parametros,"tbblue-set-pattern")) {
+		int index_int;
+		z80_byte valor;
+		if (parametros[0]==0) {
+			escribir_socket(misocket,"ERROR. No parameters set");
+		}
+
+		else {
+
+			index_int=parse_string_to_number(parametros);
+
+			if (index_int<0 || index_int>=TBBLUE_MAX_PATTERNS) escribir_socket(misocket,"ERROR. Out of range");
+
+			z80_byte i=0;
+
+			//Ver si hay espacio
+			char *s=find_space_or_end(parametros);
+			while (*s) {
+				valor=parse_string_to_number(s);
+				tbsprite_patterns[index_int][i++]=valor;
+
+				s=find_space_or_end(s);
+			}
+
+
+		}
+
+	}
+
+
+	else if (!strcmp(comando_sin_parametros,"tbblue-set-sprite")) {
+		int index_int;
+		z80_byte valor;
+		if (parametros[0]==0) {
+			escribir_socket(misocket,"ERROR. No parameters set");
+		}
+
+		else {
+
+			index_int=parse_string_to_number(parametros);
+
+			if (index_int<0 || index_int>=TBBLUE_MAX_SPRITES) escribir_socket(misocket,"ERROR. Out of range");
+
+			z80_byte i=0;
+
+			//Ver si hay espacio
+			char *s=find_space_or_end(parametros);
+			while (*s) {
+				valor=parse_string_to_number(s);
+				tbsprite_sprites[index_int][i++]=valor;
+				if (i==4) i=0;
+
+				s=find_space_or_end(s);
+			}
+
+
+		}
+
+	}
+
+
 				else if (!strcmp(comando_sin_parametros,"tsconf-get-af-port") ) {
 
 			  	if (!MACHINE_IS_TSCONF) escribir_socket(misocket,"ERROR. Machine is not TSConf");
@@ -3733,9 +3828,7 @@ else if (!strcmp(comando_sin_parametros,"write-memory") || !strcmp(comando_sin_p
 
 			s=find_space_or_end(s);
 		}
-		/*else {
-			escribir_socket(misocket,"ERROR. No value set");
-		}*/
+
 
 	}
 
