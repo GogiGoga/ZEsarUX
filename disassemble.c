@@ -119,15 +119,31 @@ static const char *rotate_op( z80_byte b );
 static const char *bit_op( z80_byte b );
 static int bit_op_bit( z80_byte b );
 
+struct s_tbblue_extended_string_opcode {
+	char text[32];
+	z80_byte opcode;
+};
+
+#define TOTAL_TBBLUE_EXTENDED_OPCODES 2
+
+struct s_tbblue_extended_string_opcode tbblue_extended_string_opcode[TOTAL_TBBLUE_EXTENDED_OPCODES]={
+	{"SWAPNIB",0x23},
+	{"POPX",0x8B}
+};
+
 void debugger_handle_extended_tbblue_opcodes(char *buffer, unsigned int address)
 {
 	if (MACHINE_IS_TBBLUE) {
 		if (!strcmp(buffer,"NOPD")) {
 			if (disassemble_peek_byte(address)==237) {
-				switch (disassemble_peek_byte(address+1)) {
-					case 0x8B:
-						strcpy(buffer,"POPX");
-					break;
+				z80_byte opcode=disassemble_peek_byte(address+1);
+
+				int i;
+				for (i=0;i<TOTAL_TBBLUE_EXTENDED_OPCODES;i++) {
+					if (tbblue_extended_string_opcode[i].opcode==opcode) {
+						strcpy(buffer,tbblue_extended_string_opcode[i].text);
+					}
+				
 				}
 			}
 		}

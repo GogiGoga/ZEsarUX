@@ -214,7 +214,13 @@ void instruccion_ed_34 ()
 
 void instruccion_ed_35 ()
 {
-        invalid_opcode_ed("ED35");
+        if (MACHINE_IS_TBBLUE) {
+                //swapnib           ED 23          4+4  A bits 7-4 swap with A bits 3-0
+                z80_byte final_l=(reg_a>>4)&0x0F;
+                z80_byte final_h=(reg_a<<4)&0xF0;
+                reg_a=final_l|final_h;
+        }
+        else invalid_opcode_ed("ED35");
 }
 
 void instruccion_ed_36 ()
@@ -1187,6 +1193,7 @@ void instruccion_ed_139 ()
 
         if (MACHINE_IS_TBBLUE) {
                 //POPX
+                //popx              ED 8B         4+4  pop value and disguard
                 reg_sp +=2;
         }
 
