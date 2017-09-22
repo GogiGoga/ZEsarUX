@@ -784,7 +784,7 @@ struct s_items_ayuda items_ayuda[]={
   {"speech-empty-fifo",NULL,NULL,"Empty speech fifo"},
   {"speech-send",NULL,"message","Sends message to speech"},
 
- {"tbblue-get-palette",NULL,"index","Get palette colour at index. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tbblue-get-palette",NULL,"index [items]","Get palette colours at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tsconf-get-af-port",NULL,"index","Get TSConf XXAF port value"},
@@ -3558,18 +3558,26 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
     else if (!strcmp(comando_sin_parametros,"tbblue-get-palette") ) {
 
 		if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
-			else {
-        	        if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
-                	else {
+		else {
+			remote_parse_commands_argvc(parametros);
+			if (remote_command_argc<1) {
+				escribir_socket(misocket,"ERROR. Needs one parameter minimum");
+				return;
+			}
 
-				int index=parse_string_to_number(parametros);
-				if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
-				else {
-					z80_byte color=tbsprite_palette[index];
-					escribir_socket_format(misocket,"%02X",color);
-				}
-	                }
-		}
+			z80_byte index=parse_string_to_number(remote_command_argv[0]);
+
+			int items=1;
+			if (remote_command_argc>1) items=parse_string_to_number(remote_command_argv[1]);
+			//if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
+
+			for (;items;items--) {
+				z80_byte color=tbsprite_palette[index++];
+				escribir_socket_format(misocket,"%02X ",color);
+			}
+
+	        }
+
 
         }
 
@@ -3578,7 +3586,7 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
                 if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
                 else {
 
-										remote_parse_commands_argvc(parametros);
+				remote_parse_commands_argvc(parametros);
 
 		                if (remote_command_argc<1) {
                 		        escribir_socket(misocket,"ERROR. Needs one parameter minimum");
