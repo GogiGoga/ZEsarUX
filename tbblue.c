@@ -972,6 +972,9 @@ void tbblue_set_memory_pages(void)
 	int ram_page,rom_page;
 	int indice;
 
+	//Por defecto
+	tbblue_low_segment_writable.v=0;
+
 	//printf ("tbblue set memory pages. maquina=%d\n",maquina);
 	/*
 	bits 1-0 = Machine type:
@@ -1000,7 +1003,7 @@ void tbblue_set_memory_pages(void)
 		        contend_pages_actual[3]=contend_pages_128k_p2a[0];
 
 
-			tbblue_low_segment_writable.v=0;
+			//tbblue_low_segment_writable.v=0;
 		break;
 
 		case 2:
@@ -1019,7 +1022,7 @@ void tbblue_set_memory_pages(void)
 			debug_paginas_memoria_mapeadas[2]=2;
 			debug_paginas_memoria_mapeadas[3]=ram_page;
 
-			tbblue_low_segment_writable.v=0;
+			//tbblue_low_segment_writable.v=0;
 		        contend_pages_actual[0]=0;
 		        contend_pages_actual[1]=contend_pages_128k_p2a[5];
 		        contend_pages_actual[2]=contend_pages_128k_p2a[2];
@@ -1034,10 +1037,13 @@ void tbblue_set_memory_pages(void)
 			if (puerto_8189&1) {
 
 				tbblue_mem_page_ram_rom();
+				//printf ("setting low segment writeable as port 8189 bit 1\n");
 				tbblue_low_segment_writable.v=1;
 			}
 
 			else {
+
+				//printf ("NOT setting low segment writeable as port 8189 bit 1\n");
 
                     //when "11"    => maquina <= s_speccy3e;
                         rom_page=(puerto_32765>>4)&1;
@@ -1092,7 +1098,7 @@ which allows you access to all SRAM.
 				//In this setting state, the page 0 repeats the content of the ROM 'loader', ie 0-8191 appear memory contents, and repeats 8192-16383
 				//La rom es de 8 kb pero la hemos cargado dos veces
 				tbblue_memory_paged[0]=tbblue_fpga_rom;
-				tbblue_low_segment_writable.v=0;
+				//tbblue_low_segment_writable.v=0;
 				//printf ("low segment NON writable for machine default\n");
 			}
 
