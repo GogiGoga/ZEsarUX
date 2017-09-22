@@ -1565,6 +1565,8 @@ void tbblue_set_value_port(z80_byte value)
 			tbblue_bootrom.v=0;
 			//printf ("----setting bootrom to 0\n");
 
+			//printf ("Writing register 3 value %02XH\n",value);
+
 			tbblue_set_memory_pages();
 
 
@@ -1700,7 +1702,7 @@ z80_byte tbblue_get_value_port_register(z80_byte registro)
 	}
 
 
-	return tbblue_registers[tbblue_last_register];
+	return tbblue_registers[registro];
 }
 
 
