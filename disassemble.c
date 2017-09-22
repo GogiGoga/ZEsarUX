@@ -119,6 +119,21 @@ static const char *rotate_op( z80_byte b );
 static const char *bit_op( z80_byte b );
 static int bit_op_bit( z80_byte b );
 
+void debugger_handle_extended_tbblue_opcodes(char *buffer, unsigned int address)
+{
+	if (MACHINE_IS_TBBLUE) {
+		if (!strcmp(buffer,"NOPD")) {
+			if (disassemble_peek_byte(address)==237) {
+				switch (disassemble_peek_byte(address+1)) {
+					case 0x8B:
+						strcpy(buffer,"POPX");
+					break;
+				}
+			}
+		}
+	}
+}
+
 /* A very thin wrapper to avoid exposing the USE_HL constant */
 void
 debugger_disassemble( char *buffer, size_t buflen, size_t *length,
@@ -149,6 +164,9 @@ debugger_disassemble( char *buffer, size_t buflen, size_t *length,
 	}
 
 	disassemble_main( address, buffer, buflen, length, USE_HL );
+
+	//gestionar casos de opcodes extendidos de Next
+	debugger_handle_extended_tbblue_opcodes(buffer,address);
 }
 
 
@@ -159,6 +177,10 @@ void debugger_disassemble_array (char *buffer, size_t buflen, size_t *length, un
 	disassemble_show_value.v=0;
 	disassemble_ddfd_anidado=0;
 	disassemble_main( address, buffer, buflen, length, USE_HL );
+
+	//gestionar casos de opcodes extendidos de Next
+	debugger_handle_extended_tbblue_opcodes(buffer,address);
+
 }
 
 
