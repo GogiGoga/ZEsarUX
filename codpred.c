@@ -1,5 +1,5 @@
 /*
-    ZEsarUX  ZX Second-Emulator And Released for UniX 
+    ZEsarUX  ZX Second-Emulator And Released for UniX
     Copyright (C) 2013 Cesar Hernandez Bano
 
     This file is part of ZEsarUX.
@@ -26,7 +26,7 @@
 #include "contend.h"
 #include "zxuno.h"
 
-void invalid_opcode_ed(char *s) 
+void invalid_opcode_ed(char *s)
 {
 	//debug_printf(VERBOSE_ERR,"Invalid opcode %s. Final PC: %X",s,reg_pc);
 
@@ -712,7 +712,7 @@ void instruccion_ed_95 ()
       contend_read_no_mreq( IR, 1 );
 
 	reg_a=(reg_r&127) | (reg_r_bit7 &128);
-	
+
 
         Z80_FLAGS=Z80_FLAGS & FLAG_C;
 
@@ -802,7 +802,7 @@ void instruccion_ed_103 ()
         z80_byte low_hl,low_hl_copia,high_hl,low_a,high_a;
         z80_byte bytehl;
 	z80_int reg_temp_hl;
-        
+
 
         reg_temp_hl=HL;
         bytehl=peek_byte(reg_temp_hl);
@@ -811,7 +811,7 @@ void instruccion_ed_103 ()
 
         low_hl_copia=low_hl=bytehl & 0xF;
         high_hl=(bytehl >> 4) & 0xF;
-        low_a=reg_a & 0xF; 
+        low_a=reg_a & 0xF;
 
         //este sin rotar
         high_a=reg_a & 0xF0;
@@ -822,9 +822,9 @@ void instruccion_ed_103 ()
 
         reg_a=high_a | low_a;
         bytehl=(high_hl<<4) | low_hl;
-        
+
         poke_byte(HL,bytehl);
-        
+
 
 	//FLAG C no alterado
 	Z80_FLAGS = Z80_FLAGS & FLAG_C;
@@ -940,7 +940,7 @@ void instruccion_ed_111 ()
 	low_a=high_hl;
 	high_hl=low_hl;
 	low_hl=low_a_copia;
-	
+
 	reg_a=high_a | low_a;
 	bytehl=(high_hl<<4) | low_hl;
 
@@ -948,12 +948,12 @@ void instruccion_ed_111 ()
 
         //FLAG C no alterado
         Z80_FLAGS = Z80_FLAGS & FLAG_C;
-        
+
         Z80_FLAGS |=sz53p_table[reg_a];
 
 
 	set_memptr(reg_temp_hl+1);
-	
+
 }
 
 void instruccion_ed_112 ()
@@ -1184,7 +1184,13 @@ void instruccion_ed_138 ()
 
 void instruccion_ed_139 ()
 {
-        invalid_opcode_ed("ED139");
+
+        if (MACHINE_IS_TBBLUE) {
+                //POPX
+                reg_sp +=2;
+        }
+
+        else invalid_opcode_ed("ED139");
 }
 
 void instruccion_ed_140 ()
@@ -1318,7 +1324,7 @@ LDIR        --000-  Load, Inc., Repeat    LDI till BC=0
 	if (byte_leido & 8 ) Z80_FLAGS |=FLAG_3;
 
 	if (byte_leido & 2 ) Z80_FLAGS |=FLAG_5;
-	
+
 
 }
 
@@ -1576,7 +1582,7 @@ void instruccion_ed_176 ()
         byte_leido=peek_byte(HL);
         poke_byte(DE,byte_leido);
 
-        contend_write_no_mreq( DE, 1 ); 
+        contend_write_no_mreq( DE, 1 );
 	contend_write_no_mreq( DE, 1 );
 
 	BC--;
@@ -1589,9 +1595,9 @@ void instruccion_ed_176 ()
 
         if (BC) {
 	  Z80_FLAGS |=FLAG_PV;
-          contend_write_no_mreq( DE, 1 ); 
+          contend_write_no_mreq( DE, 1 );
 	  contend_write_no_mreq( DE, 1 );
-          contend_write_no_mreq( DE, 1 ); 
+          contend_write_no_mreq( DE, 1 );
 	  contend_write_no_mreq( DE, 1 );
           contend_write_no_mreq( DE, 1 );
           reg_pc -=2;
@@ -1618,9 +1624,9 @@ void instruccion_ed_177 ()
 		return;
 	}
 
-          contend_read_no_mreq( HL, 1 ); 
+          contend_read_no_mreq( HL, 1 );
 	  contend_read_no_mreq( HL, 1 );
-          contend_read_no_mreq( HL, 1 ); 
+          contend_read_no_mreq( HL, 1 );
 	  contend_read_no_mreq( HL, 1 );
           contend_read_no_mreq( HL, 1 );
 
@@ -1667,9 +1673,9 @@ void instruccion_ed_178 ()
         set_flags_parity(( aux & 0x07 ) ^ reg_b);
 
         if ( reg_b ) {
-          contend_write_no_mreq( HL, 1 ); 
+          contend_write_no_mreq( HL, 1 );
 	  contend_write_no_mreq( HL, 1 );
-          contend_write_no_mreq( HL, 1 ); 
+          contend_write_no_mreq( HL, 1 );
 	  contend_write_no_mreq( HL, 1 );
           contend_write_no_mreq( HL, 1 );
           reg_pc -= 2;
@@ -1687,9 +1693,9 @@ void instruccion_ed_179 ()
         instruccion_ed_163();
 
         if ( reg_b ) {
-          contend_read_no_mreq( BC, 1 ); 
+          contend_read_no_mreq( BC, 1 );
 	  contend_read_no_mreq( BC, 1 );
-          contend_read_no_mreq( BC, 1 ); 
+          contend_read_no_mreq( BC, 1 );
 	  contend_read_no_mreq( BC, 1 );
           contend_read_no_mreq( BC, 1 );
           reg_pc -= 2;
@@ -1734,7 +1740,7 @@ void instruccion_ed_184 ()
         byte_leido=peek_byte(HL);
         poke_byte(DE,byte_leido);
 
-        contend_write_no_mreq( DE, 1 ); 
+        contend_write_no_mreq( DE, 1 );
 	contend_write_no_mreq( DE, 1 );
 
         BC--;
@@ -1748,9 +1754,9 @@ void instruccion_ed_184 ()
 
         if (BC) {
 	  Z80_FLAGS |=FLAG_PV;
-          contend_write_no_mreq( DE, 1 ); 
+          contend_write_no_mreq( DE, 1 );
 	  contend_write_no_mreq( DE, 1 );
-          contend_write_no_mreq( DE, 1 ); 
+          contend_write_no_mreq( DE, 1 );
 	  contend_write_no_mreq( DE, 1 );
           contend_write_no_mreq( DE, 1 );
           reg_pc -=2;
@@ -1777,9 +1783,9 @@ void instruccion_ed_185 ()
 		return;
 	}
 
-          contend_read_no_mreq( HL, 1 ); 
+          contend_read_no_mreq( HL, 1 );
 	  contend_read_no_mreq( HL, 1 );
-          contend_read_no_mreq( HL, 1 ); 
+          contend_read_no_mreq( HL, 1 );
 	  contend_read_no_mreq( HL, 1 );
           contend_read_no_mreq( HL, 1 );
 
@@ -1826,9 +1832,9 @@ void instruccion_ed_186 ()
         set_flags_parity(( aux & 0x07 ) ^ reg_b);
 
         if (reg_b) {
-          contend_write_no_mreq( HL, 1 ); 
+          contend_write_no_mreq( HL, 1 );
 	  contend_write_no_mreq( HL, 1 );
-          contend_write_no_mreq( HL, 1 ); 
+          contend_write_no_mreq( HL, 1 );
 	  contend_write_no_mreq( HL, 1 );
           contend_write_no_mreq( HL, 1 );
           reg_pc -= 2;
@@ -1845,9 +1851,9 @@ void instruccion_ed_187 ()
         instruccion_ed_171();
 
         if ( reg_b ) {
-          contend_read_no_mreq( BC, 1 ); 
+          contend_read_no_mreq( BC, 1 );
 	  contend_read_no_mreq( BC, 1 );
-          contend_read_no_mreq( BC, 1 ); 
+          contend_read_no_mreq( BC, 1 );
 	  contend_read_no_mreq( BC, 1 );
           contend_read_no_mreq( BC, 1 );
           reg_pc -= 2;
@@ -2198,7 +2204,7 @@ void instruccion_ed_255 ()
 
 
 
-void (*codpred[]) ()   = { 
+void (*codpred[]) ()   = {
 instruccion_ed_0,
 instruccion_ed_1,
 instruccion_ed_2,
