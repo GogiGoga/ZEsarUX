@@ -1497,31 +1497,44 @@ void tbblue_change_timing(int timing)
 */
 void tbblue_set_emulator_setting_timing(void)
 {
-/*
-- Write in port 0x24DB (config1)
+	/*
+	(W) 0x03 (03) => Set machine type, only in IPL or config mode:
+	A write in this register disables the IPL
+	(0x0000-0x3FFF are mapped to the RAM instead of the internal ROM)
+	bit 7 = lock timing
 
-                case cpu_do(7 downto 6) is
-                    when "01"    => maquina <= s_speccy48;
-                    when "10"    => maquina <= s_speccy128;
-                    when "11"    => maquina <= s_speccy3e;
-                    when others    => maquina <= s_config;   ---config mode
-                end case;
+	bits 6-4 = Timing:
+	000 or 001 = ZX 48K
+	010 = ZX 128K
+	011 = ZX +2/+3e
+	100 = Pentagon 128K
 
-*/
+	bit 3 = Reserved, must be 0
+
+	bits 2-0 = Machine type:
+	000 = Config mode
+	001 = ZX 48K
+	010 = ZX 128K
+	011 = ZX +2/+3e
+	100 = Pentagon 128K
+	*/
 
 
                 //z80_byte t=(tbblue_config1 >> 6)&3;
-								z80_byte t=(tbblue_registers[3])&3;
+		z80_byte t=(tbblue_registers[3]>>4)&7;
+
+		//TODO: otros timings
+		
                 if (t<=1) {
-					//48k
-							debug_printf (VERBOSE_INFO,"Apply config.timing. change:48k");
-							tbblue_change_timing(0);
-					}
-				else {
-					//128k
-							debug_printf (VERBOSE_INFO,"Apply config.timing. change:128k");
-							tbblue_change_timing(1);
-					}
+		//48k
+				debug_printf (VERBOSE_INFO,"Apply config.timing. change:48k");
+				tbblue_change_timing(0);
+		}
+		else {
+		//128k
+				debug_printf (VERBOSE_INFO,"Apply config.timing. change:128k");
+				tbblue_change_timing(1);
+		}
 
 
 
@@ -1622,18 +1635,9 @@ void tbblue_set_value_port(z80_byte value)
 			tbblue_set_memory_pages();
 
 
-//- Write in port 0x24DB (config1)
-//
-	//              case cpu_do(7 downto 6) is
-		//                when "01"    => maquina <= s_speccy48;
-	//                  when "10"    => maquina <= s_speccy128;
-//                    when "11"    => maquina <= s_speccy3e;
-//                    when others    => maquina <= s_config;   ---config mode
-//                end case;
-
-
 			//Solo cuando hay cambio
-			if ( last_register_3 != value ) tbblue_set_emulator_setting_timing();
+			//if ( last_register_3 != value )
+			tbblue_set_emulator_setting_timing();
 		break;
 
 
