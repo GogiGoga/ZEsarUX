@@ -285,7 +285,15 @@ void instruccion_ed_47 ()
 
 void instruccion_ed_48 ()
 {
-        invalid_opcode_ed("ED48");
+        if (MACHINE_IS_TBBLUE) {
+                //mul               ED 30          4+4  multiply HL*DE = HLDE (no flags set)
+                int resultado=HL*DE;
+
+                HL=(resultado>>16) & 0xFFFF;
+                DE=resultado & 0xFFFF;
+        }
+
+        else invalid_opcode_ed("ED48");
 }
 
 void instruccion_ed_49 ()

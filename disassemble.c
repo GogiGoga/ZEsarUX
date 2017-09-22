@@ -124,10 +124,11 @@ struct s_tbblue_extended_string_opcode {
 	z80_byte opcode;
 };
 
-#define TOTAL_TBBLUE_EXTENDED_OPCODES 2
+#define TOTAL_TBBLUE_EXTENDED_OPCODES 3
 
 struct s_tbblue_extended_string_opcode tbblue_extended_string_opcode[TOTAL_TBBLUE_EXTENDED_OPCODES]={
 	{"SWAPNIB",0x23},
+	{"MUL",0x30},
 	{"POPX",0x8B}
 };
 
@@ -143,7 +144,7 @@ void debugger_handle_extended_tbblue_opcodes(char *buffer, unsigned int address)
 					if (tbblue_extended_string_opcode[i].opcode==opcode) {
 						strcpy(buffer,tbblue_extended_string_opcode[i].text);
 					}
-				
+
 				}
 			}
 		}
