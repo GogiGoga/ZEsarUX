@@ -965,8 +965,8 @@ z80_byte tbblue_mem_get_ram_page(void)
 
 void tbblue_set_memory_pages(void)
 {
-	//Mapeamos paginas de RAM segun config1
-	z80_byte maquina=(tbblue_registers[3])&3;
+	//Mapeamos paginas de RAM segun config maquina
+	z80_byte maquina=(tbblue_registers[3])&7;
 
 	int romram_page;
 	int ram_page,rom_page;
@@ -986,7 +986,7 @@ void tbblue_set_memory_pages(void)
 
 	switch (maquina) {
 		case 1:
-                    //when "01"    => maquina <= s_speccy48;
+                    //001 = ZX 48K
 			tbblue_memory_paged[0]=tbblue_rom_memory_pages[0];
 			tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
 			tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
@@ -1007,7 +1007,7 @@ void tbblue_set_memory_pages(void)
 		break;
 
 		case 2:
-                    //when "10"    => maquina <= s_speccy128;
+                    //010 = ZX 128K
 			rom_page=(puerto_32765>>4)&1;
                         tbblue_memory_paged[0]=tbblue_rom_memory_pages[rom_page];
 
@@ -1032,7 +1032,7 @@ void tbblue_set_memory_pages(void)
 		break;
 
 		case 3:
-
+			//011 = ZX +2/+3e
 			//Si RAM en ROM
 			if (puerto_8189&1) {
 
@@ -1076,7 +1076,35 @@ void tbblue_set_memory_pages(void)
 			}
 		break;
 
+		case 4:
+                    //100 = Pentagon 128K. TODO. de momento tal cual 128kb
+			rom_page=(puerto_32765>>4)&1;
+                        tbblue_memory_paged[0]=tbblue_rom_memory_pages[rom_page];
+
+                        tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
+                        tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
+
+			ram_page=tbblue_mem_get_ram_page();
+                        tbblue_memory_paged[3]=tbblue_ram_memory_pages[ram_page];
+
+			debug_paginas_memoria_mapeadas[0]=rom_page+128;
+			debug_paginas_memoria_mapeadas[1]=5;
+			debug_paginas_memoria_mapeadas[2]=2;
+			debug_paginas_memoria_mapeadas[3]=ram_page;
+
+			//tbblue_low_segment_writable.v=0;
+		        contend_pages_actual[0]=0;
+		        contend_pages_actual[1]=contend_pages_128k_p2a[5];
+		        contend_pages_actual[2]=contend_pages_128k_p2a[2];
+		        contend_pages_actual[3]=contend_pages_128k_p2a[ram_page];
+
+
+		break;
+
 		default:
+
+			//Caso maquina 0 u otros no contemplados
+			//000 = Config mode
 
 			//printf ("tbblue_bootrom.v=%d\n",tbblue_bootrom.v);
 
@@ -1549,8 +1577,26 @@ void tbblue_set_value_port(z80_byte value)
 		break;
 
 		case 3:
-
 		/*
+		(W) 0x03 (03) => Set machine type, only in IPL or config mode:
+   		A write in this register disables the IPL
+   		(0x0000-0x3FFF are mapped to the RAM instead of the internal ROM)
+   		bit 7 = lock timing
+   		bits 6-4 = Timing:
+      		000 or 001 = ZX 48K
+      		010 = ZX 128K
+      		011 = ZX +2/+3e
+      		100 = Pentagon 128K
+   		bit 3 = Reserved, must be 0
+   		bits 2-0 = Machine type:
+      		000 = Config mode
+      		001 = ZX 48K
+      		010 = ZX 128K
+      		011 = ZX +2/+3e
+      		100 = Pentagon 128K
+      		*/
+
+		/*  OLD:
 				(W)		03 => Set machine type, only in bootrom or config mode:
 							A write in this register disables the bootrom mode (0000 to 3FFF are mapped to the RAM instead of the internal ROM)
 							bits 7-5 = Reserved, must be 0
@@ -1566,7 +1612,7 @@ void tbblue_set_value_port(z80_byte value)
 								10 = ZX 128K
 								11 = ZX +2/+3e
 								*/
-
+			//Pentagon not supported yet. TODO
 			//last_value=tbblue_config1;
 			tbblue_bootrom.v=0;
 			//printf ("----setting bootrom to 0\n");
@@ -1587,7 +1633,7 @@ void tbblue_set_value_port(z80_byte value)
 
 
 			//Solo cuando hay cambio
-			if ( (last_register_3&3) != (value&3) ) tbblue_set_emulator_setting_timing();
+			if ( last_register_3 != value ) tbblue_set_emulator_setting_timing();
 		break;
 
 
