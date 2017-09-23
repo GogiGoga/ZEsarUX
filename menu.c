@@ -3103,7 +3103,7 @@ void menu_calculate_mouse_xy(void)
 	if (si_complete_video_driver() ) {
 
 		int mouse_en_emulador=0;
-		//printf ("x: %d y: %d\n",mouse_x,mouse_y);
+		//printf ("x: %04d y: %04d\n",mouse_x,mouse_y);
 		if (mouse_x>=0 && mouse_y>=0
 			&& mouse_x<=screen_get_window_size_width_zoom_border_en() && mouse_y<=screen_get_window_size_height_zoom_border_en() ) {
 				//Si mouse esta dentro de la ventana del emulador
@@ -3128,7 +3128,7 @@ void menu_calculate_mouse_xy(void)
 
 		//Todo lo que sea negativo o exceda border, nada.
 
-		//printf ("x: %d y: %d\n",x,y);
+		//printf ("x: %04d y: %04d\n",x,y);
 
 
 
@@ -3139,6 +3139,14 @@ void menu_calculate_mouse_xy(void)
 
 	x -=margenx_izq;
 	y -=margeny_arr;
+
+	//printf ("x: %04d y: %04d\n",x,y);
+
+	//Aqui puede dar negativo, en caso que cursor este en el border
+	//si esta justo en los ultimos 8 pixeles, dara entre -7 y -1. al dividir entre 8, retornaria 0, diciendo erroneamente que estamos dentro de ventana
+
+	if (x<0) x-=(8*menu_gui_zoom); //posicion entre -7 y -1 y demas, cuenta como -1, -2 al dividir entre 8
+	if (y<0) y-=(8*menu_gui_zoom);
 
 	x /=8;
 	y /=8;
@@ -3151,6 +3159,10 @@ void menu_calculate_mouse_xy(void)
 
 	menu_mouse_x=x;
 	menu_mouse_y=y;
+
+	//if (x<=0 || y<=0) printf ("x: %04d y: %04d final\n",x,y);
+
+	//printf ("ventana_x %d margen_izq %d\n",ventana_x,margenx_izq);
 
 	//Coordenadas menu_mouse_x y tienen como origen 0,0 en zona superior izquierda de ventana (titulo ventana)
 	//Y en coordenadas de linea (y=0 primera linea, y=1 segunda linea, etc)
