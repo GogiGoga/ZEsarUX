@@ -34,18 +34,7 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 
-Menú con zoom:
--continuarlo para otros drivers. comparar con cocoa:
-putchar menu llama a   scr_putsprite_comun_zoom(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f,menu_gui_zoom);
-putchar_footer llama a scr_putsprite_comun_zoom(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f,1);
--corregir posicion raton en menu cuando hay zoom. tener en cuenta que border no suma para zoom
-
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada
-
-
-Todos los putpixel de menú deberían pasar por mismo sitio: waveform, etc
-
-Hay que hacer otra función scr_putsprite_comun para menu
 
 
 -Archivos recientes. Solo para smartload ?
@@ -67,7 +56,6 @@ Media cpu total?
 Info de tamaño ventana. Y tamaño ventana sin zoom
 
 -Logo más visible. En la raíz? Ahora está en carpeta Mac 
-
 
 
 -memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
@@ -98,8 +86,6 @@ Documentar mínimamente cómo va refresco de pantalla:
 -Esxdos. Decidir hl o ix según si está paginada la memoria divmmc?
 
 
-
--ZRCP: enter-cpu-step && run se cuelga en windows
 
 -overscan, con ula im2 slow a yes, se ven bien del todo
 
