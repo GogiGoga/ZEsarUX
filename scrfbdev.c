@@ -331,7 +331,8 @@ void scrfbdev_putchar_menu(int x,int y, z80_byte caracter,z80_byte tinta,z80_byt
 	f.v=0;
         //128 y 129 corresponden a franja de menu y a letra enye minuscula
         if (caracter<32 || caracter>MAX_CHARSET_GRAPHIC) caracter='?';
-	scr_putsprite_comun(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f);
+	//scr_putsprite_comun     (&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f);
+        scr_putsprite_comun_zoom(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f,menu_gui_zoom);
 
 
 }
@@ -344,42 +345,17 @@ void scrfbdev_putchar_footer(int x,int y, z80_byte caracter,z80_byte tinta,z80_b
 	yorigen=screen_get_emulated_display_height_no_zoom_bottomborder_en()/8;
 
 
-/*
-	if (MACHINE_IS_Z88) yorigen=24;
 
-	else if (MACHINE_IS_CPC) {
-                yorigen=(CPC_DISPLAY_HEIGHT/8);
-                if (border_enabled.v) yorigen+=CPC_TOP_BORDER_NO_ZOOM/8;
-        }
 
-	else if (MACHINE_IS_PRISM) {
-                yorigen=(PRISM_DISPLAY_HEIGHT/8);
-                if (border_enabled.v) yorigen+=PRISM_TOP_BORDER_NO_ZOOM/8;
-        }
+	//scr_putchar_menu(x,yorigen+y,caracter,tinta,papel);
+        y +=yorigen;
+        z80_bit inverse,f;
 
-	else if (MACHINE_IS_TSCONF) {
-                yorigen=(TSCONF_DISPLAY_HEIGHT/8);
-                if (border_enabled.v) yorigen+=TSCONF_TOP_BORDER_NO_ZOOM/8;
-        }
-
-        else if (MACHINE_IS_SAM) {
-                yorigen=(SAM_DISPLAY_HEIGHT/8);
-                if (border_enabled.v) yorigen+=SAM_TOP_BORDER_NO_ZOOM/8;
-        }
-
-        else if (MACHINE_IS_QL) {
-                yorigen=(QL_DISPLAY_HEIGHT/8);
-                if (border_enabled.v) yorigen+=QL_TOP_BORDER_NO_ZOOM/8;
-        }
-
-	else {
-		//Spectrum o ZX80/81
-		if (border_enabled.v) yorigen=31;
-		else yorigen=24;
-	}
-*/
-
-	scr_putchar_menu(x,yorigen+y,caracter,tinta,papel);
+        inverse.v=0;
+        f.v=0;
+        //128 y 129 corresponden a franja de menu y a letra enye minuscula
+        if (caracter<32 || caracter>MAX_CHARSET_GRAPHIC) caracter='?';
+        scr_putsprite_comun_zoom(&char_set[(caracter-32)*8],x,y,inverse,tinta,papel,f,1);
 
 }
 
