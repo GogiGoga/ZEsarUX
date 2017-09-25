@@ -4952,7 +4952,8 @@ void menu_breakpoints(MENU_ITEM_PARAMETERS)
 		menu_add_item_menu_tooltip(array_menu_breakpoints,"Test if a condition is true");
 		menu_add_item_menu_ayuda(array_menu_breakpoints,"It tests a condition using the same method as breakpoint conditions below");
 
-                for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
+		//Maximo 10 breakpoints mostrados en pantalla. Para mas, usar ZRCP
+                for (i=0;i<MAX_BREAKPOINTS_CONDITIONS && i<10;i++) {
 			char string_condition_shown[14];
 			char string_action_shown[8];
 
@@ -4976,13 +4977,15 @@ void menu_breakpoints(MENU_ITEM_PARAMETERS)
 			}
 
 
-			menu_add_item_menu_tooltip(array_menu_breakpoints,"Set a condition breakpoint. Press Space to disable or enable");
+			menu_add_item_menu_tooltip(array_menu_breakpoints,"Set a condition breakpoint. Press Space to disable or enable. Only 10 shown here. "
+						"If you want to use more, connect to ZRCP");
 
 			menu_add_item_menu_espacio(array_menu_breakpoints,menu_breakpoints_condition_enable_disable);
 
 			menu_add_item_menu_valor_opcion(array_menu_breakpoints,i);
 
-			menu_add_item_menu_ayuda(array_menu_breakpoints,"Set a condition breakpoint and its action. Press Space to disable or enable\n"
+			menu_add_item_menu_ayuda(array_menu_breakpoints,"Set a condition breakpoint and its action. Press Space to disable or enable. Only 10 shown here. "
+                                                "If you want to use more, connect to ZRCP.\n"
 						HELP_MESSAGE_CONDITION_BREAKPOINT
 						"\n\n\n"
 						HELP_MESSAGE_BREAKPOINT_ACTION

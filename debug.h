@@ -49,7 +49,7 @@ extern void init_breakpoints_table(void);
 
 #define MAX_BREAKPOINT_CONDITION_LENGTH 256
 
-#define MAX_BREAKPOINTS_CONDITIONS 10
+#define MAX_BREAKPOINTS_CONDITIONS 100
 extern char debug_breakpoints_conditions_array[MAX_BREAKPOINTS_CONDITIONS][MAX_BREAKPOINT_CONDITION_LENGTH];
 
 //Acciones al saltar un breakpoint
