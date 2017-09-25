@@ -3092,6 +3092,17 @@ char buffer_retorno[2048];
 	  else if (!strcmp(comando_sin_parametros,"get-breakpointsactions") || !strcmp(comando_sin_parametros,"gba")) {
         int inicio=0;
         int items=MAX_BREAKPOINTS_CONDITIONS;
+
+                remote_parse_commands_argvc(parametros);
+                if (remote_command_argc>0) {
+                        inicio=parse_string_to_number(remote_command_argv[0])-1;
+                }
+
+                if (remote_command_argc>1) {
+                        items=parse_string_to_number(remote_command_argv[1]);
+                }
+
+
 	    remote_get_breakpointsactions(misocket,inicio,items);
 	  }
 
