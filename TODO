@@ -83,7 +83,6 @@ Documentar mínimamente cómo va refresco de pantalla:
 
 -OCR con f4 y ZRCP con ansi?
 
--Esxdos. Decidir hl o ix según si está paginada la memoria divmmc?
 
 
 
@@ -93,6 +92,8 @@ Documentar mínimamente cómo va refresco de pantalla:
 fopen,fread,fwrite,fclose,fopendir,freaddir
 *soporta cargar comandos, tapein, grabar snaps desde nmi
 *no lista directorio desde menu nmi
+
+-Esxdos. Decidir hl o ix según si está paginada la memoria divmmc?
 
 Unhandled ESXDOS_RST8: B3H !!
 

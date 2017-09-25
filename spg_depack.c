@@ -230,7 +230,7 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 		int bitcount;
 
 
-		deMLZ(z80_byte *dst, z80_byte *src)
+		void deMLZ(z80_byte *dst, z80_byte *src)
 		{
 			from = src;
 			to = dst;
@@ -306,7 +306,7 @@ z80_int dehrust(z80_byte* dst, z80_byte* src, int size)
 
 
 // depacker
-void demlz(z80_byte *dst, z80_byte *src, int size)
+void demlz(z80_byte *dst, z80_byte *src, int size GCC_UNUSED)
 {
 	deMLZ (dst, src);
 	z80_long_int done = 0;

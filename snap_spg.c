@@ -82,7 +82,7 @@ void load_spg_snapshot(char *filename)
   }
 
   struct hdrSPG1_0 *hdr10 = (struct hdrSPG1_0 *)snbuf;
-  struct hdrSPG0_2 *hdr02 = (struct hdrSPG0_2 *)snbuf;
+  //struct hdrSPG0_2 *hdr02 = (struct hdrSPG0_2 *)snbuf;
 
 
 
