@@ -697,7 +697,7 @@ struct s_items_ayuda items_ayuda[]={
 
   {"about",NULL,NULL,"Shows about message"},
   {"cpu-step","|cs",NULL,"Run single opcode cpu step"},
-  {"cpu-step-over","|cso",NULL,"Runs until returning from the current opcode"},
+  {"cpu-step-over","|cso",NULL,"Runs until returning from the current opcode. In case if current opcode is RET or JP (with or without flag conditions) it will run a cpu-step instead of cpu-step-over"},
   {"disable-breakpoint","|db","index","Disable specific breakpoint"},
   {"disable-breakpoints",NULL,NULL,"Disable all breakpoints"},
   {"disassemble","|d","[address] [lines]","Disassemble at address. If no address specified, "
@@ -1402,9 +1402,51 @@ void remote_cpu_step(int misocket) {
 
 }
 
+int si_remote_cpu_step_over_jpret(void)
+{
+	if (CPU_IS_MOTOROLA || CPU_IS_SCMP) return 0;
+	z80_byte opcode=peek_byte_no_time(reg_pc);
+
+	switch (opcode)
+	{
+
+		case 0xC3: // JP
+                case 0xCA: // JP Z
+                case 0xD2: // JP NC
+                case 0xDA: // JP C
+                case 0xE2: // JP PO
+                case 0xE9: // JP (HL)
+                case 0xEA: // JP PE
+                case 0xF2: // JP P
+                case 0xFA: // JP M
+
+                case 0xC0: // RET NZ
+                case 0xC8: // RET Z
+                case 0xC9: // RET
+                case 0xD0: // RET NC
+                case 0xD8: // RET C
+                case 0xE0: // RET PO
+                case 0xE8: // RET PE
+                case 0xF0: // RET P
+                case 0xF8: // RET M
+
+			return 1;
+		break;
+	}
+
+	return 0;
+
+}
+
 void remote_cpu_step_over(int misocket) {
 
   //char buffer_retorno[1024];
+  //Si apunta PC a instrucciones RET o JP, hacer un cpu-step
+  if (si_remote_cpu_step_over_jpret()) {
+	  debug_printf(VERBOSE_DEBUG,"Running only cpu-step as current opcode is JP or RET");
+	  remote_cpu_step(misocket);
+	  return;
+  }
 
 
   if (menu_event_remote_protocol_enterstep.v==0) {
