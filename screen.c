@@ -6129,7 +6129,11 @@ void screen_store_scanline_rainbow_solo_display(void)
         direccion=screen_addr_table[(scanline_copia<<5)];
 
 				//Inicializar puntero a layer2 de tbblue, irlo incrementando a medida que se ponen pixeles
-				int tbblue_layer2_offset=tbblue_get_offset_start_layer2();
+				//Layer2 siempre se dibuja desde registro que indique pagina 18. Registro 19 es un backbuffer pero siempre se dibuja desde 18
+				int tbblue_layer2_offset=tbblue_registers[18]&63;
+
+				tbblue_layer2_offset*=16384;
+
 
 				//Mantener el offset y en 0..255
 				z80_byte tbblue_reg_23=tbblue_registers[23];

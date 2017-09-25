@@ -167,8 +167,10 @@ int tbblue_is_active_layer2(void)
 int tbblue_get_offset_start_layer2(void)
 {
 	int offset=tbblue_registers[18]&63;
+
 	if (tbblue_port_123b & 8 ) offset=tbblue_registers[19]&63;
-	offset=tbblue_registers[18]&63;
+
+	//offset=tbblue_registers[18]&63;
 	offset*=16384;
 
 	return offset;
@@ -1524,7 +1526,7 @@ void tbblue_set_emulator_setting_timing(void)
 		z80_byte t=(tbblue_registers[3]>>4)&7;
 
 		//TODO: otros timings
-		
+
                 if (t<=1) {
 		//48k
 				debug_printf (VERBOSE_INFO,"Apply config.timing. change:48k");
