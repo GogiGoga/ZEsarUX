@@ -198,10 +198,7 @@ https://zx.itch.io/derbyplus
 
 -Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense: quiza esto quedara para formato zsf?
 
--Soft QL
-http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Computer&lang=en
 
--Mirar uqlx a ver cómo hace el load 
 
 -Probar diferencia de sonido speech ay en versión actual y anteriores
 Chase hq
@@ -243,14 +240,20 @@ probado lo siguiente:
 
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc
 
--Soporte microdrive / floppy QL
--Que QL, cuando busque un archivo, lo haga todo en minusculas y tambien todo en mayusculas
+
 
 -Full screen cocoa gl
 -Grabar en archivo configuracion joystick: eventos, teclas, etc
 
 -QL:
 *cpu stats: quiza no porque hay mas instrucciones que z80....
+-Soporte microdrive / floppy QL
+-Que QL, cuando busque un archivo, lo haga todo en minusculas y tambien todo en mayusculas
+-QL
+-Soft QL
+http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Computer&lang=en
+-Mirar uqlx a ver cómo hace el load 
+
 
 
 
