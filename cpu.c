@@ -3155,7 +3155,7 @@ void set_menu_gui_zoom(void)
 {
 	//Ajustar zoom del gui. por defecto 1
 	menu_gui_zoom=1;
-	printf ("calling set_menu_gui_zoom. driver: %s\n",scr_driver_name);
+	//printf ("calling set_menu_gui_zoom. driver: %s\n",scr_driver_name);
 
 	if (si_complete_video_driver() ) {
 		if (MACHINE_IS_QL || MACHINE_IS_TSCONF || MACHINE_IS_CPC || MACHINE_IS_PRISM || MACHINE_IS_SAM) menu_gui_zoom=2;
