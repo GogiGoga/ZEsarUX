@@ -1557,6 +1557,19 @@ void tbblue_set_value_port(z80_byte value)
 	z80_byte last_register_6=tbblue_registers[6];
 	z80_byte last_register_7=tbblue_registers[7];
 
+	if (tbblue_last_register==3) {
+		//Controlar caso especial
+		//(W) 0x03 (03) => Set machine type, only in IPL or config mode
+		//   		bits 2-0 = Machine type:
+		//      		000 = Config mode
+		z80_byte machine_type=tbblue_registers[3]&7;
+
+		if (!(machine_type==0 || tbblue_bootrom.v)) {
+			debug_printf(VERBOSE_DEBUG,"Can not change machine type (to %02XH) while in non config mode or non IPL mode",value);
+			return;
+		}
+	}
+
 	tbblue_registers[tbblue_last_register]=value;
 
 	switch(tbblue_last_register)
@@ -1720,8 +1733,9 @@ z80_byte tbblue_get_value_port_register(z80_byte registro)
 
 	//Casos especiales
 	/*
-	(R)		00 => Machine ID
-	(R)		01 => Version (Nibble most significant = Major, Nibble less significant = Minor)
+	(R) 0x00 (00) => Machine ID
+
+	(R) 0x01 (01) => Version (Nibble most significant = Major, Nibble less significant = Minor)
 	*/
 	switch(registro)
 	{
@@ -1730,7 +1744,7 @@ z80_byte tbblue_get_value_port_register(z80_byte registro)
 		break;
 
 		case 1:
-			return 0x16;
+			return 0x19;
 		break;
 
 		/*
