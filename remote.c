@@ -712,8 +712,8 @@ struct s_items_ayuda items_ayuda[]={
 {"find-label",NULL,"label","Finds label on source code"},
   {"generate-nmi",NULL,NULL,"Generates a NMI"},
 	{"get-audio-buffer-info",NULL,NULL,"Get audio buffer information"},
-  {"get-breakpoints","|gb",NULL,"Get breakpoints list"},
-	{"get-breakpointsactions","|gba",NULL,"Get breakpoints actions list"},
+  {"get-breakpoints","|gb","[first] [items]","Get breakpoints list. If set first, returns list starting from this parameter. If set items, returns number of items list starting from first parameter"},
+	{"get-breakpointsactions","|gba","[first] [items]","Get breakpoints actions list. If set first, returns list starting from this parameter. If set items, returns number of items list starting from first parameter"},
 	{"get-cpu-core-name",NULL,NULL,"Get emulation cpu core name"},
   {"get-current-machine","|gcm",NULL,"Returns current machine name"},
 	{"get-current-memory-zone","|gcmz",NULL,"Returns current memory zone"},
@@ -851,7 +851,8 @@ void remote_help_command(int misocket,char *parametros)
 
 }
 
-void remote_get_breakpoints(int misocket)
+//Inicio contando desde cero
+void remote_get_breakpoints(int misocket,int inicio,int items)
 {
   int i;
 
@@ -859,7 +860,7 @@ void remote_get_breakpoints(int misocket)
   if (debug_breakpoints_enabled.v) escribir_socket (misocket,"On\n");
   else escribir_socket (misocket,"Off\n");
 
-  for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
+  for (i=inicio;i<MAX_BREAKPOINTS_CONDITIONS && i<inicio+items;i++) {
 
     if (debug_breakpoints_conditions_enabled[i]==0 || debug_breakpoints_enabled.v==0) {
       escribir_socket_format(misocket,"Disabled %d: ",i+1);
@@ -900,12 +901,12 @@ void remote_get_memory_zones(int misocket)
 
 }
 
-void remote_get_breakpointsactions(int misocket)
+void remote_get_breakpointsactions(int misocket,int inicio,int items)
 {
   int i;
 
 
-  for (i=0;i<MAX_BREAKPOINTS_CONDITIONS;i++) {
+  for (i=inicio;i<MAX_BREAKPOINTS_CONDITIONS && i<inicio+items;i++) {
 		escribir_socket_format(misocket,"%d: ",i+1);
 
     if (debug_breakpoints_actions_array[i][0]==0 ||
@@ -3071,12 +3072,27 @@ char buffer_retorno[2048];
 
 //get-breakpoints, estado global y lista cada uno, si hay y si esta enabled
   else if (!strcmp(comando_sin_parametros,"get-breakpoints") || !strcmp(comando_sin_parametros,"gb")) {
-    remote_get_breakpoints(misocket);
+	int inicio=0;
+	int items=MAX_BREAKPOINTS_CONDITIONS;
+
+		remote_parse_commands_argvc(parametros);
+                if (remote_command_argc>0) {
+			inicio=parse_string_to_number(remote_command_argv[0])-1;
+                }
+
+                if (remote_command_argc>1) {
+			items=parse_string_to_number(remote_command_argv[1]);
+                }
+
+
+    remote_get_breakpoints(misocket,inicio,items);
   }
 
 	//get-breakpoints, estado global y lista cada uno, si hay y si esta enabled
 	  else if (!strcmp(comando_sin_parametros,"get-breakpointsactions") || !strcmp(comando_sin_parametros,"gba")) {
-	    remote_get_breakpointsactions(misocket);
+        int inicio=0;
+        int items=MAX_BREAKPOINTS_CONDITIONS;
+	    remote_get_breakpointsactions(misocket,inicio,items);
 	  }
 
 
