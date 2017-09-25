@@ -712,8 +712,8 @@ struct s_items_ayuda items_ayuda[]={
 {"find-label",NULL,"label","Finds label on source code"},
   {"generate-nmi",NULL,NULL,"Generates a NMI"},
 	{"get-audio-buffer-info",NULL,NULL,"Get audio buffer information"},
-  {"get-breakpoints","|gb","[first] [items]","Get breakpoints list. If set first, returns list starting from this parameter. If set items, returns number of items list starting from first parameter"},
-	{"get-breakpointsactions","|gba","[first] [items]","Get breakpoints actions list. If set first, returns list starting from this parameter. If set items, returns number of items list starting from first parameter"},
+  {"get-breakpoints","|gb","[index] [items]","Get breakpoints list. If set index, returns item at index. If set items, returns number of items list starting from index parameter"},
+	{"get-breakpointsactions","|gba","[index] [items]","Get breakpoints actions list. If set first, returns item at index. If set items, returns number of items list starting from index parameter"},
 	{"get-cpu-core-name",NULL,NULL,"Get emulation cpu core name"},
   {"get-current-machine","|gcm",NULL,"Returns current machine name"},
 	{"get-current-memory-zone","|gcmz",NULL,"Returns current memory zone"},
@@ -3072,12 +3072,17 @@ char buffer_retorno[2048];
 
 //get-breakpoints, estado global y lista cada uno, si hay y si esta enabled
   else if (!strcmp(comando_sin_parametros,"get-breakpoints") || !strcmp(comando_sin_parametros,"gb")) {
-	int inicio=0;
+	int inicio=1;
 	int items=MAX_BREAKPOINTS_CONDITIONS;
 
 		remote_parse_commands_argvc(parametros);
                 if (remote_command_argc>0) {
-			inicio=parse_string_to_number(remote_command_argv[0])-1;
+			inicio=parse_string_to_number(remote_command_argv[0]);
+			if (inicio<1 || inicio>MAX_BREAKPOINTS_CONDITIONS) {
+				escribir_socket (misocket,"ERROR. Index out of range");
+				return;
+			}
+			items=1;
                 }
 
                 if (remote_command_argc>1) {
@@ -3085,17 +3090,22 @@ char buffer_retorno[2048];
                 }
 
 
-    remote_get_breakpoints(misocket,inicio,items);
+    remote_get_breakpoints(misocket,inicio-1,items);
   }
 
 	//get-breakpoints, estado global y lista cada uno, si hay y si esta enabled
 	  else if (!strcmp(comando_sin_parametros,"get-breakpointsactions") || !strcmp(comando_sin_parametros,"gba")) {
-        int inicio=0;
+        int inicio=1;
         int items=MAX_BREAKPOINTS_CONDITIONS;
 
                 remote_parse_commands_argvc(parametros);
                 if (remote_command_argc>0) {
-                        inicio=parse_string_to_number(remote_command_argv[0])-1;
+                        inicio=parse_string_to_number(remote_command_argv[0]);
+			if (inicio<1 || inicio>MAX_BREAKPOINTS_CONDITIONS) {
+				escribir_socket (misocket,"ERROR. Index out of range");
+				return;
+			}
+			items=1;
                 }
 
                 if (remote_command_argc>1) {
@@ -3103,7 +3113,7 @@ char buffer_retorno[2048];
                 }
 
 
-	    remote_get_breakpointsactions(misocket,inicio,items);
+	    remote_get_breakpointsactions(misocket,inicio-1,items);
 	  }
 
 
