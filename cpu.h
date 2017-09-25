@@ -414,4 +414,6 @@ extern z80_bit windows_no_disable_console;
 
 extern char *string_machines_list_description;
 
+extern void set_menu_gui_zoom(void);
+
 #endif

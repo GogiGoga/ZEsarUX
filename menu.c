@@ -18277,7 +18277,11 @@ void menu_change_video_driver_apply(MENU_ITEM_PARAMETERS)
 
         funcion_init=scr_driver_array[num_menu_scr_driver].funcion_init;
         funcion_set=scr_driver_array[num_menu_scr_driver].funcion_set;
-                if ( (funcion_init()) ==0) {
+
+	int resultado=funcion_init();
+	set_menu_gui_zoom();
+
+                if ( resultado == 0 ) {
                         funcion_set();
 			menu_generic_message("Apply Driver","OK. Driver applied");
 	                //Y salimos de todos los menus
@@ -18292,6 +18296,8 @@ void menu_change_video_driver_apply(MENU_ITEM_PARAMETERS)
 			//Restaurar video driver
 			screen_reset_scr_driver_params();
 		        funcion_init=scr_driver_array[num_previo_menu_scr_driver].funcion_init;
+			set_menu_gui_zoom();
+			
 		        funcion_set=scr_driver_array[num_previo_menu_scr_driver].funcion_set;
 
 			funcion_init();
@@ -18301,6 +18307,7 @@ void menu_change_video_driver_apply(MENU_ITEM_PARAMETERS)
         //scr_init_pantalla();
 
 	modificado_border.v=1;
+
 	menu_init_footer();
 
 

@@ -37,7 +37,6 @@ The format of each table entry is as follows:
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada
 
 
--Archivos recientes. Solo para smartload ?
 
 -Más f funciones. Habrá que hacer lista de funciones con ventana en vez de menú con opciones
 
@@ -106,6 +105,7 @@ quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo
 ver que hace zxpand aqui....
 
 *recomendar que o bien usen todo mayusculas o todo minusculas... en mac o windows no hay problemas, en linux si
+-FAQ esxdos handler. Comentar mayúsculas etc
 
 
 -mk14
@@ -133,7 +133,6 @@ O quizá setting configurable
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 
--FAQ esxdos handler. Comentar mayúsculas etc
 
 
 
@@ -246,15 +245,12 @@ Etc...
 -reducir fifo por defecto de pulse? de 10 a 2?
 reducir fifo por defecto de alsa? de 4 a 2?
 
--UnoDOS text mode sale de ram últimas direcciones . util para drivers solo texto
 
 -No leer ratón en menú si driver no lee ratón (como en fbdev)
 -revisar mezclado ay+beeper . posiblemente set_value_beeper acaba sacando algun valor beeper 50*2 y se sale todo de rango?
 o bien el mezclado de chip ay
 
 
--mejorar deteccion frecuencia sonido en audio wave form
--beeper piano
 
 
 -pentagon 512 y superiores modos de paginacion ram
@@ -262,8 +258,6 @@ http://www.zxuno.com/forum/viewtopic.php?f=12&t=400
 relacionado:
 http://www.zxuno.com/forum/viewtopic.php?f=37&t=552&sid=88847dce1ad30a54353f35884937ef1f
 
-
--control menu raton no va bien en xwindows?
 
 -probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
 
@@ -1447,6 +1441,8 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 *** Menu  ***
 
+-mejorar deteccion frecuencia sonido en audio wave form
+-beeper piano
 -debugger z80: que sea capaz de mostrar direcciones NNNN correctas (para JR CC DIS) aunque se este debugando con memory zone y direccion alta.
 Por ejemplo:
 estamos en full ram en zxuno, vamos a la direccion donde empieza propiamente la rom 0, a la 131072:
@@ -1461,6 +1457,8 @@ estamos en full ram en zxuno, vamos a la direccion donde empieza propiamente la 
 Este JR NZ deberia aparecer como 20004
 
 -conversor archivos
+
+-Archivos recientes. Solo para smartload ?
 
 -Otra mejora: poder mover ventanas menu con ratón 
 
@@ -1555,6 +1553,10 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 
 *** Core CPU ***
+
+-UnoDOS text mode sale de ram últimas direcciones . util para drivers solo texto
+es decir, la pantalla en ascii esta ubicada hacia el final de la ram. obtener de ahi los caracteres en modos de video curses, stdout, etc
+
 
 -Visualmem pero que notifique mediante ZRCP de cada operacion de escritura que se realice. Quiza solo se puede hacer cuando este en modo "run" desde ZRCP
 

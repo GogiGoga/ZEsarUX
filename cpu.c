@@ -3151,6 +3151,19 @@ void set_machine_params(void)
 
 }
 
+void set_menu_gui_zoom(void)
+{
+	//Ajustar zoom del gui. por defecto 1
+	menu_gui_zoom=1;
+	printf ("calling set_menu_gui_zoom. driver: %s\n",scr_driver_name);
+
+	if (si_complete_video_driver() ) {
+		if (MACHINE_IS_QL || MACHINE_IS_TSCONF || MACHINE_IS_CPC || MACHINE_IS_PRISM || MACHINE_IS_SAM) menu_gui_zoom=2;
+	}
+
+	debug_printf (VERBOSE_INFO,"Setting GUI menu zoom to %d",menu_gui_zoom);
+}
+
 
 /*
 Reabrir ventana en caso de que maquina seleccionada tenga tamanyo diferente que la anterior
@@ -3161,14 +3174,8 @@ pero quiza simplemente habria que ver que el tamanyo anterior fuera diferente al
 void post_set_machine_no_rom_load_reopen_window(void)
 {
 
-	//Ajustar zoom del gui. por defecto 1
-	menu_gui_zoom=1;
+	set_menu_gui_zoom();
 
-	if (si_complete_video_driver() ) {
-		if (MACHINE_IS_QL || MACHINE_IS_TSCONF || MACHINE_IS_CPC || MACHINE_IS_PRISM || MACHINE_IS_SAM) menu_gui_zoom=2;
-	}
-
-	debug_printf (VERBOSE_INFO,"Setting GUI menu zoom to %d",menu_gui_zoom);
 
 	//si se cambia de maquina Z88 o a maquina Z88, redimensionar ventana
 	if (last_machine_type!=255) {
@@ -6011,6 +6018,10 @@ init_randomize_noise_value();
   //Inicializamos Video antes que el resto de cosas.
   main_init_video();
 
+  //llamar a set_menu_gui_zoom para establecer zoom menu. Ya se ha llamado desde set_machine pero como no hay driver de video aun ahi,
+  //no se aplica zoom de gui dado que eso solo es para driver xwindows, sdl etc y no para curses y otros
+  set_menu_gui_zoom();
+
   //Activar deteccion automatica de rutina de impresion de caracteres, si conviene
 	//Esto se hace tambien al inicializar cpu... Pero como al inicializar cpu aun no hemos inicializado driver video,
 	//y por tanto no se sabe si hay stdout... Entonces hacemos esto justo despues de inicializar video
@@ -6018,6 +6029,7 @@ init_randomize_noise_value();
   if (chardetect_detect_char_enabled.v) {
   	chardetect_init_automatic_char_detection();
   }
+
 
 
   set_putpixel_zoom();
