@@ -46,7 +46,6 @@ The format of each table entry is as follows:
 
 -quiza redibujar archivo logo tal cual con el boot logo
 
--Disassemble a txt
 
 -licencia tipo letra man soft
 
@@ -87,25 +86,6 @@ Documentar mínimamente cómo va refresco de pantalla:
 
 -overscan, con ula im2 slow a yes, se ven bien del todo
 
--esxdos handler
-fopen,fread,fwrite,fclose,fopendir,freaddir
-*soporta cargar comandos, tapein, grabar snaps desde nmi
-*no lista directorio desde menu nmi
-
--Esxdos. Decidir hl o ix según si está paginada la memoria divmmc?
-
-Unhandled ESXDOS_RST8: B3H !!
-
-al abrir, que pruebe con mayusculas y luego minusculas
-quiza habra problemas con rutas como : /BIN/paco
-
-si subo todo a mayusculas->no ira
-si subo todo a minusculas->no ira
-quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo minusculas o todo mayusculas
-ver que hace zxpand aqui....
-
-*recomendar que o bien usen todo mayusculas o todo minusculas... en mac o windows no hay problemas, en linux si
--FAQ esxdos handler. Comentar mayúsculas etc
 
 
 -mk14
@@ -198,13 +178,6 @@ And some text demo modes seems to run ok (copter, txtdemo)
 
 
 
-
-
-
--Mostrar backtrace de stack. quiza solo en remote command protocol. Stack y su densemsamblaje de cada dirección. Hasta 5?
-->Falta motorola
-
-
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
 
 
@@ -215,7 +188,6 @@ teclas F en general en fbdev driver no raw
 
 -seguir formato zsf
 
--Convertir cintas paws
 
 -128ke parecido a +2B
 http://scratchpad.wikia.com/wiki/ZX_Spectrum_128Ke
@@ -274,7 +246,6 @@ probado lo siguiente:
 -Soporte microdrive / floppy QL
 -Que QL, cuando busque un archivo, lo haga todo en minusculas y tambien todo en mayusculas
 
--Joystick en Mac,Win
 -Full screen cocoa gl
 -Grabar en archivo configuracion joystick: eventos, teclas, etc
 
@@ -282,8 +253,6 @@ probado lo siguiente:
 *cpu stats: quiza no porque hay mas instrucciones que z80....
 
 
--Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros,
-como descubrir rutinas de pintado de sprites
 
 
 ---Fin cosas para version 5.1
@@ -469,6 +438,8 @@ no cierra la ventana sdl. si en cambio el driver audio no es sdl, al cambiar de 
 
 --- QL ---
 
+
+-get-stack-backtrace para motorola
 
 -sonido y otros comandos parece que a veces dejan el ipc en estado inconsistente. Quiza tambien por eso algunos juegos, como el spacepods, se cuelga despues de una partida
 
@@ -756,9 +727,36 @@ http://www.spinpoint.org/2016/05/06/m4-board-retrofun-8-bit-amstrad-cpc-wifi/#co
 
 
 
+--- ESXDOS handler ---
+
+-esxdos handler
+fopen,fread,fwrite,fclose,fopendir,freaddir
+*soporta cargar comandos, tapein, grabar snaps desde nmi
+*no lista directorio desde menu nmi
+
+-Esxdos. Decidir hl o ix según si está paginada la memoria divmmc?
+
+Unhandled ESXDOS_RST8: B3H !!
+
+al abrir, que pruebe con mayusculas y luego minusculas
+quiza habra problemas con rutas como : /BIN/paco
+
+si subo todo a mayusculas->no ira
+si subo todo a minusculas->no ira
+quiza aqui entonces mejor que el usuario tenga su ruta bien creada en disco todo minusculas o todo mayusculas
+ver que hace zxpand aqui....
+
+*recomendar que o bien usen todo mayusculas o todo minusculas... en mac o windows no hay problemas, en linux si
+-FAQ esxdos handler. Comentar mayúsculas etc
 
 
---- remote command ---
+-------------
+
+
+
+
+
+--- ZRCP remote command ---
 
 -Protocolo remoto:
 Ver si la simulación de pulsado de escape desde smartload de remote protocol no se detecta como space-break en zxuno
@@ -1441,6 +1439,7 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 *** Menu  ***
 
+-Disassemble a txt
 -mejorar deteccion frecuencia sonido en audio wave form
 -beeper piano
 -debugger z80: que sea capaz de mostrar direcciones NNNN correctas (para JR CC DIS) aunque se este debugando con memory zone y direccion alta.
@@ -1806,6 +1805,16 @@ me gusta tener el menu encima de misma ventana del emulador, quiza podria ser un
 
 -Z88. Poder cambiar reloj del Z88 con el reloj real
 
+***********
+
+
+
+*** Misc ***
+
+-Convertir cintas paws
+-Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros,
+como descubrir rutinas de pintado de sprites
+-Joystick en Mac,Win
 
 ***********
 
