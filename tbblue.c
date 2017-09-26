@@ -34,16 +34,16 @@
 #include "ulaplus.h"
 #include "screen.h"
 
-//Punteros a los 32 bloques de 16kb de ram de spectrum
-z80_byte *tbblue_ram_memory_pages[32];
+//Punteros a los 64 bloques de 8kb de ram de spectrum
+z80_byte *tbblue_ram_memory_pages[64];
 
-//Punteros a los 4 bloques de 16kb de rom de spectrum
-z80_byte *tbblue_rom_memory_pages[4];
+//Punteros a los 8 bloques de 8kb de rom de spectrum
+z80_byte *tbblue_rom_memory_pages[8];
 
 z80_byte *tbblue_fpga_rom;
 
-//Memoria mapedada
-z80_byte *tbblue_memory_paged[4];
+//Memoria mapeada, en 8 bloques de 8 kb
+z80_byte *tbblue_memory_paged[8];
 
 
 //Sprites
@@ -824,15 +824,15 @@ Nuevo:
 	//Los 8 KB de la fpga ROM estan al final
 	tbblue_fpga_rom=&memoria_spectrum[1024*1024];
 
-	//32 Paginas RAM spectrum 512k. Hay 128kb mas despues de estos...
-	for (i=0;i<32;i++) {
-		indice=0x060000+16384*i;
+	//64 Paginas RAM spectrum 512k. Hay 128kb mas despues de estos...
+	for (i=0;i<64;i++) {
+		indice=0x060000+8192*i;
 		tbblue_ram_memory_pages[i]=&memoria_spectrum[indice];
 	}
 
 	//4 Paginas ROM
-	for (i=0;i<4;i++) {
-		indice=0+16384*i;
+	for (i=0;i<8;i++) {
+		indice=0+8192*i;
 		tbblue_rom_memory_pages[i]=&memoria_spectrum[indice];
 	}
 
@@ -847,10 +847,14 @@ void tbblue_mem_page_ram_rom(void)
 	switch (page_type) {
 		case 0:
 			debug_printf (VERBOSE_DEBUG,"Pages 0,1,2,3");
-			tbblue_memory_paged[0]=tbblue_ram_memory_pages[0];
-			tbblue_memory_paged[1]=tbblue_ram_memory_pages[1];
-			tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
-			tbblue_memory_paged[3]=tbblue_ram_memory_pages[3];
+			tbblue_memory_paged[0*2]=tbblue_ram_memory_pages[0*2];
+			tbblue_memory_paged[0*2+1]=tbblue_ram_memory_pages[0*2+1];
+			tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[1*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[1*2+1];
+			tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[2*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[2*2+1];
+			tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[3*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[3*2+1];
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[0];
 			contend_pages_actual[1]=contend_pages_128k_p2a[1];
@@ -866,10 +870,14 @@ void tbblue_mem_page_ram_rom(void)
 
 		case 1:
 			debug_printf (VERBOSE_DEBUG,"Pages 4,5,6,7");
-			tbblue_memory_paged[0]=tbblue_ram_memory_pages[4];
-			tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-			tbblue_memory_paged[2]=tbblue_ram_memory_pages[6];
-			tbblue_memory_paged[3]=tbblue_ram_memory_pages[7];
+			tbblue_memory_paged[0*2]=tbblue_ram_memory_pages[4*2];
+			tbblue_memory_paged[0*2+1]=tbblue_ram_memory_pages[4*2+1];
+			tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+			tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[6*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[6*2+1];
+			tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[7*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[7*2+1];
 
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[4];
@@ -888,10 +896,14 @@ void tbblue_mem_page_ram_rom(void)
 
 		case 2:
 			debug_printf (VERBOSE_DEBUG,"Pages 4,5,6,3");
-			tbblue_memory_paged[0]=tbblue_ram_memory_pages[4];
-			tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-			tbblue_memory_paged[2]=tbblue_ram_memory_pages[6];
-			tbblue_memory_paged[3]=tbblue_ram_memory_pages[3];
+			tbblue_memory_paged[0*2]=tbblue_ram_memory_pages[4*2];
+			tbblue_memory_paged[0*2+1]=tbblue_ram_memory_pages[4*2+1];
+			tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+			tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[6*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[6*2+1];
+			tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[3*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[3*2+1];
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[4];
 			contend_pages_actual[1]=contend_pages_128k_p2a[5];
@@ -908,10 +920,14 @@ void tbblue_mem_page_ram_rom(void)
 
 		case 3:
 			debug_printf (VERBOSE_DEBUG,"Pages 4,7,6,3");
-			tbblue_memory_paged[0]=tbblue_ram_memory_pages[4];
-			tbblue_memory_paged[1]=tbblue_ram_memory_pages[7];
-			tbblue_memory_paged[2]=tbblue_ram_memory_pages[6];
-			tbblue_memory_paged[3]=tbblue_ram_memory_pages[3];
+			tbblue_memory_paged[0*2]=tbblue_ram_memory_pages[4*2];
+			tbblue_memory_paged[0*2+1]=tbblue_ram_memory_pages[4*2+1];
+			tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[7*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[7*2+1];
+			tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[6*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[6*2+1];
+			tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[3*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[3*2+1];
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[4];
 			contend_pages_actual[1]=contend_pages_128k_p2a[7];
@@ -989,10 +1005,14 @@ void tbblue_set_memory_pages(void)
 	switch (maquina) {
 		case 1:
                     //001 = ZX 48K
-			tbblue_memory_paged[0]=tbblue_rom_memory_pages[0];
-			tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-			tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
-			tbblue_memory_paged[3]=tbblue_ram_memory_pages[0];
+			tbblue_memory_paged[0*2]=tbblue_rom_memory_pages[0*2];
+			tbblue_memory_paged[0*2+1]=tbblue_rom_memory_pages[0*2+1];
+			tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+			tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[2*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[2*2+1];
+			tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[0*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[0*2+1];
 
 			debug_paginas_memoria_mapeadas[0]=0+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1011,13 +1031,18 @@ void tbblue_set_memory_pages(void)
 		case 2:
                     //010 = ZX 128K
 			rom_page=(puerto_32765>>4)&1;
-                        tbblue_memory_paged[0]=tbblue_rom_memory_pages[rom_page];
+                        tbblue_memory_paged[0*2]=tbblue_rom_memory_pages[rom_page*2];
+			tbblue_memory_paged[0*2+1]=tbblue_rom_memory_pages[rom_page*2+1];
 
-                        tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-                        tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
+                        tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+
+                        tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[2*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[2*2+1];
 
 			ram_page=tbblue_mem_get_ram_page();
-                        tbblue_memory_paged[3]=tbblue_ram_memory_pages[ram_page];
+                        tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[ram_page*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[ram_page*2+1];
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1056,13 +1081,18 @@ void tbblue_set_memory_pages(void)
 			z80_byte rom_page=rom1f | rom7f;
 
 
-                        tbblue_memory_paged[0]=tbblue_rom_memory_pages[rom_page];
+                        tbblue_memory_paged[0*2]=tbblue_rom_memory_pages[rom_page*2];
+			tbblue_memory_paged[0*2+1]=tbblue_rom_memory_pages[rom_page*2+1];
 
-                        tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-                        tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
+                        tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+
+                        tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[2*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[2*2+1];
 
                         ram_page=tbblue_mem_get_ram_page();
-                        tbblue_memory_paged[3]=tbblue_ram_memory_pages[ram_page];
+                        tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[ram_page*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[ram_page+2+1];
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1081,13 +1111,18 @@ void tbblue_set_memory_pages(void)
 		case 4:
                     //100 = Pentagon 128K. TODO. de momento tal cual 128kb
 			rom_page=(puerto_32765>>4)&1;
-                        tbblue_memory_paged[0]=tbblue_rom_memory_pages[rom_page];
+                        tbblue_memory_paged[0*2]=tbblue_rom_memory_pages[rom_page*2];
+			tbblue_memory_paged[0*2+1]=tbblue_rom_memory_pages[rom_page*2+1];
 
-                        tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-                        tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
+                        tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+
+                        tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[2*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[2*2+1];
 
 			ram_page=tbblue_mem_get_ram_page();
-                        tbblue_memory_paged[3]=tbblue_ram_memory_pages[ram_page];
+                        tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[ram_page*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[ram_page*2+1];
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1120,21 +1155,26 @@ which allows you access to all SRAM.
 				romram_page=(tbblue_registers[4]&63);
 				indice=romram_page*16384;
 				//printf ("page on 0-16383: %d offset: %X\n",romram_page,indice);
-				tbblue_memory_paged[0]=&memoria_spectrum[indice];
+				tbblue_memory_paged[0*2]=&memoria_spectrum[indice];
+				tbblue_memory_paged[0*2+1]=&memoria_spectrum[indice+8192];
 				tbblue_low_segment_writable.v=1;
 				//printf ("low segment writable for machine default\n");
 			}
 			else {
 				//In this setting state, the page 0 repeats the content of the ROM 'loader', ie 0-8191 appear memory contents, and repeats 8192-16383
 				//La rom es de 8 kb pero la hemos cargado dos veces
-				tbblue_memory_paged[0]=tbblue_fpga_rom;
+				tbblue_memory_paged[0*2]=tbblue_fpga_rom;
+				tbblue_memory_paged[0*2+1]=&tbblue_fpga_rom[8192];
 				//tbblue_low_segment_writable.v=0;
 				//printf ("low segment NON writable for machine default\n");
 			}
 
-			tbblue_memory_paged[1]=tbblue_ram_memory_pages[5];
-			tbblue_memory_paged[2]=tbblue_ram_memory_pages[2];
-			tbblue_memory_paged[3]=tbblue_ram_memory_pages[7];
+			tbblue_memory_paged[1*2]=tbblue_ram_memory_pages[5*2];
+			tbblue_memory_paged[1*2+1]=tbblue_ram_memory_pages[5*2+1];
+			tbblue_memory_paged[2*2]=tbblue_ram_memory_pages[2*2];
+			tbblue_memory_paged[2*2+1]=tbblue_ram_memory_pages[2*2+1];
+			tbblue_memory_paged[3*2]=tbblue_ram_memory_pages[7*2];
+			tbblue_memory_paged[3*2+1]=tbblue_ram_memory_pages[7*2+1];
 
 			debug_paginas_memoria_mapeadas[0]=0+128;
 			debug_paginas_memoria_mapeadas[1]=5;

@@ -231,21 +231,21 @@ z80_byte *get_base_mem_pantalla_continue(void)
 		z80_byte maquina=(tbblue_registers[3])&3;
 		if (maquina==0) {
 			//modo s_config
-			return tbblue_memory_paged[1];
+			return tbblue_memory_paged[1*2];
 		}
 
 		else {
 
 			if (maquina==1) {
 				//48kb
-				return tbblue_ram_memory_pages[5];
+				return tbblue_ram_memory_pages[5*2];
 			}
 
 
 	                if (puerto_32765 & 8) {
-        	                return tbblue_ram_memory_pages[7];
+        	                return tbblue_ram_memory_pages[7*2];
                 	}
-	                else return tbblue_ram_memory_pages[5];
+	                else return tbblue_ram_memory_pages[5*2];
 
 		}
         }

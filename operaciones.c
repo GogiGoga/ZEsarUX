@@ -1798,7 +1798,7 @@ z80_byte *tbblue_return_segment_memory(z80_int dir)
 {
 	int segmento;
 
-	segmento=dir/16384;
+	segmento=dir/8192;
 
 	return tbblue_memory_paged[segmento];
 
@@ -1847,7 +1847,7 @@ set_visualmembuffer(dir);
 		z80_byte *puntero;
 		puntero=tbblue_return_segment_memory(dir);
 
-		dir = dir & 16383;
+		dir = dir & 8191;
 		puntero=puntero+dir;
 
 		*puntero=valor;
@@ -1880,7 +1880,7 @@ z80_byte peek_byte_no_time_tbblue(z80_int dir)
 
 		//printf ("Returning tbblue memory address %X\n",dir);
 
-		dir = dir & 16383;
+		dir = dir & 8191;
 		puntero=puntero+dir;
 
 		//printf ("Returning tbblue memory value %X\n",*puntero);
