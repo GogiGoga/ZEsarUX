@@ -6634,6 +6634,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 				//printf ("TBBLUE changing port 32765 value=0x%02XH\n",value);
                                 puerto_32765=value;
 
+				//para indicar a la MMU la  pagina en los segmentos 6 y 7
+				tbblue_registers[80+6]=(value&7)*2;
+				tbblue_registers[80+7]=(value&7)*2+1;
+
                                 tbblue_set_memory_pages();
                         }
 
