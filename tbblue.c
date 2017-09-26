@@ -838,7 +838,7 @@ Nuevo:
 
 }
 
-void tbblue_set_ram_page(z80_byte segment,z80_byte page)
+void tbblue_set_ram_page(z80_byte segment)
 {
 	z80_byte tbblue_register=80+segment;
 	z80_byte reg_value=tbblue_registers[tbblue_register];
@@ -868,14 +868,24 @@ void tbblue_mem_page_ram_rom(void)
 	switch (page_type) {
 		case 0:
 			debug_printf (VERBOSE_DEBUG,"Pages 0,1,2,3");
-			tbblue_set_ram_page(0*2,0*2);
-			tbblue_set_ram_page(0*2+1,0*2+1);
-			tbblue_set_ram_page(1*2,1*2);
-			tbblue_set_ram_page(1*2+1,1*2+1);
-			tbblue_set_ram_page(2*2,2*2);
-			tbblue_set_ram_page(2*2+1,2*2+1);
-			tbblue_set_ram_page(3*3,3*2);
-			tbblue_set_ram_page(3*2+1,3*2+1);
+			tbblue_registers[80]=0*2;
+			tbblue_registers[81]=0*2+1;
+			tbblue_registers[82]=1*2;
+			tbblue_registers[83]=1*2+1;
+			tbblue_registers[84]=2*2;
+			tbblue_registers[85]=2*2+1;
+			tbblue_registers[86]=3*2;
+			tbblue_registers[87]=3*2+1;
+
+
+			tbblue_set_ram_page(0*2);
+			tbblue_set_ram_page(0*2+1);
+			tbblue_set_ram_page(1*2);
+			tbblue_set_ram_page(1*2+1);
+			tbblue_set_ram_page(2*2);
+			tbblue_set_ram_page(2*2+1);
+			tbblue_set_ram_page(3*3);
+			tbblue_set_ram_page(3*2+1);
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[0];
 			contend_pages_actual[1]=contend_pages_128k_p2a[1];
@@ -891,14 +901,24 @@ void tbblue_mem_page_ram_rom(void)
 
 		case 1:
 			debug_printf (VERBOSE_DEBUG,"Pages 4,5,6,7");
-			tbblue_set_ram_page(0*2,4*2);
-			tbblue_set_ram_page(0*2+1,4*2+1);
-			tbblue_set_ram_page(1*2,5*2);
-			tbblue_set_ram_page(1*2+1,5*2+1);
-			tbblue_set_ram_page(2*2,6*2);
-			tbblue_set_ram_page(2*2+1,6*2+1);
-			tbblue_set_ram_page(3*2,7*2);
-			tbblue_set_ram_page(3*2+1,7*2+1);
+
+			tbblue_registers[80]=4*2;
+			tbblue_registers[81]=4*2+1;
+			tbblue_registers[82]=5*2;
+			tbblue_registers[83]=5*2+1;
+			tbblue_registers[84]=6*2;
+			tbblue_registers[85]=6*2+1;
+			tbblue_registers[86]=7*2;
+			tbblue_registers[87]=7*2+1;
+
+			tbblue_set_ram_page(0*2);
+			tbblue_set_ram_page(0*2+1);
+			tbblue_set_ram_page(1*2);
+			tbblue_set_ram_page(1*2+1);
+			tbblue_set_ram_page(2*2);
+			tbblue_set_ram_page(2*2+1);
+			tbblue_set_ram_page(3*2);
+			tbblue_set_ram_page(3*2+1);
 
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[4];
@@ -917,14 +937,24 @@ void tbblue_mem_page_ram_rom(void)
 
 		case 2:
 			debug_printf (VERBOSE_DEBUG,"Pages 4,5,6,3");
-			tbblue_set_ram_page(0*2,4*2);
-			tbblue_set_ram_page(0*2+1,4*2+1);
-			tbblue_set_ram_page(1*2,5*2);
-			tbblue_set_ram_page(1*2+1,5*2+1);
-			tbblue_set_ram_page(2*2,6*2);
-			tbblue_set_ram_page(2*2+1,6*2+1);
-			tbblue_set_ram_page(3*2,3*2);
-			tbblue_set_ram_page(3*2+1,3*2+1);
+
+			tbblue_registers[80]=4*2;
+			tbblue_registers[81]=4*2+1;
+			tbblue_registers[82]=5*2;
+			tbblue_registers[83]=5*2+1;
+			tbblue_registers[84]=6*2;
+			tbblue_registers[85]=6*2+1;
+			tbblue_registers[86]=3*2;
+			tbblue_registers[87]=3*2+1;
+
+			tbblue_set_ram_page(0*2);
+			tbblue_set_ram_page(0*2+1);
+			tbblue_set_ram_page(1*2);
+			tbblue_set_ram_page(1*2+1);
+			tbblue_set_ram_page(2*2);
+			tbblue_set_ram_page(2*2+1);
+			tbblue_set_ram_page(3*2);
+			tbblue_set_ram_page(3*2+1);
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[4];
 			contend_pages_actual[1]=contend_pages_128k_p2a[5];
@@ -941,14 +971,24 @@ void tbblue_mem_page_ram_rom(void)
 
 		case 3:
 			debug_printf (VERBOSE_DEBUG,"Pages 4,7,6,3");
-			tbblue_set_ram_page(0*2,4*2);
-			tbblue_set_ram_page(0*2+1,4*2+1);
-			tbblue_set_ram_page(1*2,7*2);
-			tbblue_set_ram_page(1*2+1,7*2+1);
-			tbblue_set_ram_page(2*2,6*2);
-			tbblue_set_ram_page(2*2+1,6*2+1);
-			tbblue_set_ram_page(3*2,3*2);
-			tbblue_set_ram_page(3*2+1,3*2+1);
+
+			tbblue_registers[80]=4*2;
+			tbblue_registers[81]=4*2+1;
+			tbblue_registers[82]=7*2;
+			tbblue_registers[83]=7*2+1;
+			tbblue_registers[84]=6*2;
+			tbblue_registers[85]=6*2+1;
+			tbblue_registers[86]=3*2;
+			tbblue_registers[87]=3*2+1;
+
+			tbblue_set_ram_page(0*2);
+			tbblue_set_ram_page(0*2+1);
+			tbblue_set_ram_page(1*2);
+			tbblue_set_ram_page(1*2+1);
+			tbblue_set_ram_page(2*2);
+			tbblue_set_ram_page(2*2+1);
+			tbblue_set_ram_page(3*2);
+			tbblue_set_ram_page(3*2+1);
 
 			contend_pages_actual[0]=contend_pages_128k_p2a[4];
 			contend_pages_actual[1]=contend_pages_128k_p2a[7];
@@ -1028,12 +1068,12 @@ void tbblue_set_memory_pages(void)
                     //001 = ZX 48K
 			tbblue_set_rom_page(0,0*2);
 			tbblue_set_rom_page(1,0*2+1);
-			tbblue_set_ram_page(2,5*2);
-			tbblue_set_ram_page(3,5*2+1);
-			tbblue_set_ram_page(4,2*2);
-			tbblue_set_ram_page(5,2*2+1);
-			tbblue_set_ram_page(6,0*2);
-			tbblue_set_ram_page(7,0*2+1);
+			tbblue_set_ram_page(2);
+			tbblue_set_ram_page(3);
+			tbblue_set_ram_page(4);
+			tbblue_set_ram_page(5);
+			tbblue_set_ram_page(6);
+			tbblue_set_ram_page(7);
 
 			debug_paginas_memoria_mapeadas[0]=0+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1055,15 +1095,19 @@ void tbblue_set_memory_pages(void)
                         tbblue_set_rom_page(0,rom_page*2);
 			tbblue_set_rom_page(1,rom_page*2+1);
 
-                        tbblue_set_ram_page(2,5*2);
-			tbblue_set_ram_page(3,5*2+1);
+                        tbblue_set_ram_page(2);
+			tbblue_set_ram_page(3);
 
-                        tbblue_set_ram_page(4,2*2);
-			tbblue_set_ram_page(5,2*2+1);
+                        tbblue_set_ram_page(4);
+			tbblue_set_ram_page(5);
 
 			ram_page=tbblue_mem_get_ram_page();
-                        tbblue_set_ram_page(6,ram_page*2);
-			tbblue_set_ram_page(7,ram_page*2+1);
+			tbblue_registers[80+6]=ram_page*2;
+			tbblue_registers[80+7]=ram_page*2+1;
+
+
+                        tbblue_set_ram_page(6);
+			tbblue_set_ram_page(7);
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1105,15 +1149,17 @@ void tbblue_set_memory_pages(void)
                         tbblue_set_rom_page(0,rom_page*2);
 			tbblue_set_rom_page(1,rom_page*2+1);
 
-                        tbblue_set_ram_page(2,5*2);
-			tbblue_set_ram_page(3,5*2+1);
+                        tbblue_set_ram_page(2);
+			tbblue_set_ram_page(3);
 
-                        tbblue_set_ram_page(4,2*2);
-			tbblue_set_ram_page(5,2*2+1);
+                        tbblue_set_ram_page(4);
+			tbblue_set_ram_page(5);
 
                         ram_page=tbblue_mem_get_ram_page();
-                        tbblue_set_ram_page(6,ram_page*2);
-			tbblue_set_ram_page(7,ram_page+2+1);
+			tbblue_registers[80+6]=ram_page*2;
+			tbblue_registers[80+7]=ram_page*2+1;
+                        tbblue_set_ram_page(6);
+			tbblue_set_ram_page(7);
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1135,15 +1181,17 @@ void tbblue_set_memory_pages(void)
                         tbblue_set_rom_page(0,rom_page*2);
 			tbblue_set_rom_page(1,rom_page*2+1);
 
-                        tbblue_set_ram_page(2,5*2);
-			tbblue_set_ram_page(3,5*2+1);
+                        tbblue_set_ram_page(2);
+			tbblue_set_ram_page(3);
 
-                        tbblue_set_ram_page(4,2*2);
-			tbblue_set_ram_page(5,2*2+1);
+                        tbblue_set_ram_page(4);
+			tbblue_set_ram_page(5);
 
 			ram_page=tbblue_mem_get_ram_page();
-                        tbblue_set_ram_page(6,ram_page*2);
-			tbblue_set_ram_page(7,ram_page*2+1);
+			tbblue_registers[80+6]=ram_page*2;
+			tbblue_registers[80+7]=ram_page*2+1;
+                        tbblue_set_ram_page(6);
+			tbblue_set_ram_page(7);
 
 			debug_paginas_memoria_mapeadas[0]=rom_page+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1190,12 +1238,17 @@ which allows you access to all SRAM.
 				//printf ("low segment NON writable for machine default\n");
 			}
 
-			tbblue_set_ram_page(2,5*2);
-			tbblue_set_ram_page(3,5*2+1);
-			tbblue_set_ram_page(4,2*2);
-			tbblue_set_ram_page(5,2*2+1);
-			tbblue_set_ram_page(6,7*2);
-			tbblue_set_ram_page(7,7*2+1);
+			tbblue_set_ram_page(2);
+			tbblue_set_ram_page(3);
+			tbblue_set_ram_page(4);
+			tbblue_set_ram_page(5);
+
+			tbblue_registers[80+6]=7*2;
+			tbblue_registers[80+7]=7*2+1;
+
+
+			tbblue_set_ram_page(6);
+			tbblue_set_ram_page(7);
 
 			debug_paginas_memoria_mapeadas[0]=0+128;
 			debug_paginas_memoria_mapeadas[1]=5;
@@ -1388,6 +1441,17 @@ void tbblue_hard_reset(void)
 	tbblue_registers[19]=32;
 
 	tbblue_port_123b=0;
+
+
+	//(R/W) 0x50 (80) => MMU slot 0 (Reset to 255 after a reset)
+		tbblue_registers[80]=255;
+		tbblue_registers[81]=255;
+		tbblue_registers[82]=10;
+		tbblue_registers[83]=11;
+		tbblue_registers[84]=4;
+		tbblue_registers[85]=5;
+		tbblue_registers[86]=0;
+		tbblue_registers[87]=1;
 
 	tbblue_bootrom.v=1;
 	//printf ("----setting bootrom to 1\n");
