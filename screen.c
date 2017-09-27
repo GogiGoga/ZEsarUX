@@ -7185,21 +7185,28 @@ G  G   R   R   B   B
 												//z80_byte color;
 
 									for (i=0;i<256;i++) {
-																			int r,g,b;
-																			int valorgris=i;
-																			VALOR_GRIS_A_R_G_B
+									int r,g,b;
+									int valorgris=i;
+									VALOR_GRIS_A_R_G_B
 
-																			color32=(r<<16)|(g<<8)|b;
+									color32=(r<<16)|(g<<8)|b;
 
-																									screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i, color32);
+															screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i, color32);
 
-																								}
-																								//trama de grises para tsconf
-																								for (i=0;i<32768;i++) {
-																					                                valorgris=i/128;
-																					                                VALOR_GRIS_A_R_G_B
-																					                                screen_set_colour_normal(TSCONF_INDEX_FIRST_COLOR+i,(r<<16)|(g<<8)|b);
-																					                        }
+														}
+			//trama de grises para tsconf
+			for (i=0;i<32768;i++) {
+                                valorgris=i/128;
+                                VALOR_GRIS_A_R_G_B
+                                screen_set_colour_normal(TSCONF_INDEX_FIRST_COLOR+i,(r<<16)|(g<<8)|b);
+                        }
+
+			//Colores HEATMAP
+			for (i=0;i<256;i++) {
+				valorgris=i;
+				VALOR_GRIS_A_R_G_B
+				screen_set_colour_normal(HEATMAP_INDEX_FIRST_COLOR+i,(r<<16)|(g<<8)|b);
+			}
 
 
 
@@ -7341,6 +7348,14 @@ b=tsconf_5_to_8[b];
 
 					screen_set_colour_normal(TSCONF_INDEX_FIRST_COLOR+i, color32);
 
+				}
+
+
+				//Colores HEATMAP
+				for (i=0;i<256;i++) {
+					int colorheat=i<<16;
+					debug_printf (VERBOSE_DEBUG,"Heatmap color: %02XH 32 bit: %06XH",i,colorheat);
+					screen_set_colour_normal(HEATMAP_INDEX_FIRST_COLOR+i,colorheat);
 				}
 
 

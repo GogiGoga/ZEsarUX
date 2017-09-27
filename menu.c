@@ -15924,6 +15924,9 @@ int visualmem_alto_variable=22;
 //#define VISUALMEM_ALTO 15
 #define VISUALMEM_ALTO (visualmem_alto_variable)
 
+
+int visualmem_bright_multiplier=10;
+
 void menu_debug_draw_visualmem(void)
 {
 
@@ -16036,7 +16039,9 @@ void menu_debug_draw_visualmem(void)
 		final_puntero_membuffer=QL_MEM_LIMIT+1;
 	}
 
-        char si_modificado;
+	//Valores entre 0 y 255: numero de veces byte modificado
+	//Valor 65535 especial
+        int si_modificado;
 
 
              //Calcular cuantos bytes modificados representa un pixel, teniendo en cuenta maximo buffer
@@ -16058,18 +16063,25 @@ void menu_debug_draw_visualmem(void)
                 for (;valores>0;valores--,inicio_puntero_membuffer++) {
                         if (inicio_puntero_membuffer>=final_puntero_membuffer) {
 				//printf ("llegado a final con x: %d y: %d ",x,y);
-				si_modificado=2;
+				si_modificado=65535;
                         }
 			else {
-                        	if (visualmem_buffer[inicio_puntero_membuffer]) si_modificado=1;
+                        	//if (visualmem_buffer[inicio_puntero_membuffer]) si_modificado=1;
+				si_modificado=visualmem_buffer[inicio_puntero_membuffer];
+
 				clear_visualmembuffer(inicio_puntero_membuffer);
 			}
                 }
 
                 //dibujamos valor actual
-                if (si_modificado==1) {
+                if (si_modificado>=1 && si_modificado<=255) {
 			if (si_complete_video_driver() ) {
-				menu_scr_putpixel(x,y,ESTILO_GUI_TINTA_NORMAL);
+				//Aumentar el brillo del color
+				int color_final=si_modificado*visualmem_bright_multiplier;
+				if (color_final>255) color_final=255;
+
+				//menu_scr_putpixel(x,y,ESTILO_GUI_TINTA_NORMAL);
+				menu_scr_putpixel(x,y,HEATMAP_INDEX_FIRST_COLOR+color_final);
 			}
 
 			else {
@@ -16078,7 +16090,7 @@ void menu_debug_draw_visualmem(void)
 		}
 
 		//color ficticio para indicar fuera de memoria y por tanto final de ventana... para saber donde acaba
-		else if (si_modificado==2) {
+		else if (si_modificado==65535) {
 			if (si_complete_video_driver() ) {
 				menu_scr_putpixel(x,y,ESTILO_GUI_COLOR_UNUSED_VISUALMEM);
 			}
@@ -16102,11 +16114,16 @@ void menu_debug_draw_visualmem(void)
 
 }
 
+
+
 void menu_debug_visualmem_dibuja_ventana(void)
 {
 	menu_dibuja_ventana(VISUALMEM_X,VISUALMEM_Y,VISUALMEM_ANCHO,VISUALMEM_ALTO,"Visual memory");
 
-	menu_escribe_linea_opcion(VISUALMEM_Y,-1,1,"Resize: OPQA");
+
+	char texto_linea[33];
+	sprintf (texto_linea,"Resize: OPQA Bright: %d",visualmem_bright_multiplier);
+	menu_escribe_linea_opcion(VISUALMEM_Y,-1,1,texto_linea);
 }
 
 void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
@@ -16160,6 +16177,22 @@ void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
 
 		z80_byte tecla;
 		tecla=menu_get_pressed_key();
+
+
+		if (tecla=='b') {
+			menu_espera_no_tecla();
+			if (visualmem_bright_multiplier>=200) visualmem_bright_multiplier=1;
+			else if (visualmem_bright_multiplier==1) visualmem_bright_multiplier=10;
+			else visualmem_bright_multiplier +=10;
+
+			cls_menu_overlay();
+			menu_debug_visualmem_dibuja_ventana();
+
+			//decir que no hay tecla pulsada
+			acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+
+
+		}
 
 		if (tecla=='o') {
 			menu_espera_no_tecla();
@@ -18297,7 +18330,7 @@ void menu_change_video_driver_apply(MENU_ITEM_PARAMETERS)
 			screen_reset_scr_driver_params();
 		        funcion_init=scr_driver_array[num_previo_menu_scr_driver].funcion_init;
 			set_menu_gui_zoom();
-			
+
 		        funcion_set=scr_driver_array[num_previo_menu_scr_driver].funcion_set;
 
 			funcion_init();

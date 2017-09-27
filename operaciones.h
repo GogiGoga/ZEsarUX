@@ -35,7 +35,8 @@
 
 #ifdef EMULATE_VISUALMEM
 
-extern char *visualmem_buffer;
+extern z80_byte *visualmem_buffer;
+extern z80_byte *visualmem_opcode_buffer;
 
 extern void init_visualmembuffer(void);
 extern void set_visualmembuffer(int dir);

@@ -106,10 +106,13 @@ int get_visualmem_size(void)
 	return visualmem_size;
 }
 
-//A 1 indica memoria modificada
+//Entre 1 y 255 indica memoria modificada y cuantas veces
 //A 0 se establece desde opcion de menu
 //char visualmem_buffer[65536];
-char *visualmem_buffer=NULL;
+z80_byte *visualmem_buffer=NULL;
+
+//lo mismo pero para ejecucion de opcodes
+z80_byte *visualmem_opcode_buffer=NULL;
 
 void init_visualmembuffer(void)
 {
@@ -129,7 +132,10 @@ void init_visualmembuffer(void)
 
 void set_visualmembuffer(int dir)
 {
-	visualmem_buffer[dir]=1;
+	//visualmem_buffer[dir]=1;
+	z80_byte valor=visualmem_buffer[dir];
+	if (valor<255) visualmem_buffer[dir]=valor+1;
+
 	//printf ("dir: %d\n",dir);
 }
 

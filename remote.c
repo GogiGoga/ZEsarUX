@@ -730,7 +730,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-stack-backtrace",NULL,NULL,"Get last 5 16-bit values from the stack"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
 #ifdef EMULATE_VISUALMEM
-  {"get-visualmem-dump",NULL,NULL,"Dumps all the visual memory written positions. Then, clear its contents"},
+  {"get-visualmem-dump",NULL,NULL,"Dumps all the visual memory written positions and value. Then, clear its contents"},
 #endif
   {"hard-reset-cpu",NULL,NULL,"Hard resets the machine"},
   {"help","|?","[command]","Shows help screen or command help"},
@@ -3256,7 +3256,7 @@ char buffer_retorno[2048];
 		int i;
 		for (i=0;i<final_visualmem;i++) {
 			if (visualmem_buffer[i]) {
-				escribir_socket_format(misocket,"%0*XH\n",digitos_max,i);
+				escribir_socket_format(misocket,"%0*XH %u\n",digitos_max,i,visualmem_buffer[i]);
 				clear_visualmembuffer(i);
 			}
 		}
