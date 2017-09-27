@@ -16122,7 +16122,7 @@ void menu_debug_visualmem_dibuja_ventana(void)
 
 
 	char texto_linea[33];
-	sprintf (texto_linea,"Resize: OPQA Bright: %d",visualmem_bright_multiplier);
+	sprintf (texto_linea,"Resize: OPQA B: Bright: %d",visualmem_bright_multiplier);
 	menu_escribe_linea_opcion(VISUALMEM_Y,-1,1,texto_linea);
 }
 
