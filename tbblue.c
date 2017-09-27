@@ -845,6 +845,8 @@ void tbblue_set_ram_page(z80_byte segment)
 
 	//tbblue_memory_paged[segment]=tbblue_ram_memory_pages[page];
 	tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];
+
+	debug_paginas_memoria_mapeadas[segment]=reg_value;
 }
 
 void tbblue_set_rom_page(z80_byte segment,z80_byte page)
@@ -852,9 +854,13 @@ void tbblue_set_rom_page(z80_byte segment,z80_byte page)
 	z80_byte tbblue_register=80+segment;
 	z80_byte reg_value=tbblue_registers[tbblue_register];
 
-	if (reg_value==255) tbblue_memory_paged[segment]=tbblue_rom_memory_pages[page];
+	if (reg_value==255) {
+		tbblue_memory_paged[segment]=tbblue_rom_memory_pages[page];
+		debug_paginas_memoria_mapeadas[segment]=page+128;
+	}
 	else {
 	  tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];
+	  debug_paginas_memoria_mapeadas[segment]=reg_value;
 	}
 }
 
@@ -892,10 +898,7 @@ void tbblue_mem_page_ram_rom(void)
 			contend_pages_actual[2]=contend_pages_128k_p2a[2];
 			contend_pages_actual[3]=contend_pages_128k_p2a[3];
 
-			debug_paginas_memoria_mapeadas[0]=0;
-			debug_paginas_memoria_mapeadas[1]=1;
-			debug_paginas_memoria_mapeadas[2]=2;
-			debug_paginas_memoria_mapeadas[3]=3;
+
 
 			break;
 
@@ -926,10 +929,7 @@ void tbblue_mem_page_ram_rom(void)
 			contend_pages_actual[2]=contend_pages_128k_p2a[6];
 			contend_pages_actual[3]=contend_pages_128k_p2a[7];
 
-			debug_paginas_memoria_mapeadas[0]=4;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=6;
-			debug_paginas_memoria_mapeadas[3]=7;
+
 
 
 
@@ -961,10 +961,7 @@ void tbblue_mem_page_ram_rom(void)
 			contend_pages_actual[2]=contend_pages_128k_p2a[6];
 			contend_pages_actual[3]=contend_pages_128k_p2a[3];
 
-			debug_paginas_memoria_mapeadas[0]=4;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=6;
-			debug_paginas_memoria_mapeadas[3]=3;
+
 
 
 			break;
@@ -995,10 +992,7 @@ void tbblue_mem_page_ram_rom(void)
 			contend_pages_actual[2]=contend_pages_128k_p2a[6];
 			contend_pages_actual[3]=contend_pages_128k_p2a[3];
 
-			debug_paginas_memoria_mapeadas[0]=4;
-			debug_paginas_memoria_mapeadas[1]=7;
-			debug_paginas_memoria_mapeadas[2]=6;
-			debug_paginas_memoria_mapeadas[3]=3;
+
 
 
 			break;
@@ -1042,6 +1036,33 @@ z80_byte tbblue_mem_get_ram_page(void)
 }
 
 
+void tbblue_set_mmu_128k_default(void)
+{
+	//rom default, paginas ram 5,2,0
+	tbblue_registers[80]=255;
+	tbblue_registers[81]=255;
+	tbblue_registers[82]=10;
+	tbblue_registers[83]=11;
+	tbblue_registers[84]=4;
+	tbblue_registers[85]=5;
+	tbblue_registers[86]=0;
+	tbblue_registers[87]=1;
+
+	debug_paginas_memoria_mapeadas[0]=0;
+	debug_paginas_memoria_mapeadas[1]=1;
+	debug_paginas_memoria_mapeadas[2]=10;
+	debug_paginas_memoria_mapeadas[3]=11;
+	debug_paginas_memoria_mapeadas[4]=4;
+	debug_paginas_memoria_mapeadas[5]=5;
+	debug_paginas_memoria_mapeadas[6]=0;
+	debug_paginas_memoria_mapeadas[7]=1;
+
+}
+
+//Indica si estamos en modo ram in rom del +2a
+z80_bit tbblue_was_in_p2a_ram_in_rom={0};
+
+
 void tbblue_set_memory_pages(void)
 {
 	//Mapeamos paginas de RAM segun config maquina
@@ -1075,10 +1096,6 @@ void tbblue_set_memory_pages(void)
 			tbblue_set_ram_page(6);
 			tbblue_set_ram_page(7);
 
-			debug_paginas_memoria_mapeadas[0]=0+128;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=2;
-			debug_paginas_memoria_mapeadas[3]=0;
 
 		        contend_pages_actual[0]=0;
 		        contend_pages_actual[1]=contend_pages_128k_p2a[5];
@@ -1109,10 +1126,7 @@ void tbblue_set_memory_pages(void)
                         tbblue_set_ram_page(6);
 			tbblue_set_ram_page(7);
 
-			debug_paginas_memoria_mapeadas[0]=rom_page+128;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=2;
-			debug_paginas_memoria_mapeadas[3]=ram_page;
+
 
 			//tbblue_low_segment_writable.v=0;
 		        contend_pages_actual[0]=0;
@@ -1131,45 +1145,49 @@ void tbblue_set_memory_pages(void)
 				tbblue_mem_page_ram_rom();
 				//printf ("setting low segment writeable as port 8189 bit 1\n");
 				tbblue_low_segment_writable.v=1;
+
+				tbblue_was_in_p2a_ram_in_rom.v=1;
 			}
 
 			else {
 
 				//printf ("NOT setting low segment writeable as port 8189 bit 1\n");
 
+			 	//Si se cambiaba de modo ram in rom a normal
+				if (tbblue_was_in_p2a_ram_in_rom.v) {
+					debug_printf(VERBOSE_DEBUG,"Going from ram in rom mode to normal mode. Setting default ram pages");
+					tbblue_set_mmu_128k_default();
+					tbblue_was_in_p2a_ram_in_rom.v=0;
+				}
+
                     //when "11"    => maquina <= s_speccy3e;
-                        rom_page=(puerto_32765>>4)&1;
+                        	rom_page=(puerto_32765>>4)&1;
 
-		        z80_byte rom1f=(puerto_8189>>1)&2;
-		        z80_byte rom7f=(puerto_32765>>4)&1;
+		        	z80_byte rom1f=(puerto_8189>>1)&2;
+		        	z80_byte rom7f=(puerto_32765>>4)&1;
 
-			z80_byte rom_page=rom1f | rom7f;
+				z80_byte rom_page=rom1f | rom7f;
 
 
-                        tbblue_set_rom_page(0,rom_page*2);
-			tbblue_set_rom_page(1,rom_page*2+1);
+                        	tbblue_set_rom_page(0,rom_page*2);
+				tbblue_set_rom_page(1,rom_page*2+1);
 
-                        tbblue_set_ram_page(2);
-			tbblue_set_ram_page(3);
+                        	tbblue_set_ram_page(2);
+				tbblue_set_ram_page(3);
 
-                        tbblue_set_ram_page(4);
-			tbblue_set_ram_page(5);
+                        	tbblue_set_ram_page(4);
+				tbblue_set_ram_page(5);
 
-                        ram_page=tbblue_mem_get_ram_page();
-			tbblue_registers[80+6]=ram_page*2;
-			tbblue_registers[80+7]=ram_page*2+1;
-                        tbblue_set_ram_page(6);
-			tbblue_set_ram_page(7);
+                        	ram_page=tbblue_mem_get_ram_page();
+				tbblue_registers[80+6]=ram_page*2;
+				tbblue_registers[80+7]=ram_page*2+1;
+                        	tbblue_set_ram_page(6);
+				tbblue_set_ram_page(7);
 
-			debug_paginas_memoria_mapeadas[0]=rom_page+128;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=2;
-			debug_paginas_memoria_mapeadas[3]=ram_page;
-
-		        contend_pages_actual[0]=0;
-		        contend_pages_actual[1]=contend_pages_128k_p2a[5];
-		        contend_pages_actual[2]=contend_pages_128k_p2a[2];
-		        contend_pages_actual[3]=contend_pages_128k_p2a[ram_page];
+		        	contend_pages_actual[0]=0;
+		        	contend_pages_actual[1]=contend_pages_128k_p2a[5];
+		        	contend_pages_actual[2]=contend_pages_128k_p2a[2];
+		        	contend_pages_actual[3]=contend_pages_128k_p2a[ram_page];
 
 
 			}
@@ -1193,10 +1211,6 @@ void tbblue_set_memory_pages(void)
                         tbblue_set_ram_page(6);
 			tbblue_set_ram_page(7);
 
-			debug_paginas_memoria_mapeadas[0]=rom_page+128;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=2;
-			debug_paginas_memoria_mapeadas[3]=ram_page;
 
 			//tbblue_low_segment_writable.v=0;
 		        contend_pages_actual[0]=0;
@@ -1228,6 +1242,9 @@ which allows you access to all SRAM.
 				tbblue_memory_paged[1]=&memoria_spectrum[indice+8192];
 				tbblue_low_segment_writable.v=1;
 				//printf ("low segment writable for machine default\n");
+
+				debug_paginas_memoria_mapeadas[0]=romram_page;
+				debug_paginas_memoria_mapeadas[1]=romram_page;
 			}
 			else {
 				//In this setting state, the page 0 repeats the content of the ROM 'loader', ie 0-8191 appear memory contents, and repeats 8192-16383
@@ -1236,6 +1253,8 @@ which allows you access to all SRAM.
 				tbblue_memory_paged[1]=&tbblue_fpga_rom[8192];
 				//tbblue_low_segment_writable.v=0;
 				//printf ("low segment NON writable for machine default\n");
+				debug_paginas_memoria_mapeadas[0]=0;
+				debug_paginas_memoria_mapeadas[1]=0;
 			}
 
 			tbblue_set_ram_page(2);
@@ -1243,6 +1262,7 @@ which allows you access to all SRAM.
 			tbblue_set_ram_page(4);
 			tbblue_set_ram_page(5);
 
+			//En modo config, ram7 esta en segmento 3
 			tbblue_registers[80+6]=7*2;
 			tbblue_registers[80+7]=7*2+1;
 
@@ -1250,10 +1270,8 @@ which allows you access to all SRAM.
 			tbblue_set_ram_page(6);
 			tbblue_set_ram_page(7);
 
-			debug_paginas_memoria_mapeadas[0]=0+128;
-			debug_paginas_memoria_mapeadas[1]=5;
-			debug_paginas_memoria_mapeadas[2]=2;
-			debug_paginas_memoria_mapeadas[3]=7;
+
+
 
 		        contend_pages_actual[0]=0; //Suponemos que esa pagina no tiene contienda
 		        contend_pages_actual[1]=contend_pages_128k_p2a[5];
@@ -1398,14 +1416,10 @@ void tbblue_reset(void)
 
 
 //(R/W) 0x50 (80) => MMU slot 0 (Reset to 255 after a reset)
-	tbblue_registers[80]=255;
-	tbblue_registers[81]=255;
-	tbblue_registers[82]=10;
-	tbblue_registers[83]=11;
-	tbblue_registers[84]=4;
-	tbblue_registers[85]=5;
-	tbblue_registers[86]=0;
-	tbblue_registers[87]=1;
+	tbblue_set_mmu_128k_default();
+
+	tbblue_was_in_p2a_ram_in_rom.v=0;
+
 
 }
 
@@ -1444,17 +1458,14 @@ void tbblue_hard_reset(void)
 
 
 	//(R/W) 0x50 (80) => MMU slot 0 (Reset to 255 after a reset)
-		tbblue_registers[80]=255;
-		tbblue_registers[81]=255;
-		tbblue_registers[82]=10;
-		tbblue_registers[83]=11;
-		tbblue_registers[84]=4;
-		tbblue_registers[85]=5;
-		tbblue_registers[86]=0;
-		tbblue_registers[87]=1;
+	tbblue_set_mmu_128k_default();
+
 
 	tbblue_bootrom.v=1;
 	//printf ("----setting bootrom to 1\n");
+
+	tbblue_was_in_p2a_ram_in_rom.v=0;
+
 	tbblue_set_memory_pages();
 
 
@@ -1467,79 +1478,7 @@ void tbblue_hard_reset(void)
 }
 
 
-/*
-void old_tbblue_out_port(z80_int port,z80_byte value)
-{
-	//printf ("tbblue_out_port port=%04XH value=%02XH PC=%d\n",port,value,reg_pc);
-	//debug_printf (VERBOSE_PARANOID,"tbblue_out_port port=%04XH value=%02XH",port,value);
 
-	z80_byte last_value;
-
-	switch (port) {
-		case 0x24DB:
-			last_value=tbblue_config1;
-			tbblue_config1=value;
-			tbblue_bootrom.v=0;
-			tbblue_set_memory_pages();
-
-
-//- Write in port 0x24DB (config1)
-//
-  //              case cpu_do(7 downto 6) is
-    //                when "01"    => maquina <= s_speccy48;
-  //                  when "10"    => maquina <= s_speccy128;
-//                    when "11"    => maquina <= s_speccy3e;
-//                    when others    => maquina <= s_config;   ---config mode
-//                end case;
-
-
-			//Solo cuando hay cambio
-                        if ( (last_value&(128+64)) != (value&(128+64)))  tbblue_set_emulator_setting_timing();
-		break;
-
-		case 0x24DD:
-			last_value=tbblue_config2;
-			tbblue_config2=value;
-
-			//Solo cuando hay cambio
-			if ( (last_value&4) != (value&4) ) tbblue_set_emulator_setting_divmmc();
-
-			//Solo cuando hay cambio
-			if ( (last_value&8) != (value&8) ) tbblue_set_emulator_setting_ulaplus();
-
-
-
-		break;
-
-		case 0x24DF:
-			//printf ("\n\nEscribir %d en 24df\n\n",value);
-			last_value=tbblue_port_24df;
-			tbblue_port_24df=value;
-
-			//Solo cuando hay cambio
-                        if ( (last_value&4) != (value&4) ) tbblue_set_emulator_setting_turbo();
-		break;
-
-
-		case 0x24D9:
-			tbblue_hardsoftreset=value;
-			if (value&1) {
-				//printf ("Doing soft reset due to writing to port 24D9H\n");
-				reg_pc=0;
-			}
-			if (value&2) {
-				//printf ("Doing hard reset due to writing to port 24D9H\n");
-				tbblue_bootrom.v=1;
-				tbblue_config1=0;
-				tbblue_set_memory_pages();
-				reg_pc=0;
-			}
-
-		break;
-	}
-
-}
-*/
 
 
 /*
@@ -1560,21 +1499,7 @@ z80_byte old_tbblue_read_port_24d5(void)
 //9 = ZX Spectrum Next
 
 
-//Retornaremos 8.0
-
-	z80_byte value;
-
-
-	if (tbblue_read_port_24d5_index==0) value=8;
-	else if (tbblue_read_port_24d5_index==1) value=0;
-
-	//Cualquier otra cosa, 255
-	else value=255;
-
-	//printf ("puerto 24d5. index=%d value=%d\n",tbblue_read_port_24d5_index,value);
-
-	tbblue_read_port_24d5_index++;
-	return value;
+/
 
 }
 

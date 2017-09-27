@@ -3570,6 +3570,22 @@ void debug_registers_get_mem_page_zxuno(z80_byte segmento,char *texto_pagina)
 }
 
 
+//Retorna la pagina mapeada para el segmento en tbblue
+void debug_registers_get_mem_page_tbblue(z80_byte segmento,char *texto_pagina)
+{
+        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+                //ROM.
+                sprintf (texto_pagina,"O%d",debug_paginas_memoria_mapeadas[segmento] & 127);
+        }
+
+        else {
+                //RAM
+                sprintf (texto_pagina,"A%d",debug_paginas_memoria_mapeadas[segmento]);
+        }
+
+}
+
+
 
 
 //Retorna representacion de texto del estado de las paginas de memoria:
@@ -3587,30 +3603,17 @@ void debug_get_memory_pages(char *texto_final)
 
 
       //Paginas memoria
-      if (MACHINE_IS_SPECTRUM_128_P2_P2A ||  MACHINE_IS_TBBLUE || superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
+      if (MACHINE_IS_SPECTRUM_128_P2_P2A ||  superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
                                   int pagina;
                                   //4 paginas, texto 5 caracteres max
                                   char texto_paginas[4][5];
 
         for (pagina=0;pagina<4;pagina++) {
 
-  					//Caso tbblue y modo config en pagina 0
-  					if (MACHINE_IS_TBBLUE && pagina==0) {
-  						//z80_byte maquina=(tbblue_config1>>6)&3;
-  						z80_byte maquina=(tbblue_registers[3])&3;
-  						if (maquina==0){
-  							if (tbblue_bootrom.v) strcpy (texto_paginas[0],"ROM");
-  							else {
-  								//z80_byte romram_page=(tbblue_config1&31);
-  								z80_byte romram_page=(tbblue_registers[4]&31);
-  								sprintf (texto_paginas[0],"SR%d",romram_page);
-  							}
-  						}
-  						else debug_registers_get_mem_page(pagina,texto_paginas[pagina]);
-  					}
-            else {
+
+
   						debug_registers_get_mem_page(pagina,texto_paginas[pagina]);
-  					}
+
           }
 
   				sprintf (texto_memoria,"%s %s %s %s SCR%d %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3],
@@ -3620,6 +3623,41 @@ void debug_get_memory_pages(char *texto_final)
 
 
                           }
+
+                          if (MACHINE_IS_TBBLUE) {
+                                                      int pagina;
+                                                      //4 paginas, texto 5 caracteres max
+                                                      char texto_paginas[8][5];
+
+                            for (pagina=0;pagina<8;pagina++) {
+
+                                                            //Caso tbblue y modo config en pagina 0
+                                                            if (pagina==0 || pagina==1) {
+                                                                    //z80_byte maquina=(tbblue_config1>>6)&3;
+                                                                    z80_byte maquina=(tbblue_registers[3])&3;
+                                                                    if (maquina==0){
+                                                                            if (tbblue_bootrom.v) strcpy (texto_paginas[pagina],"RO");
+                                                                            else {
+                                                                                    //z80_byte romram_page=(tbblue_config1&31);
+                                                                                    z80_byte romram_page=(tbblue_registers[4]&31);
+                                                                                    sprintf (texto_paginas[pagina],"SR%d",romram_page);
+                                                                            }
+                                                                    }
+                                                                    else debug_registers_get_mem_page_tbblue(pagina,texto_paginas[pagina]);
+                                                            }
+                                                            else {
+                                                                    debug_registers_get_mem_page_tbblue(pagina,texto_paginas[pagina]);
+                                                            }
+                                                    }
+
+                                                    sprintf (texto_memoria,"%s %s %s %s %s %s %s %s SCR%d %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3],
+                                                        texto_paginas[4],texto_paginas[5],texto_paginas[6],texto_paginas[7],
+                                                              ( (puerto_32765&8) ? 7 : 5) ,  ( (puerto_32765&32) ? "PDI" : "PEN"  ) );
+
+                      //D5
+
+
+                                              }
 
 
 

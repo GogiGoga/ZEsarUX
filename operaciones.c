@@ -6638,6 +6638,10 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 				//tbblue_registers[80+6]=(value&7)*2;
 				//tbblue_registers[80+7]=(value&7)*2+1;
 
+				//En rom entra la pagina habitual de modo 128k, evitando lo que diga la mmu
+				tbblue_registers[80]=255;
+				tbblue_registers[81]=255;
+
                                 tbblue_set_memory_pages();
                         }
 
@@ -6648,6 +6652,9 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 				//printf ("TBBLUE changing port 8189 value=0x%02XH\n",value);
                                 puerto_8189=value;
 
+				//En rom entra la pagina habitual de modo 128k, evitando lo que diga la mmu
+				tbblue_registers[80]=255;
+				tbblue_registers[81]=255;
 
                                 tbblue_set_memory_pages();
                         }

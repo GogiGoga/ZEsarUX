@@ -64,7 +64,9 @@ int mem128_multiplicador=1;
 
 //Paginas mapeadas en cada zona de RAM. Se solamente usa en menu debug y breakpoints, no para el core de emulacion
 //Si numero pagina >=128, numero pagina=numero pagina-128 y se trata de ROM. Si no, es RAM
-z80_byte debug_paginas_memoria_mapeadas[4];
+//Permitir hasta 8 bloques para compatibilidad con mmu de 8 paginas, como tbblue
+//Hacer que en vez de pagina >=128, sea pagina >=32768 para indicar rom
+z80_byte debug_paginas_memoria_mapeadas[8];
 
 /*
 El conmutador de hardware esta en la direccion de E/S 7FFDh (32765). El campo del bit
@@ -192,7 +194,7 @@ z80_byte *get_base_mem_pantalla_continue(void)
 	}
 
 	if (MACHINE_IS_ZXUNO) {
-			
+
 	                if (puerto_32765 & 8) {
         	                return zxuno_sram_mem_table_new[7];
                 	}
