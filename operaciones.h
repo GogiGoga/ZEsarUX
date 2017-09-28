@@ -43,6 +43,9 @@ extern void set_visualmembuffer(int dir);
 extern void clear_visualmembuffer(int dir);
 extern int get_visualmem_size(void);
 
+extern void set_visualmemopcodebuffer(int dir);
+extern void clear_visualmemopcodebuffer(int dir);
+
 
 #endif
 

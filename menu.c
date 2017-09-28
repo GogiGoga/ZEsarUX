@@ -15914,18 +15914,25 @@ void menu_debug_registers_console(MENU_ITEM_PARAMETERS) {
 
 #ifdef EMULATE_VISUALMEM
 
+#define VISUALMEM_MAX_ALTO 23
+
 int visualmem_ancho_variable=30;
-int visualmem_alto_variable=22;
+int visualmem_alto_variable=VISUALMEM_MAX_ALTO;
 
 #define VISUALMEM_X 1
-#define VISUALMEM_Y 1
+#define VISUALMEM_Y 0
 //#define VISUALMEM_ANCHO 30
 #define VISUALMEM_ANCHO (visualmem_ancho_variable)
 //#define VISUALMEM_ALTO 15
 #define VISUALMEM_ALTO (visualmem_alto_variable)
 
+//0=vemos visualmem
+//1=vemos visualmem opcode
+int menu_visualmem_donde=0;
+
 
 int visualmem_bright_multiplier=10;
+
 
 void menu_debug_draw_visualmem(void)
 {
@@ -15936,7 +15943,7 @@ void menu_debug_draw_visualmem(void)
         int ancho=(VISUALMEM_ANCHO-2);
         int alto=(VISUALMEM_ALTO-6);
         int xorigen=(VISUALMEM_X+1);
-        int yorigen=(VISUALMEM_Y+4);
+        int yorigen=(VISUALMEM_Y+5);
 
         if (si_complete_video_driver() ) {
                 ancho *=8;
@@ -16039,6 +16046,11 @@ void menu_debug_draw_visualmem(void)
 		final_puntero_membuffer=QL_MEM_LIMIT+1;
 	}
 
+	//Si es de opcode, puede ser desde cualquier sitio desde la rom
+	if (menu_visualmem_donde==1) {
+		inicio_puntero_membuffer=0;
+	}
+
 	//Valores entre 0 y 255: numero de veces byte modificado
 	//Valor 65535 especial
         int si_modificado;
@@ -16066,10 +16078,16 @@ void menu_debug_draw_visualmem(void)
 				si_modificado=65535;
                         }
 			else {
-                        	//if (visualmem_buffer[inicio_puntero_membuffer]) si_modificado=1;
-				si_modificado=visualmem_buffer[inicio_puntero_membuffer];
+				if (menu_visualmem_donde==0) {
+					si_modificado=visualmem_buffer[inicio_puntero_membuffer];
+					clear_visualmembuffer(inicio_puntero_membuffer);
+				}
+				else {
+					si_modificado=visualmem_opcode_buffer[inicio_puntero_membuffer];
+					clear_visualmemopcodebuffer(inicio_puntero_membuffer);
+				}
 
-				clear_visualmembuffer(inicio_puntero_membuffer);
+
 			}
                 }
 
@@ -16121,9 +16139,22 @@ void menu_debug_visualmem_dibuja_ventana(void)
 	menu_dibuja_ventana(VISUALMEM_X,VISUALMEM_Y,VISUALMEM_ANCHO,VISUALMEM_ALTO,"Visual memory");
 
 
+	//Forzar a mostrar atajos
+	z80_bit antes_menu_writing_inverse_color;
+	antes_menu_writing_inverse_color.v=menu_writing_inverse_color.v;
+	menu_writing_inverse_color.v=1;
+
+
 	char texto_linea[33];
-	sprintf (texto_linea,"Resize: OPQA B: Bright: %d",visualmem_bright_multiplier);
+	sprintf (texto_linea,"Size: ~~O~~P~~Q~~A ~~Bright: %d",visualmem_bright_multiplier);
 	menu_escribe_linea_opcion(VISUALMEM_Y,-1,1,texto_linea);
+
+	sprintf (texto_linea,"~~Looking: %s",(menu_visualmem_donde == 0 ? "Read Mem" : "Opcode") );
+	menu_escribe_linea_opcion(VISUALMEM_Y+1,-1,1,texto_linea);
+
+
+	//Restaurar comportamiento atajos
+	menu_writing_inverse_color.v=antes_menu_writing_inverse_color.v;
 }
 
 void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
@@ -16194,9 +16225,24 @@ void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
 
 		}
 
+
+		if (tecla=='l') {
+			menu_espera_no_tecla();
+
+			menu_visualmem_donde ^=1;
+
+			cls_menu_overlay();
+			menu_debug_visualmem_dibuja_ventana();
+
+			//decir que no hay tecla pulsada
+			acumulado = MENU_PUERTO_TECLADO_NINGUNA;
+
+
+		}
+
 		if (tecla=='o') {
 			menu_espera_no_tecla();
-			if (visualmem_ancho_variable>14) visualmem_ancho_variable--;
+			if (visualmem_ancho_variable>23) visualmem_ancho_variable--;
 
 			cls_menu_overlay();
 			menu_debug_visualmem_dibuja_ventana();
@@ -16233,7 +16279,7 @@ void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
 
                 if (tecla=='a') {
                         menu_espera_no_tecla();
-                        if (visualmem_alto_variable<22) visualmem_alto_variable++;
+                        if (visualmem_alto_variable<VISUALMEM_MAX_ALTO) visualmem_alto_variable++;
 
                         cls_menu_overlay();
                         menu_debug_visualmem_dibuja_ventana();

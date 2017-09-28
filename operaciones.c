@@ -128,6 +128,14 @@ void init_visualmembuffer(void)
 		cpu_panic("Can not allocate visualmem buffer");
 	}
 
+
+	debug_printf(VERBOSE_INFO,"Allocating %d bytes for visualmem opcode buffer",visualmem_size);
+
+	visualmem_opcode_buffer=malloc(visualmem_size);
+	if (visualmem_opcode_buffer==NULL) {
+		cpu_panic("Can not allocate visualmem opcode buffer");
+	}
+
 }
 
 void set_visualmembuffer(int dir)
@@ -139,11 +147,24 @@ void set_visualmembuffer(int dir)
 	//printf ("dir: %d\n",dir);
 }
 
+void set_visualmemopcodebuffer(int dir)
+{
+	//visualmem_buffer[dir]=1;
+	z80_byte valor=visualmem_opcode_buffer[dir];
+	if (valor<255) visualmem_opcode_buffer[dir]=valor+1;
+
+	//printf ("dir: %d\n",dir);
+}
+
 void clear_visualmembuffer(int dir)
 {
         visualmem_buffer[dir]=0;
 }
 
+void clear_visualmemopcodebuffer(int dir)
+{
+        visualmem_buffer[dir]=0;
+}
 
 
 #endif
@@ -887,6 +908,9 @@ z80_byte peek_byte_ace(z80_int dir)
 
 z80_byte fetch_opcode_spectrum(void)
 {
+#ifdef EMULATE_VISUALMEM
+	set_visualmemopcodebuffer(reg_pc);
+#endif
 	return peek_byte_no_time (reg_pc);
 }
 
