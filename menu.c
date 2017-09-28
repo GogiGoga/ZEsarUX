@@ -16053,7 +16053,7 @@ void menu_debug_draw_visualmem(void)
 
 	//Valores entre 0 y 255: numero de veces byte modificado
 	//Valor 65535 especial
-        int si_modificado;
+        //int si_modificado;
 
 
              //Calcular cuantos bytes modificados representa un pixel, teniendo en cuenta maximo buffer
@@ -16071,32 +16071,48 @@ void menu_debug_draw_visualmem(void)
 
                 int valores=max_valores;
 
-		si_modificado=0;
+		int acumulado=0;
+		//si_modificado=0;
                 for (;valores>0;valores--,inicio_puntero_membuffer++) {
                         if (inicio_puntero_membuffer>=final_puntero_membuffer) {
 				//printf ("llegado a final con x: %d y: %d ",x,y);
-				si_modificado=65535;
+				//Fuera de memoria direccionable. Zona gris. Decrementamos valor
+				//Como se lee a trozos de "max_valores" tamanyo, cuando este trozo empieza ya fuera de memoria
+				//acumulado acabara siendo <0 y saldra gris. Si es a medias, si acaba restando mucho, saldra gris tambien
+				//(eso solo pasara en el ultimo pixel de la zona direccionable)
+				acumulado--;
                         }
 			else {
+				//Es en memoria direccionable. Sumar valor de visualmem y luego haremos valor medio
 				if (menu_visualmem_donde==0) {
-					si_modificado=visualmem_buffer[inicio_puntero_membuffer];
+					acumulado +=visualmem_buffer[inicio_puntero_membuffer];
 					clear_visualmembuffer(inicio_puntero_membuffer);
 				}
 				else {
-					si_modificado=visualmem_opcode_buffer[inicio_puntero_membuffer];
+					acumulado +=visualmem_opcode_buffer[inicio_puntero_membuffer];
 					clear_visualmemopcodebuffer(inicio_puntero_membuffer);
 				}
 
 
 			}
                 }
+		//if (acumulado>0) printf ("final pixel %d %d (divisor: %d)\n",inicio_puntero_membuffer,acumulado,max_valores);
 
-                //dibujamos valor actual
-                if (si_modificado>=1 && si_modificado<=255) {
+                //dibujamos valor medio
+                if (acumulado>0) {
+
 			if (si_complete_video_driver() ) {
+
+				//Sacar valor medio
+				int color_final=acumulado/max_valores;
+
+				//printf ("color final: %d\n",color_final);
+
 				//Aumentar el brillo del color
-				int color_final=si_modificado*visualmem_bright_multiplier;
+				color_final=color_final*visualmem_bright_multiplier;
 				if (color_final>255) color_final=255;
+
+
 
 				//menu_scr_putpixel(x,y,ESTILO_GUI_TINTA_NORMAL);
 				menu_scr_putpixel(x,y,HEATMAP_INDEX_FIRST_COLOR+color_final);
@@ -16108,7 +16124,7 @@ void menu_debug_draw_visualmem(void)
 		}
 
 		//color ficticio para indicar fuera de memoria y por tanto final de ventana... para saber donde acaba
-		else if (si_modificado==65535) {
+		else if (acumulado<0) {
 			if (si_complete_video_driver() ) {
 				menu_scr_putpixel(x,y,ESTILO_GUI_COLOR_UNUSED_VISUALMEM);
 			}
@@ -16118,6 +16134,7 @@ void menu_debug_draw_visualmem(void)
 
 		}
 
+		//Valor 0
 		else {
 			if (si_complete_video_driver() ) {
 				menu_scr_putpixel(x,y,ESTILO_GUI_PAPEL_NORMAL);
