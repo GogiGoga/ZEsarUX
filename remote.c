@@ -730,8 +730,8 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-stack-backtrace",NULL,NULL,"Get last 5 16-bit values from the stack"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
 #ifdef EMULATE_VISUALMEM
-  {"get-visualmem-dump",NULL,NULL,"Dumps all the visual memory written positions and values. Then, clear its contents"},
-  {"get-visualmem-opcode-dump",NULL,NULL,"Dumps all the visual memory executed positions and values. Then, clear its contents"},
+  {"get-visualmem-dump",NULL,"[compact]","Dumps all the visual memory written positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
+  {"get-visualmem-opcode-dump",NULL,"[compact]","Dumps all the visual memory executed positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
 #endif
   {"hard-reset-cpu",NULL,NULL,"Hard resets the machine"},
   {"help","|?","[command]","Shows help screen or command help"},
@@ -2876,6 +2876,43 @@ int return_internal_pointer(char *s,z80_byte **puntero)
 }
 
 
+#ifdef EMULATE_VISUALMEM
+
+void remote_visualmem_generic_compact(int misocket, z80_byte *buffer, int final_visualmem)
+{
+
+	int digitos_max=menu_debug_get_total_digits_hexa(final_visualmem-1);
+	int longitud_linea=0;
+
+	int i;
+	for (i=0;i<final_visualmem;i++) {
+		//Posicion no 0
+		if (buffer[i]) {
+			if (longitud_linea==0) {
+				//Nueva linea
+				escribir_socket_format(misocket,"%0*XH ",digitos_max,i);
+			}
+			escribir_socket_format(misocket,"%u ",buffer[i]);
+			buffer[i]=0;
+
+			longitud_linea++;
+			if (longitud_linea==16) {
+				escribir_socket_format(misocket,"\n");
+				longitud_linea=0;
+			}
+		}
+
+		else {
+			//Posicion 0. Si la linea estaba empezada, salto de linea
+			if (longitud_linea) {
+				escribir_socket_format(misocket,"\n");
+				longitud_linea=0;
+			}
+		}
+	}
+}
+#endif
+
 //Leer todos los parametros en un solo array de char
 //Maximo es 65536*4, para permitir comando largo write-mapped-memory que pueda escribir en 64kb de memoria,
 //teniendo en cuenta que un numero como maximo ocupa 3 caracteres + 1 espacio
@@ -3249,8 +3286,19 @@ char buffer_retorno[2048];
 #ifdef EMULATE_VISUALMEM
 	else if (!strcmp(comando_sin_parametros,"get-visualmem-dump")) {
 
+		int salida_compacta=0;
+		remote_parse_commands_argvc(parametros);
+		if (remote_command_argc>0) {
+			if (!strcmp(remote_command_argv[0],"compact")) salida_compacta=1;
+		}
+
 		int final_visualmem=65536;
 		if (MACHINE_IS_QL) final_visualmem=QL_MEM_LIMIT+1;
+
+		if (salida_compacta) {
+			remote_visualmem_generic_compact(misocket,visualmem_buffer,final_visualmem);
+			return;
+		}
 
 		int digitos_max=menu_debug_get_total_digits_hexa(final_visualmem-1);
 
@@ -3265,8 +3313,19 @@ char buffer_retorno[2048];
 
 	else if (!strcmp(comando_sin_parametros,"get-visualmem-opcode-dump")) {
 
+		int salida_compacta=0;
+		remote_parse_commands_argvc(parametros);
+		if (remote_command_argc>0) {
+			if (!strcmp(remote_command_argv[0],"compact")) salida_compacta=1;
+		}
+
 		int final_visualmem=65536;
 		if (MACHINE_IS_QL) final_visualmem=QL_MEM_LIMIT+1;
+
+		if (salida_compacta) {
+			remote_visualmem_generic_compact(misocket,visualmem_opcode_buffer,final_visualmem);
+			return;
+		}
 
 		int digitos_max=menu_debug_get_total_digits_hexa(final_visualmem-1);
 
@@ -3279,6 +3338,10 @@ char buffer_retorno[2048];
 		}
 	}
 #endif
+
+
+
+
 
   else if (!strcmp(comando_sin_parametros,"hard-reset-cpu")) {
           hard_reset_cpu();
