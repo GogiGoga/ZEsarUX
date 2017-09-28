@@ -163,7 +163,7 @@ void clear_visualmembuffer(int dir)
 
 void clear_visualmemopcodebuffer(int dir)
 {
-        visualmem_buffer[dir]=0;
+        visualmem_opcode_buffer[dir]=0;
 }
 
 
