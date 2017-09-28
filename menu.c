@@ -16166,7 +16166,7 @@ void menu_debug_visualmem_dibuja_ventana(void)
 	sprintf (texto_linea,"Size: ~~O~~P~~Q~~A ~~Bright: %d",visualmem_bright_multiplier);
 	menu_escribe_linea_opcion(VISUALMEM_Y,-1,1,texto_linea);
 
-	sprintf (texto_linea,"~~Looking: %s",(menu_visualmem_donde == 0 ? "Read Mem" : "Opcode") );
+	sprintf (texto_linea,"~~Looking: %s",(menu_visualmem_donde == 0 ? "Written Mem" : "Opcode") );
 	menu_escribe_linea_opcion(VISUALMEM_Y+1,-1,1,texto_linea);
 
 
