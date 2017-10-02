@@ -1457,9 +1457,6 @@ opcion tambien para bajar bit 7 final
 -Mostrar ay piano pero para notas deducidas del beeper (wave form)
 
 
--Visualmem. que muestre por separado escritura y lectura. Quizá no tiene sentido pues la ejecución de código genera lecturas por cada opcode leido. Mismo para ZRCP
--Visualmem en ZRCP no solo como lista de direcciones sino como un "cuadrado" en ascii, con X por direccion modificada y espacio en blanco por no modificada
-
 
 -items recientemente abiertos en quickload . Y en otros menus de carga tambien?
 
