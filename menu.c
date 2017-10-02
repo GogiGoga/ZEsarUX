@@ -2124,6 +2124,9 @@ int menu_get_cpu_use_perc(void)
 	return usocpu;
 }
 
+int cpu_use_total_acumulado=0;
+int cpu_use_total_acumulado_medidas=0;
+
 void menu_draw_cpu_use(void)
 {
         //solo redibujarla de vez en cuando
@@ -2150,6 +2153,9 @@ void menu_draw_cpu_use(void)
 
 	char buffer_perc[5];
 	sprintf (buffer_perc,"%3d%%",cpu_use);
+
+	cpu_use_total_acumulado +=cpu_use;
+	cpu_use_total_acumulado_medidas++;
 
 	int x;
 
@@ -22269,6 +22275,14 @@ void menu_about_running_info(MENU_ITEM_PARAMETERS)
 				timer_get_texto_time(&zesarux_start_time,hora_inicio);
 
 
+	//int cpu_use_total_acumulado=0;
+	//int cpu_use_total_acumulado_medidas=0;
+
+	int media_cpu=0;
+
+	if (cpu_use_total_acumulado_medidas>0) {
+		media_cpu=cpu_use_total_acumulado/cpu_use_total_acumulado_medidas;
+	}
 
 
 	menu_generic_message_format("Running info",
@@ -22276,9 +22290,10 @@ void menu_about_running_info(MENU_ITEM_PARAMETERS)
 		"Configuration file: %s\n\n"
 		"Start time: %s\n"
 		"Uptime %d secs (%d mins)\n"
+		"Average CPU Use: %d%%\n"
 		,
 		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile,hora_inicio,
-		uptime_seconds,uptime_seconds/60);
+		uptime_seconds,uptime_seconds/60,media_cpu);
 
 
 
