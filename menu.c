@@ -15926,8 +15926,9 @@ int visualmem_alto_variable=VISUALMEM_MAX_ALTO;
 //#define VISUALMEM_ALTO 15
 #define VISUALMEM_ALTO (visualmem_alto_variable)
 
-//0=vemos visualmem
-//1=vemos visualmem opcode
+//0=vemos visualmem write
+//1=vemos visualmem read
+//2=vemos visualmem opcode
 int menu_visualmem_donde=0;
 
 
@@ -16046,8 +16047,8 @@ void menu_debug_draw_visualmem(void)
 		final_puntero_membuffer=QL_MEM_LIMIT+1;
 	}
 
-	//Si es de opcode, puede ser desde cualquier sitio desde la rom
-	if (menu_visualmem_donde==1) {
+	//Si es de opcode o read, puede ser desde cualquier sitio desde la rom
+	if (menu_visualmem_donde>0) {
 		inicio_puntero_membuffer=0;
 	}
 
@@ -16088,6 +16089,12 @@ void menu_debug_draw_visualmem(void)
 					acumulado +=visualmem_buffer[inicio_puntero_membuffer];
 					clear_visualmembuffer(inicio_puntero_membuffer);
 				}
+
+				else if (menu_visualmem_donde==1) {
+					acumulado +=visualmem_read_buffer[inicio_puntero_membuffer];
+					clear_visualmemreadbuffer(inicio_puntero_membuffer);
+				}
+
 				else {
 					acumulado +=visualmem_opcode_buffer[inicio_puntero_membuffer];
 					clear_visualmemopcodebuffer(inicio_puntero_membuffer);
@@ -16166,7 +16173,13 @@ void menu_debug_visualmem_dibuja_ventana(void)
 	sprintf (texto_linea,"Size: ~~O~~P~~Q~~A ~~Bright: %d",visualmem_bright_multiplier);
 	menu_escribe_linea_opcion(VISUALMEM_Y,-1,1,texto_linea);
 
-	sprintf (texto_linea,"~~Looking: %s",(menu_visualmem_donde == 0 ? "Written Mem" : "Opcode") );
+
+	if (menu_visualmem_donde == 0) sprintf (texto_linea,"~~Looking: Written Mem");
+	else if (menu_visualmem_donde == 1) sprintf (texto_linea,"~~Looking: Read Mem");
+	else sprintf (texto_linea,"~~Looking: Opcode");
+
+
+	//sprintf (texto_linea,"~~Looking: %s",(menu_visualmem_donde == 0 ? "Written Mem" : "Opcode") );
 	menu_escribe_linea_opcion(VISUALMEM_Y+1,-1,1,texto_linea);
 
 
@@ -16246,7 +16259,8 @@ void menu_debug_visualmem(MENU_ITEM_PARAMETERS)
 		if (tecla=='l') {
 			menu_espera_no_tecla();
 
-			menu_visualmem_donde ^=1;
+			menu_visualmem_donde++;
+			if (menu_visualmem_donde==3) menu_visualmem_donde=0;
 
 			cls_menu_overlay();
 			menu_debug_visualmem_dibuja_ventana();

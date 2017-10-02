@@ -111,8 +111,14 @@ int get_visualmem_size(void)
 //char visualmem_buffer[65536];
 z80_byte *visualmem_buffer=NULL;
 
+//lo mismo pero para lectura de memoria
+z80_byte *visualmem_read_buffer=NULL;
+
 //lo mismo pero para ejecucion de opcodes
 z80_byte *visualmem_opcode_buffer=NULL;
+
+
+
 
 void init_visualmembuffer(void)
 {
@@ -121,11 +127,19 @@ void init_visualmembuffer(void)
 	//int visualmem_size=(QL_MEM_LIMIT)+1;
 	int visualmem_size=get_visualmem_size();
 
-	debug_printf(VERBOSE_INFO,"Allocating %d bytes for visualmem buffer",visualmem_size);
+	debug_printf(VERBOSE_INFO,"Allocating %d bytes for visualmem write buffer",visualmem_size);
 
 	visualmem_buffer=malloc(visualmem_size);
 	if (visualmem_buffer==NULL) {
-		cpu_panic("Can not allocate visualmem buffer");
+		cpu_panic("Can not allocate visualmem write buffer");
+	}
+
+
+	debug_printf(VERBOSE_INFO,"Allocating %d bytes for visualmem read buffer",visualmem_size);
+
+	visualmem_read_buffer=malloc(visualmem_size);
+	if (visualmem_read_buffer==NULL) {
+		cpu_panic("Can not allocate visualmem read buffer");
 	}
 
 
@@ -147,6 +161,15 @@ void set_visualmembuffer(int dir)
 	//printf ("dir: %d\n",dir);
 }
 
+void set_visualmemreadbuffer(int dir)
+{
+	//visualmem_buffer[dir]=1;
+	z80_byte valor=visualmem_read_buffer[dir];
+	if (valor<255) visualmem_read_buffer[dir]=valor+1;
+
+	//printf ("dir: %d\n",dir);
+}
+
 void set_visualmemopcodebuffer(int dir)
 {
 	//visualmem_buffer[dir]=1;
@@ -159,6 +182,11 @@ void set_visualmemopcodebuffer(int dir)
 void clear_visualmembuffer(int dir)
 {
         visualmem_buffer[dir]=0;
+}
+
+void clear_visualmemreadbuffer(int dir)
+{
+        visualmem_read_buffer[dir]=0;
 }
 
 void clear_visualmemopcodebuffer(int dir)
@@ -1200,12 +1228,20 @@ z80_byte peek_byte_spectrum_inves(z80_int dir)
 
 z80_byte peek_byte_no_time_spectrum_48k(z80_int dir)
 {
+#ifdef EMULATE_VISUALMEM
+	set_visualmemreadbuffer(dir);
+#endif
+
         return memoria_spectrum[dir];
 }
 
 
 z80_byte peek_byte_spectrum_48k(z80_int dir)
 {
+#ifdef EMULATE_VISUALMEM
+	set_visualmemreadbuffer(dir);
+#endif
+
 #ifdef EMULATE_CONTEND
         if ( (dir&49152)==16384) {
 		//printf ("%d\n",t_estados);

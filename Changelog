@@ -44,7 +44,7 @@ Improved stdout driver. Now can show ansi colours
 Improved messages windows. Can now find text using f and n
 Improved footer. Host CPU % usage on footer is not enabled by default to avoid confussion with emulated CPU speed. You can enable it with a setting. Host CPU % usage is not show on Windows.
 Improved Visual Mem:
-*showing also opcode execution visual mem
+*showing also read memory and opcode execution visual mem
 *it has a counter (0-255) to see how many times an address has been read/executed
 *menu draws different values as red tones, with a configurable bright
 
