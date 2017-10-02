@@ -37,7 +37,6 @@ The format of each table entry is as follows:
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada
 
 
-
 -Más f funciones. Habrá que hacer lista de funciones con ventana en vez de menú con opciones
 
 -smartloadpath en auto save 
@@ -157,8 +156,6 @@ And some text demo modes seems to run ok (copter, txtdemo)
 
 
 
-
-
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
 
 
@@ -166,29 +163,12 @@ probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros driver
 teclas F en general en fbdev driver no raw
 
 
-
 -seguir formato zsf
-
-
--128ke parecido a +2B
-http://scratchpad.wikia.com/wiki/ZX_Spectrum_128Ke
-Rom derby 
-https://zx.itch.io/derbyplus
-
 
 
 -Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense: quiza esto quedara para formato zsf?
 
 
-
--Probar diferencia de sonido speech ay en versión actual y anteriores
-Chase hq
-Robocop 1
-Dizzy 3
-Demo covox
-Etc...
-
--Quizá inicializacion de ruido de cada chip debe ser diferente 
 
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
 
@@ -1399,7 +1379,17 @@ Ver http://www.atc.us.es/svn/zxuno/software/modo_radastan/videos_radastanianos/ 
 
 *** Audio ***
 
+-Probar diferencia de sonido speech ay en versión actual y anteriores
+Chase hq
+Robocop 1
+Dizzy 3
+Demo covox
+Etc...
+
+
 -con vo stdout y speech habilitado, parece que cambiar entre maquinas zx81 y spectrum, vuelve a decir texto de bienvenida. normal??
+
+-Quizá inicializacion de ruido de cada chip debe ser diferente 
 
 -agregar otro detector silencio, en este caso para specdrum. tiene sentido? total no altera mucho la onda de salida cuando lo activo y no se envia sonido 
 
@@ -1533,6 +1523,12 @@ O bien poder saltar ejecución de call, metiendo breakpoint justo a después del
 
 
 *** Core CPU ***
+
+
+-128ke parecido a +2B
+http://scratchpad.wikia.com/wiki/ZX_Spectrum_128Ke
+Rom derby
+https://zx.itch.io/derbyplus
 
 -UnoDOS text mode sale de ram últimas direcciones . util para drivers solo texto
 es decir, la pantalla en ascii esta ubicada hacia el final de la ram. obtener de ahi los caracteres en modos de video curses, stdout, etc
