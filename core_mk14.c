@@ -96,6 +96,12 @@ else printf ("   ");
  printf ("%s\n",buffer);
 */
 
+
+#ifdef EMULATE_VISUALMEM
+        set_visualmemopcodebuffer(scmp_m_PC.w.l);
+#endif
+
+
       scmp_run_opcode();
 
 

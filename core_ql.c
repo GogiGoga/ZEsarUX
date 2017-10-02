@@ -784,6 +784,10 @@ A0: 00000D88 A1: 00000D88 A2: 00006906 A3: 00000668 A4: 00000012 A5: 00000670 A6
 	//if (pc_ql==0x0872) exit(1);
 
 	//Ejecutar opcode
+#ifdef EMULATE_VISUALMEM
+        set_visualmemopcodebuffer(get_pc_register() );
+#endif
+
                 // Values to execute determine the interleave rate.
                 // Smaller values allow for more accurate interleaving with multiple
                 // devices/CPUs but is more processor intensive.
