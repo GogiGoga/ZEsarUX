@@ -916,16 +916,25 @@ z80_byte fetch_opcode_spectrum(void)
 
 z80_byte fetch_opcode_ace(void)
 {
+#ifdef EMULATE_VISUALMEM
+        set_visualmemopcodebuffer(reg_pc);
+#endif
         return peek_byte_no_time (reg_pc);
 }
 
 z80_byte fetch_opcode_cpc(void)
 {
+#ifdef EMULATE_VISUALMEM
+        set_visualmemopcodebuffer(reg_pc);
+#endif
         return peek_byte_no_time (reg_pc);
 }
 
 z80_byte fetch_opcode_sam(void)
 {
+#ifdef EMULATE_VISUALMEM
+        set_visualmemopcodebuffer(reg_pc);
+#endif
         return peek_byte_no_time (reg_pc);
 }
 
@@ -933,7 +942,9 @@ z80_byte fetch_opcode_sam(void)
 
 z80_byte fetch_opcode_zx81(void)
 {
-
+#ifdef EMULATE_VISUALMEM
+        set_visualmemopcodebuffer(reg_pc);
+#endif
 	z80_byte op;
 
         op=peek_byte_zx80_no_time(reg_pc&0x7fff);
