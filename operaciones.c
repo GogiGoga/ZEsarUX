@@ -877,6 +877,9 @@ void poke_byte_ace(z80_int dir,z80_byte valor)
 
 z80_byte peek_byte_zx80_no_time(z80_int dir)
 {
+#ifdef EMULATE_VISUALMEM
+	set_visualmemreadbuffer(dir);
+#endif
 	//Modulo RAM en 49152
 	if (ram_in_49152.v==1 && dir>49151) {
 		return memoria_spectrum[dir];
@@ -918,6 +921,10 @@ z80_byte peek_byte_zx80(z80_int dir)
 
 z80_byte peek_byte_ace_no_time(z80_int dir)
 {
+#ifdef EMULATE_VISUALMEM
+	set_visualmemreadbuffer(dir);
+#endif
+
 	dir=jupiterace_adjust_memory_pointer(dir);
         return memoria_spectrum[dir];
 
@@ -1196,6 +1203,10 @@ z80_byte fetch_opcode_zx81(void)
 //Si dir>16383, leemos RAM. Sino, leemos ROM siempre que la ram oculta este oculta
 z80_byte peek_byte_no_time_spectrum_inves(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 	if (dir<16384) {
 		if ( (zesarux_zxi_registers_array[0]&1)==0 ) {
 			return memoria_spectrum[65536+dir];  //Mostrar ROM
@@ -1315,6 +1326,9 @@ void reset_peek_byte_function_ram_refresh(void)
 
 z80_byte peek_byte_no_time_spectrum_128k(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
 
 	int segmento;
 	z80_byte *puntero;
@@ -1330,6 +1344,9 @@ z80_byte peek_byte_no_time_spectrum_128k(z80_int dir)
 
 z80_byte peek_byte_spectrum_128k(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
 
 	int segmento;
 	z80_byte *puntero;
@@ -1355,6 +1372,10 @@ z80_byte peek_byte_spectrum_128k(z80_int dir)
 
 z80_byte peek_byte_no_time_spectrum_128kp2a(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 	int segmento;
 	z80_byte *puntero;
 	segmento=dir / 16384;
@@ -1368,6 +1389,10 @@ z80_byte peek_byte_no_time_spectrum_128kp2a(z80_int dir)
 
 z80_byte peek_byte_spectrum_128kp2a(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 	int segmento;
 	z80_byte *puntero;
 	segmento=dir / 16384;
@@ -1391,6 +1416,9 @@ z80_byte peek_byte_spectrum_128kp2a(z80_int dir)
 
 z80_byte peek_byte_no_time_spectrum_16k(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
 
         if (dir<32768) return memoria_spectrum[dir];
 	else return 255;
@@ -1398,6 +1426,9 @@ z80_byte peek_byte_no_time_spectrum_16k(z80_int dir)
 
 z80_byte peek_byte_spectrum_16k(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
 
 #ifdef EMULATE_CONTEND
         if ( (dir&49152)==16384) {
@@ -1463,58 +1494,7 @@ set_visualmembuffer(dir);
 
 }
 
-/*void old_peek_byte_no_time_zxuno(z80_int dir,z80_byte valor)
-{
-        int segmento;
-        z80_byte *puntero;
-        segmento=dir / 16384;
 
-        //Modo BOOTM
-
-        if ( (zxuno_ports[0]&1)==1) {
-                //Si no es rom
-                if (dir>16383) {
-                        dir = dir & 16383;
-
-                        puntero=zxuno_bootm_memory_paged[segmento]+dir;
-                        *puntero=valor;
-                }
-        }
-
-        else {
-                //Modo no bootm. como un +2a
-
-                if (dir>16383) {
-#ifdef EMULATE_VISUALMEM
-
-set_visualmembuffer(dir);
-
-#endif
-                        dir = dir & 16383;
-                        puntero=zxuno_no_bootm_memory_paged[segmento]+dir;
-
-        //              printf ("segmento: %d dir: %d puntero: %p\n",segmento,dir,puntero);
-                        *puntero=valor;
-                }
-
-                else {
-                        //memoria normalmente ROM. Miramos a ver si esta page RAM in ROM
-                        if ((puerto_8189&1)==1) {
-                                //printf ("Poke en direccion normalmente ROM pero hay RAM. Dir=%d Valor=%d\n",dir,valor);
-#ifdef EMULATE_VISUALMEM
-
-set_visualmembuffer(dir);
-
-#endif
-                                puntero=zxuno_no_bootm_memory_paged[0]+dir;
-                                *puntero=valor;
-															}
-														                 }
-
-														         }
-
-}
-*/
 
 void poke_byte_zxuno(z80_int dir,z80_byte valor)
 {
@@ -1532,36 +1512,13 @@ int segmento;
 }
 
 
-/*
-z80_byte old_peek_byte_no_time_zxuno(z80_int dir)
-{
 
-        int segmento;
-        z80_byte *puntero;
-        segmento=dir / 16384;
-	dir = dir & 16383;
-
-	//Modo BOOTM
-
-	if ( (zxuno_ports[0]&1)==1) {
-		puntero=zxuno_bootm_memory_paged[segmento]+dir;
-//              printf ("segmento: %d dir: %d puntero: %p\n",segmento,dir,puntero);
-		return *puntero;
-
-	}
-
-	else {
-
-		puntero=zxuno_no_bootm_memory_paged[segmento]+dir;
-//              printf ("segmento: %d dir: %d puntero: %p\n",segmento,dir,puntero);
-		return *puntero;
-	}
-
-}
-*/
 
 z80_byte peek_byte_no_time_zxuno(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
 
         //int segmento;
         z80_byte *puntero;
@@ -1654,6 +1611,10 @@ int segmento;
 
 z80_byte peek_byte_no_time_chloe(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 		z80_byte *puntero;
 		puntero=chloe_return_segment_memory(dir);
 
@@ -1851,6 +1812,10 @@ void poke_byte_prism(z80_int dir,z80_byte valor)
 
 z80_byte peek_byte_no_time_prism(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 		z80_byte *puntero;
 		puntero=prism_return_segment_memory(dir);
 
@@ -1952,6 +1917,10 @@ int segmento;
 
 z80_byte peek_byte_no_time_tbblue(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 		z80_byte *puntero;
 		puntero=tbblue_return_segment_memory(dir);
 
@@ -2041,6 +2010,10 @@ int segmento;
 
 z80_byte peek_byte_no_time_chrome(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 		z80_byte *puntero;
 		puntero=chrome_return_segment_memory(dir);
 
@@ -2086,9 +2059,7 @@ void poke_byte_no_time_tsconf(z80_int dir,z80_byte valor)
 {
 
 #ifdef EMULATE_VISUALMEM
-
-set_visualmembuffer(dir);
-
+	set_visualmembuffer(dir);
 #endif
 
 		z80_byte *puntero;
@@ -2165,6 +2136,10 @@ int segmento;
 
 z80_byte peek_byte_no_time_tsconf(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 		z80_byte *puntero;
 		puntero=tsconf_return_segment_memory(dir);
 
@@ -2196,6 +2171,9 @@ z80_byte peek_byte_tsconf(z80_int dir)
 
 void poke_byte_no_time_mk14(z80_int dir,z80_byte valor)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmembuffer(dir);
+	#endif
 
 	z80_int zona=dir & 0x0F00;
 	if (zona==0x900 || zona==0xD00)  {
@@ -2220,6 +2198,10 @@ void poke_byte_mk14(z80_int dir,z80_byte valor)
 
 z80_byte peek_byte_no_time_mk14(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
 		z80_int zona=dir & 0x0F00;
 		if (zona==0x900 || zona==0xD00)  {
 				//I/O en 900H or D00H
@@ -2301,6 +2283,10 @@ void poke_byte_timex(z80_int dir,z80_byte valor)
 
 z80_byte peek_byte_no_time_timex(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
                 z80_byte *puntero;
                 puntero=timex_return_segment_memory(dir);
 
@@ -2387,6 +2373,10 @@ int segmento;
 
 z80_byte peek_byte_no_time_cpc(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
                 z80_byte *puntero;
                 puntero=cpc_return_segment_memory_read(dir);
 
@@ -2553,6 +2543,10 @@ int segmento;
 
 z80_byte peek_byte_no_time_sam(z80_int dir)
 {
+	#ifdef EMULATE_VISUALMEM
+		set_visualmemreadbuffer(dir);
+	#endif
+
                 z80_byte *puntero;
                 puntero=sam_return_segment_memory(dir);
 

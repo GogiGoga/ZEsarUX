@@ -851,6 +851,9 @@ void poke_byte_z88(z80_int dir,z80_byte valor)
 //Funcion peek normal de la cpu, sin contar t-estados
 z80_byte peek_byte_no_time_z88(z80_int dir)
 {
+#ifdef EMULATE_VISUALMEM
+        set_visualmemreadbuffer(dir);
+#endif
 	return poke_peek_byte_no_time_z88(dir,0,1);
 }
 

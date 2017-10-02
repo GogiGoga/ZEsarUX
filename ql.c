@@ -1163,12 +1163,23 @@ unsigned char ql_readbyte(unsigned int Address)
 
 		unsigned char valor=ql_lee_puerto(Address);
 		//printf ("return value: %02XH\n",valor);
+#ifdef EMULATE_VISUALMEM
+                //Escribimos en visualmem a partir de direccion 18000H
+                set_visualmemreadbuffer(Address);
+
+#endif
 		return valor;
 	}
 
 	//if (Address==0x00028000) printf ("Leyendo parte despues del boot\n");
 
   if (Address>QL_MEM_LIMIT) return(0);
+
+#ifdef EMULATE_VISUALMEM
+                //Escribimos en visualmem a partir de direccion 18000H
+                set_visualmemreadbuffer(Address);
+
+#endif
 
 	//unsigned char valor=memoria_ql[Address&0xfffff];
 	unsigned char valor=memoria_ql[Address];
