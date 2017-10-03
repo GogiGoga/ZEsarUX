@@ -37,11 +37,14 @@ The format of each table entry is as follows:
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada
 
 
--Más f funciones. Habrá que hacer lista de funciones con ventana en vez de menú con opciones
 
 -smartloadpath en auto save 
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
+
+-smartload de tbblue desactiva esxdos. esto es porque parece que antes de quickload detecta correctamente que estava divmmc, y se guarda el estado,
+pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno si que va bien
+revisar funcion quickload
 
 
 
@@ -170,8 +173,6 @@ reducir fifo por defecto de alsa? de 4 a 2?
 -No leer ratón en menú si driver no lee ratón (como en fbdev)
 -revisar mezclado ay+beeper . posiblemente set_value_beeper acaba sacando algun valor beeper 50*2 y se sale todo de rango?
 o bien el mezclado de chip ay
-
-
 
 
 
@@ -1413,6 +1414,7 @@ Etc...
 *** Menu  ***
 
 -Disassemble a txt
+-Más f funciones. Habrá que hacer lista de funciones con ventana en vez de menú con opciones
 -mejorar deteccion frecuencia sonido en audio wave form
 -beeper piano
 -debugger z80: que sea capaz de mostrar direcciones NNNN correctas (para JR CC DIS) aunque se este debugando con memory zone y direccion alta.
@@ -1546,8 +1548,6 @@ es decir, la pantalla en ascii esta ubicada hacia el final de la ram. obtener de
 
 -recreated zx spectrum
 
-HASTA AQUI REVISADO
-
 -Pantalla de cpu panic, que colores aplique a toda pantalla y no solo 256x192. Util en otras maquinas, como ql, cpc, etc
 
 -Multiface 128 falla en algunos juegos, como abadia del crimen. En eightyone tambien falla en este caso
@@ -1584,7 +1584,8 @@ HASTA AQUI REVISADO
 
 -top speed spectrum con threads es el doble mas rapido que sin threads
 
--breakpoint en menu debug cpu/registers, que sea un breakpoint justo despues de la instruccion actual. Tiene sentido cuando estamos en un CALL
+-breakpoint en menu debug cpu/registers, que sea un breakpoint justo despues de la instruccion actual. Tiene sentido cuando estamos en un CALL. 
+Pero da problemas pues entonces ventana de desensamblaje muestra instruccion justo despues y no la que genera el breakpoint
 
 -quiza tambien poder poner breakpoint y que vuelva a rutina que ha llamado (es decir, buscar en la pila la direccion de retorno y esperar a que vuelva ahi)
 
@@ -1594,7 +1595,7 @@ Modo de vídeo timex /Spectra/etc
 
 -watches que retorne valor de opcode. tiene sentido???
 
--mejorar valor que se retorna cuando se lee bus idle port: ahora solo retorna 255 o color atributos, tambien deberia detectar valor pixeles
+-mejorar valor que se retorna cuando se lee bus idle port. Revisar rutina
 
 -Al expulsar cinta real o insertar, meter speed a 100. Esto para cuando hay autoacelerar rutinas de carga
 
@@ -1605,9 +1606,6 @@ Modo de vídeo timex /Spectra/etc
 -timer con SDL
 
 -temporizador con tarjeta de sonido?
-
--optimizar velocidad de opcodes:
-*variables temporales tenerlas siempre definidas, no crearlas cada vez al entrar a una funcion
 
 probado - Variable traps que se activa por si hay load o save- hará que vaya más rápido
 
@@ -1739,11 +1737,6 @@ ok-formato .sna
 -48k ok
 -128k . parece que snapshots grabados con fuse luego no van bien, ni desde el mismo fuse - probar abadia del crimen por ejemplo
 
--automatic snapshot en memoria... o que de alguna manera se pueda recuperar el estado de la maquina en los X segundos anteriores.
-Que habilitando una opcion, cada 1 segundo por ejemplo se genere un snapshot, y guardar los X ultimos
-
--snapshot de grabacion rapida. con una sola accion, graba un snapshot del juego xxxx.
-
 -incluir en snapshot nombre de ultimo juego cargado, para saber de que snapshot se trata?
 ->rutinas ssl deben establecer nombre para juegos conocidos. quiza tambien una informacion del juego, teclas, descripcion del juego, etc?
 
@@ -1791,6 +1784,9 @@ me gusta tener el menu encima de misma ventana del emulador, quiza podria ser un
 -Convertir cintas paws
 -Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros,
 como descubrir rutinas de pintado de sprites
+*rutinas de pintado de sprites: quiza detectar cambios en pantalla al pulsar teclas. y ver desde donde se realizan esos cambios en pantalla
+
+
 -Joystick en Mac,Win
 -quiza redibujar archivo logo tal cual con el boot logo
 -Logo más visible. En la raíz? Ahora está en carpeta Mac 
@@ -1825,8 +1821,6 @@ Si es botón está también mapeado a un evento, entonces esa letra no se ve
 
 -emulacion keypad spectrum 128
 
--ESXDOS rst 8 traps para capturar llamadas de acceso a ficheros y acceder a ficheros locales en vez de imagen mmc/sd/ide/cfconsultar http://www.zxuno.com/forum/viewtopic.php?f=39&t=358&hilit=rst+8
-
 -Código konami para Easter egg
 
 -Meter roms alternativas para divide
@@ -1835,7 +1829,7 @@ Si es botón está también mapeado a un evento, entonces esa letra no se ve
 
 -hotswap de 48k a 48k spanish
 
--update roms +3e. Falla también por usar cmd8. como generamos el error de illegal command???
+-update roms +3e. Falla también por usar cmd8. como generamos el error de illegal command???. mismo pasa en roms +3e de Spectrum Next
 
 -Floppy +3. Quiza para poderlo hacer hay que tener un sistema de gestion de eventos, en que se puedan programar eventos futuros, como cuando el floppy llega a la pista que se le ha pedido con operacion de seek
 
@@ -1911,8 +1905,6 @@ cursores para poder subir/bajar instruccion mostrada en vista inicial debug
 
 -Mejorar emulación teclado issue 2,3. Etc. Inves
 
--Implementar rtc para divmmc
-
 -Probar dispositivo depuración puerto ffh mad mix game
 
 -Emular mejor issue 2 y 3 y bit tape cuando cinta cargando o no cargando
@@ -1971,8 +1963,6 @@ se desactivan los caracteres "bold" y se generan caracteres normales que curses 
 cancione.tap, bubble.tap, binarylove, envelopes.tap
 
 -memoedit codigo fuente formato GEN... convertir. hay que truncar muchas lineas largas  de DEFB
-
--Numero versión build en las snapshots, que sea numero que se incremente a cada commit...
 
 -snow effect se deberia parecer a:
 https://www.youtube.com/watch?v=Ix9Wy2jhDwI

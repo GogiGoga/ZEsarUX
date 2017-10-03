@@ -75,6 +75,7 @@ void divmmc_mmc_ports_disable(void)
 void divmmc_diviface_enable(void)
 {
 
+	//printf ("%d\n",divmmc_diviface_enabled.v);
   //Si ya esta habilitado, salir
   if (divmmc_diviface_enabled.v) return;
 
