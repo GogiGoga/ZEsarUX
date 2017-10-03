@@ -730,9 +730,9 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-stack-backtrace",NULL,NULL,"Get last 5 16-bit values from the stack"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
 #ifdef EMULATE_VISUALMEM
-  {"get-visualmem-written-dump",NULL,"[compact]","Dumps all the visual memory written positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
-  {"get-visualmem-read-dump",NULL,"[compact]","Dumps all the visual memory read positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
-  {"get-visualmem-opcode-dump",NULL,"[compact]","Dumps all the visual memory executed positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
+  {"get-visualmem-written-dump","|gvmwd","[compact]","Dumps all the visual memory written positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
+  {"get-visualmem-read-dump","|gvmrd","[compact]","Dumps all the visual memory read positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
+  {"get-visualmem-opcode-dump","|gvmod","[compact]","Dumps all the visual memory executed positions and values. Then, clear its contents. If parameter compact, will compress non zero values on the same line, for a maximum of 16"},
 #endif
   {"hard-reset-cpu",NULL,NULL,"Hard resets the machine"},
   {"help","|?","[command]","Shows help screen or command help"},
@@ -3285,7 +3285,7 @@ char buffer_retorno[2048];
 	}
 
 #ifdef EMULATE_VISUALMEM
-	else if (!strcmp(comando_sin_parametros,"get-visualmem-written-dump")) {
+	else if (!strcmp(comando_sin_parametros,"get-visualmem-written-dump") || !strcmp(comando_sin_parametros,"gvmwd") ) {
 
 		int salida_compacta=0;
 		remote_parse_commands_argvc(parametros);
@@ -3312,7 +3312,7 @@ char buffer_retorno[2048];
 		}
 	}
 
-	else if (!strcmp(comando_sin_parametros,"get-visualmem-read-dump")) {
+	else if (!strcmp(comando_sin_parametros,"get-visualmem-read-dump") || !strcmp(comando_sin_parametros,"gvmrd")) {
 
 		int salida_compacta=0;
 		remote_parse_commands_argvc(parametros);
@@ -3339,7 +3339,7 @@ char buffer_retorno[2048];
 		}
 	}
 
-	else if (!strcmp(comando_sin_parametros,"get-visualmem-opcode-dump")) {
+	else if (!strcmp(comando_sin_parametros,"get-visualmem-opcode-dump") || !strcmp(comando_sin_parametros,"gvmod")) {
 
 		int salida_compacta=0;
 		remote_parse_commands_argvc(parametros);
