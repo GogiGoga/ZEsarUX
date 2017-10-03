@@ -582,9 +582,9 @@ void recalcular_get_total_ancho_rainbow(void)
 		get_total_ancho_rainbow_cached=(screen_total_borde_izquierdo+screen_total_borde_derecho)*border_enabled.v+512;
         }
 
-			else if (MACHINE_IS_TSCONF) {
-					get_total_ancho_rainbow_cached=(screen_total_borde_izquierdo+screen_total_borde_derecho)*border_enabled.v+TSCONF_DISPLAY_WIDTH;
-			}
+	else if (MACHINE_IS_TSCONF) {
+		get_total_ancho_rainbow_cached=(screen_total_borde_izquierdo+screen_total_borde_derecho)*border_enabled.v+TSCONF_DISPLAY_WIDTH;
+	}
 
 	else if (MACHINE_IS_SAM) {
                 get_total_ancho_rainbow_cached=2*SAM_LEFT_BORDER_NO_ZOOM*border_enabled.v+SAM_DISPLAY_WIDTH;
@@ -622,17 +622,17 @@ void recalcular_get_total_alto_rainbow(void)
 		get_total_alto_rainbow_cached=(screen_borde_superior+screen_total_borde_inferior)*border_enabled.v+384;
         }
 
-				else if (MACHINE_IS_TSCONF) {
+	else if (MACHINE_IS_TSCONF) {
 		get_total_alto_rainbow_cached=(screen_borde_superior+screen_total_borde_inferior)*border_enabled.v+TSCONF_DISPLAY_HEIGHT;
-				}
+	}
 
         else if (MACHINE_IS_SAM) {
                 get_total_alto_rainbow_cached=2*SAM_TOP_BORDER_NO_ZOOM*border_enabled.v+SAM_DISPLAY_HEIGHT;
         }
 
-				else if (MACHINE_IS_QL) {
-								get_total_alto_rainbow_cached=2*QL_TOP_BORDER_NO_ZOOM*border_enabled.v+QL_DISPLAY_HEIGHT;
-				}
+	else if (MACHINE_IS_QL) {
+		get_total_alto_rainbow_cached=2*QL_TOP_BORDER_NO_ZOOM*border_enabled.v+QL_DISPLAY_HEIGHT;
+	}
 
 	else {
 	        get_total_alto_rainbow_cached=(screen_borde_superior+screen_total_borde_inferior)*border_enabled.v+192;
@@ -1893,7 +1893,7 @@ void screen_tsconf_refresca_rainbow(void) {
         ancho=get_total_ancho_rainbow();
         alto=get_total_alto_rainbow();
 
-				//printf ("alto: %d\n",alto);
+				//printf ("ancho: %d alto: %d\n",ancho,alto);
 
         int x,y,bit;
 
@@ -1924,7 +1924,7 @@ void screen_tsconf_refresca_rainbow(void) {
                         //Ver si esa zona esta ocupada por texto de menu u overlay
 
                         //if (y>=margeny_arr && y<margeny_aba && x>=margenx_izq && x<margenx_der) {
-												if (y<192 && x<256) {
+			if (y<192 && x<256) {
 
 
                                 //normalmente a 48
@@ -2378,6 +2378,8 @@ void scr_putsprite_comun_zoom(z80_byte *puntero,int x,int y,z80_bit inverse,z80_
         z80_byte bit;
         z80_byte line;
         z80_byte byte_leido;
+
+        //printf ("tinta %d papel %d\n",tinta,papel);
 
         //margenes de zona interior de pantalla. Para modo rainbow
         int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
@@ -10069,7 +10071,7 @@ int screen_get_emulated_display_height_no_zoom_bottomborder_en(void)
         return PRISM_DISPLAY_HEIGHT+(PRISM_TOP_BORDER_NO_ZOOM)*border_enabled.v;
         }
 
-				else if (MACHINE_IS_TSCONF) {
+	else if (MACHINE_IS_TSCONF) {
         return TSCONF_DISPLAY_HEIGHT+(TSCONF_TOP_BORDER_NO_ZOOM)*border_enabled.v;
         }
 

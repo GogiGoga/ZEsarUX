@@ -2647,24 +2647,30 @@ void set_machine_params(void)
 
 						else if (MACHINE_IS_TSCONF) {
 									                         contend_read=contend_read_tsconf;
-									                         contend_read_no_mreq=contend_read_no_mreq_tsconf;
-									                         contend_write_no_mreq=contend_write_no_mreq_tsconf;
+							                         contend_read_no_mreq=contend_read_no_mreq_tsconf;
+					                         contend_write_no_mreq=contend_write_no_mreq_tsconf;
 
-									 			ula_contend_port_early=ula_contend_port_early_tsconf;
-									 			ula_contend_port_late=ula_contend_port_late_tsconf;
-
-
-									 	                screen_testados_linea=228;
-
-									                 	//screen_invisible_borde_derecho=104;
-
-																		//Puede haber border de tamaño 0
-																		//screen_invisible_borde_superior=0;
-																		//screen_borde_superior=0;
-																		//screen_total_borde_inferior=0;
+				 			ula_contend_port_early=ula_contend_port_early_tsconf;
+				 			ula_contend_port_late=ula_contend_port_late_tsconf;
+					                screen_testados_linea=228;
 
 
-						}
+							screen_total_borde_izquierdo=0;
+							screen_total_borde_derecho=0;
+
+							screen_invisible_borde_superior	=120; //para que sumen 200 320
+							screen_borde_superior=0;
+							screen_total_borde_inferior=0;
+
+							//screen_invisible_borde_derecho=??;
+		
+
+				                 	//screen_invisible_borde_derecho=104;
+								//Puede haber border de tamaño 0
+							//screen_invisible_borde_superior=0;
+					//screen_borde_superior=0;
+				//screen_total_borde_inferior=0;
+				}
 
                else if (MACHINE_IS_TIMEX_TS2068) {
                         contend_read=contend_read_timex;

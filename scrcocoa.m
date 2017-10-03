@@ -2472,8 +2472,8 @@ void scrcocoa_refresca_pantalla(void)
 	}
 
 
-        if (scr_si_color_oscuro() ) {
-                //printf ("color oscuro\n");
+    if (scr_si_color_oscuro() ) {
+               //printf ("color oscuro\n");
                 spectrum_colortable=spectrum_colortable_oscuro;
 
                 //esto invalida la cache y por tanto ralentizando el refresco de pantalla
@@ -2484,25 +2484,27 @@ void scrcocoa_refresca_pantalla(void)
 								if (menu_multitarea==0 && menu_abierto) {
 									spectrum_colortable=spectrum_colortable_blanco_y_negro;
 								}
-        }
+    }
 
 
 
-        if (MACHINE_IS_ZX8081) {
+    if (MACHINE_IS_ZX8081) {
                 //scr_refresca_pantalla_rainbow_comun();
                 scrcocoa_refresca_pantalla_zx81();
-        }
+    }
 
 	else if (MACHINE_IS_PRISM) {
 		screen_prism_refresca_pantalla();
 	}
 
-        else if (MACHINE_IS_SPECTRUM) {
+    else if (MACHINE_IS_SPECTRUM) {
 
-					if (MACHINE_IS_TSCONF)	screen_tsconf_refresca_pantalla();
+		if (MACHINE_IS_TSCONF)	{
+            screen_tsconf_refresca_pantalla();
+        }
 
 
-				  else { //Spectrum no TSConf
+		else { //Spectrum no TSConf
 
                 //modo clasico. sin rainbow
                 if (rainbow_enabled.v==0) {
@@ -2524,20 +2526,20 @@ void scrcocoa_refresca_pantalla(void)
                         scr_refresca_pantalla_rainbow_comun();
                 }
 
-						}
-        }
+		}
+    }
 
-        else if (MACHINE_IS_Z88) {
+    else if (MACHINE_IS_Z88) {
                 screen_z88_refresca_pantalla();
-        }
+    }
 
 	else if (MACHINE_IS_ACE) {
 		scr_refresca_pantalla_y_border_ace();
 	}
 
-        else if (MACHINE_IS_CPC) {
+    else if (MACHINE_IS_CPC) {
                 scr_refresca_pantalla_y_border_cpc();
-        }
+    }
 
 	else if (MACHINE_IS_SAM) {
 		scr_refresca_pantalla_y_border_sam();
@@ -2556,12 +2558,12 @@ void scrcocoa_refresca_pantalla(void)
 
 	spectrum_colortable=spectrum_colortable_normal;
 	if (menu_overlay_activo) {
-                menu_overlay_function();
-        }
+        menu_overlay_function();
+    }
 
 
-        //Escribir footer
-        draw_footer();
+    //Escribir footer
+    draw_footer();
 
 
 	scrcocoa_refresca_pantalla_solo_driver();

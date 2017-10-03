@@ -47,7 +47,6 @@ pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno 
 revisar funcion quickload
 
 
-
 -licencia tipo letra man soft
 
 -Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
@@ -86,6 +85,8 @@ O quizá setting configurable
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
+*MMU
+*6 paletas. colores 9 bit RRRGGGBBB
 
 
 
@@ -115,7 +116,7 @@ No sale de ese bucle while y se cierra todo emulador
 ->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
 *quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
 
--320 lineas
+-320 lineas tsconf. ajustar t-estados por linea para que llegue a ser correcto. ajustar timings en cpu.c screen_total_borde_izquierdo, screen_invisible_borde_superior, etc
 
 -Cuando se interpreta solo vram y cuando bit shadow de 128k?
 
