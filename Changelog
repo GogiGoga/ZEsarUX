@@ -33,7 +33,6 @@ Improved menu interface:
 
 Improved debugger:
 *you can now set conditions for all flags, written as: FS,FZ,FP,FV,FH,FN,FC
-*now breakpoints are evaluated before running the current opcode (instead of after). So breakpoints like "PC=0" and doing a reset from menu, now works
 *now you can set breakpoints from command line/config file but not enabled by default. You need --enable-breakpoints setting
 *now the multitask setting is not lost when a breakpoint is fired
 *now you can repeat last command by pressing enter on ZRCP (requires enabling a debug-setting)
