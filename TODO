@@ -43,7 +43,6 @@ The format of each table entry is as follows:
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
--quiza redibujar archivo logo tal cual con el boot logo
 
 
 -licencia tipo letra man soft
@@ -51,7 +50,6 @@ The format of each table entry is as follows:
 -Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
 Info de tamaño ventana. Y tamaño ventana sin zoom
 
--Logo más visible. En la raíz? Ahora está en carpeta Mac 
 
 
 -memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
@@ -65,11 +63,6 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 
 
 
-
--mk14
-*condiciones registros, establecer registros
-*input, output, teclas, visualizacion leds
-*y posiblemente muchas mas cosas...
 
 
 -Parámetro change slow que no venga por defecto
@@ -180,11 +173,6 @@ o bien el mezclado de chip ay
 
 
 
-
--pentagon 512 y superiores modos de paginacion ram
-http://www.zxuno.com/forum/viewtopic.php?f=12&t=400
-relacionado:
-http://www.zxuno.com/forum/viewtopic.php?f=37&t=552&sid=88847dce1ad30a54353f35884937ef1f
 
 
 -probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
@@ -439,6 +427,15 @@ http://www.dilwyn.me.uk/downloads.html
 
 
 
+--- MK14 ---
+
+*condiciones registros, establecer registros
+*input, output, teclas, visualizacion leds
+*y posiblemente muchas mas cosas...
+
+-------------
+
+
 
 --- Jupiter Ace ---
 
@@ -567,6 +564,10 @@ Edición de colores de paleta 2
 -snapshot .zx
 -Agregar soporte TRD
 -No deja desactivar timing pentagon cuando la maquina seleccionada es pentagon. dado que reinicializa el valor
+-pentagon 512 y superiores modos de paginacion ram
+http://www.zxuno.com/forum/viewtopic.php?f=12&t=400
+relacionado:
+http://www.zxuno.com/forum/viewtopic.php?f=37&t=552&sid=88847dce1ad30a54353f35884937ef1f
 
 -------------
 
@@ -1791,6 +1792,8 @@ me gusta tener el menu encima de misma ventana del emulador, quiza podria ser un
 -Otros componentes mas extraños, como "descubrir" puntuaciones actuales en un juego u otros parámetros,
 como descubrir rutinas de pintado de sprites
 -Joystick en Mac,Win
+-quiza redibujar archivo logo tal cual con el boot logo
+-Logo más visible. En la raíz? Ahora está en carpeta Mac 
 
 ***********
 
