@@ -475,8 +475,7 @@ void instruccion_ed_61 ()
                 DE=(dehl>>16) & 0xFFFF;
         }  
         
-        else   
-        invalid_opcode_ed("ED61");
+        else invalid_opcode_ed("ED61");
 }
 
 void instruccion_ed_62 ()
@@ -1311,6 +1310,15 @@ void instruccion_ed_137 ()
 
 void instruccion_ed_138 ()
 {
+        if (MACHINE_IS_TBBLUE) {
+                //push NN        ED 8A LO HI   4+4+3+3+3+3  push 16bit immidiate value
+                z80_int value=0;
+                value |= lee_byte_pc();
+                value |= (lee_byte_pc()<<8);
+                push_valor( value );
+        }
+
+        else
         invalid_opcode_ed("ED138");
 }
 

@@ -35,7 +35,7 @@ New Z80 opcodes on the NEXT (more to come)
    ldirscale         ED B6           As LDIRX,  if(hl)!=A then (de)=(hl); HL_E'+=BC'; DE+=DE'; dec BC; Loop.
    ldpirx            ED B7           (de) = ( (hl&$fff8)+(E&7) ) when != A
    fillde            ED B5           Using A fill from DE for BC bytes
-   push $0000        ED 8A LO HI     push 16bit immidiate value
+-   push NN        ED 8A LO HI   4+4+3+3+3+3  push 16bit immidiate value
 -   popx              ED 8B         4+4  pop value and disguard
 
 
