@@ -124,11 +124,15 @@ struct s_tbblue_extended_string_opcode {
 	z80_byte opcode;
 };
 
-#define TOTAL_TBBLUE_EXTENDED_OPCODES 3
+#define TOTAL_TBBLUE_EXTENDED_OPCODES 7
 
 struct s_tbblue_extended_string_opcode tbblue_extended_string_opcode[TOTAL_TBBLUE_EXTENDED_OPCODES]={
 	{"SWAPNIB",0x23},
+  {"MIRROR A",0x24},
 	{"MUL",0x30},
+  {"ADD HL,A",0x31},
+  {"ADD DE,A",0x32},
+  {"ADD BC,A",0x33},
 	{"POPX",0x8B}
 };
 

@@ -225,6 +225,19 @@ void instruccion_ed_35 ()
 
 void instruccion_ed_36 ()
 {
+        if (MACHINE_IS_TBBLUE) {
+                //mirror a          ED 24           4+4 mirror the bits in A
+                //76543210 -> 01234567
+                int i;
+                z80_byte result_a=0;
+                for (i=0;i<8;i++) {
+                  result_a = result_a >> 1;
+                  if (reg_a&128) result_a |=128;
+                  reg_a=reg_a << 1;
+                }
+
+                reg_a=result_a;
+        }  
         invalid_opcode_ed("ED36");
 }
 
@@ -298,16 +311,28 @@ void instruccion_ed_48 ()
 
 void instruccion_ed_49 ()
 {
+        if (MACHINE_IS_TBBLUE) {
+                //add  hl,a         ED 31          4+4  Add A to HL (no flags set)
+                HL +=reg_a;
+        }
         invalid_opcode_ed("ED49");
 }
 
 void instruccion_ed_50 ()
 {
+        if (MACHINE_IS_TBBLUE) {
+                //add  de,a         ED 32          4+4  Add A to DE (no flags set)
+                DE +=reg_a;
+        }
         invalid_opcode_ed("ED50");
 }
 
 void instruccion_ed_51 ()
 {
+        if (MACHINE_IS_TBBLUE) {
+                //add  bc,a         ED 33          4+4  Add A to BC (no flags set)
+                BC +=reg_a;
+        }  
         invalid_opcode_ed("ED51");
 }
 

@@ -1,25 +1,20 @@
 New Z80 opcodes on the NEXT (more to come)
 ======================================================================================
--   swapnib           ED 23          4+4  A bits 7-4 swap with A bits 3-0
--   mul               ED 30          4+4  multiply HL*DE = HLDE (no flags set)
-   add  hl,a         ED 31           Add A to HL (no flags set)
-   add  de,a         ED 32           Add A to DE (no flags set)
-   add  bc,a         ED 33           Add A to BC (no flags set)
-   add  hl,$0000     ED 34 LO HI     Add A to HL (no flags set)
-   add  de,$0000     ED 35 LO HI     Add A to DE (no flags set)
-   add  bc,$0000     ED 36 LO HI     Add A to BC (no flags set)
-   outinb            ED 90           out (c),(hl), hl++
-   ldix              ED A4           As LDI,  but if byte==A does not copy
-   ldirx             ED B4           As LDIR, but if byte==A does not copy
-   lddx              ED AC           As LDD,  but if byte==A does not copy, and DE is incremented
-   lddrx             ED BC           As LDDR,  but if byte==A does not copy
-   ldirscale         ED B6           As LDIRX,  if(hl)!=A then (de)=(hl); HL_E'+=BC'; DE+=DE'; dec BC; Loop.
-   ldpirx            ED B7           (de) = ( (hl&$fff8)+(E&7) ) when != A
-   fillde            ED B5           Using A fill from DE for BC bytes
-   ld  hl,sp         ED 25           transfer SP to HL
    ld  a32,dehl      ED 20           transfer DEHL into A32
    ld  dehl,a32      ED 21           transfer A32 into DEHL
    ex  a32,dehl      ED 22           swap A32 with DEHL
+-   swapnib           ED 23          4+4  A bits 7-4 swap with A bits 3-0
+-   mirror a          ED 24           4+4 mirror the bits in A     
+   ld  hl,sp         ED 25           transfer SP to HL
+   mirror de         ED 26           mirror the bits in DE     
+   test $00          ED 27           And A with $XX and set all flags. A is not affected.
+-   mul               ED 30          4+4  multiply HL*DE = HLDE (no flags set)
+-   add  hl,a         ED 31          4+4  Add A to HL (no flags set)
+-   add  de,a         ED 32          4+4 Add A to DE (no flags set)
+-   add  bc,a         ED 33           4+4 Add A to BC (no flags set)
+   add  hl,$0000     ED 34 LO HI     Add A to HL (no flags set)
+   add  de,$0000     ED 35 LO HI     Add A to DE (no flags set)
+   add  bc,$0000     ED 36 LO HI     Add A to BC (no flags set)
    inc dehl          ED 37           increment 32bit DEHL
    dec dehl          ED 38           increment 32bit DEHL
    add dehl,a        ED 39           Add A to 32bit DEHL
@@ -27,16 +22,21 @@ New Z80 opcodes on the NEXT (more to come)
    add dehl,$0000    ED 3B LO HI     Add $0000 to 32bit DEHL
    sub dehl,a        ED 3C           Subtract A from 32bit DEHL
    sub dehl,bc       ED 3D           Subtract BC from 32bit DEHL
-   mirror a          ED 24           mirror the bits in A     
-   mirror de         ED 26           mirror the bits in DE     
-   push $0000        ED 8A LO HI     push 16bit immidiate value
--   popx              ED 8B         4+4  pop value and disguard
+   outinb            ED 90           out (c),(hl), hl++
    nextreg reg,val   ED 91 reg,val   Set a NEXT register (like doing out($243b),reg then out($253b),val )
    nextreg reg,a     ED 92 reg       Set a NEXT register using A (like doing out($243b),reg then out($253b),A )
    pixeldn           ED 93           Move down a line on the ULA screen
    pixelad           ED 94           using D,E (as Y,X) calculate the ULA screen address and store in HL
    setae             ED 95           Using the lower 3 bits of E (X coordinate), set the correct bit value in A
-   test $00          ED 27           And A with $XX and set all flags. A is not affected.
+   ldix              ED A4           As LDI,  but if byte==A does not copy
+   ldirx             ED B4           As LDIR, but if byte==A does not copy
+   lddx              ED AC           As LDD,  but if byte==A does not copy, and DE is incremented
+   lddrx             ED BC           As LDDR,  but if byte==A does not copy
+   ldirscale         ED B6           As LDIRX,  if(hl)!=A then (de)=(hl); HL_E'+=BC'; DE+=DE'; dec BC; Loop.
+   ldpirx            ED B7           (de) = ( (hl&$fff8)+(E&7) ) when != A
+   fillde            ED B5           Using A fill from DE for BC bytes
+   push $0000        ED 8A LO HI     push 16bit immidiate value
+-   popx              ED 8B         4+4  pop value and disguard
 
 
 see also
