@@ -20,8 +20,8 @@ New Z80 opcodes on the NEXT (more to come)
 -   add dehl,a        ED 39          4+4 Add A to 32bit DEHL
 -   add dehl,bc       ED 3A          4+4 Add BC to 32bit DEHL
 -   add dehl,$0000    ED 3B LO HI    4+4 Add $0000 to 32bit DEHL
-   sub dehl,a        ED 3C           Subtract A from 32bit DEHL
-   sub dehl,bc       ED 3D           Subtract BC from 32bit DEHL
+-   sub dehl,a        ED 3C          4+4 Subtract A from 32bit DEHL
+-   sub dehl,bc       ED 3D          4+4 Subtract BC from 32bit DEHL
    outinb            ED 90           out (c),(hl), hl++
    nextreg reg,val   ED 91 reg,val   Set a NEXT register (like doing out($243b),reg then out($253b),val )
    nextreg reg,a     ED 92 reg       Set a NEXT register using A (like doing out($243b),reg then out($253b),A )

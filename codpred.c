@@ -454,11 +454,28 @@ void instruccion_ed_59 ()
 
 void instruccion_ed_60 ()
 {
-        invalid_opcode_ed("ED60");
+        if (MACHINE_IS_TBBLUE) {
+                //sub dehl,a        ED 3C          4+4 Subtract A from 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+                dehl -=reg_a;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else invalid_opcode_ed("ED60");
 }
 
 void instruccion_ed_61 ()
 {
+        if (MACHINE_IS_TBBLUE) {
+                //sub dehl,bc       ED 3D          4+4 Subtract BC from 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+                dehl -=BC;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else   
         invalid_opcode_ed("ED61");
 }
 
