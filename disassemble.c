@@ -122,21 +122,30 @@ static int bit_op_bit( z80_byte b );
 struct s_tbblue_extended_string_opcode {
 	char text[32];
 	z80_byte opcode;
+  int sumar_longitud;
 };
 
-#define TOTAL_TBBLUE_EXTENDED_OPCODES 7
+#define TOTAL_TBBLUE_EXTENDED_OPCODES 15
 
 struct s_tbblue_extended_string_opcode tbblue_extended_string_opcode[TOTAL_TBBLUE_EXTENDED_OPCODES]={
-	{"SWAPNIB",0x23},
-  {"MIRROR A",0x24},
-	{"MUL",0x30},
-  {"ADD HL,A",0x31},
-  {"ADD DE,A",0x32},
-  {"ADD BC,A",0x33},
-	{"POPX",0x8B}
+	{"SWAPNIB",0x23,0},
+  {"MIRROR A",0x24,0},
+  {"LD HL,SP",0x25,0},
+  {"MIRROR DE",0x26,0},
+  {"TEST N",0x27,1},
+	{"MUL",0x30,0},
+  {"ADD HL,A",0x31,0},
+  {"ADD DE,A",0x32,0},
+  {"ADD BC,A",0x33,0},
+  {"INC DEHL",0x37,0},
+  {"DEC DEHL",0x38,0},
+  {"ADD DEHL,A",0x39,0},
+  {"ADD DEHL,BC",0x3A,0}, 
+  {"ADD DEHL,NN",0x3B,2},
+	{"POPX",0x8B,0}
 };
 
-void debugger_handle_extended_tbblue_opcodes(char *buffer, unsigned int address)
+void debugger_handle_extended_tbblue_opcodes(char *buffer, unsigned int address, int *sumar_longitud)
 {
 	if (MACHINE_IS_TBBLUE) {
 		if (!strcmp(buffer,"NOPD")) {
@@ -147,6 +156,7 @@ void debugger_handle_extended_tbblue_opcodes(char *buffer, unsigned int address)
 				for (i=0;i<TOTAL_TBBLUE_EXTENDED_OPCODES;i++) {
 					if (tbblue_extended_string_opcode[i].opcode==opcode) {
 						strcpy(buffer,tbblue_extended_string_opcode[i].text);
+            *sumar_longitud=tbblue_extended_string_opcode[i].sumar_longitud;
 					}
 
 				}
@@ -187,7 +197,9 @@ debugger_disassemble( char *buffer, size_t buflen, size_t *length,
 	disassemble_main( address, buffer, buflen, length, USE_HL );
 
 	//gestionar casos de opcodes extendidos de Next
-	debugger_handle_extended_tbblue_opcodes(buffer,address);
+  int sumar_longitud=0;
+	debugger_handle_extended_tbblue_opcodes(buffer,address,&sumar_longitud);
+  *length +=sumar_longitud;
 }
 
 
@@ -200,7 +212,9 @@ void debugger_disassemble_array (char *buffer, size_t buflen, size_t *length, un
 	disassemble_main( address, buffer, buflen, length, USE_HL );
 
 	//gestionar casos de opcodes extendidos de Next
-	debugger_handle_extended_tbblue_opcodes(buffer,address);
+  int sumar_longitud=0;
+	debugger_handle_extended_tbblue_opcodes(buffer,address,&sumar_longitud);
+  *length +=sumar_longitud;
 
 }
 

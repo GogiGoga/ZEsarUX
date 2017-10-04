@@ -238,22 +238,50 @@ void instruccion_ed_36 ()
 
                 reg_a=result_a;
         }  
-        invalid_opcode_ed("ED36");
+        else invalid_opcode_ed("ED36");
 }
 
 void instruccion_ed_37 ()
 {
-        invalid_opcode_ed("ED37");
+        if (MACHINE_IS_TBBLUE) {
+                //ld  hl,sp         ED 25          4+4 transfer SP to HL
+                HL=reg_sp;
+        }  
+        else invalid_opcode_ed("ED37");
 }
 
 void instruccion_ed_38 ()
 {
-        invalid_opcode_ed("ED38");
+        if (MACHINE_IS_TBBLUE) {
+                //mirror de         ED 26          4+4 mirror the bits in DE
+                //15 14 13 12 11 10 9 8 76543210 -> 0123456789 10 11 12 13 14 15
+                int i;
+                z80_int result_de=0;
+                for (i=0;i<16;i++) {
+                  result_de = result_de >> 1;
+                  if (DE&32768) result_de |=32768;
+                  DE=DE << 1;
+                }
+
+                DE=result_de;
+        }  
+        else invalid_opcode_ed("ED38");
 }
 
 void instruccion_ed_39 ()
 {
-        invalid_opcode_ed("ED39");
+  
+        if (MACHINE_IS_TBBLUE) {
+                //test N            ED 27           4+4+3 And A with $XX and set all flags. A is not affected.
+                //mismo que AND N pero sin afectar A
+                z80_byte valor=lee_byte_pc();
+                z80_byte temp_a=reg_a;
+                temp_a &= valor; 
+                Z80_FLAGS=FLAG_H | sz53p_table[temp_a]; 
+
+        }  
+
+        else invalid_opcode_ed("ED39");
 }
 
 void instruccion_ed_40 ()
@@ -315,7 +343,8 @@ void instruccion_ed_49 ()
                 //add  hl,a         ED 31          4+4  Add A to HL (no flags set)
                 HL +=reg_a;
         }
-        invalid_opcode_ed("ED49");
+        
+        else invalid_opcode_ed("ED49");
 }
 
 void instruccion_ed_50 ()
@@ -324,7 +353,8 @@ void instruccion_ed_50 ()
                 //add  de,a         ED 32          4+4  Add A to DE (no flags set)
                 DE +=reg_a;
         }
-        invalid_opcode_ed("ED50");
+        
+        else invalid_opcode_ed("ED50");
 }
 
 void instruccion_ed_51 ()
@@ -333,7 +363,8 @@ void instruccion_ed_51 ()
                 //add  bc,a         ED 33          4+4  Add A to BC (no flags set)
                 BC +=reg_a;
         }  
-        invalid_opcode_ed("ED51");
+        
+        else invalid_opcode_ed("ED51");
 }
 
 void instruccion_ed_52 ()
@@ -353,27 +384,72 @@ void instruccion_ed_54 ()
 
 void instruccion_ed_55 ()
 {
-        invalid_opcode_ed("ED55");
+        if (MACHINE_IS_TBBLUE) {
+                //inc dehl          ED 37          4+4 increment 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+                dehl++;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else invalid_opcode_ed("ED55");
 }
 
 void instruccion_ed_56 ()
 {
-        invalid_opcode_ed("ED56");
+        if (MACHINE_IS_TBBLUE) {
+                //dec dehl          ED 37          4+4 decrement 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+                dehl--;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else invalid_opcode_ed("ED56");
 }
 
 void instruccion_ed_57 ()
 {
-        invalid_opcode_ed("ED57");
+        if (MACHINE_IS_TBBLUE) {
+                //add dehl,a        ED 39          4+4 Add A to 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+                dehl +=reg_a;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else invalid_opcode_ed("ED57");
 }
 
 void instruccion_ed_58 ()
 {
-        invalid_opcode_ed("ED58");
+        if (MACHINE_IS_TBBLUE) {
+                //add dehl,bc       ED 3A           Add BC to 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+                dehl +=BC;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else invalid_opcode_ed("ED58");
 }
 
 void instruccion_ed_59 ()
 {
-        invalid_opcode_ed("ED59");
+        if (MACHINE_IS_TBBLUE) {
+                //add dehl,$0000    ED 3B LO HI    4+4 Add $0000 to 32bit DEHL
+                z80_long_int dehl= (DE << 16) | HL;
+
+                z80_int operador=0;
+                operador |= lee_byte_pc();
+                operador |= (lee_byte_pc()<<8);
+
+                dehl +=operador;
+                HL=dehl & 0xFFFF;
+                DE=(dehl>>16) & 0xFFFF;
+        }  
+        
+        else invalid_opcode_ed("ED59");
 }
 
 void instruccion_ed_60 ()

@@ -4,22 +4,22 @@ New Z80 opcodes on the NEXT (more to come)
    ld  dehl,a32      ED 21           transfer A32 into DEHL
    ex  a32,dehl      ED 22           swap A32 with DEHL
 -   swapnib           ED 23          4+4  A bits 7-4 swap with A bits 3-0
--   mirror a          ED 24           4+4 mirror the bits in A     
-   ld  hl,sp         ED 25           transfer SP to HL
-   mirror de         ED 26           mirror the bits in DE     
-   test $00          ED 27           And A with $XX and set all flags. A is not affected.
+-   mirror a          ED 24          4+4 mirror the bits in A     
+-   ld  hl,sp         ED 25          4+4 transfer SP to HL
+-   mirror de         ED 26          4+4 mirror the bits in DE     
+-   test N            ED 27           4+4+3 And A with $XX and set all flags. A is not affected.
 -   mul               ED 30          4+4  multiply HL*DE = HLDE (no flags set)
 -   add  hl,a         ED 31          4+4  Add A to HL (no flags set)
 -   add  de,a         ED 32          4+4 Add A to DE (no flags set)
--   add  bc,a         ED 33           4+4 Add A to BC (no flags set)
+-   add  bc,a         ED 33          4+4 Add A to BC (no flags set)
    add  hl,$0000     ED 34 LO HI     Add A to HL (no flags set)
    add  de,$0000     ED 35 LO HI     Add A to DE (no flags set)
    add  bc,$0000     ED 36 LO HI     Add A to BC (no flags set)
-   inc dehl          ED 37           increment 32bit DEHL
-   dec dehl          ED 38           increment 32bit DEHL
-   add dehl,a        ED 39           Add A to 32bit DEHL
-   add dehl,bc       ED 3A           Add BC to 32bit DEHL
-   add dehl,$0000    ED 3B LO HI     Add $0000 to 32bit DEHL
+-   inc dehl          ED 37          4+4 increment 32bit DEHL
+-   dec dehl          ED 38          4+4 increment 32bit DEHL
+-   add dehl,a        ED 39          4+4 Add A to 32bit DEHL
+-   add dehl,bc       ED 3A          4+4 Add BC to 32bit DEHL
+-   add dehl,$0000    ED 3B LO HI    4+4 Add $0000 to 32bit DEHL
    sub dehl,a        ED 3C           Subtract A from 32bit DEHL
    sub dehl,bc       ED 3D           Subtract BC from 32bit DEHL
    outinb            ED 90           out (c),(hl), hl++
