@@ -6505,9 +6505,9 @@ int menu_debug_sprites_max_value_mapped_palette(int paleta)
 			return SAM_TOTAL_PALETTE_COLOURS;
 		break;
 
-		//RGB8 Tbblue
+		//RGB9 Tbblue
 		case 7:
-			return RGB8_TOTAL_PALETTE_COLOURS;
+			return RGB9_TOTAL_PALETTE_COLOURS;
 		break;
 
 		//TSConf
@@ -6564,7 +6564,7 @@ int menu_debug_sprites_return_index_palette(int paleta, z80_byte color)
 		break;
 
 		case 7:
-			//RGB8 TBBlue
+			//RGB9 TBBlue
 			return tbsprite_palette[color];
 		break;
 
@@ -6616,7 +6616,7 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 		break;
 
 		case 7:
-			return RGB8_INDEX_FIRST_COLOR+index;
+			return RGB9_INDEX_FIRST_COLOR+index;
 		break;
 
 		case 8:
@@ -6832,8 +6832,8 @@ void menu_debug_draw_sprites(void)
 				int offset_sprite=(y%16)*16+x;
 				index_color=tbsprite_patterns[numero_pattern][offset_sprite];
 				color=tbsprite_palette[index_color];
-				if (view_sprites_inverse.v) color ^=255;
-				menu_scr_putpixel(xorigen+x,yorigen+y,RGB8_INDEX_FIRST_COLOR+color);
+				if (view_sprites_inverse.v) color ^=511;
+				menu_scr_putpixel(xorigen+x,yorigen+y,RGB9_INDEX_FIRST_COLOR+color);
 			}
 		}
 	}

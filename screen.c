@@ -163,7 +163,7 @@ total_palette_colours total_palette_colours_array[TOTAL_PALETAS_COLORES]={
 	{"CPC","CPC palette",CPC_INDEX_FIRST_COLOR,CPC_TOTAL_PALETTE_COLOURS},
 	{"Prism","Prism 12 bit palette",PRISM_INDEX_FIRST_COLOR,PRISM_TOTAL_PALETTE_COLOURS},
 	{"Sam Coupe","Sam 128 colour palette",SAM_INDEX_FIRST_COLOR,SAM_TOTAL_PALETTE_COLOURS},
-	{"RGB8","RGB8, for Tbblue etc",RGB8_INDEX_FIRST_COLOR,RGB8_TOTAL_PALETTE_COLOURS},
+	{"RGB9","RGB9, for Tbblue etc",RGB9_INDEX_FIRST_COLOR,RGB9_TOTAL_PALETTE_COLOURS},
 	{"TSConf","TSConf 15 bit palette",TSCONF_INDEX_FIRST_COLOR,TSCONF_TOTAL_PALETTE_COLOURS}
 };
 
@@ -6391,7 +6391,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 							//Pixel en Layer2 no transparente. Mostramos pixel de layer2
 							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
-								store_value_rainbow(puntero_buf_rainbow,RGB8_INDEX_FIRST_COLOR+color_layer2);
+								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+color_layer2);
 							}
 
 							//Pixel en layer2 transparente. Mostramos pixel normal de pantalla speccy
@@ -6411,7 +6411,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 							else {
 								//Pixel en pantalla speccy transparente. Mostramos pixel de layer2
-								store_value_rainbow(puntero_buf_rainbow,RGB8_INDEX_FIRST_COLOR+color_layer2);
+								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+color_layer2);
 							}
 						}
 				}
@@ -7183,19 +7183,20 @@ G  G   R   R   B   B
                         }
 
 
-												//trama de grises para rgb8
+												//trama de grises para rgb9
 												//z80_byte color;
 
-									for (i=0;i<256;i++) {
+									for (i=0;i<512;i++) {
 									int r,g,b;
 									int valorgris=i;
+									valorgris=i/2;
 									VALOR_GRIS_A_R_G_B
 
 									color32=(r<<16)|(g<<8)|b;
 
-															screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i, color32);
+										screen_set_colour_normal(RGB9_INDEX_FIRST_COLOR+i, color32);
 
-														}
+									}
 			//trama de grises para tsconf
 			for (i=0;i<32768;i++) {
                                 valorgris=i/128;
@@ -7316,10 +7317,10 @@ Bit 6 GRN1 most  significant bit of green.
         }
 
 
-				//Colores RGB8
-				for (i=0;i<256;i++) {
-					debug_printf (VERBOSE_DEBUG,"RGB8 color: %02XH 32 bit: %06XH",i,get_rgb8_color(i));
-					screen_set_colour_normal(RGB8_INDEX_FIRST_COLOR+i,get_rgb8_color(i));
+				//Colores RGB9
+				for (i=0;i<512;i++) {
+					debug_printf (VERBOSE_DEBUG,"RGB9 color: %02XH 32 bit: %06XH",i,get_rgb9_color(i));
+					screen_set_colour_normal(RGB9_INDEX_FIRST_COLOR+i,get_rgb9_color(i));
 				}
 
 
@@ -12538,8 +12539,11 @@ void screen_set_window_zoom(int z)
 
 
 
-//Retorna color RGB en formato 32 bits para un color rgb en formato 8 bit de RRRGGGBB. Actualmente de momento solo usado en TBBLUE
+//En DESUSO:
+//Retorna color RGB en formato 32 bits para un color rgb en formato 8 bit de RRRGGGBB. 
+//Actualmente de momento solo usado en TBBLUE
 //NO es mismo formato que tabla de ulaplus. Ulaplus tiene formato GGGRRRBB
+/*
 int get_rgb8_color (z80_byte color)
 {
 	//Minitablas de conversion de 3 bits a 8 bits
@@ -12571,7 +12575,40 @@ int get_rgb8_color (z80_byte color)
 
 
 }
+*/
 
+
+//Retorna color RGB en formato 32 bits para un color rgb en formato 9 bit de RRRGGGBBB. 
+//Actualmente de momento solo usado en TBBLUE
+
+int get_rgb9_color (z80_int color)
+{
+	//Minitablas de conversion de 3 bits a 8 bits
+	z80_byte color_3_to_8[8]={
+	0,36,73,109,146,182,219,255
+	};
+
+	int color32;
+	z80_byte r,g,b;
+	z80_byte r8,g8,b8;
+	//formato en color:
+	//876543210
+	//RRRGGGBBB
+
+		r=(color>>6)&7;
+		g=(color>>3)&7;
+		b=color&7;
+
+		//Pasamos cada componente de 3 bits a su correspondiente de 8 bits
+		r8=color_3_to_8[r];
+		g8=color_3_to_8[g];
+		b8=color_3_to_8[b];
+
+		color32=(r8<<16)|(g8<<8)|b8;
+		return color32;
+
+
+}
 
 
 z80_bit zxuno_tbblue_disparada_raster={0};

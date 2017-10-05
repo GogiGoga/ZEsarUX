@@ -101,7 +101,7 @@ extern void tbsprite_do_overlay(void);
 #define TBBLUE_SPRITE_WIDTH 16
 
 extern z80_byte tbsprite_patterns[TBBLUE_MAX_PATTERNS][256];
-extern z80_byte tbsprite_palette[];
+extern z80_int tbsprite_palette[];
 extern z80_byte tbsprite_sprites[TBBLUE_MAX_SPRITES][4];
 
 extern void tbblue_out_port_sprite_index(z80_byte value);

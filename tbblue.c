@@ -48,8 +48,9 @@ z80_byte *tbblue_memory_paged[8];
 
 //Sprites
 
-//Paleta de 256 colores formato RRRGGGBB
-z80_byte tbsprite_palette[256];
+//Paleta de 256 colores formato RGB9 RRRGGGBBB
+//Valores son de 9 bits por tanto lo definimos con z80_int que es de 16 bits
+z80_int tbsprite_palette[256];
 //64 patterns de Sprites
 /*
 In the palette each byte represents the colors in the RRRGGGBB format, and the pink color, defined by standard 1110011, is reserved for the transparent color.
@@ -181,7 +182,7 @@ void tbblue_reset_sprites(void)
 	//Inicializar Paleta
 	int i;
 
-	for (i=0;i<256;i++) tbsprite_palette[i]=i;
+	for (i=0;i<256;i++) tbsprite_palette[i]=i*2; //Metemos colores RRRGGGBB0
 
 	//Resetear patterns todos a transparente
 	for (i=0;i<TBBLUE_MAX_PATTERNS;i++) {
@@ -325,7 +326,7 @@ z80_byte tbsprite_do_overlay_get_pattern_xy(z80_byte index_pattern,z80_byte sx,z
 z80_int tbsprite_return_color_index(z80_byte index)
 {
 	z80_int color_final=tbsprite_palette[index];
-	return RGB8_INDEX_FIRST_COLOR+color_final;
+	return RGB9_INDEX_FIRST_COLOR+color_final;
 }
 
 void tbsprite_do_overlay(void)
