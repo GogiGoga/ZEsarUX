@@ -133,6 +133,17 @@ z80_int tbblue_get_value_palette_rw(z80_byte index)
 	return paleta[index];
 }
 
+
+//Modificamos el valor del color de la paleta que se esta leyendo o escribiendo en una operacion de I/O
+void tbblue_set_value_palette_rw(z80_byte index,z80_int valor)
+{
+	z80_int *paleta;
+
+	paleta=tbblue_get_palette_rw();
+
+	paleta[index]=valor;
+}
+
 //Damos el valor del color de la paleta que se esta mostrando en pantalla para sprites
 //Para ello mirar bit 3 de reg 0x43
 z80_int tbblue_get_palette_active_sprite(z80_byte index)
@@ -377,6 +388,92 @@ void tbblue_out_port_sprite_index(z80_byte value)
 	if (tbsprite_index_palette==255) tbsprite_index_palette=0;
 	else tbsprite_index_palette++;
 }*/
+
+//Escribe valor de 8 bits superiores (de total de 9) para indice de color de paleta e incrementa indice
+void tbblue_write_palette_value_high8(z80_byte valor)
+{
+/*
+(R/W) 0x40 (64) => Palette Index
+  bits 7-0 = Select the palette index to change the default colour. 
+  0 to 127 indexes are to ink colours and 128 to 255 indexes are to papers.
+  (Except full ink colour mode, that all values 0 to 255 are inks)
+  Border colours are the same as paper 0 to 7, positions 128 to 135,
+  even at full ink mode. 
+  (inks and papers concept only applies to ULANext palette. 
+  Layer 2 and Sprite palettes works as "full ink" mode)
+
+  (R/W) 0x41 (65) => Palette Value
+  bits 7-0 = Colour for the palette index selected by the register 0x40. Format is RRRGGGBB
+  After the write, the palette index is auto-incremented to the next index. 
+  The changed palette remains until a Hard Reset.
+
+  (R/W) 0x44 (68) => Palette Lower bit
+  bits 7-1 = Reserved, must be 0
+  bit 0 = Set the lower blue bit colour for the current palette value
+*/
+	z80_byte indice=tbblue_registers[0x40];
+
+	//Obtenemos valor actual y alteramos los 8 bits altos del total de 9
+	z80_int color_actual=tbblue_get_value_palette_rw(indice);
+
+	//Conservamos bit bajo
+	color_actual &=1;
+
+	z80_int valor16=valor;
+
+	//rotamos a la izquierda para que sean los 8 bits altos
+	valor16=valor16<<1;
+	//y or del valor de 1 bit de B
+	valor16 |=color_actual;
+
+	tbblue_set_value_palette_rw(indice,valor16);
+
+	//Y sumamos contador
+	indice++;
+	tbblue_registers[0x40]=indice;
+
+}
+
+
+//Escribe valor de 1 bit inferior (de total de 9) para indice de color de paleta 
+void tbblue_write_palette_value_low1(z80_byte valor)
+{
+/*
+(R/W) 0x40 (64) => Palette Index
+  bits 7-0 = Select the palette index to change the default colour. 
+  0 to 127 indexes are to ink colours and 128 to 255 indexes are to papers.
+  (Except full ink colour mode, that all values 0 to 255 are inks)
+  Border colours are the same as paper 0 to 7, positions 128 to 135,
+  even at full ink mode. 
+  (inks and papers concept only applies to ULANext palette. 
+  Layer 2 and Sprite palettes works as "full ink" mode)
+
+  (R/W) 0x41 (65) => Palette Value
+  bits 7-0 = Colour for the palette index selected by the register 0x40. Format is RRRGGGBB
+  After the write, the palette index is auto-incremented to the next index. 
+  The changed palette remains until a Hard Reset.
+
+  (R/W) 0x44 (68) => Palette Lower bit
+  bits 7-1 = Reserved, must be 0
+  bit 0 = Set the lower blue bit colour for the current palette value
+*/
+	z80_byte indice=tbblue_registers[0x40];
+
+	//Obtenemos valor actual y conservamos los 8 bits altos del total de 9
+	z80_int color_actual=tbblue_get_value_palette_rw(indice);
+
+	//Conservamos 8 bits altos
+	color_actual &=0x1FE;
+
+	//Y valor indicado, solo conservar 1 bit
+	valor &= 1;
+
+	color_actual |=valor;
+
+	tbblue_set_value_palette_rw(indice,color_actual);
+
+
+}
 
 void tbblue_out_sprite_pattern(z80_byte value)
 {
@@ -1920,6 +2017,18 @@ void tbblue_set_value_port(z80_byte value)
 					*/
 					if ( last_register_7 != value ) tbblue_set_emulator_setting_turbo();
 		break;
+
+
+		//(R/W) 0x41 (65) => Palette Value
+		case 65:
+			tbblue_write_palette_value_high8(value);
+		break;
+
+		// (R/W) 0x44 (68) => Palette Lower bit
+		case 68:
+			tbblue_write_palette_value_low1(value);
+		break;
+
 	}
 
 
@@ -1990,6 +2099,9 @@ z80_byte tbblue_get_value_port_register(z80_byte registro)
 			linea_raster=tbblue_get_raster_line();
 			return (linea_raster&0xFF);
 		break;
+
+
+
 
 	}
 
