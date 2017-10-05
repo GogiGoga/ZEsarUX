@@ -76,6 +76,12 @@ O quizá setting configurable
 
 -tbblue:
 *paleta 9 bits. necesario gestion de color de layer2 (necesita mapeo de paleta first/second de layer2) y colores ula para esa paleta tambien
+*poder ver mapeado de las otras 5 paletas (actualmente muestra el mapeo de la primera paleta de sprites solo). tanto en menu de ver paletas como en el de sprite (al activar sprite hardware tbblue)
+
+*modificar comando ZRCP asi:
+tbblue-get-palette ula|layer2|sprite first|second index
+hacer similar para set palette:
+tbblue-set-palette ula|layer2|sprite first|second index value
 
 
 *lores layer
