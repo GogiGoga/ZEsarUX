@@ -271,7 +271,7 @@ void tbblue_out_sprite_sprite(z80_byte value)
 }
 
 
-
+//Guarda scanline actual y el pattern (los indices a colores) sobre la paleta activa de sprites
 z80_byte sprite_line[MAX_X_SPRITE_LINE];
 
 
@@ -309,7 +309,9 @@ void tbsprite_put_color_line(int x,z80_byte color,int rangoxmin,int rangoxmax)
 		tbblue_port_303b |=1;
 		//printf ("set colision flag. result value: %d\n",tbblue_port_303b);
 	}
+	
 
+	//sprite_line[x]=color;
 	sprite_line[x]=color;
 
 }
@@ -320,7 +322,11 @@ z80_byte tbsprite_do_overlay_get_pattern_xy(z80_byte index_pattern,z80_byte sx,z
 	return tbsprite_patterns[index_pattern][sy*TBBLUE_SPRITE_WIDTH+sx];
 }
 
-
+z80_int tbsprite_return_color_index(z80_byte index)
+{
+	z80_int color_final=tbsprite_palette[index];
+	return RGB8_INDEX_FIRST_COLOR+color_final;
+}
 
 void tbsprite_do_overlay(void)
 {
@@ -574,7 +580,7 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 								index_color +=palette_offset;
 
 								//printf ("index color: %d\n",index_color);
-								z80_byte color=tbsprite_palette[index_color];
+								
 
 								sx=sx+incx;
 								sy=sy+incy;
@@ -588,8 +594,9 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 									//offset_pattern++;
 									sx++;
 								}*/
-
-								tbsprite_put_color_line(sprite_x++,color,rangoxmin,rangoxmax);
+								//z80_byte color=tbsprite_palette[index_color];
+								//tbsprite_put_color_line(sprite_x++,color,rangoxmin,rangoxmax);
+								tbsprite_put_color_line(sprite_x++,index_color,rangoxmin,rangoxmax);
 
 
 							}
@@ -665,7 +672,8 @@ Register:
 
 						color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;*/
 						z80_int color_final;
-						color_final=RGB8_INDEX_FIRST_COLOR+color;
+						//color_final=RGB8_INDEX_FIRST_COLOR+color;
+						color_final=tbsprite_return_color_index(color);
 						//color_final=ulaplus_rgb_table[color_final];
 
 						*puntero_buf_rainbow=color_final;
