@@ -75,6 +75,9 @@ O quizá setting configurable
 
 
 -tbblue:
+*paleta 9 bits. necesario gestion de color de layer2 (necesita mapeo de paleta first/second de layer2) y colores ula para esa paleta tambien
+
+
 *lores layer
 *radasjim mode
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
@@ -86,7 +89,6 @@ O quizá setting configurable
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 *MMU
-*6 paletas. colores 9 bit RRRGGGBBB
 *update bios
 
 
