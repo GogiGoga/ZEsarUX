@@ -50,7 +50,137 @@ z80_byte *tbblue_memory_paged[8];
 
 //Paleta de 256 colores formato RGB9 RRRGGGBBB
 //Valores son de 9 bits por tanto lo definimos con z80_int que es de 16 bits
-z80_int tbsprite_palette[256];
+//z80_int tbsprite_palette[256];
+
+
+//Diferentes paletas
+//Total:
+//     000 = ULA first palette
+//     100 = ULA secondary palette
+//     001 = Layer 2 first palette
+//    101 = Layer 2 secondary palette
+//     010 = Sprites first palette 
+//     110 = Sprites secondary palette
+//Paletas de 256 colores formato RGB9 RRRGGGBBB
+//Valores son de 9 bits por tanto lo definimos con z80_int que es de 16 bits
+z80_int tbblue_palette_ula_first[256];
+z80_int tbblue_palette_ula_second[256];
+z80_int tbblue_palette_layer2_first[256];
+z80_int tbblue_palette_layer2_second[256];
+z80_int tbblue_palette_sprite_first[256];
+z80_int tbblue_palette_sprite_second[256];
+
+
+//Damos la paleta que se esta leyendo o escribiendo en una operacion de I/O
+//Para ello mirar bits 6-4  de reg 0x43
+z80_int *tbblue_get_palette_rw(void)
+{
+/*
+(R/W) 0x43 (67) => Palette Control
+  bit 7 = Reserved, must be 0
+  bits 6-4 = Select palette for reading or writing:
+     000 = ULA first palette
+     100 = ULA secondary palette
+     001 = Layer 2 first palette
+     101 = Layer 2 secondary palette
+     010 = Sprites first palette 
+     110 = Sprites secondary palette
+  bit 3 = Select Sprites palette (0 = first palette, 1 = secondary palette)
+  bit 2 = Select Layer 2 palette (0 = first palette, 1 = secondary palette)
+  bit 1 = Select ULA palette (0 = first palette, 1 = secondary palette)
+*/
+	z80_byte active_palette=(tbblue_registers[0x43]>>4);
+
+	switch (active_palette) {
+		case 0:
+			return tbblue_palette_ula_first;
+		break;
+
+		case 4:
+			return tbblue_palette_ula_second;
+		break;
+
+		case 1:
+			return tbblue_palette_layer2_first;
+		break;
+
+		case 5:
+			return tbblue_palette_layer2_second;
+		break;
+
+		case 2:
+			return tbblue_palette_sprite_first;
+		break;
+
+		case 6:
+			return tbblue_palette_sprite_second;
+		break;
+
+		//por defecto retornar siempre ULA first palette
+		default:
+			return tbblue_palette_ula_first;
+		break;
+	}
+}
+
+//Damos el valor del color de la paleta que se esta leyendo o escribiendo en una operacion de I/O
+z80_int tbblue_get_value_palette_rw(z80_byte index)
+{
+	z80_int *paleta;
+
+	paleta=tbblue_get_palette_rw();
+
+	return paleta[index];
+}
+
+//Damos el valor del color de la paleta que se esta mostrando en pantalla para sprites
+//Para ello mirar bit 3 de reg 0x43
+z80_int tbblue_get_palette_active_sprite(z80_byte index)
+{
+/*
+(R/W) 0x43 (67) => Palette Control
+
+  bit 3 = Select Sprites palette (0 = first palette, 1 = secondary palette)
+  bit 2 = Select Layer 2 palette (0 = first palette, 1 = secondary palette)
+  bit 1 = Select ULA palette (0 = first palette, 1 = secondary palette)
+*/
+	if (tbblue_registers[0x43]&8) return tbblue_palette_sprite_second[index];
+	else return tbblue_palette_sprite_first[index];
+
+}
+
+//Damos el valor del color de la paleta que se esta mostrando en pantalla para layer2
+//Para ello mirar bit 2 de reg 0x43
+z80_int tbblue_get_palette_active_layer2(z80_byte index)
+{
+/*
+(R/W) 0x43 (67) => Palette Control
+
+  bit 3 = Select Sprites palette (0 = first palette, 1 = secondary palette)
+  bit 2 = Select Layer 2 palette (0 = first palette, 1 = secondary palette)
+  bit 1 = Select ULA palette (0 = first palette, 1 = secondary palette)
+*/
+	if (tbblue_registers[0x43]&4) return tbblue_palette_layer2_second[index];
+	else return tbblue_palette_layer2_first[index];
+
+}
+
+//Damos el valor del color de la paleta que se esta mostrando en pantalla para ula
+//Para ello mirar bit 1 de reg 0x43
+z80_int tbblue_get_palette_active_ula(z80_byte index)
+{
+/*
+(R/W) 0x43 (67) => Palette Control
+
+  bit 3 = Select Sprites palette (0 = first palette, 1 = secondary palette)
+  bit 2 = Select Layer 2 palette (0 = first palette, 1 = secondary palette)
+  bit 1 = Select ULA palette (0 = first palette, 1 = secondary palette)
+*/
+	if (tbblue_registers[0x43]&2) return tbblue_palette_ula_second[index];
+	else return tbblue_palette_ula_first[index];
+
+}
+
 //64 patterns de Sprites
 /*
 In the palette each byte represents the colors in the RRRGGGBB format, and the pink color, defined by standard 1110011, is reserved for the transparent color.
@@ -179,10 +309,10 @@ int tbblue_get_offset_start_layer2(void)
 
 void tbblue_reset_sprites(void)
 {
-	//Inicializar Paleta
+
 	int i;
 
-	for (i=0;i<256;i++) tbsprite_palette[i]=i*2; //Metemos colores RRRGGGBB0
+	
 
 	//Resetear patterns todos a transparente
 	for (i=0;i<TBBLUE_MAX_PATTERNS;i++) {
@@ -212,6 +342,25 @@ void tbblue_reset_sprites(void)
 }
 
 
+void tbblue_reset_palettes(void)
+{
+	//Inicializar Paleta
+	int i;
+
+	for (i=0;i<256;i++) {
+		//Metemos colores RRRGGGBB0
+		tbblue_palette_ula_first[i]=i*2;
+ 		tbblue_palette_ula_second[i]=i*2;
+ 		tbblue_palette_layer2_first[i]=i*2;
+ 		tbblue_palette_layer2_second[i]=i*2;
+ 		tbblue_palette_sprite_first[i]=i*2;
+ 		tbblue_palette_sprite_second[i]=i*2;
+	}
+
+	
+}
+
+
 void tbblue_out_port_sprite_index(z80_byte value)
 {
 	//printf ("Out tbblue_out_port_sprite_index %02XH\n",value);
@@ -220,14 +369,14 @@ void tbblue_out_port_sprite_index(z80_byte value)
 	tbsprite_index_pattern_subindex=tbsprite_index_sprite_subindex=0;
 }
 
-void tbblue_out_sprite_palette(z80_byte value)
+/*void tbblue_out_sprite_palette(z80_byte value)
 {
 	//printf ("Out tbblue_out_sprite_palette %02XH\n",value);
 
 	tbsprite_palette[tbsprite_index_palette]=value;
 	if (tbsprite_index_palette==255) tbsprite_index_palette=0;
 	else tbsprite_index_palette++;
-}
+}*/
 
 void tbblue_out_sprite_pattern(z80_byte value)
 {
@@ -325,7 +474,9 @@ z80_byte tbsprite_do_overlay_get_pattern_xy(z80_byte index_pattern,z80_byte sx,z
 
 z80_int tbsprite_return_color_index(z80_byte index)
 {
-	z80_int color_final=tbsprite_palette[index];
+	//z80_int color_final=tbsprite_palette[index];
+
+	z80_int color_final=tbblue_get_palette_active_sprite(index);
 	return RGB9_INDEX_FIRST_COLOR+color_final;
 }
 
@@ -1483,6 +1634,7 @@ void tbblue_hard_reset(void)
 	tbblue_set_emulator_setting_ulaplus();
 
 	tbblue_reset_sprites();
+	tbblue_reset_palettes();
 
 }
 

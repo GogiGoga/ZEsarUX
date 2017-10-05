@@ -6564,8 +6564,8 @@ int menu_debug_sprites_return_index_palette(int paleta, z80_byte color)
 		break;
 
 		case 7:
-			//RGB9 TBBlue
-			return tbsprite_palette[color];
+			//RGB9 TBBlue paleta 1
+			return tbblue_palette_sprite_first[color];
 		break;
 
 		case 8:
@@ -6831,7 +6831,8 @@ void menu_debug_draw_sprites(void)
 			for (x=0;x<sprite_ancho;x++) {
 				int offset_sprite=(y%16)*16+x;
 				index_color=tbsprite_patterns[numero_pattern][offset_sprite];
-				color=tbsprite_palette[index_color];
+				//color=tbsprite_palette[index_color];
+				color=tbblue_palette_sprite_first[index_color]; //color de la paleta primera
 				if (view_sprites_inverse.v) color ^=511;
 				menu_scr_putpixel(xorigen+x,yorigen+y,RGB9_INDEX_FIRST_COLOR+color);
 			}

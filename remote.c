@@ -3765,7 +3765,8 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 			//if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
 
 			for (;items;items--) {
-				z80_byte color=tbsprite_palette[index++];
+				//z80_byte color=tbsprite_palette[index++];  
+        z80_byte color=tbblue_palette_sprite_first[index++];  //primera paleta
 				escribir_socket_format(misocket,"%02X ",color);
 			}
 
@@ -3862,7 +3863,8 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 			char *s=find_space_or_end(parametros);
 			while (*s) {
 				valor=parse_string_to_number(s);
-				tbsprite_palette[index++]=valor;
+				//tbsprite_palette[index++]=valor;
+        tbblue_palette_sprite_first[index++]=valor; //primera paleta
 
 				s=find_space_or_end(s);
 			}
