@@ -89,7 +89,7 @@ z80_int *tbblue_get_palette_rw(void)
   bit 2 = Select Layer 2 palette (0 = first palette, 1 = secondary palette)
   bit 1 = Select ULA palette (0 = first palette, 1 = secondary palette)
 */
-	z80_byte active_palette=(tbblue_registers[0x43]>>4);
+	z80_byte active_palette=(tbblue_registers[0x43]>>4)&7;
 
 	switch (active_palette) {
 		case 0:
@@ -905,6 +905,7 @@ Register:
 
 				if (i>=rangoxmin && i<=rangoxmax) {
 
+					//color transparente hace referencia al valor indice que hay en pattern. y NO al color final
 					if (color!=TBBLUE_TRANSPARENT_COLOR) {
 
 						//Pasamos de RGB a GRB
