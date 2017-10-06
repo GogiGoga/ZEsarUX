@@ -6564,11 +6564,36 @@ int menu_debug_sprites_return_index_palette(int paleta, z80_byte color)
 		break;
 
 		case 7:
-			//RGB9 TBBlue paleta 1
-			return tbblue_palette_sprite_first[color];
+			//TBBlue ula paleta 1
+			return tbblue_palette_ula_first[color];
 		break;
 
 		case 8:
+			//TBBlue ula paleta 2
+			return tbblue_palette_ula_second[color];
+		break;			
+
+		case 9:
+			//TBBlue layer2 paleta 1
+			return tbblue_palette_layer2_first[color];
+		break;
+
+		case 10:
+			//TBBlue layer2 paleta 2
+			return tbblue_palette_layer2_second[color];
+		break;		
+
+		case 11:
+			//TBBlue sprites paleta 1
+			return tbblue_palette_sprite_first[color];
+		break;
+
+		case 12:
+			//TBBlue sprites paleta 2
+			return tbblue_palette_sprite_second[color];
+		break;
+
+		case 13:
 			//TSConf
 			return tsconf_return_cram_color(color);
 		break;
@@ -6629,7 +6654,7 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 }
 
 //Usado en ver sprites y ver colores mapeados
-#define MENU_TOTAL_MAPPED_PALETTES 9
+#define MENU_TOTAL_MAPPED_PALETTES 14
 
 void menu_debug_sprites_change_palette(void)
 {
@@ -6669,10 +6694,30 @@ void menu_debug_sprites_get_palette_name(int paleta, char *s)
 		break;
 
 		case 7:
-			strcpy(s,"NextSprite");
+			strcpy(s,"TBBlue ULA 1st");
 		break;
 
 		case 8:
+			strcpy(s,"TBBlue ULA 2nd");
+		break;	
+
+		case 9:
+			strcpy(s,"TBBlue Layer2 1st");
+		break;
+
+		case 10:
+			strcpy(s,"TBBlue Layer2 2nd");
+		break;	
+
+		case 11:
+			strcpy(s,"TBBlue Sprites 1st");
+		break;
+
+		case 12:
+			strcpy(s,"TBBlue Sprites 2nd");
+		break;			
+
+		case 13:
 			strcpy(s,"TSConf");
 		break;
 

@@ -6385,13 +6385,14 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 				//Si layer2 tbblue
 				if (MACHINE_IS_TBBLUE && tbblue_is_active_layer2() ) {
 						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
+						z80_int final_color_layer2=tbblue_get_palette_active_layer2(color_layer2);
 
 						//Si layer2 encima
 						if ( (tbblue_port_123b & 16)==0) {
 
 							//Pixel en Layer2 no transparente. Mostramos pixel de layer2
 							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
-								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+color_layer2);
+								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
 							}
 
 							//Pixel en layer2 transparente. Mostramos pixel normal de pantalla speccy
@@ -6411,7 +6412,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 							else {
 								//Pixel en pantalla speccy transparente. Mostramos pixel de layer2
-								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+color_layer2);
+								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
 							}
 						}
 				}
