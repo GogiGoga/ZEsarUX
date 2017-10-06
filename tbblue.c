@@ -368,6 +368,18 @@ void tbblue_reset_palettes(void)
  		tbblue_palette_sprite_second[i]=i*2;
 	}
 
+	//Pero el ultimo color quiero que apunte a 511 y no 510, porque sino, el 510 es:
+	//FFFFDBH amarillento
+	//y 511 es:
+	//FFFFFFH blanco
+
+
+	tbblue_palette_ula_first[255]=511;
+ 	tbblue_palette_ula_second[255]=511;
+ 	tbblue_palette_layer2_first[255]=511;
+ 	tbblue_palette_layer2_second[255]=511;
+ 	tbblue_palette_sprite_first[255]=511;
+ 	tbblue_palette_sprite_second[255]=511;
 	
 }
 

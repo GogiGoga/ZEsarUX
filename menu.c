@@ -6450,11 +6450,16 @@ int menu_debug_sprites_total_colors_mapped_palette(int paleta)
 
 		//RGB8 Tbblue
 		case 7:
+		case 8:
+		case 9:
+		case 10:
+		case 11:
+		case 12:
 			return 256;
 		break;
 
 		//TSConf
-		case 8:
+		case 13:
 			return 256;
 		break;
 
@@ -6507,11 +6512,16 @@ int menu_debug_sprites_max_value_mapped_palette(int paleta)
 
 		//RGB9 Tbblue
 		case 7:
+		case 8:
+		case 9:
+		case 10:
+		case 11:
+		case 12:
 			return RGB9_TOTAL_PALETTE_COLOURS;
 		break;
 
 		//TSConf
-		case 8:
+		case 13:
 			return TSCONF_TOTAL_PALETTE_COLOURS;
 		break;
 
@@ -6603,7 +6613,7 @@ int menu_debug_sprites_return_index_palette(int paleta, z80_byte color)
 	return color;
 }
 
-//Retorna valor de color asociado a la paleta actual
+//Retorna valor de color asociado a la paleta actual mapeada
 int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 {
 
@@ -6641,10 +6651,15 @@ int menu_debug_sprites_return_color_palette(int paleta, z80_byte color)
 		break;
 
 		case 7:
+		case 8:
+		case 9:
+		case 10:
+		case 11:
+		case 12:
 			return RGB9_INDEX_FIRST_COLOR+index;
 		break;
 
-		case 8:
+		case 13:
 			return TSCONF_INDEX_FIRST_COLOR+index;
 		break;
 
