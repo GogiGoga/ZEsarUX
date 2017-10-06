@@ -6531,7 +6531,7 @@ int menu_debug_sprites_max_value_mapped_palette(int paleta)
 }
 
 
-//Retorna indice color asociado a la paleta actual
+//Retorna indice color asociado a la paleta indicada
 int menu_debug_sprites_return_index_palette(int paleta, z80_byte color)
 {
 

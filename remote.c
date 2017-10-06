@@ -786,11 +786,13 @@ struct s_items_ayuda items_ayuda[]={
   {"speech-empty-fifo",NULL,NULL,"Empty speech fifo"},
   {"speech-send",NULL,"message","Sends message to speech"},
 
- {"tbblue-get-palette",NULL,"index [items]","Get palette colours at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+ {"tbblue-get-palette",NULL,"ula|layer2|sprite first|second index [items]","Get palette colours at index, if not specified items parameters, returns only one. You need to tell which palette. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
+
+
  {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
- {"tbblue-set-palette",NULL,"index value","Sets palette values starting at desired starting index. Values must be separed by one space each one"},
+ {"tbblue-set-palette",NULL,"ula|layer2|sprite first|second index value","Sets palette values starting at desired starting index. You need to tell which palette. Values must be separed by one space each one"},
  {"tbblue-set-pattern",NULL,"index value","Sets pattern values starting at desired pattern index. Values must be separed by one space each one, you can only define one pattern maximum (so 256 values maximum)"},
  {"tbblue-set-sprite",NULL,"index value","Sets sprite values starting at desired sprite index. Values must be separed by one space each one, you can only define one sprite maximum (so 4 values maximum)"},
 
@@ -2485,6 +2487,22 @@ void remote_simple_help(int misocket)
 
 }
 
+//Copia de origen hasta destino finalizado con espacio o 0
+void remote_copy_string_spc(char *origen, char *destino)
+{
+
+  if (origen!=NULL) {
+    while (*origen!=0 && *origen!=32) {
+      *destino=*origen;
+
+      destino++;
+      origen++;
+    }
+  }
+
+  *destino=0;
+}
+
 
 
 char remote_get_raw_source_code_char(int posicion)
@@ -2874,6 +2892,45 @@ int return_internal_pointer(char *s,z80_byte **puntero)
 	*puntero=inicio;
 
 	return retorno;
+}
+
+
+//Retorna puntero a array de paleta, segun 
+//tipo : ula|layer2|sprite
+//firstsecond: first|second
+//Retorna NULL si hay algun error
+z80_int *remote_return_palette(char *tipo, char *firstsecond)
+{
+
+  int segundo=0;
+
+  if (!strcmp(firstsecond,"first")) segundo=0;
+  else if (!strcmp(firstsecond,"second")) segundo=1;
+  else return NULL;
+  /*
+  z80_int tbblue_palette_ula_first[256];
+z80_int tbblue_palette_ula_second[256];
+z80_int tbblue_palette_layer2_first[256];
+z80_int tbblue_palette_layer2_second[256];
+z80_int tbblue_palette_sprite_first[256];
+z80_int tbblue_palette_sprite_second[256];
+*/
+
+  if (!strcmp(tipo,"ula")) {
+    if (segundo) return tbblue_palette_ula_second;
+    else return tbblue_palette_ula_first;
+  }
+  else   if (!strcmp(tipo,"layer2")) {
+    if (segundo) return tbblue_palette_layer2_second;
+    else return tbblue_palette_layer2_first;
+  }
+  else   if (!strcmp(tipo,"sprite")) {
+    if (segundo) return tbblue_palette_sprite_second;
+    else return tbblue_palette_sprite_first;
+  }
+
+  return NULL;
+
 }
 
 
@@ -3753,21 +3810,28 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 		if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
 		else {
 			remote_parse_commands_argvc(parametros);
-			if (remote_command_argc<1) {
-				escribir_socket(misocket,"ERROR. Needs one parameter minimum");
+			if (remote_command_argc<3) {
+				escribir_socket(misocket,"ERROR. Needs three parameter minimum");
 				return;
 			}
 
-			z80_byte index=parse_string_to_number(remote_command_argv[0]);
+			z80_byte index=parse_string_to_number(remote_command_argv[2]);
+
+      z80_int *paleta;
+      paleta=remote_return_palette(remote_command_argv[0],remote_command_argv[1]);
+      if (paleta==NULL) {
+        escribir_socket(misocket,"ERROR. Unknown palette");
+        return;
+      }
 
 			int items=1;
-			if (remote_command_argc>1) items=parse_string_to_number(remote_command_argv[1]);
+			if (remote_command_argc>3) items=parse_string_to_number(remote_command_argv[3]);
 			//if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
 
 			for (;items;items--) {
 				//z80_byte color=tbsprite_palette[index++];  
-        z80_byte color=tbblue_palette_sprite_first[index++];  //primera paleta
-				escribir_socket_format(misocket,"%02X ",color);
+        z80_int color=paleta[index++];  //primera paleta
+				escribir_socket_format(misocket,"%03X ",color);
 			}
 
 	        }
@@ -3855,16 +3919,44 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 			escribir_socket(misocket,"ERROR. No parameters set");
 		}
 
+    //ula|layer2|sprite first|second index value
 		else {
 
-			index=parse_string_to_number(parametros);
+      //remote_copy_string_spc
+      char nombrepaleta[100];
+      char tipopaleta[100];
+      char textoindice[100];
+
+      char *s;
+      s=parametros;
+
+      remote_copy_string_spc(s,nombrepaleta);
+      s=find_space_or_end(s);
+
+      remote_copy_string_spc(s,tipopaleta);
+      s=find_space_or_end(s);
+
+      remote_copy_string_spc(s,textoindice);
+      s=find_space_or_end(s);
+
+      //printf ("%s-%s-%s\n",nombrepaleta,tipopaleta,textoindice);
+
+      z80_int *paleta;
+      paleta=remote_return_palette(nombrepaleta,tipopaleta);
+      if (paleta==NULL) {
+        escribir_socket(misocket,"ERROR. Unknown palette");
+        return;
+      }
+
+
+			index=parse_string_to_number(textoindice);
 
 			//Ver si hay espacio
-			char *s=find_space_or_end(parametros);
+			//s=find_space_or_end(parametros);
 			while (*s) {
 				valor=parse_string_to_number(s);
-				//tbsprite_palette[index++]=valor;
-        tbblue_palette_sprite_first[index++]=valor; //primera paleta
+
+        paleta[index++]=valor; 
 
 				s=find_space_or_end(s);
 			}
