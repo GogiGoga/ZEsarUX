@@ -2134,7 +2134,28 @@ z80_byte tbblue_get_value_port(void)
 
 
 
+//Devuelve puntero a direccion de memoria donde esta el scanline en modo lores para direccion y
+z80_byte *get_lores_pointer(int y)
+{
+	z80_byte *base_pointer;
 
+	//Siempre saldra de ram 5
+	base_pointer=tbblue_ram_memory_pages[5*2];	
+
+	//128x96 one byte per pixel in left to right, top to bottom order so that the 
+	//top half of the screen is in the first timex display file at 0x4000 
+	//and the bottom half is in the second timex display file at 0x6000
+	
+	z80_int offset=0;
+
+	if (y>=96/2) {
+		offset=0x2000;
+	}
+
+	base_pointer +=offset;
+
+	return base_pointer;
+}
 
 
 
@@ -2245,6 +2266,20 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
 	//Por defecto
 	puntero_buffer_atributos=scanline_buffer;
 
+	/* modo lores
+	(R/W) 0x15 (21) => Sprite and Layers system
+  bit 7 - LoRes mode, 128 x 96 x 256 colours (1 = enabled)
+  bits 6-5 = Reserved, must be 0
+  	*/
+
+  	int tbblue_lores=tbblue_registers[0x15] & 128;
+
+  	z80_byte *lores_pointer;
+
+  	if (tbblue_lores) {
+  		lores_pointer=get_lores_pointer(scanline_copia/2);  //admite hasta y=95, dividimos entre 2 linea actual
+  	}
+
 
 	if (timex_video_emulation.v) {
 		//Modos de video Timex
@@ -2350,6 +2385,18 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 				
 				color= ( byte_leido & 128 ? ink : paper ) ;
 
+				if (tbblue_lores) {
+					
+
+					z80_byte lorescolor=*lores_pointer;
+					//tenemos indice color de paleta
+					//transformar a color final segun paleta ula activa
+					color=tbblue_get_palette_active_ula(lorescolor);
+
+					//x lo incremento cuando bit es impar, para tener doble de ancho
+					if (bit&1) lores_pointer++; 
+				}
+
 				//Si layer2 tbblue
 				if (tbblue_is_active_layer2() ) {
 						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
@@ -2387,7 +2434,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 
 				else {
-                                store_value_rainbow(puntero_buf_rainbow,color);
+                                	store_value_rainbow(puntero_buf_rainbow,color);
 				}
 
                                 byte_leido=byte_leido<<1;

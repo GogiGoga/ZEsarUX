@@ -76,11 +76,7 @@ O quizá setting configurable
 
 -tbblue:
 *paleta 9 bits. necesario gestion de color de layer2 (necesita mapeo de paleta first/second de layer2) y colores ula para esa paleta tambien
-*poder ver mapeado de las otras 5 paletas (actualmente muestra el mapeo de la primera paleta de sprites solo). tanto en menu de ver paletas como en el de sprite (al activar sprite hardware tbblue)
 
-
-*lores layer
-*radasjim mode
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *layer2 con ulaplus y quiza otros modos?? parece que no va?? quiza porque color es diferente? probado con layer2 detras y parece que no lo haga->ya no me preocupa. ulaplus no esta soportado
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
@@ -89,7 +85,6 @@ O quizá setting configurable
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
-*MMU
 *update bios
 
 
