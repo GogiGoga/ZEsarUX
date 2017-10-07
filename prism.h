@@ -111,4 +111,72 @@ extern z80_byte prism_retorna_ram_entra(void);
 extern void prism_set_emulator_setting_cpuspeed(void);
 
 
+
+//screendatadecoding
+/*
+0000 – SPECTRUM ATTR: D0-D2 ink, D3-D5, paper, D6 bright, D7 Flash
+
+0001 – 16+16 Colour: ATTR: D0-D2 ink, D3-D5, paper, D6 ink bright, D7 paper bright
+
+0010 - 32 Colour ATTR: D0-D2 ink, D3-D5 paper, D6-D7 "CLUT". In the standard palette, colours 0-15 are the same as the normal Spectrum palette and colours 16-31 are darker versions of the no
+rmal spectrum palette)
+
+0011 - RESERVED
+
+0100 - 256 Colour mode 1 - D0-D7 = ink colour. Paper colour is determined by ULA2 BORDER (IO 0x9E3B)
+*/
+
+#define GET_PIXEL_COLOR_PRISM \
+            switch (screendatadecoding) { \
+            \
+            case 0: \
+            default: \
+                        ink=attribute &7; \
+                        paper=(attribute>>3) &7; \
+                        bright=(attribute)&64; \
+                        flash=(attribute)&128; \
+                        if (flash) { \
+                                if (estado_parpadeo.v) { \
+                                        aux=paper; \
+                                        paper=ink; \
+                                        ink=aux; \
+                                } \
+                        } \
+                        \
+                        if (bright) {   \
+                                paper+=8; \
+                                ink+=8; \
+                        } \
+            break; \
+            \
+            case 1: \
+            ink=attribute &7; \
+                        paper=(attribute>>3) &7; \
+                        bright=(attribute)&64; \
+                        bright2=(attribute)&128; \
+            if (bright) {   \
+                                ink+=8; \
+                        } \
+            if (bright2) {   \
+                                paper+=8; \
+                        } \
+                        break; \
+            \
+            case 2: \
+            ink=attribute &7; \
+                        paper=(attribute>>3) &7; \
+                        clut=((attribute)&(64+128))>>6; \
+            ink +=8*clut; \
+            paper +=8*clut; \
+            break; \
+            \
+            case 4: \
+            ink=attribute; \
+            paper=prism_ula2_border_colour; \
+            break; \
+            } \
+
+
+
+
 #endif

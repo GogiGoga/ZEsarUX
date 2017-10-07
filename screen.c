@@ -559,11 +559,7 @@ void store_value_rainbow_debug(z80_int **p, z80_int valor)
 }
 
 
-//Funcion normal
-#define store_value_rainbow(p,x) *p++=x;
 
-//Funcion con debug
-//#define store_value_rainbow(p,x) store_value_rainbow_debug(&p,x);
 
 
 void recalcular_get_total_ancho_rainbow(void)
@@ -4050,116 +4046,8 @@ void screen_store_scanline_rainbow_border_comun_supinf(void)
 }
 
 
-/*
-Macro de obtencion de color de un pixel
-Nota: Quiza el if (ulaplus_presente.v && ulaplus_enabled.v) consume algunos ciclos de cpu,
-y se podria haber evitado, haciendo rutina de screen_store_scanline_rainbow_solo_display solo para ulaplus,
-con lo cual el if se evitaria y ahorrariamos ciclos de cpu...
-Esto a la practica no ahorra cpu apreciable, y ademas, se tendria
-otra rutina de screen_store_scanline_rainbow_solo_display diferente de la que no tiene ulaplus,
-agregando duplicidad de funciones sin verdadera necesidad...
-*/
-#define GET_PIXEL_COLOR \
-			if (ulaplus_presente.v && ulaplus_enabled.v) {  \
-				GET_PIXEL_ULAPLUS_COLOR \
-			} \
-			else { \
-                        ink=attribute &7; \
-                        paper=(attribute>>3) &7; \
-                        bright=(attribute)&64; \
-                        flash=(attribute)&128; \
-                        if (flash) { \
-                                if (estado_parpadeo.v) { \
-                                        aux=paper; \
-                                        paper=ink; \
-                                        ink=aux; \
-                                } \
-                        } \
-			\
-			if (bright) {	\
-				paper+=8; \
-				ink+=8; \
-			} \
-			} \
 
 
-//Macro de obtencion de color de un pixel con ulaplus
-#define GET_PIXEL_ULAPLUS_COLOR \
-                        ink=attribute &7; \
-                        paper=(attribute>>3) &7; \
-                        bright=( (attribute)&64 ? 1 : 0 )  ; \
-                        flash=( (attribute)&128 ? 1 : 0 ) ; \
-			\
-			z80_int temp_color=(flash * 2 + bright) * 16; \
-			ink=temp_color+ink; \
-			ink=ulaplus_palette_table[ink]+ ULAPLUS_INDEX_FIRST_COLOR ; \
-			paper=temp_color+paper+8;  \
-			paper=ulaplus_palette_table[paper]+ ULAPLUS_INDEX_FIRST_COLOR ; \
-
-
-//screendatadecoding
-/*
-0000 – SPECTRUM ATTR: D0-D2 ink, D3-D5, paper, D6 bright, D7 Flash
-
-0001 – 16+16 Colour: ATTR: D0-D2 ink, D3-D5, paper, D6 ink bright, D7 paper bright
-
-0010 - 32 Colour ATTR: D0-D2 ink, D3-D5 paper, D6-D7 "CLUT". In the standard palette, colours 0-15 are the same as the normal Spectrum palette and colours 16-31 are darker versions of the no
-rmal spectrum palette)
-
-0011 - RESERVED
-
-0100 - 256 Colour mode 1 - D0-D7 = ink colour. Paper colour is determined by ULA2 BORDER (IO 0x9E3B)
-*/
-
-#define GET_PIXEL_COLOR_PRISM \
-			switch (screendatadecoding) { \
-			\
-			case 0: \
-			default: \
-                        ink=attribute &7; \
-                        paper=(attribute>>3) &7; \
-                        bright=(attribute)&64; \
-                        flash=(attribute)&128; \
-                        if (flash) { \
-                                if (estado_parpadeo.v) { \
-                                        aux=paper; \
-                                        paper=ink; \
-                                        ink=aux; \
-                                } \
-                        } \
-                        \
-                        if (bright) {   \
-                                paper+=8; \
-                                ink+=8; \
-                        } \
-			break; \
-			\
-			case 1: \
-			ink=attribute &7; \
-                        paper=(attribute>>3) &7; \
-                        bright=(attribute)&64; \
-                        bright2=(attribute)&128; \
-			if (bright) {   \
-                                ink+=8; \
-                        } \
-			if (bright2) {   \
-                                paper+=8; \
-                        } \
-                        break; \
-			\
-			case 2: \
-			ink=attribute &7; \
-                        paper=(attribute>>3) &7; \
-                        clut=((attribute)&(64+128))>>6; \
-			ink +=8*clut; \
-			paper +=8*clut; \
-			break; \
-			\
-			case 4: \
-			ink=attribute; \
-			paper=prism_ula2_border_colour; \
-			break; \
-			} \
 
 
 //para snow effect
@@ -5847,11 +5735,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 
         direccion=screen_addr_table[(y_origen_pixeles<<5)];
 
-				//Inicializar puntero a layer2 de tbblue, irlo incrementando a medida que se ponen pixeles
-				//int tbblue_layer2_offset=tbblue_get_offset_start_layer2();
-
-				//tbblue_layer2_offset +=scanline_copia*256;
-
+				
 
 
 
@@ -6062,6 +5946,13 @@ void screen_store_scanline_rainbow_solo_display(void)
 	}
 
 
+	//Funcion aparte para tbblue
+	if (MACHINE_IS_TBBLUE) {
+
+		screen_store_scanline_rainbow_solo_display_tbblue();
+		return;
+	}
+
 	//si linea no coincide con entrelazado, volvemos
 	if (if_store_scanline_interlace(t_scanline_draw)==0) return;
 
@@ -6075,7 +5966,6 @@ void screen_store_scanline_rainbow_solo_display(void)
 		//Aqui se entra tanto si es spectrum como si es prism
 		screen_store_scanline_rainbow_solo_display_ulaplus_lineal();
 		spritechip_do_overlay();
-		if (MACHINE_IS_TBBLUE && rainbow_enabled.v) tbsprite_do_overlay();
 		return;
 	}
 
@@ -6130,28 +6020,7 @@ void screen_store_scanline_rainbow_solo_display(void)
 
         direccion=screen_addr_table[(scanline_copia<<5)];
 
-				//Inicializar puntero a layer2 de tbblue, irlo incrementando a medida que se ponen pixeles
-				//Layer2 siempre se dibuja desde registro que indique pagina 18. Registro 19 es un backbuffer pero siempre se dibuja desde 18
-				int tbblue_layer2_offset=tbblue_registers[18]&63;
-
-				tbblue_layer2_offset*=16384;
-
-
-				//Mantener el offset y en 0..255
-				z80_byte tbblue_reg_23=tbblue_registers[23];
-				tbblue_reg_23 +=scanline_copia;
-
-				tbblue_layer2_offset +=tbblue_reg_23*256;
-
-				z80_byte tbblue_reg_22=tbblue_registers[22];
-
-/*
-(R/W) 22 => Layer2 Offset X
-  bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
-
-(R/W) 23 => Layer2 Offset Y
-  bist 7-0 = Y Offset (0-255)(Reset to 0 after a reset)
-*/
+				
 
 
         fila=scanline_copia/8;
@@ -6382,51 +6251,18 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 				color= ( byte_leido & 128 ? ink : paper ) ;
 
-				//Si layer2 tbblue
-				if (MACHINE_IS_TBBLUE && tbblue_is_active_layer2() ) {
-						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
-						z80_int final_color_layer2=tbblue_get_palette_active_layer2(color_layer2);
-
-						//Si layer2 encima
-						if ( (tbblue_port_123b & 16)==0) {
-
-							//Pixel en Layer2 no transparente. Mostramos pixel de layer2
-							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
-								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
-							}
-
-							//Pixel en layer2 transparente. Mostramos pixel normal de pantalla speccy
-							else {
-								store_value_rainbow(puntero_buf_rainbow,color);
-							}
-						}
-
-						//Layer2 debajo
-						else {
-							z80_byte tbblue_color_transparente=tbblue_registers[20];
-
-							//Pixel en pantalla speccy no transparente. Mostramos pixel normal de pantalla speccy
-							if (color!=tbblue_color_transparente) {
-								store_value_rainbow(puntero_buf_rainbow,color);
-							}
-
-							else {
-								//Pixel en pantalla speccy transparente. Mostramos pixel de layer2
-								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
-							}
-						}
-				}
+				
 
 
-				else {
+				
                                 store_value_rainbow(puntero_buf_rainbow,color);
-				}
+				
 
                                 byte_leido=byte_leido<<1;
 
 
 																//tbblue_layer2_offset++;
-				tbblue_reg_22++;
+				
                         }
 			direccion++;
                 	//dir_atributo++;
@@ -6439,7 +6275,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 	}
 	spritechip_do_overlay();
-	if (MACHINE_IS_TBBLUE) tbsprite_do_overlay();
+
 
 }
 

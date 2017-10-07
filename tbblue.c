@@ -34,6 +34,9 @@
 #include "ulaplus.h"
 #include "screen.h"
 
+#include "timex.h"
+#include "ula.h"
+
 //Punteros a los 64 bloques de 8kb de ram de spectrum
 z80_byte *tbblue_ram_memory_pages[64];
 
@@ -2128,3 +2131,284 @@ z80_byte tbblue_get_value_port(void)
 {
 	return tbblue_get_value_port_register(tbblue_last_register);
 }
+
+
+
+
+
+
+
+//Guardar en buffer rainbow la linea actual. Para Spectrum. solo display
+//Tener en cuenta que si border esta desactivado, la primera linea del buffer sera de display,
+//en cambio, si border esta activado, la primera linea del buffer sera de border
+void screen_store_scanline_rainbow_solo_display_tbblue(void)
+{
+
+	//si linea no coincide con entrelazado, volvemos
+	if (if_store_scanline_interlace(t_scanline_draw)==0) return;
+
+  if (t_scanline_draw>=screen_indice_inicio_pant && t_scanline_draw<screen_indice_fin_pant) {
+
+
+
+
+
+
+
+        //printf ("scan line de pantalla fisica (no border): %d\n",t_scanline_draw);
+
+        //linea que se debe leer
+        int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
+
+        //la copiamos a buffer rainbow
+        z80_int *puntero_buf_rainbow;
+        //esto podria ser un contador y no hace falta que lo recalculemos cada vez. TODO
+        int y;
+
+        y=t_scanline_draw-screen_invisible_borde_superior;
+        if (border_enabled.v==0) y=y-screen_borde_superior;
+
+        puntero_buf_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
+
+        puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+
+
+        int x,bit;
+        z80_int direccion;
+	//z80_int dir_atributo;
+        z80_byte byte_leido;
+
+
+        int color=0;
+        int fila;
+
+        z80_byte attribute,bright,flash;
+	z80_int ink,paper,aux;
+
+
+        z80_byte *screen=get_base_mem_pantalla();
+
+        direccion=screen_addr_table[(scanline_copia<<5)];
+
+				//Inicializar puntero a layer2 de tbblue, irlo incrementando a medida que se ponen pixeles
+				//Layer2 siempre se dibuja desde registro que indique pagina 18. Registro 19 es un backbuffer pero siempre se dibuja desde 18
+				int tbblue_layer2_offset=tbblue_registers[18]&63;
+
+				tbblue_layer2_offset*=16384;
+
+
+				//Mantener el offset y en 0..255
+				z80_byte tbblue_reg_23=tbblue_registers[23];
+				tbblue_reg_23 +=scanline_copia;
+
+				tbblue_layer2_offset +=tbblue_reg_23*256;
+
+				z80_byte tbblue_reg_22=tbblue_registers[22];
+
+/*
+(R/W) 22 => Layer2 Offset X
+  bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
+
+(R/W) 23 => Layer2 Offset Y
+  bist 7-0 = Y Offset (0-255)(Reset to 0 after a reset)
+*/
+
+
+        fila=scanline_copia/8;
+        //dir_atributo=6144+(fila*32);
+
+
+	z80_byte *puntero_buffer_atributos;
+
+
+	//Si modo timex 512x192 pero se hace modo escalado
+	//Si es modo timex 512x192, llamar a otra funcion
+        if (timex_si_modo_512_y_zoom_par() ) {
+                //Si zoom x par
+                                        if (timex_mode_512192_real.v) {
+                                                return;
+                                        }
+        }
+
+
+	//temporal modo 6 timex 512x192 pero hacemos 256x192
+	z80_byte temp_prueba_modo6[SCANLINEBUFFER_ONE_ARRAY_LENGTH];
+	z80_byte col6;
+	z80_byte tin6, pap6;
+
+	z80_byte timex_video_mode=timex_port_ff&7;
+	z80_byte timexhires_resultante;
+	z80_int timexhires_origen;
+
+	z80_bit si_timex_hires={0};
+
+	//Por defecto
+	puntero_buffer_atributos=scanline_buffer;
+
+
+	if (timex_video_emulation.v) {
+		//Modos de video Timex
+		/*
+000 - Video data at address 16384 and 8x8 color attributes at address 22528 (like on ordinary Spectrum);
+
+001 - Video data at address 24576 and 8x8 color attributes at address 30720;
+
+010 - Multicolor mode: video data at address 16384 and 8x1 color attributes at address 24576;
+
+110 - Extended resolution: without color attributes, even columns of video data are taken from address 16384, and odd columns of video data are taken from address 24576
+		*/
+		switch (timex_video_mode) {
+
+			case 4:
+			case 6:
+				//512x192 monocromo. aunque hacemos 256x192
+				//y color siempre fijo
+				/*
+bits D3-D5: Selection of ink and paper color in extended screen resolution mode (000=black/white, 001=blue/yellow, 010=red/cyan, 011=magenta/green, 100=green/magenta, 101=cyan/red, 110=yellow/blue, 111=white/black); these bits are ignored when D2=0
+
+				black, blue, red, magenta, green, cyan, yellow, white
+				*/
+
+				//Si D2==0, these bits are ignored when D2=0?? Modo 4 que es??
+
+				//col6=(timex_port_ff>>3)&7;
+				tin6=get_timex_ink_mode6_color();
+
+
+				//Obtenemos color
+				//tin6=col6;
+				pap6=get_timex_paper_mode6_color();
+
+				//Y con brillo
+				col6=((pap6*8)+tin6)+64;
+
+				//Nos inventamos un array de colores, con mismo color siempre, correspondiente a lo que dice el registro timex
+				//Saltamos de dos en dos
+				//De manera similar al buffer scanlines_buffer, hay pixel, atributo, pixel, atributo, etc
+				//por eso solo llenamos la parte que afecta al atributo
+
+				puntero_buffer_atributos=temp_prueba_modo6;
+				int i;
+				for (i=1;i<SCANLINEBUFFER_ONE_ARRAY_LENGTH;i+=2) {
+					temp_prueba_modo6[i]=col6;
+				}
+				si_timex_hires.v=1;
+			break;
+
+
+		}
+	}
+
+
+	int posicion_array_pixeles_atributos=0;
+        for (x=0;x<32;x++) {
+
+
+                        //byte_leido=screen[direccion];
+                        byte_leido=puntero_buffer_atributos[posicion_array_pixeles_atributos++];
+
+			//Timex. Reducir 512x192 a 256x192.
+			//Obtenemos los dos bytes implicados, metemos en variable de 16 bits,
+			//Y vamos comprimiendo cada 2 pixeles. De cada 2 pixeles, si los dos son 0, metemos 0. Si alguno o los dos son 1, metemos 1
+			//Esto es muy lento
+
+			if (si_timex_hires.v) {
+
+					//comprimir bytes
+					timexhires_resultante=0;
+					//timexhires_origen=byte_leido*256+screen[direccion+8192];
+					timexhires_origen=screen[direccion]*256+screen[direccion+8192];
+
+					//comprimir pixeles
+					int i;
+					for (i=0;i<8;i++) {
+						timexhires_resultante=timexhires_resultante<<1;
+						if ( (timexhires_origen&(32768+16384))   ) timexhires_resultante |=1;
+						timexhires_origen=timexhires_origen<<2;
+					}
+
+					byte_leido=timexhires_resultante;
+
+			}
+
+
+
+                        attribute=puntero_buffer_atributos[posicion_array_pixeles_atributos++];
+
+
+                                
+
+
+			GET_PIXEL_COLOR
+
+			int cambiada_tinta,cambiada_paper;
+
+			cambiada_tinta=cambiada_paper=0;
+
+                        for (bit=0;bit<8;bit++) {
+
+				
+				color= ( byte_leido & 128 ? ink : paper ) ;
+
+				//Si layer2 tbblue
+				if (tbblue_is_active_layer2() ) {
+						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
+						z80_int final_color_layer2=tbblue_get_palette_active_layer2(color_layer2);
+
+						//Si layer2 encima
+						if ( (tbblue_port_123b & 16)==0) {
+
+							//Pixel en Layer2 no transparente. Mostramos pixel de layer2
+							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
+								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
+							}
+
+							//Pixel en layer2 transparente. Mostramos pixel normal de pantalla speccy
+							else {
+								store_value_rainbow(puntero_buf_rainbow,color);
+							}
+						}
+
+						//Layer2 debajo
+						else {
+							z80_byte tbblue_color_transparente=tbblue_registers[20];
+
+							//Pixel en pantalla speccy no transparente. Mostramos pixel normal de pantalla speccy
+							if (color!=tbblue_color_transparente) {
+								store_value_rainbow(puntero_buf_rainbow,color);
+							}
+
+							else {
+								//Pixel en pantalla speccy transparente. Mostramos pixel de layer2
+								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
+							}
+						}
+				}
+
+
+				else {
+                                store_value_rainbow(puntero_buf_rainbow,color);
+				}
+
+                                byte_leido=byte_leido<<1;
+
+
+																//tbblue_layer2_offset++;
+				tbblue_reg_22++;
+                        }
+			direccion++;
+                	//dir_atributo++;
+
+
+        	}
+
+
+
+
+	}
+
+	tbsprite_do_overlay();
+
+}
+
+

@@ -133,6 +133,6 @@ extern int tbblue_is_active_layer2(void);
 #define TBBLUE_MACHINE_128_P2 (TBBLUE_MACHINE_TYPE==2)
 #define TBBLUE_MACHINE_P2A (TBBLUE_MACHINE_TYPE==3)
 
-
+extern void screen_store_scanline_rainbow_solo_display_tbblue(void);
 
 #endif

@@ -616,4 +616,64 @@ extern z80_byte get_zxuno_tbblue_rasterctrl(void);
 extern void zxuno_tbblue_handle_raster_interrupts();
 
 
+
+/*
+Macro de obtencion de color de un pixel
+Nota: Quiza el if (ulaplus_presente.v && ulaplus_enabled.v) consume algunos ciclos de cpu,
+y se podria haber evitado, haciendo rutina de screen_store_scanline_rainbow_solo_display solo para ulaplus,
+con lo cual el if se evitaria y ahorrariamos ciclos de cpu...
+Esto a la practica no ahorra cpu apreciable, y ademas, se tendria
+otra rutina de screen_store_scanline_rainbow_solo_display diferente de la que no tiene ulaplus,
+agregando duplicidad de funciones sin verdadera necesidad...
+*/
+#define GET_PIXEL_COLOR \
+            if (ulaplus_presente.v && ulaplus_enabled.v) {  \
+                GET_PIXEL_ULAPLUS_COLOR \
+            } \
+            else { \
+                        ink=attribute &7; \
+                        paper=(attribute>>3) &7; \
+                        bright=(attribute)&64; \
+                        flash=(attribute)&128; \
+                        if (flash) { \
+                                if (estado_parpadeo.v) { \
+                                        aux=paper; \
+                                        paper=ink; \
+                                        ink=aux; \
+                                } \
+                        } \
+            \
+            if (bright) {   \
+                paper+=8; \
+                ink+=8; \
+            } \
+            } \
+
+
+
+
+
+//Macro de obtencion de color de un pixel con ulaplus
+#define GET_PIXEL_ULAPLUS_COLOR \
+                        ink=attribute &7; \
+                        paper=(attribute>>3) &7; \
+                        bright=( (attribute)&64 ? 1 : 0 )  ; \
+                        flash=( (attribute)&128 ? 1 : 0 ) ; \
+            \
+            z80_int temp_color=(flash * 2 + bright) * 16; \
+            ink=temp_color+ink; \
+            ink=ulaplus_palette_table[ink]+ ULAPLUS_INDEX_FIRST_COLOR ; \
+            paper=temp_color+paper+8;  \
+            paper=ulaplus_palette_table[paper]+ ULAPLUS_INDEX_FIRST_COLOR ; \
+
+
+
+
+//Funcion normal
+#define store_value_rainbow(p,x) *p++=x;
+
+//Funcion con debug
+//#define store_value_rainbow(p,x) store_value_rainbow_debug(&p,x);            
+
+
 #endif

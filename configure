@@ -1257,7 +1257,7 @@ remote.o: remote.c remote.h cpu.h debug.h utils.h compileoptions.h ql.h disassem
 esxdos_handler.o: esxdos_handler.c esxdos_handler.h cpu.h operaciones.h debug.h menu.h utils.h diviface.h screen.h
 	\$(CC) \$(CFLAGS) -c esxdos_handler.c
 
-tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h
+tbblue.o: tbblue.c tbblue.h cpu.h mem128.h debug.h contend.h utils.h menu.h divmmc.h diviface.h ulaplus.h screen.h timex.h
 	\$(CC) \$(CFLAGS) -c tbblue.c
 
 zx8081.o: zx8081.c zx8081.h cpu.h screen.h debug.h audio.h core_zx8081.h operaciones.h menu.h ula.h
