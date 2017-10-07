@@ -2148,16 +2148,21 @@ z80_byte *get_lores_pointer(int y)
 	
 	z80_int offset=0;
 
+	//int yorig=y;
+
 	const int mitad_alto=96/2;
 
 	//Segunda mitad
 	if (y>=mitad_alto) {
+		//printf ("segundo bloque. y=%d offset=%d\n",y,offset);
 		offset +=0x2000;
 		y=y-mitad_alto;
 	}
 
 	//Sumamos desplazamiento por y
 	offset +=y*128;
+
+	//printf ("y: %d offset: %d\n",yorig,offset);
 
 	base_pointer +=offset;
 
@@ -2398,7 +2403,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 					z80_byte lorescolor=*lores_pointer;
 					//tenemos indice color de paleta
 					//transformar a color final segun paleta ula activa
-					color=tbblue_get_palette_active_ula(lorescolor);
+					color=RGB9_INDEX_FIRST_COLOR+tbblue_get_palette_active_ula(lorescolor);
 
 					//x lo incremento cuando bit es impar, para tener doble de ancho
 					if (bit&1) lores_pointer++; 
