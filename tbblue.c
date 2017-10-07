@@ -2148,9 +2148,16 @@ z80_byte *get_lores_pointer(int y)
 	
 	z80_int offset=0;
 
-	if (y>=96/2) {
-		offset=0x2000;
+	const int mitad_alto=96/2;
+
+	//Segunda mitad
+	if (y>=mitad_alto) {
+		offset +=0x2000;
+		y=y-mitad_alto;
 	}
+
+	//Sumamos desplazamiento por y
+	offset +=y*128;
 
 	base_pointer +=offset;
 
