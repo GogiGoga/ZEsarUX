@@ -2353,6 +2353,8 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
 		tbblue_layer_sprites[i]=TBBLUE_TRANSPARENT_COLOR;
 	}
 
+	int bordesupinf=0;
+
   //En zona visible pantalla (no borde superior ni inferior)
   if (t_scanline_draw>=screen_indice_inicio_pant && t_scanline_draw<screen_indice_fin_pant) {
 
@@ -2658,7 +2660,9 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 	}
 
-
+	else {
+		bordesupinf=1;
+	}
 
 	//Aqui puede ser borde superior o inferior
 	//capa sprites
@@ -2715,6 +2719,25 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 					*puntero_final_rainbow=RGB9_INDEX_FIRST_COLOR+color;
 				}
 				//TODO: que pasa si las tres capas son transparentes
+				else {
+					if (bordesupinf) {
+					//Si estamos en borde inferior o superior, no hacemos nada, dibujar color borde
+					}
+
+					else {
+						//Borde izquierdo o derecho o pantalla. Ver si estamos en pantalla
+						if (i>=screen_total_borde_izquierdo*border_enabled.v &&
+							i<screen_total_borde_izquierdo*border_enabled.v+256) {
+							//Poner color negro
+							*puntero_final_rainbow=RGB9_INDEX_FIRST_COLOR+0;
+						}
+
+						else {
+						//Es borde. dejar ese color
+						}
+					
+					}
+				}
 			}
 
 		}
