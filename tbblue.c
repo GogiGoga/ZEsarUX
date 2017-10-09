@@ -74,6 +74,28 @@ z80_int tbblue_palette_sprite_first[256];
 z80_int tbblue_palette_sprite_second[256];
 
 
+//Diferentes layers a componer la imagen final
+/*
+(R/W) 0x15 (21) => Sprite and Layers system
+  bit 7 - LoRes mode, 128 x 96 x 256 colours (1 = enabled)
+  bits 6-5 = Reserved, must be 0
+  bits 4-2 = set layers priorities:
+     Reset default is 000, sprites over the Layer 2, over the ULA graphics
+     000 - S L U
+     001 - L S U
+     010 - S U L
+     011 - L U S
+     100 - U S L
+     101 - U L S
+ */
+
+//Si en zona pantalla y todo es transparente, se pone un 0
+//Layers con el indice al olor final en la paleta RGB9 (0..511)
+z80_int tbblue_layer_ula[512];
+z80_int tbblue_layer_layer2[512];
+z80_int tbblue_layer_sprites[512];
+
+
 //Damos la paleta que se esta leyendo o escribiendo en una operacion de I/O
 //Para ello mirar bits 6-4  de reg 0x43
 z80_int *tbblue_get_palette_rw(void)
@@ -332,7 +354,7 @@ void tbblue_reset_sprites(void)
 	for (i=0;i<TBBLUE_MAX_PATTERNS;i++) {
 		int j;
 		for (j=0;j<256;j++) {
-			tbsprite_patterns[i][j]=TBBLUE_TRANSPARENT_COLOR;
+			tbsprite_patterns[i][j]=TBBLUE_TRANSPARENT_COLOR_INDEX;
 		}
 	}
 
@@ -384,6 +406,45 @@ void tbblue_reset_palettes(void)
  	tbblue_palette_sprite_first[255]=511;
  	tbblue_palette_sprite_second[255]=511;
 	
+
+	//Y de momento la paleta ula first tiene los colores lo mas parecido a spectrum:
+	//CD->DB
+	/*
+	0x000000,  //negro 0
+0x0000CD,  //azul 1
+0xCD0000,  //rojo 2
+0xCD00CD,  //magenta 3
+0x00CD00,  //verde 4
+0x00CDCD,  //cyan 5
+0xCDCD00,  //amarillo 6
+0xCDCDCD,  //blanco 7
+
+0x000000, 8
+0x0000FF, 9 
+0xFF0000, 10
+0xFF00FF, 11
+0x00FF00, 12
+0x00FFFF, 13
+0xFFFF00, 14
+0xFFFFFF  15
+*/
+	tbblue_palette_ula_first[1]=6; 
+	tbblue_palette_ula_first[2]=384;
+	tbblue_palette_ula_first[3]=390;
+	tbblue_palette_ula_first[4]=48;
+	tbblue_palette_ula_first[5]=54;
+	tbblue_palette_ula_first[6]=432; 
+	tbblue_palette_ula_first[7]=438;
+	tbblue_palette_ula_first[8]=0;
+	tbblue_palette_ula_first[9]=7;
+	tbblue_palette_ula_first[10]=448;
+	tbblue_palette_ula_first[11]=455;
+	tbblue_palette_ula_first[12]=56;
+	tbblue_palette_ula_first[13]=63;
+	tbblue_palette_ula_first[14]=504;
+	tbblue_palette_ula_first[15]=511;
+
+
 }
 
 
@@ -534,9 +595,15 @@ void tbblue_out_sprite_sprite(z80_byte value)
 
 
 //Guarda scanline actual y el pattern (los indices a colores) sobre la paleta activa de sprites
-z80_byte sprite_line[MAX_X_SPRITE_LINE];
+//z80_byte sprite_line[MAX_X_SPRITE_LINE];
 
 
+//Dice si un color de la paleta rbg9 es transparente
+int tbblue_si_transparent(z80_int color)
+{
+	if ( (color&0x1FE)==TBBLUE_TRANSPARENT_COLOR) return 1;
+	return 0;
+}
 
 
 /*
@@ -559,14 +626,21 @@ void tbsprite_put_color_line(int x,z80_byte color,int rangoxmin,int rangoxmax)
 	//Si coordenadas fuera de la parte visible (border si o no), volver
 	if (x<rangoxmin || x>rangoxmax) return;
 
+	z80_int color_final=tbblue_get_palette_active_sprite(color);
+
 	//Si color transparente, no hacer nada
-	if (color==TBBLUE_TRANSPARENT_COLOR) return;
+	if (tbblue_si_transparent(color_final)) return;
+
+	int xfinal=x;
+
+	xfinal +=screen_total_borde_izquierdo*border_enabled.v;
+	xfinal -=TBBLUE_SPRITE_BORDER;
 
 
 	//Ver si habia un color y activar bit colision
-	z80_byte color_antes=sprite_line[x];
+	z80_int color_antes=tbblue_layer_sprites[xfinal];
 
-	if (color_antes!=TBBLUE_TRANSPARENT_COLOR) {
+	if (!tbblue_si_transparent(color_antes)) {
 		//colision
 		tbblue_port_303b |=1;
 		//printf ("set colision flag. result value: %d\n",tbblue_port_303b);
@@ -574,7 +648,7 @@ void tbsprite_put_color_line(int x,z80_byte color,int rangoxmin,int rangoxmax)
 	
 
 	//sprite_line[x]=color;
-	sprite_line[x]=color;
+	tbblue_layer_sprites[xfinal]=color_final;
 
 }
 
@@ -589,7 +663,8 @@ z80_int tbsprite_return_color_index(z80_byte index)
 	//z80_int color_final=tbsprite_palette[index];
 
 	z80_int color_final=tbblue_get_palette_active_sprite(index);
-	return RGB9_INDEX_FIRST_COLOR+color_final;
+	//return RGB9_INDEX_FIRST_COLOR+color_final;
+	return color_final;
 }
 
 void tbsprite_do_overlay(void)
@@ -623,8 +698,10 @@ void tbsprite_do_overlay(void)
 				//Calculos exclusivos para puntero buffer rainbow
 		    int rainbowy=t_scanline_draw-screen_invisible_borde_superior;
 		    if (border_enabled.v==0) rainbowy=rainbowy-screen_borde_superior;
-		    z80_int *puntero_buf_rainbow;
-		    puntero_buf_rainbow=&rainbow_buffer[ rainbowy*get_total_ancho_rainbow() ];
+		    //z80_int *puntero_buf_rainbow;
+		    //puntero_buf_rainbow=&rainbow_buffer[ rainbowy*get_total_ancho_rainbow() ];
+
+		    int puntero_array_layer=0;
 
 
 
@@ -646,9 +723,9 @@ void tbsprite_do_overlay(void)
 
 
 				//Inicializar linea a transparente
-				for (i=0;i<MAX_X_SPRITE_LINE;i++) {
-					sprite_line[i]=TBBLUE_TRANSPARENT_COLOR;
-				}
+				//for (i=0;i<MAX_X_SPRITE_LINE;i++) {
+				//	sprite_line[i]=TBBLUE_TRANSPARENT_COLOR;
+				//}
 
 				int rangoxmin, rangoxmax;
 
@@ -883,9 +960,11 @@ If the display of the sprites on the border is disabled, the coordinates of the 
 			//Tener en cuenta que de 0..31 en x es el border
 			//Posicionar puntero rainbow en zona interior pantalla-32 pixels border
 
-			puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+			//puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 
-			puntero_buf_rainbow -=TBBLUE_SPRITE_BORDER;
+			//puntero_buf_rainbow -=TBBLUE_SPRITE_BORDER;
+
+
 
 			//Inicializar linea a transparente
 
@@ -915,19 +994,21 @@ Register:
 
 
 
+			//Dibujar en buffer rainbow
+			/*
 			for (i=0;i<MAX_X_SPRITE_LINE;i++) {
 				z80_byte color=sprite_line[i];
 
 				if (i>=rangoxmin && i<=rangoxmax) {
 
 					//color transparente hace referencia al valor indice que hay en pattern. y NO al color final
-					if (color!=TBBLUE_TRANSPARENT_COLOR) {
+					//if (color!=TBBLUE_TRANSPARENT_COLOR) {
 
 						//Pasamos de RGB a GRB
-						/*z80_byte r,g,b;
-						r=(color>>5)&7;
-						g=(color>>2)&7;
-						b=(color&3);
+						//z80_byte r,g,b;
+						//r=(color>>5)&7;
+						//g=(color>>2)&7;
+						//b=(color&3);
 
 						z80_byte colorulaplus=(g<<5)|(r<<2)|b;
 
@@ -935,20 +1016,23 @@ Register:
 						//TODO conversion rgb. esto no es ulaplus. usamos tabla ulaplus solo para probar
 
 
-						color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;*/
+						//color_final=colorulaplus+ULAPLUS_INDEX_FIRST_COLOR;
 						z80_int color_final;
 						//color_final=RGB8_INDEX_FIRST_COLOR+color;
 						color_final=tbsprite_return_color_index(color);
 						//color_final=ulaplus_rgb_table[color_final];
 
-						*puntero_buf_rainbow=color_final;
+						// *puntero_buf_rainbow=color_final;
+						tbblue_layer_sprites[puntero_array_layer]=color_fnal;
 
-					}
+					//}
 				}
 
-				puntero_buf_rainbow++;
+				//puntero_buf_rainbow++;
+				puntero_array_layer++;
 
 			}
+			*/
 
 }
 
@@ -1641,12 +1725,11 @@ void tbblue_reset(void)
 	*/
 	tbblue_registers[2]=1;
 	/*
-	(R/W) 20 => Layer 2 transparency color
-  bits 7-4 = Reserved, must be 0
-  bits 3-0 = ULA transparency color (IGRB)(Reset to "1000" black with bright, after a reset)
+	(R/W) 0x14 (20) => Global transparency color
+  bits 7-0 = Transparency color value (Reset to 0xE3, after a reset)
 
 	*/
-	tbblue_registers[20]=8;
+	tbblue_registers[20]=0xE3;
 
 	tbblue_registers[21]=0;
 	tbblue_registers[22]=0;
@@ -1726,6 +1809,17 @@ void tbblue_hard_reset(void)
 	//0x080000 – 0x0FFFFF (512K) => Extra RAM
 	tbblue_registers[18]=32;
 	tbblue_registers[19]=32;
+
+
+	tbblue_registers[20]=0xE3;
+
+	tbblue_registers[21]=0;
+	tbblue_registers[22]=0;
+	tbblue_registers[23]=0;
+
+	tbblue_registers[30]=0;
+	tbblue_registers[31]=0;
+	tbblue_registers[34]=0;
 
 	tbblue_port_123b=0;
 
@@ -2180,6 +2274,14 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
 	//si linea no coincide con entrelazado, volvemos
 	if (if_store_scanline_interlace(t_scanline_draw)==0) return;
 
+	int i;
+	for (i=0;i<512;i++) {
+		tbblue_layer_ula[i]=TBBLUE_TRANSPARENT_COLOR;
+		tbblue_layer_layer2[i]=TBBLUE_TRANSPARENT_COLOR;
+		tbblue_layer_sprites[i]=TBBLUE_TRANSPARENT_COLOR;
+	}
+
+  //En zona visible pantalla (no borde superior ni inferior)
   if (t_scanline_draw>=screen_indice_inicio_pant && t_scanline_draw<screen_indice_fin_pant) {
 
 
@@ -2346,6 +2448,10 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 		}
 	}
 
+	int posicion_array_layer=0;
+
+	posicion_array_layer +=screen_total_borde_izquierdo*border_enabled.v;
+
 
 	int posicion_array_pixeles_atributos=0;
         for (x=0;x<32;x++) {
@@ -2411,11 +2517,10 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 				//Si layer2 tbblue
 				if (tbblue_is_active_layer2() ) {
-						z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
-						z80_int final_color_layer2=tbblue_get_palette_active_layer2(color_layer2);
+
 
 						//Si layer2 encima
-						if ( (tbblue_port_123b & 16)==0) {
+						/*if ( (tbblue_port_123b & 16)==0) {
 
 							//Pixel en Layer2 no transparente. Mostramos pixel de layer2
 							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
@@ -2441,18 +2546,33 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 								//Pixel en pantalla speccy transparente. Mostramos pixel de layer2
 								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
 							}
-						}
+						}*/
 				}
 
 
 				else {
-                                	store_value_rainbow(puntero_buf_rainbow,color);
+                                	//store_value_rainbow(puntero_buf_rainbow,color);
+
+                                	//temp
+                                	//tbblue_layer_ula[posicion_array_layer++]=color;
 				}
+
+				//Capa ula
+				tbblue_layer_ula[posicion_array_layer]=tbblue_get_palette_active_ula(color);
+
+				//Capa layer2
+				if (tbblue_is_active_layer2()) {
+					z80_byte color_layer2=memoria_spectrum[tbblue_layer2_offset+tbblue_reg_22];
+					z80_int final_color_layer2=tbblue_get_palette_active_layer2(color_layer2);
+					tbblue_layer_layer2[posicion_array_layer]=final_color_layer2;
+				}
+
+				posicion_array_layer++;
 
                                 byte_leido=byte_leido<<1;
 
 
-																//tbblue_layer2_offset++;
+					//tbblue_layer2_offset++;
 				tbblue_reg_22++;
                         }
 			direccion++;
@@ -2466,7 +2586,76 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 	}
 
+
+
+	//Aqui puede ser borde superior o inferior
+	//capa sprites
 	tbsprite_do_overlay();
+
+
+	//int i;
+
+	int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
+
+        //la copiamos a buffer rainbow
+        z80_int *puntero_buf_rainbow;
+        //esto podria ser un contador y no hace falta que lo recalculemos cada vez. TODO
+        int y;
+
+        y=t_scanline_draw-screen_invisible_borde_superior;
+        if (border_enabled.v==0) y=y-screen_borde_superior;
+
+	//puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
+	z80_int *puntero_final_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
+
+	//Inicializa punteros a los 3 layers
+	z80_int *p_layer_first;
+	z80_int *p_layer_second;
+	z80_int *p_layer_third;
+
+	//Por defecto
+	//sprites over the Layer 2, over the ULA graphics
+
+	p_layer_first=tbblue_layer_sprites;
+	p_layer_second=tbblue_layer_layer2;
+	p_layer_third=tbblue_layer_ula;
+
+	//TODO: asignar punteros a layers
+
+
+
+
+	z80_int color;
+	//z80_int color_final=;
+
+	for (i=0;i<get_total_ancho_rainbow();i++) {
+
+		//Primera capa
+		color=p_layer_first[i];
+		if (!tbblue_si_transparent(color)) {
+			*puntero_final_rainbow=RGB9_INDEX_FIRST_COLOR+color;
+		}
+
+		else {
+			color=p_layer_second[i];
+			if (!tbblue_si_transparent(color)) {
+				*puntero_final_rainbow=RGB9_INDEX_FIRST_COLOR+color;
+			}
+
+			else {
+				color=p_layer_third[i];
+				if (!tbblue_si_transparent(color)) {
+					*puntero_final_rainbow=RGB9_INDEX_FIRST_COLOR+color;
+				}
+				//TODO: que pasa si las tres capas son transparentes
+			}
+
+		}
+
+		puntero_final_rainbow++;
+
+		
+	}
 
 }
 
