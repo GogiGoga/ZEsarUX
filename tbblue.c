@@ -2265,6 +2265,78 @@ z80_byte *get_lores_pointer(int y)
 
 
 
+//Inicializa punteros a los 3 layers
+z80_int *p_layer_first;
+z80_int *p_layer_second;
+z80_int *p_layer_third;
+
+void tbblue_set_layer_priorities(void)
+{
+	//Por defecto
+	//sprites over the Layer 2, over the ULA graphics
+	p_layer_first=tbblue_layer_sprites;
+	p_layer_second=tbblue_layer_layer2;
+	p_layer_third=tbblue_layer_ula;
+
+	/*
+	(R/W) 0x15 (21) => Sprite and Layers system
+  bit 7 - LoRes mode, 128 x 96 x 256 colours (1 = enabled)
+  bits 6-5 = Reserved, must be 0
+  bits 4-2 = set layers priorities:
+     Reset default is 000, sprites over the Layer 2, over the ULA graphics
+     000 - S L U
+     001 - L S U
+     010 - S U L
+     011 - L U S
+     100 - U S L
+     101 - U L S
+  bit 1 = Over border (1 = yes)(Back to 0 after a reset)
+  bit 0 = Sprites visible (1 = visible)(Back to 0 after a reset)
+  */
+	z80_byte prio=(tbblue_registers[0x15] >> 2)&7;
+
+	switch (prio) {
+		case 0:
+			p_layer_first=tbblue_layer_sprites;
+			p_layer_second=tbblue_layer_layer2;
+			p_layer_third=tbblue_layer_ula;
+		break;
+
+		case 1:
+			p_layer_first=tbblue_layer_layer2;
+			p_layer_second=tbblue_layer_sprites;
+			p_layer_third=tbblue_layer_ula;
+		break;
+
+
+		case 2:
+			p_layer_first=tbblue_layer_sprites;
+			p_layer_second=tbblue_layer_ula;
+			p_layer_third=tbblue_layer_layer2;
+		break;
+
+		case 3:
+			p_layer_first=tbblue_layer_layer2;
+			p_layer_second=tbblue_layer_ula;
+			p_layer_third=tbblue_layer_sprites;
+		break;
+
+		case 4:
+			p_layer_first=tbblue_layer_ula;
+			p_layer_second=tbblue_layer_sprites;
+			p_layer_third=tbblue_layer_layer2;
+		break;
+
+		case 5:
+			p_layer_first=tbblue_layer_ula;
+			p_layer_second=tbblue_layer_layer2;
+			p_layer_third=tbblue_layer_sprites;
+		break;
+	}
+
+}
+
+
 //Guardar en buffer rainbow la linea actual. Para Spectrum. solo display
 //Tener en cuenta que si border esta desactivado, la primera linea del buffer sera de display,
 //en cambio, si border esta activado, la primera linea del buffer sera de border
@@ -2608,19 +2680,14 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 	//puntero_buf_rainbow +=screen_total_borde_izquierdo*border_enabled.v;
 	z80_int *puntero_final_rainbow=&rainbow_buffer[ y*get_total_ancho_rainbow() ];
 
-	//Inicializa punteros a los 3 layers
-	z80_int *p_layer_first;
-	z80_int *p_layer_second;
-	z80_int *p_layer_third;
-
 	//Por defecto
 	//sprites over the Layer 2, over the ULA graphics
 
-	p_layer_first=tbblue_layer_sprites;
-	p_layer_second=tbblue_layer_layer2;
-	p_layer_third=tbblue_layer_ula;
+	//p_layer_first=tbblue_layer_sprites;
+	//p_layer_second=tbblue_layer_layer2;
+	//p_layer_third=tbblue_layer_ula;
 
-	//TODO: asignar punteros a layers
+	tbblue_set_layer_priorities();
 
 
 
