@@ -438,7 +438,7 @@ void tbblue_reset_palettes(void)
 	tbblue_palette_ula_first[8]=0;
 	tbblue_palette_ula_first[9]=7;
 	tbblue_palette_ula_first[10]=448;
-	tbblue_palette_ula_first[11]=455;
+	tbblue_palette_ula_first[11]=454;  //magenta seria 455 (FF00FF) pero lo cuadramos con transparente 1c6h( 454) ff00db
 	tbblue_palette_ula_first[12]=56;
 	tbblue_palette_ula_first[13]=63;
 	tbblue_palette_ula_first[14]=504;
