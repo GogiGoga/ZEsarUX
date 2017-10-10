@@ -2587,7 +2587,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 					z80_byte lorescolor=*lores_pointer;
 					//tenemos indice color de paleta
 					//transformar a color final segun paleta ula activa
-					color=RGB9_INDEX_FIRST_COLOR+tbblue_get_palette_active_ula(lorescolor);
+					color=tbblue_get_palette_active_ula(lorescolor);
 
 					//x lo incremento cuando bit es impar, para tener doble de ancho
 					if (bit&1) lores_pointer++; 
