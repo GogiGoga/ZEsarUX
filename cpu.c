@@ -968,7 +968,6 @@ char *string_machines_list_description=
 							" P2A40    Spectrum +2A (ROM v4.0)\n"
 							" P2A41    Spectrum +2A (ROM v4.1)\n"
 							" P2AS     Spectrum +2A (Spanish)\n"
-							" CPC464   Amstrad CPC 464\n"
 
 							" TS2068   Timex TS 2068\n"
 
@@ -1001,6 +1000,7 @@ char *string_machines_list_description=
 
 					    " ACE      Jupiter Ace\n"
 
+							" CPC464   Amstrad CPC 464\n"
 							;
 
 
