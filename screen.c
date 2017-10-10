@@ -3975,6 +3975,10 @@ void screen_store_scanline_rainbow_border_comun(z80_int *puntero_buf_rainbow,int
 		}
 	}
 
+	if (MACHINE_IS_TBBLUE) {
+		color_border=tbblue_get_palette_active_ula(color_border)+RGB9_INDEX_FIRST_COLOR;
+	}	
+
 
 	//Hay que recorrer el array del border para la linea actual
 	int final_border_linea=indice_border+screen_testados_linea;
@@ -4000,6 +4004,11 @@ void screen_store_scanline_rainbow_border_comun(z80_int *puntero_buf_rainbow,int
 					color_border=get_timex_border_mode6_color();
 				}
 			}
+
+
+		        if (MACHINE_IS_TBBLUE) {
+                		color_border=tbblue_get_palette_active_ula(color_border)+RGB9_INDEX_FIRST_COLOR;
+		        }
 
 
                 }
