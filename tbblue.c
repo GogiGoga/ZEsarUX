@@ -354,7 +354,7 @@ void tbblue_reset_sprites(void)
 	for (i=0;i<TBBLUE_MAX_PATTERNS;i++) {
 		int j;
 		for (j=0;j<256;j++) {
-			tbsprite_patterns[i][j]=TBBLUE_TRANSPARENT_COLOR_INDEX;
+			tbsprite_patterns[i][j]=TBBLUE_DEFAULT_TRANSPARENT;
 		}
 	}
 
@@ -438,7 +438,9 @@ void tbblue_reset_palettes(void)
 	tbblue_palette_ula_first[8]=0;
 	tbblue_palette_ula_first[9]=7;
 	tbblue_palette_ula_first[10]=448;
-	tbblue_palette_ula_first[11]=454;  //magenta seria 455 (FF00FF) pero lo cuadramos con transparente 1c6h( 454) ff00db
+	tbblue_palette_ula_first[11]=455; 
+
+	 //tanto 455 como 454 (1C7H y 1C6H) son colores transparentes por defecto (1C7H y 1C6H  / 2 = E3H)
 	tbblue_palette_ula_first[12]=56;
 	tbblue_palette_ula_first[13]=63;
 	tbblue_palette_ula_first[14]=504;
@@ -601,7 +603,9 @@ void tbblue_out_sprite_sprite(z80_byte value)
 //Dice si un color de la paleta rbg9 es transparente
 int tbblue_si_transparent(z80_int color)
 {
-	if ( (color&0x1FE)==TBBLUE_TRANSPARENT_COLOR) return 1;
+	//if ( (color&0x1FE)==TBBLUE_TRANSPARENT_COLOR) return 1;
+	color=(color>>1)&0xFF;
+	if (color==TBBLUE_TRANSPARENT_REGISTER) return 1;
 	return 0;
 }
 
@@ -1811,7 +1815,7 @@ void tbblue_hard_reset(void)
 	tbblue_registers[19]=32;
 
 
-	tbblue_registers[20]=0xE3;
+	tbblue_registers[20]=TBBLUE_DEFAULT_TRANSPARENT;
 
 	tbblue_registers[21]=0;
 	tbblue_registers[22]=0;
@@ -2348,9 +2352,9 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
 
 	int i;
 	for (i=0;i<512;i++) {
-		tbblue_layer_ula[i]=TBBLUE_TRANSPARENT_COLOR;
-		tbblue_layer_layer2[i]=TBBLUE_TRANSPARENT_COLOR;
-		tbblue_layer_sprites[i]=TBBLUE_TRANSPARENT_COLOR;
+		tbblue_layer_ula[i]=TBBLUE_TRANSPARENT_REGISTER_9;
+		tbblue_layer_layer2[i]=TBBLUE_TRANSPARENT_REGISTER_9;
+		tbblue_layer_sprites[i]=TBBLUE_TRANSPARENT_REGISTER_9;
 	}
 
 	int bordesupinf=0;
