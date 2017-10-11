@@ -1987,6 +1987,8 @@ void tbblue_set_value_port(z80_byte value)
 	z80_byte last_register_5=tbblue_registers[5];
 	z80_byte last_register_6=tbblue_registers[6];
 	z80_byte last_register_7=tbblue_registers[7];
+	z80_byte last_register_21=tbblue_registers[21];
+	
 
 	if (tbblue_last_register==3) {
 		//Controlar caso especial
@@ -2130,6 +2132,14 @@ void tbblue_set_value_port(z80_byte value)
 					bit 0 = Turbo (0 = 3.5MHz, 1 = 7MHz)
 					*/
 					if ( last_register_7 != value ) tbblue_set_emulator_setting_turbo();
+		break;
+
+		case 21:
+			//modo lores
+			if ( (last_register_21&128) != (value&128)) {
+				if (value&128) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Enabling lores mode. 128x96 256 colours");
+				else screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Setting ULA normal video mode");
+			}
 		break;
 
 
