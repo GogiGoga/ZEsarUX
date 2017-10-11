@@ -2466,6 +2466,10 @@ void get_pixel_color_tbblue(z80_byte attribute,z80_int *tinta_orig, z80_int *pap
 		int mascara_tinta=palette_format;
 		int mascara_papel=255-mascara_tinta;
 
+		//Estos valores se podrian tener ya calculados al llamar desde la funcion de screen_store_scanline_rainbow_solo_display_tbblue
+		//o incluso calcularlos en cuanto se modificase el registro 42h o 43h
+		//Como realmente son pocas variables a calcular, quiza ni merece la pena
+
 		switch (mascara_tinta) {
 			case 1:
 				rotacion_papel=1;
