@@ -1991,7 +1991,6 @@ void tbblue_splash_palette_format(void)
 	bit 0 = Disable the standard Spectrum flash feature to enable the extra colours.
   (Reset to 0 after a reset)
 
-	/*
 	(R/W) 0x42 (66) => Palette Format
   bits 7-0 = Number of the last ink colour entry on palette. (Reset to 15 after a Reset)
   This number can be 1, 3, 7, 15, 31, 63, 127 or 255.
@@ -2002,10 +2001,31 @@ void tbblue_splash_palette_format(void)
 
 	if ((tbblue_registers[67]&1)==0) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Disabling extra colour palette");
 	else {
-		int tintas=tbblue_registers[66]+1;
+
+		z80_byte palformat=tbblue_registers[66];
+
+		/*
+		Ejemplo: mascara 3:   00000011
+		Son 4 tintas
+		64 papeles
+
+		Para pasar de tintas a papeles :    00000011 -> inverso -> 11111100
+		Dividimos 11111100 entre tintas, para rotar el valor 2 veces a la derecha = 252 / 4 = 63   -> +1 -> 64
+		*/
+
+		int tintas=palformat+1;
+
+		int papeles=255-palformat;
+
+		//Dado que tintas siempre es +1, nunca habra division por 0. Pero por si acaso
+
+		if (tintas==0) papeles=0;
+		else {
+			papeles=(papeles/tintas)+1;
+		}
 
 		char mensaje[200];
-		sprintf (mensaje,"Enabling extra colour palette: %d inks",tintas);
+		sprintf (mensaje,"Enabling extra colour palette: %d inks %d papers",tintas,papeles);
 		screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,mensaje);
 	}
 		
