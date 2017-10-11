@@ -2137,8 +2137,8 @@ void tbblue_set_value_port(z80_byte value)
 		case 21:
 			//modo lores
 			if ( (last_register_21&128) != (value&128)) {
-				if (value&128) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Enabling lores mode. 128x96 256 colours");
-				else screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Setting ULA normal video mode");
+				if (value&128) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Enabling lores video mode. 128x96 256 colours");
+				else screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Disabling lores video mode");
 			}
 		break;
 
