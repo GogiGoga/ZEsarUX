@@ -2005,7 +2005,7 @@ void tbblue_splash_palette_format(void)
 		int tintas=tbblue_registers[66]+1;
 
 		char mensaje[200];
-		sprintf (mensaje,"Enabling extra colour palette: %d inks");
+		sprintf (mensaje,"Enabling extra colour palette: %d inks",tintas);
 		screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,mensaje);
 	}
 		
