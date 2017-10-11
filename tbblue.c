@@ -428,23 +428,37 @@ void tbblue_reset_palettes(void)
 0xFFFF00, 14
 0xFFFFFF  15
 */
-	tbblue_palette_ula_first[1]=6; 
-	tbblue_palette_ula_first[2]=384;
-	tbblue_palette_ula_first[3]=390;
-	tbblue_palette_ula_first[4]=48;
-	tbblue_palette_ula_first[5]=54;
-	tbblue_palette_ula_first[6]=432; 
-	tbblue_palette_ula_first[7]=438;
-	tbblue_palette_ula_first[8]=0;
-	tbblue_palette_ula_first[9]=7;
-	tbblue_palette_ula_first[10]=448;
-	tbblue_palette_ula_first[11]=455; 
+
+/*
+Colour IDs in Layer 2 and Sprites are always taken as palette indices. 
+Colour values in the ULA are mapped to the palette as fixed indices, 
+or can be taken as partial palette indices if ULANext mode is enabled. 
+The palette entry numbers for standard ULA mode are: 0-7 for the standard ink colors, 
+8-15 for BRIGHT ink colors, 128-135 for standard paper colors, and 136-143 for BRIGHT paper colors. 
+
+
+http://devnext.referata.com/wiki/Palettes
+*/
+
+ 	tbblue_palette_ula_first[0]=tbblue_palette_ula_first[0+128]=0;
+	tbblue_palette_ula_first[1]=tbblue_palette_ula_first[1+128]=6; 
+	tbblue_palette_ula_first[2]=tbblue_palette_ula_first[2+128]=384;
+	tbblue_palette_ula_first[3]=tbblue_palette_ula_first[3+128]=390;
+	tbblue_palette_ula_first[4]=tbblue_palette_ula_first[4+128]=48;
+	tbblue_palette_ula_first[5]=tbblue_palette_ula_first[5+128]=54;
+	tbblue_palette_ula_first[6]=tbblue_palette_ula_first[6+128]=432; 
+	tbblue_palette_ula_first[7]=tbblue_palette_ula_first[7+128]=438;
+
+	tbblue_palette_ula_first[8]=tbblue_palette_ula_first[8+128]=0;
+	tbblue_palette_ula_first[9]=tbblue_palette_ula_first[9+128]=7;
+	tbblue_palette_ula_first[10]=tbblue_palette_ula_first[10+128]=448;
+	tbblue_palette_ula_first[11]=tbblue_palette_ula_first[11+128]=455; 
 
 	 //tanto 455 como 454 (1C7H y 1C6H) son colores transparentes por defecto (1C7H y 1C6H  / 2 = E3H)
-	tbblue_palette_ula_first[12]=56;
-	tbblue_palette_ula_first[13]=63;
-	tbblue_palette_ula_first[14]=504;
-	tbblue_palette_ula_first[15]=511;
+	tbblue_palette_ula_first[12]=tbblue_palette_ula_first[12+128]=56;
+	tbblue_palette_ula_first[13]=tbblue_palette_ula_first[13+128]=63;
+	tbblue_palette_ula_first[14]=tbblue_palette_ula_first[14+128]=504;
+	tbblue_palette_ula_first[15]=tbblue_palette_ula_first[15+128]=511;
 
 
 }
@@ -705,7 +719,7 @@ void tbsprite_do_overlay(void)
 		    //z80_int *puntero_buf_rainbow;
 		    //puntero_buf_rainbow=&rainbow_buffer[ rainbowy*get_total_ancho_rainbow() ];
 
-		    int puntero_array_layer=0;
+		    //int puntero_array_layer=0;
 
 
 
@@ -2435,7 +2449,7 @@ void get_pixel_color_tbblue(z80_byte attribute,z80_int *tinta_orig, z80_int *pap
 	if (!flash_disabled) {
 
                         ink=attribute &7; 
-                        paper=(attribute>>3) &7; 
+                        paper=((attribute>>3) &7)+128; 
                         bright=(attribute)&64; 
                         flash=(attribute)&128; 
                         if (flash) { 
@@ -2508,7 +2522,7 @@ void get_pixel_color_tbblue(z80_byte attribute,z80_int *tinta_orig, z80_int *pap
 
 		else {
 			ink=attribute & mascara_tinta;
-			paper=(attribute & mascara_papel) >> rotacion_papel;
+			paper=((attribute & mascara_papel) >> rotacion_papel)+128;
 		}	
 
 	}			
@@ -2573,8 +2587,10 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
         int color=0;
         int fila;
 
-        z80_byte attribute,bright,flash;
-	z80_int ink,paper,aux;
+        z80_byte attribute;
+        //z80_byte bright,flash;
+	z80_int ink,paper;
+	//z80_int aux;
 
 
         z80_byte *screen=get_base_mem_pantalla();
@@ -2744,11 +2760,10 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
                         attribute=puntero_buffer_atributos[posicion_array_pixeles_atributos++];
 
-
-                                
+               
 
 			get_pixel_color_tbblue(attribute,&ink,&paper);
-			//GET_PIXEL_COLOR
+			
 
 			int cambiada_tinta,cambiada_paper;
 
@@ -2771,47 +2786,7 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 					if (bit&1) lores_pointer++; 
 				}
 
-				//Si layer2 tbblue
-				if (tbblue_is_active_layer2() ) {
-
-
-						//Si layer2 encima
-						/*if ( (tbblue_port_123b & 16)==0) {
-
-							//Pixel en Layer2 no transparente. Mostramos pixel de layer2
-							if (color_layer2!=TBBLUE_TRANSPARENT_COLOR) {
-								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
-							}
-
-							//Pixel en layer2 transparente. Mostramos pixel normal de pantalla speccy
-							else {
-								store_value_rainbow(puntero_buf_rainbow,color);
-							}
-						}
-
-						//Layer2 debajo
-						else {
-							z80_byte tbblue_color_transparente=tbblue_registers[20];
-
-							//Pixel en pantalla speccy no transparente. Mostramos pixel normal de pantalla speccy
-							if (color!=tbblue_color_transparente) {
-								store_value_rainbow(puntero_buf_rainbow,color);
-							}
-
-							else {
-								//Pixel en pantalla speccy transparente. Mostramos pixel de layer2
-								store_value_rainbow(puntero_buf_rainbow,RGB9_INDEX_FIRST_COLOR+final_color_layer2);
-							}
-						}*/
-				}
-
-
-				else {
-                                	//store_value_rainbow(puntero_buf_rainbow,color);
-
-                                	//temp
-                                	//tbblue_layer_ula[posicion_array_layer++]=color;
-				}
+							
 
 				//Capa ula
 				tbblue_layer_ula[posicion_array_layer]=tbblue_get_palette_active_ula(color);
@@ -2828,11 +2803,10 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
                                 byte_leido=byte_leido<<1;
 
 
-					//tbblue_layer2_offset++;
+					
 				tbblue_reg_22++;
                         }
 			direccion++;
-                	//dir_atributo++;
 
 
         	}
@@ -2853,10 +2827,10 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
 	//int i;
 
-	int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
+	//int scanline_copia=t_scanline_draw-screen_indice_inicio_pant;
 
         //la copiamos a buffer rainbow
-        z80_int *puntero_buf_rainbow;
+        //z80_int *puntero_buf_rainbow;
         //esto podria ser un contador y no hace falta que lo recalculemos cada vez. TODO
         int y;
 
