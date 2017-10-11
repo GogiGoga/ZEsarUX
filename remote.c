@@ -4038,7 +4038,7 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
               int value=parse_string_to_number(remote_command_argv[1]);
 
 
-              if (index_int<0 || index_int>255) escribir_socket(misocket,"ERROR. Out of range");
+              if (index_int<0 || index_int>255 || value<0 || value>255) escribir_socket(misocket,"ERROR. Out of range");
               else {
                 tbblue_set_register_port(index_int);
                 tbblue_set_value_port(value);

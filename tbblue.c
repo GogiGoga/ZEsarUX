@@ -1757,6 +1757,8 @@ void tbblue_reset(void)
 	tbblue_registers[31]=0;
 	tbblue_registers[34]=0;
 	tbblue_registers[35]=0;
+	tbblue_registers[50]=0;
+	tbblue_registers[51]=0;
 	tbblue_registers[66]=15;
 
 	/*
@@ -1839,6 +1841,8 @@ void tbblue_hard_reset(void)
 	tbblue_registers[30]=0;
 	tbblue_registers[31]=0;
 	tbblue_registers[34]=0;
+	tbblue_registers[50]=0;
+	tbblue_registers[51]=0;
 	tbblue_registers[66]=15;
 
 	tbblue_port_123b=0;
@@ -2632,9 +2636,9 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
 	//Si es modo timex 512x192, llamar a otra funcion
         if (timex_si_modo_512_y_zoom_par() ) {
                 //Si zoom x par
-                                        if (timex_mode_512192_real.v) {
-                                                return;
-                                        }
+                if (timex_mode_512192_real.v) {
+                	return;
+        	}
         }
 
 
@@ -2661,6 +2665,7 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
   	int tbblue_lores=tbblue_registers[0x15] & 128;
 
   	z80_byte *lores_pointer;
+  	z80_byte posicion_x_lores_pointer=0;
 
   	if (tbblue_lores) {
   		int linea_lores=scanline_copia;  
@@ -2677,6 +2682,11 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
   		//if (linea_lores>=192) linea_lores -=192;
 
   		lores_pointer=get_lores_pointer(linea_lores/2);  //admite hasta y=95, dividimos entre 2 linea actual
+
+
+
+  		//Y scroll horizontal
+  		posicion_x_lores_pointer=tbblue_registers[0x32];
   	}
 
 
@@ -2790,13 +2800,12 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 				if (tbblue_lores) {
 					
 
-					z80_byte lorescolor=*lores_pointer;
+					z80_byte lorescolor=lores_pointer[posicion_x_lores_pointer/2];
 					//tenemos indice color de paleta
 					//transformar a color final segun paleta ula activa
 					color=tbblue_get_palette_active_ula(lorescolor);
 
-					//x lo incremento cuando bit es impar, para tener doble de ancho
-					if (bit&1) lores_pointer++; 
+					posicion_x_lores_pointer++; 
 				}
 
 							

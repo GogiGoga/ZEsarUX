@@ -83,8 +83,6 @@ O quizá setting configurable
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 *update bios
 *como se lee valor paleta?
-*lores registros scroll
-*validar registros scroll layer2
 *como se leen valores paleta? leyendo 40h y 44h?
 
 
