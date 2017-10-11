@@ -786,14 +786,20 @@ struct s_items_ayuda items_ayuda[]={
   {"speech-empty-fifo",NULL,NULL,"Empty speech fifo"},
   {"speech-send",NULL,"message","Sends message to speech"},
 
+  
+
  {"tbblue-get-palette",NULL,"ula|layer2|sprite first|second index [items]","Get palette colours at index, if not specified items parameters, returns only one. You need to tell which palette. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
  {"tbblue-get-pattern",NULL,"index [items]","Get patterns at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
+{"tbblue-get-register",NULL,"index","Get TBBlue register at index"},
 
  {"tbblue-get-sprite",NULL,"index [items]","Get sprites at index, if not specified items parameters, returns only one. Returned values are in hexadecimal format. Only allowed on machine TBBlue"},
 
  {"tbblue-set-palette",NULL,"ula|layer2|sprite first|second index value","Sets palette values starting at desired starting index. You need to tell which palette. Values must be separed by one space each one"},
  {"tbblue-set-pattern",NULL,"index value","Sets pattern values starting at desired pattern index. Values must be separed by one space each one, you can only define one pattern maximum (so 256 values maximum)"},
+
+{"tbblue-set-register",NULL,"index value","Set TBBlue register with value at index"},
+
  {"tbblue-set-sprite",NULL,"index value","Sets sprite values starting at desired sprite index. Values must be separed by one space each one, you can only define one sprite maximum (so 4 values maximum)"},
 
 
@@ -3875,6 +3881,25 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
         }
 
 
+        else if (!strcmp(comando_sin_parametros,"tbblue-get-register") ) {
+
+          if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
+          else {
+            if (parametros[0]==0) escribir_socket(misocket,"ERROR. No parameter set");
+            else {
+
+               int index=parse_string_to_number(parametros);
+               if (index<0 || index>255) escribir_socket(misocket,"ERROR. Out of range");
+               else {
+                 z80_byte value=tbblue_registers[index];
+                 escribir_socket_format(misocket,"%02XH",value);
+               }
+            }
+          }
+
+        }
+
+
         else if (!strcmp(comando_sin_parametros,"tbblue-get-sprite") ) {
 
 					if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
@@ -3995,6 +4020,32 @@ else if (!strcmp(comando_sin_parametros,"set-memory-zone") || !strcmp(comando_si
 		}
 
 	}
+
+   else if (!strcmp(comando_sin_parametros,"tbblue-set-register") ) {
+
+          if (!MACHINE_IS_TBBLUE) escribir_socket(misocket,"ERROR. Machine is not TBBlue");
+          else {
+
+              remote_parse_commands_argvc(parametros);
+
+              if (remote_command_argc<2) {
+                      escribir_socket(misocket,"ERROR. Needs two parameters");
+                      return;
+              }
+
+              int index_int=parse_string_to_number(remote_command_argv[0]);
+
+              int value=parse_string_to_number(remote_command_argv[1]);
+
+
+              if (index_int<0 || index_int>255) escribir_socket(misocket,"ERROR. Out of range");
+              else {
+                tbblue_set_register_port(index_int);
+                tbblue_set_value_port(value);
+              }
+          }
+
+  }
 
 
 	else if (!strcmp(comando_sin_parametros,"tbblue-set-sprite")) {
