@@ -1733,7 +1733,7 @@ void tbblue_reset(void)
   bits 7-0 = Transparency color value (Reset to 0xE3, after a reset)
 
 	*/
-	tbblue_registers[20]=0xE3;
+	tbblue_registers[20]=TBBLUE_DEFAULT_TRANSPARENT;
 
 	tbblue_registers[21]=0;
 	tbblue_registers[22]=0;
@@ -1743,6 +1743,7 @@ void tbblue_reset(void)
 	tbblue_registers[31]=0;
 	tbblue_registers[34]=0;
 	tbblue_registers[35]=0;
+	tbblue_registers[66]=15;
 
 	/*
 	(R/W) 21 => Sprite system
@@ -1824,6 +1825,7 @@ void tbblue_hard_reset(void)
 	tbblue_registers[30]=0;
 	tbblue_registers[31]=0;
 	tbblue_registers[34]=0;
+	tbblue_registers[66]=15;
 
 	tbblue_port_123b=0;
 
@@ -2350,6 +2352,107 @@ void tbblue_set_layer_priorities(void)
 
 }
 
+void get_pixel_color_tbblue(z80_byte attribute,z80_int *tinta_orig, z80_int *papel_orig)
+{
+
+	/*
+(R/W) 0x43 (67) => Palette Control
+  bit 0 = Disable the standard Spectrum flash feature to enable the extra colours.
+  (Reset to 0 after a reset)
+	*/
+
+	z80_byte ink=*tinta_orig;
+	z80_byte paper=*papel_orig;
+
+	z80_byte palette_format=tbblue_registers[0x42];
+	z80_byte flash_disabled=tbblue_registers[0x43]&1;
+
+
+        z80_byte bright,flash;
+        z80_int aux;
+
+	if (!flash_disabled) {
+
+                        ink=attribute &7; 
+                        paper=(attribute>>3) &7; 
+                        bright=(attribute)&64; 
+                        flash=(attribute)&128; 
+                        if (flash) { 
+                                if (estado_parpadeo.v) { 
+                                        aux=paper; 
+                                        paper=ink; 
+                                        ink=aux; 
+                                } 
+                        } 
+            
+            if (bright) {   
+                paper+=8; 
+                ink+=8; 
+            } 
+
+	}
+
+	else {
+      /*
+(R/W) 0x42 (66) => Palette Format
+  bits 7-0 = Number of the last ink colour entry on palette. (Reset to 15 after a Reset)
+  This number can be 1, 3, 7, 15, 31, 63, 127 or 255.
+  The 255 value enables the full ink colour mode and
+  all the the palette entries are inks but the paper will be the colour at position 128.
+  (only applies to ULANext palette. Layer 2 and Sprite palettes works as "full ink")
+        */
+		int rotacion_papel=1;
+		int mascara_tinta=palette_format;
+		int mascara_papel=255-mascara_tinta;
+
+		switch (mascara_tinta) {
+			case 1:
+				rotacion_papel=1;
+			break;
+	
+			case 3:
+				rotacion_papel=2;
+			break;
+
+			case 7:
+				rotacion_papel=3;
+			break;
+
+			case 15:
+				rotacion_papel=4;
+			break;
+
+			case 31:
+				rotacion_papel=5;
+			break;
+
+			case 63:
+				rotacion_papel=6;
+			break;
+
+			case 127:
+				rotacion_papel=7;
+			break;
+
+		}
+
+		if (mascara_tinta==255) {
+			paper=128;
+			ink=attribute;
+		}
+
+		else {
+			ink=attribute & mascara_tinta;
+			paper=(attribute & mascara_papel) >> rotacion_papel;
+		}	
+
+	}			
+
+	*tinta_orig=ink;		
+	*papel_orig=paper;
+
+}
+
 
 //Guardar en buffer rainbow la linea actual. Para Spectrum. solo display
 //Tener en cuenta que si border esta desactivado, la primera linea del buffer sera de display,
@@ -2579,8 +2682,8 @@ bits D3-D5: Selection of ink and paper color in extended screen resolution mode 
 
                                 
 
-
-			GET_PIXEL_COLOR
+			get_pixel_color_tbblue(attribute,&ink,&paper);
+			//GET_PIXEL_COLOR
 
 			int cambiada_tinta,cambiada_paper;
 
