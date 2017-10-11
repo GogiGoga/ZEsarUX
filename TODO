@@ -85,7 +85,6 @@ O quizá setting configurable
 *como se lee valor paleta?
 *lores registros scroll
 *validar registros scroll layer2
-*registro 0x42 palette format
 *como se leen valores paleta? leyendo 40h y 44h?
 
 

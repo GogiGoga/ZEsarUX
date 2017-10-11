@@ -2663,7 +2663,20 @@ void screen_store_scanline_rainbow_solo_display_tbblue(void)
   	z80_byte *lores_pointer;
 
   	if (tbblue_lores) {
-  		lores_pointer=get_lores_pointer(scanline_copia/2);  //admite hasta y=95, dividimos entre 2 linea actual
+  		int linea_lores=scanline_copia;  
+  		//Sumamos offset y
+  		/*
+  		(R/W) 0x33 (51) => LoRes Offset Y
+  bits 7-0 = Y Offset (0-191)(Reset to 0 after a reset)
+  Being only 96 pixels, this allows the display to scroll in "half-pixels",
+  at the same resolution and smoothness as Layer 2.
+  		*/
+  		linea_lores +=tbblue_registers[0x33];
+
+  		linea_lores=linea_lores % 192;
+  		//if (linea_lores>=192) linea_lores -=192;
+
+  		lores_pointer=get_lores_pointer(linea_lores/2);  //admite hasta y=95, dividimos entre 2 linea actual
   	}
 
 
