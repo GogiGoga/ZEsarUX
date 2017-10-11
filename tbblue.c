@@ -1983,6 +1983,37 @@ void tbblue_set_register_port(z80_byte value)
 	tbblue_last_register=value;
 }
 
+void tbblue_splash_palette_format(void)
+{
+//if (value&128) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Enabling lores video mode. 128x96 256 colours");
+	/*
+	(R/W) 0x43 (67) => Palette Control
+	bit 0 = Disable the standard Spectrum flash feature to enable the extra colours.
+  (Reset to 0 after a reset)
+
+	/*
+	(R/W) 0x42 (66) => Palette Format
+  bits 7-0 = Number of the last ink colour entry on palette. (Reset to 15 after a Reset)
+  This number can be 1, 3, 7, 15, 31, 63, 127 or 255.
+	
+
+	*/
+
+
+	if ((tbblue_registers[67]&1)==0) screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"Disabling extra colour palette");
+	else {
+		int tintas=tbblue_registers[66]+1;
+
+		char mensaje[200];
+		sprintf (mensaje,"Enabling extra colour palette: %d inks");
+		screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,mensaje);
+	}
+		
+
+}
+
+	
+
 void tbblue_set_value_port(z80_byte value)
 {
 
@@ -1990,6 +2021,8 @@ void tbblue_set_value_port(z80_byte value)
 	z80_byte last_register_6=tbblue_registers[6];
 	z80_byte last_register_7=tbblue_registers[7];
 	z80_byte last_register_21=tbblue_registers[21];
+	z80_byte last_register_66=tbblue_registers[66];
+	z80_byte last_register_67=tbblue_registers[67];
 	
 
 	if (tbblue_last_register==3) {
@@ -2148,6 +2181,14 @@ void tbblue_set_value_port(z80_byte value)
 		//(R/W) 0x41 (65) => Palette Value
 		case 65:
 			tbblue_write_palette_value_high8(value);
+		break;
+
+		case 66:
+			if ( (last_register_66 != value) && tbblue_registers[67]&1) tbblue_splash_palette_format();
+		break;
+
+		case 67:
+			if ( (last_register_67&1) != (value&1) ) tbblue_splash_palette_format();
 		break;
 
 		// (R/W) 0x44 (68) => Palette Lower bit
