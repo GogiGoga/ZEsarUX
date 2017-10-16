@@ -509,14 +509,22 @@ void tbblue_write_palette_value_high8(z80_byte valor)
 	z80_int color_actual=tbblue_get_value_palette_rw(indice);
 
 	//Conservamos bit bajo
-	color_actual &=1;
+	//color_actual &=1;
+	//Bit bajo es el mismo que bit 1
 
 	z80_int valor16=valor;
 
+	//Bit bajo es el mismo que bit 1
+	z80_byte bit_bajo=valor&1;
 	//rotamos a la izquierda para que sean los 8 bits altos
 	valor16=valor16<<1;
+
+	valor16 |=bit_bajo;
+
+	
+
 	//y or del valor de 1 bit de B
-	valor16 |=color_actual;
+	//valor16 |=color_actual;
 
 	tbblue_set_value_palette_rw(indice,valor16);
 
@@ -550,6 +558,9 @@ void tbblue_write_palette_value_low1(z80_byte valor)
   bit 0 = Set the lower blue bit colour for the current palette value
 */
 	z80_byte indice=tbblue_registers[0x40];
+
+	//Bit inferior siempre cambia indice anterior
+	indice--;
 
 	//Obtenemos valor actual y conservamos los 8 bits altos del total de 9
 	z80_int color_actual=tbblue_get_value_palette_rw(indice);
