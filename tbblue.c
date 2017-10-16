@@ -511,7 +511,7 @@ void tbblue_write_palette_value_high8(z80_byte valor)
 	z80_byte indice=tbblue_registers[0x40];
 
 	//Obtenemos valor actual y alteramos los 8 bits altos del total de 9
-	z80_int color_actual=tbblue_get_value_palette_rw(indice);
+	//z80_int color_actual=tbblue_get_value_palette_rw(indice);
 
 	//Conservamos bit bajo
 	//color_actual &=1;
