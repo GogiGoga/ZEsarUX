@@ -167,8 +167,8 @@ void tsconf_set_sizes_display(void)
   tsconf_current_border_height=(288-tsconf_current_pixel_height)/2;
 
 
-  printf ("Current video size. Pixel size: %dX%d Border size: %dX%d\n",
-      tsconf_current_pixel_width,tsconf_current_pixel_height,tsconf_current_border_width*2,tsconf_current_border_height*2);
+  //printf ("Current video size. Pixel size: %dX%d Border size: %dX%d\n",
+  //    tsconf_current_pixel_width,tsconf_current_pixel_height,tsconf_current_border_width*2,tsconf_current_border_height*2);
 
 }
 
@@ -223,11 +223,11 @@ void tsconf_write_af_port(z80_byte puerto_h,z80_byte value)
 
   //temp debug vpage
   if (puerto_h==1) {
-    printf ("---VPAGE: %02XH\n",puerto_h);
+    //printf ("---VPAGE: %02XH\n",puerto_h);
   }
 
   if (puerto_h==7) {
-    printf ("Palette: %02XH\n",value);
+    //printf ("Palette: %02XH\n",value);
   }
 
   //Bit 4 de 32765 es bit 0 de #21AF
@@ -267,7 +267,7 @@ ZXPAL      dw  #0000,#0010,#4000,#4010,#0200,#0210,#4200,#4210
            dw  #0000,#0018,#6000,#6018,#0300,#0318,#6300,#6318
   */
   if (puerto_h==0x15) {
-    printf ("Registro fmaps 0x15 valor: %02XH\n",value);
+    //printf ("Registro fmaps 0x15 valor: %02XH\n",value);
   }
 
   if (puerto_h==32) {
@@ -527,7 +527,7 @@ void tsconf_set_memory_pages(void)
 	debug_paginas_memoria_mapeadas[2]=ram_page_80;
 	debug_paginas_memoria_mapeadas[3]=ram_page_c0;
 
-  printf ("32765: %02XH rom %d ram1 %d ram2 %d ram3 %d\n",puerto_32765,rom_page,ram_page_40,ram_page_80,ram_page_c0);
+  //printf ("32765: %02XH rom %d ram1 %d ram2 %d ram3 %d\n",puerto_32765,rom_page,ram_page_40,ram_page_80,ram_page_c0);
 
 }
 

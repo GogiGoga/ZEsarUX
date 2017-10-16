@@ -107,6 +107,9 @@ No sale de ese bucle while y se cierra todo emulador
 
 -tsconf: 
 -revisar mapeo rom mediante 32765 porque parece que no hay manera de iniciar la rom del 128kb. creo que ahora mismo el puerto 32765 esta totalmente desactivado
+-para probar sprites/tiles:
+*cfparallax: sprites
+*ny17: sprites
 
 
 *parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar

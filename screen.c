@@ -1783,8 +1783,53 @@ void screen_tsconf_refresca_border(void)
 	}
 }
 
+void temp_dice_dir_graficos(z80_byte registro)
+{
+                int direccion=tsconf_af_ports[registro]>>3;
+                direccion=direccion & 31;
+                direccion=direccion << 17;
+                printf ("%06XH -",direccion);
+}
+
+
+int temp_dice_modos_sprites_etc_conta=0;
+void temp_dice_modos_sprites_etc(void)
+{
+	temp_dice_modos_sprites_etc_conta++;
+	if (temp_dice_modos_sprites_etc_conta%50) return;
+
+	z80_byte tsconfig=tsconf_af_ports[6];
+
+	printf ("tsconfig: %02XH ",tsconfig);
+
+	//S_EN	T1_EN	T0_EN	-	T1Z_EN	T0Z_EN	-	TS_EXT*
+
+	if (tsconfig&128) {
+		printf ("Sprite layers enable ");
+		temp_dice_dir_graficos(0x19);
+	}
+	if (tsconfig&64) {
+		printf ("Tile layer 1 enable- ");
+		temp_dice_dir_graficos(0x18);
+	}
+	if (tsconfig&32) {
+		printf ("Tile layer 0 enable- ");
+		temp_dice_dir_graficos(0x17);
+	}
+	if (tsconfig&8) printf ("Tiles with number 1 display enable- ");
+	if (tsconfig&4) printf ("Tiles with number 0 display enable- ");
+	if (tsconfig&1) printf ("TSU graphics always 360x288- ");
+
+	printf ("\n");
+
+}
+
+
 void screen_tsconf_refresca_pantalla(void)
 {
+
+	temp_dice_modos_sprites_etc();
+
 
 	//Como spectrum clasico
 
