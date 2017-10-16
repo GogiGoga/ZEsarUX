@@ -1801,10 +1801,10 @@ void temp_dice_sprites(void)
         	        z80_byte y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
 			if (tsconf_fmaps[0x200+offset+1]&32) {
 	                	printf ("\nsprite %d x: %d y: %d ",i,x,y);
-				scr_putpixel_zoom(x,y,33);
-				scr_putpixel_zoom(x+1,y,33);
-				scr_putpixel_zoom(x,y+1,33);
-				scr_putpixel_zoom(x+1,y+1,33);
+				scr_putpixel_zoom(x,y,1);
+				scr_putpixel_zoom(x+1,y,1);
+				scr_putpixel_zoom(x,y+1,1);
+				scr_putpixel_zoom(x+1,y+1,1);
 			}
 		}
 }
