@@ -1490,13 +1490,15 @@ printf (
 
 
 
-                "--dandanator-rom f         Set ZX Dandanator rom file\n"
 		"--zxunospifile path        File to use on ZX-Uno as SPI Flash. Default: zxuno.flash\n"
 		"--zxunospiwriteenable      Enable writing to disk on ZX-Uno SPI Flash\n"
+                "--dandanator-rom f         Set ZX Dandanator rom file\n"
                 "--enable-dandanator        Enable ZX Dandanator emulation. Requires --dandanator-rom\n"
                 "--dandanator-press-button  Simulates pressing button on ZX Dandanator. Requires --enable-dandanator\n"
 		"--superupgrade-flash f     Set Superupgrade flash file\n"
 		"--enable-superupgrade      Enable Superupgrade emulation. Requires --superupgrade-flash\n"
+                "--kartusho-rom f           Set Kartusho rom file\n"
+                "--enable-kartusho          Enable Kartusho emulation. Requires --kartusho-rom\n"
 
 		"--enable-ql-mdv-flp        Enable QL Microdrive & Floppy emulation\n"
 		"--ql-mdv1-root-dir p       Set QL mdv1 root directory\n"
@@ -4092,6 +4094,7 @@ z80_bit command_line_8bitide={0};
 z80_bit command_line_dandanator={0};
 z80_bit command_line_dandanator_push_button={0};
 z80_bit command_line_superupgrade={0};
+z80_bit command_line_kartusho={0};
 
 z80_bit command_line_set_breakpoints={0};
 
@@ -5074,6 +5077,34 @@ void parse_cmdline_options(void) {
 
                         else if (!strcmp(argv[puntero_parametro],"--dandanator-press-button")) {
                                 command_line_dandanator_push_button.v=1;
+                        }
+
+
+              else if (!strcmp(argv[puntero_parametro],"--kartusho-rom")) {
+                                siguiente_parametro_argumento();
+
+                                //Si es ruta relativa, poner ruta absoluta
+                                if (!si_ruta_absoluta(argv[puntero_parametro])) {
+                                        //printf ("es ruta relativa\n");
+
+                                        //TODO: quiza hacer esto con convert_relative_to_absolute pero esa funcion es para directorios,
+                                        //no para directorios con archivo, por tanto quiza habria que hacer un paso intermedio separando
+                                        //directorio de archivo
+                                        char directorio_actual[PATH_MAX];
+                                        getcwd(directorio_actual,PATH_MAX);
+
+                                        sprintf (kartusho_rom_file_name,"%s/%s",directorio_actual,argv[puntero_parametro]);
+
+                                }
+
+                                else {
+                                        sprintf (kartusho_rom_file_name,"%s",argv[puntero_parametro]);
+                                }
+
+                        }
+
+                        else if (!strcmp(argv[puntero_parametro],"--enable-kartusho")) {
+                                command_line_kartusho.v=1;
                         }
 
                         else if (!strcmp(argv[puntero_parametro],"--superupgrade-flash")) {
@@ -6214,6 +6245,9 @@ struct sched_param sparam;
 
 	//Superupgrade
 	if (command_line_superupgrade.v) superupgrade_enable(1);
+
+	//Kartusho
+	if (command_line_kartusho.v) kartusho_enable();
 
 	if (command_line_set_breakpoints.v) {
 		if (debug_breakpoints_enabled.v==0) {

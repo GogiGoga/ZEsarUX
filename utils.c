@@ -87,6 +87,7 @@
 #include "esxdos_handler.h"
 #include "tbblue.h"
 #include "tsconf.h"
+#include "kartusho.h"
 
 //Archivo usado para entrada de teclas
 FILE *ptr_input_file_keyboard;
@@ -3028,6 +3029,8 @@ int util_write_configfile(void)
 
   if (dandanator_rom_file_name[0]!=0)         ADD_STRING_CONFIG,"--dandanator-rom \"%s\"",dandanator_rom_file_name);
   if (dandanator_enabled.v)                   ADD_STRING_CONFIG,"--enable-dandanator");
+  if (kartusho_rom_file_name[0]!=0)         ADD_STRING_CONFIG,"--kartusho-rom \"%s\"",kartusho_rom_file_name);
+  if (kartusho_enabled.v)                   ADD_STRING_CONFIG,"--enable-kartusho");
   if (superupgrade_rom_file_name[0]!=0)       ADD_STRING_CONFIG,"--superupgrade-flash \"%s\"",superupgrade_rom_file_name);
   if (superupgrade_enabled.v)                 ADD_STRING_CONFIG,"--enable-superupgrade");
 
