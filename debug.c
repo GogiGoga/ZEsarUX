@@ -68,6 +68,7 @@
 #include "sam.h"
 
 #include "snap.h"
+#include "kartusho.h"
 
 
 struct timeval debug_timer_antes, debug_timer_ahora;
@@ -3522,6 +3523,12 @@ void debug_registers_get_mem_page(z80_byte segmento,char *texto_pagina)
 		return;
 	}
 
+	//Si es kartusho
+        if (segmento==0 && kartusho_enabled.v==1) {
+                sprintf (texto_pagina,"KB%d",kartusho_active_bank);
+                return;
+        }
+
 	//Si es superupgrade
 	if (superupgrade_enabled.v) {
 	        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
@@ -3663,6 +3670,11 @@ void debug_get_memory_pages(char *texto_final)
 
   			//Si dandanator y maquina 48kb
   			if (MACHINE_IS_SPECTRUM_16_48 && dandanator_switched_on.v) {
+  				debug_registers_get_mem_page(0,texto_memoria);
+  			}
+
+  			//Si kartusho y maquina 48kb
+  			if (MACHINE_IS_SPECTRUM_16_48 && kartusho_enabled.v) {
   				debug_registers_get_mem_page(0,texto_memoria);
   			}
 
