@@ -486,22 +486,27 @@ void tbblue_write_palette_value_high8(z80_byte valor)
 {
 /*
 (R/W) 0x40 (64) => Palette Index
-  bits 7-0 = Select the palette index to change the default colour. 
+  bits 7-0 = Select the palette index to change the default colour.
   0 to 127 indexes are to ink colours and 128 to 255 indexes are to papers.
   (Except full ink colour mode, that all values 0 to 255 are inks)
   Border colours are the same as paper 0 to 7, positions 128 to 135,
-  even at full ink mode. 
-  (inks and papers concept only applies to ULANext palette. 
+  even at full ink mode.
+  (inks and papers concept only applies to ULANext palette.
   Layer 2 and Sprite palettes works as "full ink" mode)
 
-  (R/W) 0x41 (65) => Palette Value
+(R/W) 0x41 (65) => Palette Value
   bits 7-0 = Colour for the palette index selected by the register 0x40. Format is RRRGGGBB
-  After the write, the palette index is auto-incremented to the next index. 
+  Note the lower blue bit colour will be an OR between bit 1 and bit 0.
+  You can rewrite the lower blue bit using register 0x44 as needed.
+  After the write, the palette index is auto-incremented to the next index.
   The changed palette remains until a Hard Reset.
 
-  (R/W) 0x44 (68) => Palette Lower bit
-  bits 7-1 = Reserved, must be 0
-  bit 0 = Set the lower blue bit colour for the current palette value
+(R/W) 0x41 (65) => Palette Value
+  bits 7-0 = Colour for the palette index selected by the register 0x40. Format is RRRGGGBB
+  Note the lower blue bit colour will be an OR between bit 1 and bit 0.
+  You can rewrite the lower blue bit using register 0x44 as needed.
+  After the write, the palette index is auto-incremented to the next index.
+  The changed palette remains until a Hard Reset.
 */
 	z80_byte indice=tbblue_registers[0x40];
 
@@ -548,14 +553,21 @@ void tbblue_write_palette_value_low1(z80_byte valor)
   (inks and papers concept only applies to ULANext palette. 
   Layer 2 and Sprite palettes works as "full ink" mode)
 
-  (R/W) 0x41 (65) => Palette Value
+(R/W) 0x41 (65) => Palette Value
   bits 7-0 = Colour for the palette index selected by the register 0x40. Format is RRRGGGBB
+  Note the lower blue bit colour will be an OR between bit 1 and bit 0. 
+  You can rewrite the lower blue bit using register 0x44 as needed.
   After the write, the palette index is auto-incremented to the next index. 
   The changed palette remains until a Hard Reset.
 
-  (R/W) 0x44 (68) => Palette Lower bit
-  bits 7-1 = Reserved, must be 0
-  bit 0 = Set the lower blue bit colour for the current palette value
+(R/W) 0x41 (65) => Palette Value
+  bits 7-0 = Colour for the palette index selected by the register 0x40. Format is RRRGGGBB
+  Note the lower blue bit colour will be an OR between bit 1 and bit 0. 
+  You can rewrite the lower blue bit using register 0x44 as needed.
+  After the write, the palette index is auto-incremented to the next index. 
+  The changed palette remains until a Hard Reset.
+
+
 */
 	z80_byte indice=tbblue_registers[0x40];
 
