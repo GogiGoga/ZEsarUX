@@ -12399,8 +12399,8 @@ void menu_kartusho(MENU_ITEM_PARAMETERS)
                         menu_add_item_menu_ayuda(array_menu_kartusho,"ROM Emulation file");
 
 
-                        			menu_add_item_menu_format(array_menu_kartusho,MENU_OPCION_NORMAL,menu_storage_kartusho_emulation,menu_storage_kartusho_emulation_cond,"~~ZX Kartusho Enabled: %s", (kartusho_enabled.v ? "Yes" : "No"));
-                        menu_add_item_menu_shortcut(array_menu_kartusho,'d');
+                        			menu_add_item_menu_format(array_menu_kartusho,MENU_OPCION_NORMAL,menu_storage_kartusho_emulation,menu_storage_kartusho_emulation_cond,"~~Kartusho Enabled: %s", (kartusho_enabled.v ? "Yes" : "No"));
+                        menu_add_item_menu_shortcut(array_menu_kartusho,'k');
                         menu_add_item_menu_tooltip(array_menu_kartusho,"Enable kartusho");
                         menu_add_item_menu_ayuda(array_menu_kartusho,"Enable kartusho");
 
@@ -12415,7 +12415,7 @@ void menu_kartusho(MENU_ITEM_PARAMETERS)
 
                 menu_add_ESC_item(array_menu_kartusho);
 
-                retorno_menu=menu_dibuja_menu(&kartusho_opcion_seleccionada,&item_seleccionado,array_menu_kartusho,"ZX Kartusho settings" );
+                retorno_menu=menu_dibuja_menu(&kartusho_opcion_seleccionada,&item_seleccionado,array_menu_kartusho,"Kartusho settings" );
 
                 cls_menu_overlay();
                 if ((item_seleccionado.tipo_opcion&MENU_OPCION_ESC)==0 && retorno_menu>=0) {

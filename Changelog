@@ -20,6 +20,7 @@ Added ZX-Uno features: Radasoffset and Radaspadding registers, to do hardware sc
 Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files. Examples can be found on extras/media/spectrum/esxdos_handler/. "Classic" mmc/ide emulation by using virtual mmc/ide files can also be used
 Added feature "memory zone" to ZRCP and all menus that inspect memory (debug, disassemble, sprites etc): now you can look at all memory zones, for example: full 128kb ram, 64kb rom of +2A, divmmc ram, etc
 Added boot logo
+Added Antonio Villena's "Kartusho" cartridge interface
 
 Moved folders: docs, media, snap_tests to a "ZEsarUX-extras" package. These folders have been separated from the emulator main distributed file, and the main download have been reduced to 5 MB aprox. The git repository still holds all the files (extras have been moved to folder "extras"), but maybe in the future I will remove them also from the repo.
 Moved mmc/ide files location to extras/media/disk_images folder

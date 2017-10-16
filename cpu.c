@@ -99,6 +99,7 @@
 #include "scmp.h"
 #include "mk14.h"
 #include "esxdos_handler.h"
+#include "kartusho.h"
 
 #ifdef COMPILE_STDOUT
 #include "scrstdout.h"
@@ -2372,6 +2373,7 @@ void set_machine_params(void)
 		multiface_enabled.v=0;
 		dandanator_enabled.v=0;
 		superupgrade_enabled.v=0;
+		kartusho_enabled.v=0;
 		//nota: combiene que allow_write_rom.v sea 0 al desactivar superupgrade
 		//porque si estaba activo allow_write_rom.v antes, y desactivamos superupgrade,
 		//al intentar desactivar allow_write, se produce segmentation fault
