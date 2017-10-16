@@ -251,11 +251,14 @@ void kartusho_enable(void)
 
 	kartusho_set_peek_poke_functions();
 
-	kartusho_active_bank=0;
-	kartusho_protected.v=0;
+	kartusho_enabled.v=1;
+
+	kartusho_press_button();
+
+	//kartusho_active_bank=0;
+	//kartusho_protected.v=0;
 	
 
-	kartusho_enabled.v=1;
 
 
 }
