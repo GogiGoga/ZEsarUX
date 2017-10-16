@@ -1801,6 +1801,10 @@ void temp_dice_sprites(void)
         	        z80_byte y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
 			if (tsconf_fmaps[0x200+offset+1]&32) {
 	                	printf ("\nsprite %d x: %d y: %d ",i,x,y);
+				scr_putpixel_zoom(x,y,33);
+				scr_putpixel_zoom(x+1,y,33);
+				scr_putpixel_zoom(x,y+1,33);
+				scr_putpixel_zoom(x+1,y+1,33);
 			}
 		}
 }
@@ -1812,7 +1816,7 @@ int temp_dice_modos_sprites_etc_conta=0;
 void temp_dice_modos_sprites_etc(void)
 {
 	temp_dice_modos_sprites_etc_conta++;
-	if (temp_dice_modos_sprites_etc_conta%50) return;
+	//if (temp_dice_modos_sprites_etc_conta%50) return;
 
 	z80_byte tsconfig=tsconf_af_ports[6];
 
@@ -1863,11 +1867,13 @@ void screen_tsconf_refresca_pantalla(void)
 						screen_tsconf_refresca_border();
 						screen_tsconf_refresca_text_mode();
 					}
+
 	}
 
 	else {
 	//modo rainbow - real video
 				screen_tsconf_refresca_rainbow();
+				temp_dice_sprites();
 	}
 
 }
