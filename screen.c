@@ -1791,20 +1791,39 @@ void temp_dice_dir_graficos(z80_byte registro)
                 printf ("%06XH -",direccion);
 }
 
+void temp_sprite_xy(int x,int y,z80_int color)
+{
+	z80_int *puntero_buf_rainbow;
+
+	//x*2 pues pantalla es el doble para pixeles
+
+
+	puntero_buf_rainbow=&rainbow_buffer[ y*2*get_total_ancho_rainbow()+x*2 ];
+	*puntero_buf_rainbow=color;
+	puntero_buf_rainbow++;
+	*puntero_buf_rainbow=color;
+	puntero_buf_rainbow+=get_total_ancho_rainbow();
+	*puntero_buf_rainbow=color;
+	puntero_buf_rainbow--;
+	*puntero_buf_rainbow=color;
+	
+}
+
 void temp_dice_sprites(void)
 {
 
 		int i;
 		int offset=0;
 		for (i=0;i<85;i++,offset+=6) {
-	                z80_byte x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
-        	        z80_byte y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
+	                int x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
+        	        int y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
+			z80_byte xsize=8*((tsconf_fmaps[0x200+offset+3]>>1)&7);
+			z80_byte ysize=8*((tsconf_fmaps[0x200+offset+1]>>1)&7);
 			if (tsconf_fmaps[0x200+offset+1]&32) {
-	                	printf ("\nsprite %d x: %d y: %d ",i,x,y);
-				scr_putpixel_zoom(x,y,1);
-				scr_putpixel_zoom(x+1,y,1);
-				scr_putpixel_zoom(x,y+1,1);
-				scr_putpixel_zoom(x+1,y+1,1);
+	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d",i,x,y,xsize,ysize);
+				//x *=xsize;
+				//y *=ysize;
+				temp_sprite_xy(x,y,1+8);
 			}
 		}
 }
