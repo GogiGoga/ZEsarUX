@@ -1791,6 +1791,22 @@ void temp_dice_dir_graficos(z80_byte registro)
                 printf ("%06XH -",direccion);
 }
 
+void temp_dice_sprites(void)
+{
+
+		int i;
+		int offset=0;
+		for (i=0;i<85;i++,offset+=6) {
+	                z80_byte x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
+        	        z80_byte y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
+			if (tsconf_fmaps[0x200+offset+1]&32) {
+	                	printf ("\nsprite %d x: %d y: %d ",i,x,y);
+			}
+		}
+}
+
+
+
 
 int temp_dice_modos_sprites_etc_conta=0;
 void temp_dice_modos_sprites_etc(void)
@@ -1806,6 +1822,7 @@ void temp_dice_modos_sprites_etc(void)
 
 	if (tsconfig&128) {
 		printf ("Sprite layers enable ");
+		temp_dice_sprites();
 		temp_dice_dir_graficos(0x19);
 	}
 	if (tsconfig&64) {
