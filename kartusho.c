@@ -71,12 +71,40 @@ z80_byte kartusho_read_byte(z80_int dir)
 }
 
 
+void kartusho_handle_special_dirs(z80_int dir)
+{
+
+	if (kartusho_protected.v) return;
+
+	if (dir>=0x3FFC && dir<=0x3FFF) {
+		//Valor bit A0
+		z80_byte value_a0=dir&1;
+
+		//Mover banco * 2
+		kartusho_active_bank = kartusho_active_bank << 1;
+
+		kartusho_active_bank |=value_a0;
+
+		//Mascara final
+		kartusho_active_bank=kartusho_active_bank&31;
+
+
+
+		//Si se habilita proteccion
+		if (dir&2) kartusho_protected.v=1;
+	}
+
+}
+
+
 z80_byte kartusho_poke_byte(z80_int dir,z80_byte valor)
 {
 
 	//kartusho_original_poke_byte(dir,valor);
         //Llamar a anterior
         debug_nested_poke_byte_call_previous(kartusho_nested_id_poke_byte,dir,valor);
+
+	kartusho_handle_special_dirs(dir);
 
         //Para que no se queje el compilador, aunque este valor de retorno no lo usamos
         return 0;
@@ -91,6 +119,8 @@ z80_byte kartusho_poke_byte_no_time(z80_int dir,z80_byte valor)
         debug_nested_poke_byte_no_time_call_previous(kartusho_nested_id_poke_byte_no_time,dir,valor);
 
 
+	kartusho_handle_special_dirs(dir);
+
         //Para que no se queje el compilador, aunque este valor de retorno no lo usamos
         return 0;
 
@@ -101,6 +131,8 @@ z80_byte kartusho_peek_byte(z80_int dir,z80_byte value GCC_UNUSED)
 {
 
 	z80_byte valor_leido=debug_nested_peek_byte_call_previous(kartusho_nested_id_peek_byte,dir);
+
+	kartusho_handle_special_dirs(dir);
 
 	if (kartusho_check_if_rom_area(dir)) {
 		return kartusho_read_byte(dir);
@@ -114,6 +146,8 @@ z80_byte kartusho_peek_byte_no_time(z80_int dir,z80_byte value GCC_UNUSED)
 {
 
 	z80_byte valor_leido=debug_nested_peek_byte_no_time_call_previous(kartusho_nested_id_peek_byte_no_time,dir);
+
+	kartusho_handle_special_dirs(dir);
 
 	if (kartusho_check_if_rom_area(dir)) {
                 return kartusho_read_byte(dir);
@@ -153,7 +187,7 @@ void kartusho_restore_peek_poke_functions(void)
 
 void kartusho_alloc_memory(void)
 {
-        int size=(KARTUSHO_SIZE+256);  //+256 bytes adicionales para la memoria no volatil
+        int size=KARTUSHO_SIZE;  
 
         debug_printf (VERBOSE_DEBUG,"Allocating %d kb of memory for kartusho emulation",size/1024);
 
