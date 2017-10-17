@@ -1810,19 +1810,23 @@ void temp_sprite_xy(int x,int y,z80_int color)
 }
 
 //Hace putpixel doble
-void temp_sprite_xy_putsprite_putpixel(z80_int *puntero,z80_int color,int salto_linea)
+void temp_sprite_xy_putsprite_putpixel(z80_int *puntero,z80_int color,int salto_linea,z80_byte spal)
 {
-	*puntero=color;
+
+                //Con paleta
+                                                z80_int color_final=TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color+spal);
+
+	*puntero=color_final;
 	puntero++;
-	*puntero=color;
+	*puntero=color_final;
 
 	puntero+=salto_linea;
-	*puntero=color;
+	*puntero=color_final;
 	puntero--;
-	*puntero=color;
+	*puntero=color_final;
 }
 
-void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int tnum_y)
+void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal)
 {
 
                 int direccion=tsconf_af_ports[0x19]>>3;
@@ -1865,13 +1869,13 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 			for (;ancho;ancho-=2) { //-=2 porque son a 4bpp
 				z80_int color_izq=((*sprite_origen_leyendo)>>4)&15;
 				if (color_izq) { //0 es transparente
-					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_izq,ancho_linea_rainbow);
+					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_izq,ancho_linea_rainbow,spal);
 				}
 				puntero_buf_rainbow++;
 				puntero_buf_rainbow++;
 				z80_int color_der=((*sprite_origen_leyendo))&15;
 				if (color_der) { //0 es transparente
-					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_der,ancho_linea_rainbow);
+					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_der,ancho_linea_rainbow,spal);
 				}
 				puntero_buf_rainbow++;
 				puntero_buf_rainbow++;
@@ -1903,6 +1907,8 @@ void temp_dice_sprites(void)
 			z80_int tnum_x=tnum & 63;
 			z80_int tnum_y=(tnum>>6)&63;
 
+			z80_byte spal=(tsconf_fmaps[0x200+offset+5]>>4)&15;
+
 			/*
 			En demo ny17, xsize=ysize=32. tnum_x va de 0,4,8, etc. Asumimos que para posicionar en el sprite adecuado,
 			es un desplazamiento de tnum_x*8. Mismo para tnum_y
@@ -1910,9 +1916,9 @@ void temp_dice_sprites(void)
 			*/
 
 			if (tsconf_fmaps[0x200+offset+1]&32) {
-	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum_x: %d tnum_y: %d",i,x,y,xsize,ysize,tnum_x,tnum_y);
+	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum_x: %d tnum_y: %d spal: %d",i,x,y,xsize,ysize,tnum_x,tnum_y,spal);
 				//temp_sprite_xy(x,y,1+8);
-				temp_sprite_xy_putsprite(x,y,xsize,ysize,tnum_x,tnum_y);
+				temp_sprite_xy_putsprite(x,y,xsize,ysize,tnum_x,tnum_y,spal);
 			}
 		}
 

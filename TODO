@@ -110,6 +110,7 @@ No sale de ese bucle while y se cierra todo emulador
 -para probar sprites/tiles:
 *cfparallax: sprites
 *ny17: sprites
+*tsdemo.trd sprites
 
 
 *parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
