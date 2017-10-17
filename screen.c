@@ -1809,6 +1809,19 @@ void temp_sprite_xy(int x,int y,z80_int color)
 	
 }
 
+//Hace putpixel doble
+void temp_sprite_xy_putsprite_putpixel(z80_int *puntero,z80_int color,int salto_linea)
+{
+	*puntero=color;
+	puntero++;
+	*puntero=color;
+
+	puntero+=salto_linea;
+	*puntero=color;
+	puntero--;
+	*puntero=color;
+}
+
 void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int tnum_y)
 {
 
@@ -1835,19 +1848,33 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 
 	        z80_int *puntero_buf_rainbow;
 
-        	//x*2 pues pantalla es el doble para pixeles
 		int ancho_linea_rainbow=get_total_ancho_rainbow();
 
 
 	        //puntero_buf_rainbow=&rainbow_buffer[ y*2*get_total_ancho_rainbow()+x*2 ];
 
+		//X*2 porque en pantalla de pixeles es doble (en texto no)
+		x *=2;
+
 		int ancho_orig=ancho;
-		for (;alto;alto--,y++) {
+		z80_byte *sprite_origen_leyendo;
+		for (;alto;alto--,y++,sprite_origen +=ancho_linea) {
 			ancho=ancho_orig;
+			sprite_origen_leyendo=sprite_origen;
 			puntero_buf_rainbow=&rainbow_buffer[ y*ancho_linea_rainbow+x ];
-			for (;ancho;ancho--) {
-				*puntero_buf_rainbow=1+8;
+			for (;ancho;ancho-=2) { //-=2 porque son a 4bpp
+				z80_int color_izq=((*sprite_origen_leyendo)>>4)&15;
+				if (color_izq) { //0 es transparente
+					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_izq,ancho_linea_rainbow);
+				}
 				puntero_buf_rainbow++;
+				z80_int color_der=((*sprite_origen_leyendo))&15;
+				if (color_der) { //0 es transparente
+					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_der,ancho_linea_rainbow);
+				}
+				puntero_buf_rainbow++;
+
+				sprite_origen_leyendo++;
 			}
 		}
 		
