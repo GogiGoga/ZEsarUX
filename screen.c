@@ -1809,6 +1809,51 @@ void temp_sprite_xy(int x,int y,z80_int color)
 	
 }
 
+void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int tnum_y)
+{
+
+                int direccion=tsconf_af_ports[0x19]>>3;
+                direccion=direccion & 31;
+                direccion=direccion << 17;
+
+		z80_byte *sprite_origen;
+
+		sprite_origen=tsconf_ram_mem_table[0];
+
+		sprite_origen +=direccion;
+
+		int ancho_linea=256; //512 pixeles a 4bpp
+
+		tnum_x *=8;
+		tnum_y *=8;
+
+		//a 4bpp
+		tnum_x /=2;
+
+		sprite_origen+=(tnum_y*ancho_linea)+tnum_x;
+
+
+	        z80_int *puntero_buf_rainbow;
+
+        	//x*2 pues pantalla es el doble para pixeles
+		int ancho_linea_rainbow=get_total_ancho_rainbow();
+
+
+	        //puntero_buf_rainbow=&rainbow_buffer[ y*2*get_total_ancho_rainbow()+x*2 ];
+
+		int ancho_orig=ancho;
+		for (;alto;alto--,y++) {
+			ancho=ancho_orig;
+			puntero_buf_rainbow=&rainbow_buffer[ y*ancho_linea_rainbow+x ];
+			for (;ancho;ancho--) {
+				*puntero_buf_rainbow=1+8;
+				puntero_buf_rainbow++;
+			}
+		}
+		
+
+}
+
 void temp_dice_sprites(void)
 {
 
@@ -1822,16 +1867,27 @@ void temp_dice_sprites(void)
 			}
 	                int x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
         	        int y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
-			z80_byte xsize=8*((tsconf_fmaps[0x200+offset+3]>>1)&7);
-			z80_byte ysize=8*((tsconf_fmaps[0x200+offset+1]>>1)&7);
+			z80_byte xsize=8*(1+((tsconf_fmaps[0x200+offset+3]>>1)&7));
+			z80_byte ysize=8*(1+((tsconf_fmaps[0x200+offset+1]>>1)&7));
 			z80_int tnum=(tsconf_fmaps[0x200+offset+4])+256*(tsconf_fmaps[0x200+offset+5]&15);
+			//Tile Number for upper left corner. Bits 0-5 are X Position in Graphics Bitmap, bits 6-11 - Y Position.
+			z80_int tnum_x=tnum & 63;
+			z80_int tnum_y=(tnum>>6)&63;
+
+			/*
+			En demo ny17, xsize=ysize=32. tnum_x va de 0,4,8, etc. Asumimos que para posicionar en el sprite adecuado,
+			es un desplazamiento de tnum_x*8. Mismo para tnum_y
+			Para pasar de cada coordenada y, hay que sumar 512 pixeles (son de 4bpp), por tanto, 256 direcciones
+			*/
+
 			if (tsconf_fmaps[0x200+offset+1]&32) {
-	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum: %d",i,x,y,xsize,ysize,tnum);
-				//x *=xsize;
-				//y *=ysize;
-				temp_sprite_xy(x,y,1+8);
+	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum_x: %d tnum_y: %d",i,x,y,xsize,ysize,tnum_x,tnum_y);
+				//temp_sprite_xy(x,y,1+8);
+				temp_sprite_xy_putsprite(x,y,xsize,ysize,tnum_x,tnum_y);
 			}
 		}
+
+		printf ("\n");
 }
 
 
