@@ -1828,14 +1828,77 @@ void temp_sprite_xy_putsprite_putpixel(z80_int *puntero,z80_int color,int salto_
 	*puntero=color_final;
 }
 
+void temp_sprite_xy_putsprite_origen_relleno(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal,z80_byte *sprite_origen)
+{
+int ancho_linea=256; //512 pixeles a 4bpp
+
+                //tnum_x *=8;
+                //tnum_y *=8;
+
+                //a 4bpp
+                //tnum_x /=2;
+
+                //sprite_origen+=(tnum_y*ancho_linea)+tnum_x;
+
+
+                z80_int *puntero_buf_rainbow;
+
+                int ancho_linea_rainbow=get_total_ancho_rainbow();
+
+
+                //puntero_buf_rainbow=&rainbow_buffer[ y*2*get_total_ancho_rainbow()+x*2 ];
+
+                //X*2 porque en pantalla de pixeles es doble (en texto no)
+                //x *=2;
+/*
+       //Ver si pixel se sale de limites
+        if (x>=tsconf_current_pixel_width || y>=tsconf_current_pixel_height) {
+                printf ("fuera de limites\n");
+                return;
+        }
+        //tsconf_current_pixel_width=360;
+        //tsconf_current_pixel_height=288;
+*/
+
+                int ancho_orig=ancho;
+                z80_byte *sprite_origen_leyendo;
+                for (;alto;alto--,y++,sprite_origen +=ancho_linea) {
+                        ancho=ancho_orig;
+                        sprite_origen_leyendo=sprite_origen;
+                        puntero_buf_rainbow=&rainbow_buffer[ y*2*ancho_linea_rainbow+x*2 ];
+                        for (;ancho;ancho-=2) { //-=2 porque son a 4bpp
+                                z80_int color_izq=3;
+                                if (color_izq) { //0 es transparente
+    if (x<tsconf_current_pixel_width && y<tsconf_current_pixel_height)
+                                        temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_izq,ancho_linea_rainbow,spal);
+                                }
+                                puntero_buf_rainbow++;
+                                puntero_buf_rainbow++;
+                                z80_int color_der=3;
+                                if (color_der) { //0 es transparente
+                                        if (x<tsconf_current_pixel_width && y<tsconf_current_pixel_height)
+                                        temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_der,ancho_linea_rainbow,spal);
+                                }
+                                puntero_buf_rainbow++;
+                                puntero_buf_rainbow++;
+
+                                sprite_origen_leyendo++;
+                        }
+                }
+
+
+}
+
+
+
 
 
 void temp_sprite_xy_putsprite_origen(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal,z80_byte *sprite_origen)
 {
 
-                int direccion=tsconf_af_ports[0x19]>>3;
-                direccion=direccion & 31;
-                direccion=direccion << 17;
+                //int direccion=tsconf_af_ports[0x19]>>3;
+                //direccion=direccion & 31;
+                //direccion=direccion << 17;
 
 		//z80_byte *sprite_origen;
 
@@ -1845,11 +1908,11 @@ void temp_sprite_xy_putsprite_origen(int x,int y,int ancho, int alto, int tnum_x
 
 		int ancho_linea=256; //512 pixeles a 4bpp
 
-		tnum_x *=8;
-		tnum_y *=8;
+		//tnum_x *=8;
+		//tnum_y *=8;
 
 		//a 4bpp
-		tnum_x /=2;
+		//tnum_x /=2;
 
 		//sprite_origen+=(tnum_y*ancho_linea)+tnum_x;
 
@@ -1976,16 +2039,16 @@ void temp_dice_layer(z80_byte layer)
 			z80_byte tpal=(valor2>>4)&3;
 
 			z80_byte tnum_x=tnum&63;
-			z80_byte tnum_y=(tnum>>6)&631;
+			z80_byte tnum_y=(tnum>>6)&63;
 
 			if (tnum_x && tnum_y) {
 				printf ("tile x: %d y: %d tnum_x: %d tnum_y: %d\n",x,y,tnum_x,tnum_y);
 
 				z80_byte *sprite_origen;
-				sprite_origen=puntero_graficos+y*256+x;
+				sprite_origen=puntero_graficos+(y*256*8/2)+x*8/2;
 
 				//void temp_sprite_xy_putsprite_origen(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal,z80_byte *sprite_origen)
-				temp_sprite_xy_putsprite_origen(x*8,y*8,8,8,0,0,tpal,sprite_origen);
+				temp_sprite_xy_putsprite_origen_relleno(x*8,y*8, 8,8, 0,0,tpal,sprite_origen);
 			}
 		}
 	}
@@ -2048,20 +2111,24 @@ void temp_dice_modos_sprites_etc(void)
 
 	//S_EN	T1_EN	T0_EN	-	T1Z_EN	T0Z_EN	-	TS_EXT*
 
-	if (tsconfig&128) {
-		printf ("Sprite layers enable ");
-		temp_dice_dir_graficos(0x19);
-		temp_dice_sprites();
-	}
-	if (tsconfig&64) {
-		printf ("Tile layer 1 enable- ");
-		temp_dice_dir_graficos(0x18);
-	}
 	if (tsconfig&32) {
 		printf ("Tile layer 0 enable- ");
 		temp_dice_dir_graficos(0x17);
 		temp_dice_layer(0);
 	}
+
+        if (tsconfig&64) {
+                printf ("Tile layer 1 enable- ");
+                temp_dice_dir_graficos(0x18);
+		temp_dice_layer(1);
+        }
+
+       if (tsconfig&128) {
+                printf ("Sprite layers enable ");
+                temp_dice_dir_graficos(0x19);
+                temp_dice_sprites();
+        }
+
 	if (tsconfig&8) printf ("Tiles with number 1 display enable- ");
 	if (tsconfig&4) printf ("Tiles with number 0 display enable- ");
 	if (tsconfig&1) printf ("TSU graphics always 360x288- ");
