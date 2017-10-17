@@ -1992,7 +1992,7 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 		temp_sprite_xy_putsprite_origen(x,y,ancho,alto, tnum_x, tnum_y,spal,sprite_origen);
 }
 
-void temp_dice_layer(z80_byte layer)
+void temp_tsconf_render_tile_layer(z80_byte layer)
 {
 
 /*
@@ -2013,7 +2013,7 @@ void temp_dice_layer(z80_byte layer)
 		int direccion_tile=tsconf_af_ports[0x16];
                 direccion_tile=direccion_tile<< 14;
 
-		printf ("direccion_tile: %06XH\n",direccion_tile);
+		//printf ("direccion_tile: %06XH\n",direccion_tile);
 
 
 
@@ -2059,7 +2059,7 @@ void temp_dice_layer(z80_byte layer)
 }
 	
 
-void temp_dice_sprites(void)
+void temp_tsconf_render_graficos(void)
 {
 
 		int i;
@@ -2105,41 +2105,70 @@ void temp_dice_sprites(void)
 int temp_dice_modos_sprites_etc_conta=0;
 void temp_dice_modos_sprites_etc(void)
 {
-	temp_dice_modos_sprites_etc_conta++;
-	//if (temp_dice_modos_sprites_etc_conta%50) return;
 
 	z80_byte tsconfig=tsconf_af_ports[6];
 
-	printf ("tsconfig: %02XH ",tsconfig);
 
 	//S_EN	T1_EN	T0_EN	-	T1Z_EN	T0Z_EN	-	TS_EXT*
 
 	if (tsconfig&32) {
-		printf ("Tile layer 0 enable- ");
-		temp_dice_dir_graficos(0x17);
-		temp_dice_layer(0);
+		//printf ("Tile layer 0 enable- ");
+		//temp_dice_dir_graficos(0x17);
+		temp_tsconf_render_tile_layer(0);
 	}
+
+        if (tsconfig&64) {
+                //printf ("Tile layer 1 enable- ");
+                //temp_dice_dir_graficos(0x18);
+		temp_tsconf_render_tile_layer(1);
+        }
+
+       if (tsconfig&128) {
+                //printf ("Sprite layers enable ");
+                //temp_dice_dir_graficos(0x19);
+                temp_tsconf_render_graficos();
+        }
+
+
+	//Decir una vez por segundo los modos activos
+	temp_dice_modos_sprites_etc_conta++;
+	if (temp_dice_modos_sprites_etc_conta%50) return;
+	printf ("tsconfig: %02XH ",tsconfig);
+
+	int haytiles=0;
+
+
+        if (tsconfig&32) {
+                printf ("Tile layer 0 enable- ");
+                temp_dice_dir_graficos(0x17);
+		haytiles=1;
+        }
 
         if (tsconfig&64) {
                 printf ("Tile layer 1 enable- ");
                 temp_dice_dir_graficos(0x18);
-		temp_dice_layer(1);
+		haytiles=1;
         }
 
        if (tsconfig&128) {
                 printf ("Sprite layers enable ");
                 temp_dice_dir_graficos(0x19);
-                temp_dice_sprites();
         }
+
 
 	if (tsconfig&8) printf ("Tiles with number 1 display enable- ");
 	if (tsconfig&4) printf ("Tiles with number 0 display enable- ");
 	if (tsconfig&1) printf ("TSU graphics always 360x288- ");
 
+
+        if (tsconf_af_ports[0]&32) printf ("nogfx- ");
+
 	//Decir donde Tile map page
-        int direccion=tsconf_af_ports[0x16];
-        direccion=direccion << 14;
-        //printf ("Tile map page: %06XH - ",direccion);
+	if (haytiles) {
+	        int direccion=tsconf_af_ports[0x16];
+	        direccion=direccion << 14;
+        	printf ("Tile map page: %06XH - ",direccion);
+	}
 	
 
 	printf ("\n");
@@ -2174,7 +2203,7 @@ void screen_tsconf_refresca_pantalla(void)
 	else {
 	//modo rainbow - real video
 				temp_dice_modos_sprites_etc();
-				//temp_dice_sprites();
+				//temp_tsconf_render_graficos();
 				screen_tsconf_refresca_rainbow();
 	}
 
@@ -6065,7 +6094,7 @@ void screen_store_scanline_rainbow_solo_display_tsconf(void)
 	//Si desactivado plain graphics, no hacemos plain graphics. Pero habra que ver si estan los tiles/sprites (tsu)
 	if (tsconf_af_ports[0]&32) {
 		temp_conta_nogfx++;
-		if (temp_conta_nogfx%3200==0) printf ("nogfx\n");
+		//if (temp_conta_nogfx%3200==0) printf ("nogfx\n");
 		return;
 	}
 

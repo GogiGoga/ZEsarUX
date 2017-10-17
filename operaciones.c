@@ -5714,7 +5714,7 @@ Bit 5 If set disable Chrome features ( reading/writing to port 1FFDh, reading fr
 		if (puerto_l==0xaf) return tsconf_get_af_port(puerto_h);
 
 		//Otros puertos
-		printf ("Leyendo puerto %04XH\n",puerto);
+		//printf ("Leyendo puerto %04XH\n",puerto);
 
 	}
 

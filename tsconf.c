@@ -539,6 +539,20 @@ void tsconf_hard_reset(void)
   temp_tsconf_in_system_rom_flag=1;
   tsconf_af_ports[0x21]=4;
 
+	int i;
+	for (i=0;i<TSCONF_FMAPS_SIZE;i++) tsconf_fmaps[i]=0;
+
+       //Borrar toda memoria ram
+        int d;
+        z80_byte *puntero;
+        for (i=0;i<TSCONF_RAM_PAGES;i++) {
+                puntero=tsconf_ram_mem_table[i];
+                for (d=0;d<16384;d++,puntero++) {
+                        *puntero=0;
+                }
+        }
+
+
   //Valores por defecto
   tsconf_af_ports[0]=0;
   tsconf_af_ports[1]=5;
