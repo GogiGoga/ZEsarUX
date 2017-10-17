@@ -2026,6 +2026,11 @@ void temp_tsconf_render_tile_layer(z80_byte layer)
 
 	int x,y;
 
+	z80_byte puntero_offset_scroll=0x40+4*layer;
+
+	int offset_x=tsconf_af_ports[puntero_offset_scroll]+256*(tsconf_af_ports[puntero_offset_scroll+1]&1);
+	int offset_y=tsconf_af_ports[puntero_offset_scroll+2]+256*(tsconf_af_ports[puntero_offset_scroll+3]&1);
+
 	for (y=0;y<64;y++) {
 		for (x=0;x<64;x++) {
 			z80_byte valor1=*puntero_layer;
@@ -2053,7 +2058,7 @@ void temp_tsconf_render_tile_layer(z80_byte layer)
 				//temp_sprite_xy_putsprite_origen_relleno(x*8,y*8, 8,8, 0,0,tpal,sprite_origen);
 
 				//No estoy seguro de las siguientes multiplicacines. habria que revisarlas
-				temp_sprite_xy_putsprite_origen(x*8,y*4, 8,8, 0,0,tpal,sprite_origen);
+				temp_sprite_xy_putsprite_origen(x*8+offset_x,y*4+offset_y, 8,8, 0,0,tpal,sprite_origen);
 			}
 		}
 	}
