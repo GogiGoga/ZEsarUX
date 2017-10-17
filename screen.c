@@ -1814,7 +1814,7 @@ void temp_sprite_xy_putsprite_putpixel(z80_int *puntero,z80_int color,int salto_
 {
 
                 //Con paleta
-                                                z80_int color_final=TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color+spal);
+                                                z80_int color_final=TSCONF_INDEX_FIRST_COLOR+tsconf_return_cram_color(color+16*spal);
 
 	*puntero=color_final;
 	puntero++;
