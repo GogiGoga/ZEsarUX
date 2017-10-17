@@ -2118,6 +2118,17 @@ void temp_dice_modos_sprites_etc(void)
 
 	//S_EN	T1_EN	T0_EN	-	T1Z_EN	T0Z_EN	-	TS_EXT*
 
+        if (tsconf_af_ports[0]&32) {
+		//Si no hay graficos normales, poner a negro
+		int size=get_total_ancho_rainbow()*get_total_alto_rainbow();
+		if (size) {
+			z80_int *p;
+			p=rainbow_buffer;
+			for (;size;size--,p++) *p=0;
+		}
+		
+	
+	}
 	if (tsconfig&32) {
 		//printf ("Tile layer 0 enable- ");
 		//temp_dice_dir_graficos(0x17);
