@@ -1814,13 +1814,19 @@ void temp_dice_sprites(void)
 
 		int i;
 		int offset=0;
-		for (i=0;i<85;i++,offset+=6) {
+		int salir=0;
+		for (i=0;i<85 && !salir;i++,offset+=6) {
+			if (tsconf_fmaps[0x200+offset+1]&64) {
+				salir=1; //Bit Leap, ultimo sprite
+				printf ("\nUltimo sprite");
+			}
 	                int x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
         	        int y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
 			z80_byte xsize=8*((tsconf_fmaps[0x200+offset+3]>>1)&7);
 			z80_byte ysize=8*((tsconf_fmaps[0x200+offset+1]>>1)&7);
+			z80_int tnum=(tsconf_fmaps[0x200+offset+4])+256*(tsconf_fmaps[0x200+offset+5]&15);
 			if (tsconf_fmaps[0x200+offset+1]&32) {
-	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d",i,x,y,xsize,ysize);
+	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum: %d",i,x,y,xsize,ysize,tnum);
 				//x *=xsize;
 				//y *=ysize;
 				temp_sprite_xy(x,y,1+8);
