@@ -1898,8 +1898,13 @@ void temp_dice_sprites(void)
 				salir=1; //Bit Leap, ultimo sprite
 				printf ("\nUltimo sprite");
 			}
+			//TODO: x,y tienen signo??
 	                int x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
         	        int y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
+	                //int x=tsconf_fmaps[0x200+offset+2];
+        	        //int y=tsconf_fmaps[0x200+offset];
+
+
 			z80_byte xsize=8*(1+((tsconf_fmaps[0x200+offset+3]>>1)&7));
 			z80_byte ysize=8*(1+((tsconf_fmaps[0x200+offset+1]>>1)&7));
 			z80_int tnum=(tsconf_fmaps[0x200+offset+4])+256*(tsconf_fmaps[0x200+offset+5]&15);
