@@ -108,6 +108,8 @@ No sale de ese bucle while y se cierra todo emulador
 -tsconf: 
 -revisar mapeo rom mediante 32765 porque parece que no hay manera de iniciar la rom del 128kb. creo que ahora mismo el puerto 32765 esta totalmente desactivado
 -para probar sprites/tiles:
+render de sprites / tiles se hace de momento al final de cada frame de pantalla y de manera muy chapucera
+
 *cfparallax: sprites
 *ny17: sprites
 *tsdemo.trd sprites

@@ -2039,18 +2039,20 @@ void temp_tsconf_render_tile_layer(z80_byte layer)
 
 			z80_byte tpal=(valor2>>4)&3;
 
-			z80_byte tnum_x=tnum&63;
-			z80_byte tnum_y=(tnum>>6)&63;
+			int tnum_x=tnum&63;
+			int tnum_y=(tnum>>6)&63;
 
 			if (!(tnum_x==0 && tnum_y==0)) {
 				//printf ("tile x: %d y: %d tnum_x: %d tnum_y: %d\n",x,y,tnum_x,tnum_y);
 
 				z80_byte *sprite_origen;
 				//sprite_origen=puntero_graficos+(tnum_y*256*8/2)+tnum_x*8/2;
-				sprite_origen=puntero_graficos+(tnum_y*256)+tnum_x*8/2;
+				sprite_origen=puntero_graficos+(tnum_y*512*8/2)+tnum_x*8/2;
 
 				//void temp_sprite_xy_putsprite_origen(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal,z80_byte *sprite_origen)
 				//temp_sprite_xy_putsprite_origen_relleno(x*8,y*8, 8,8, 0,0,tpal,sprite_origen);
+
+				//No estoy seguro de las siguientes multiplicacines. habria que revisarlas
 				temp_sprite_xy_putsprite_origen(x*8,y*4, 8,8, 0,0,tpal,sprite_origen);
 			}
 		}
