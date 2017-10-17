@@ -6634,7 +6634,7 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 						//ver si paginacion desactivada
 						//if (puerto_32765 & 32) return;
 
-						printf ("Paginando mediante 32765. valor: %02XH\n",value);
+						//printf ("Paginando mediante 32765. valor: %02XH\n",value);
 
 
 						if (1==1) {

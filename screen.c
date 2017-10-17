@@ -1909,13 +1909,10 @@ void temp_dice_sprites(void)
 		for (i=0;i<85 && !salir;i++,offset+=6) {
 			if (tsconf_fmaps[0x200+offset+1]&64) {
 				salir=1; //Bit Leap, ultimo sprite
-				printf ("\nUltimo sprite");
+				//printf ("\nUltimo sprite");
 			}
-			//TODO: x,y tienen signo??
 	                int x=tsconf_fmaps[0x200+offset+2]+256*(tsconf_fmaps[0x200+offset+3]&1);
         	        int y=tsconf_fmaps[0x200+offset]+256*(tsconf_fmaps[0x200+offset+1]&1);
-	                //int x=tsconf_fmaps[0x200+offset+2];
-        	        //int y=tsconf_fmaps[0x200+offset];
 
 
 			z80_byte xsize=8*(1+((tsconf_fmaps[0x200+offset+3]>>1)&7));
@@ -1934,13 +1931,13 @@ void temp_dice_sprites(void)
 			*/
 
 			if (tsconf_fmaps[0x200+offset+1]&32) {
-	                	printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum_x: %d tnum_y: %d spal: %d",i,x,y,xsize,ysize,tnum_x,tnum_y,spal);
+	                	//printf ("\nsprite %d x: %d y: %d xs: %d ys: %d tnum_x: %d tnum_y: %d spal: %d",i,x,y,xsize,ysize,tnum_x,tnum_y,spal);
 				//temp_sprite_xy(x,y,1+8);
 				temp_sprite_xy_putsprite(x,y,xsize,ysize,tnum_x,tnum_y,spal);
 			}
 		}
 
-		printf ("\n");
+		//printf ("\n");
 }
 
 
@@ -1960,8 +1957,8 @@ void temp_dice_modos_sprites_etc(void)
 
 	if (tsconfig&128) {
 		printf ("Sprite layers enable ");
-		temp_dice_sprites();
 		temp_dice_dir_graficos(0x19);
+		temp_dice_sprites();
 	}
 	if (tsconfig&64) {
 		printf ("Tile layer 1 enable- ");
@@ -2006,7 +2003,8 @@ void screen_tsconf_refresca_pantalla(void)
 
 	else {
 	//modo rainbow - real video
-				temp_dice_sprites();
+				temp_dice_modos_sprites_etc();
+				//temp_dice_sprites();
 				screen_tsconf_refresca_rainbow();
 	}
 
@@ -5888,8 +5886,19 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 }
 
 
+int temp_conta_nogfx;
+
 void screen_store_scanline_rainbow_solo_display_tsconf(void)
 {
+
+
+	//Si desactivado plain graphics, no hacemos plain graphics. Pero habra que ver si estan los tiles/sprites (tsu)
+	if (tsconf_af_ports[0]&32) {
+		temp_conta_nogfx++;
+		if (temp_conta_nogfx%3200==0) printf ("nogfx\n");
+		return;
+	}
+
 
         //printf ("scan line de pantalla fisica (no border): %d\n",t_scanline_draw);
 
