@@ -1795,9 +1795,11 @@ void temp_sprite_xy(int x,int y,z80_int color)
 {
 	z80_int *puntero_buf_rainbow;
 
+
+
+
+
 	//x*2 pues pantalla es el doble para pixeles
-
-
 	puntero_buf_rainbow=&rainbow_buffer[ y*2*get_total_ancho_rainbow()+x*2 ];
 	*puntero_buf_rainbow=color;
 	puntero_buf_rainbow++;
@@ -1858,7 +1860,16 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 	        //puntero_buf_rainbow=&rainbow_buffer[ y*2*get_total_ancho_rainbow()+x*2 ];
 
 		//X*2 porque en pantalla de pixeles es doble (en texto no)
-		x *=2;
+		//x *=2;
+/*
+       //Ver si pixel se sale de limites
+        if (x>=tsconf_current_pixel_width || y>=tsconf_current_pixel_height) {
+                printf ("fuera de limites\n");
+                return;
+        }
+        //tsconf_current_pixel_width=360;
+        //tsconf_current_pixel_height=288;
+*/
 
 		int ancho_orig=ancho;
 		z80_byte *sprite_origen_leyendo;
@@ -1869,12 +1880,14 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 			for (;ancho;ancho-=2) { //-=2 porque son a 4bpp
 				z80_int color_izq=((*sprite_origen_leyendo)>>4)&15;
 				if (color_izq) { //0 es transparente
+					if (x<tsconf_current_pixel_width && y<tsconf_current_pixel_height)
 					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_izq,ancho_linea_rainbow,spal);
 				}
 				puntero_buf_rainbow++;
 				puntero_buf_rainbow++;
 				z80_int color_der=((*sprite_origen_leyendo))&15;
 				if (color_der) { //0 es transparente
+					if (x<tsconf_current_pixel_width && y<tsconf_current_pixel_height)
 					temp_sprite_xy_putsprite_putpixel(puntero_buf_rainbow,color_der,ancho_linea_rainbow,spal);
 				}
 				puntero_buf_rainbow++;
@@ -1970,7 +1983,7 @@ void temp_dice_modos_sprites_etc(void)
 void screen_tsconf_refresca_pantalla(void)
 {
 
-	temp_dice_modos_sprites_etc();
+	//temp_dice_modos_sprites_etc();
 
 
 	//Como spectrum clasico
@@ -1993,8 +2006,8 @@ void screen_tsconf_refresca_pantalla(void)
 
 	else {
 	//modo rainbow - real video
-				screen_tsconf_refresca_rainbow();
 				temp_dice_sprites();
+				screen_tsconf_refresca_rainbow();
 	}
 
 }
