@@ -1828,18 +1828,20 @@ void temp_sprite_xy_putsprite_putpixel(z80_int *puntero,z80_int color,int salto_
 	*puntero=color_final;
 }
 
-void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal)
+
+
+void temp_sprite_xy_putsprite_origen(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal,z80_byte *sprite_origen)
 {
 
                 int direccion=tsconf_af_ports[0x19]>>3;
                 direccion=direccion & 31;
                 direccion=direccion << 17;
 
-		z80_byte *sprite_origen;
+		//z80_byte *sprite_origen;
 
-		sprite_origen=tsconf_ram_mem_table[0];
+		//sprite_origen=tsconf_ram_mem_table[0];
 
-		sprite_origen +=direccion;
+		//sprite_origen +=direccion;
 
 		int ancho_linea=256; //512 pixeles a 4bpp
 
@@ -1849,7 +1851,7 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 		//a 4bpp
 		tnum_x /=2;
 
-		sprite_origen+=(tnum_y*ancho_linea)+tnum_x;
+		//sprite_origen+=(tnum_y*ancho_linea)+tnum_x;
 
 
 	        z80_int *puntero_buf_rainbow;
@@ -1899,6 +1901,97 @@ void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int t
 		
 
 }
+
+
+void temp_sprite_xy_putsprite(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal)
+{
+
+                int direccion=tsconf_af_ports[0x19]>>3;
+                direccion=direccion & 31;
+                direccion=direccion << 17;
+
+                z80_byte *sprite_origen;
+
+                sprite_origen=tsconf_ram_mem_table[0];
+
+                sprite_origen +=direccion;
+
+                int ancho_linea=256; //512 pixeles a 4bpp
+
+                tnum_x *=8;
+                tnum_y *=8;
+
+                //a 4bpp
+                tnum_x /=2;
+
+                sprite_origen+=(tnum_y*ancho_linea)+tnum_x;
+
+		temp_sprite_xy_putsprite_origen(x,y,ancho,alto, tnum_x, tnum_y,spal,sprite_origen);
+}
+
+void temp_dice_layer(z80_byte layer)
+{
+/*
+                temp_dice_dir_graficos(0x17);
+                temp_dice_layer(0);
+        }
+        if (tsconfig&8) printf ("Tiles with number 1 display enable- ");
+        if (tsconfig&4) printf ("Tiles with number 0 display enable- ");
+        if (tsconfig&1) printf ("TSU graphics always 360x288- ");
+
+        //Decir donde Tile map page
+        int direccion=tsconf_af_ports[0x16];
+        direccion=direccion << 14;
+        printf ("Tile map page: %06XH - ",direccion);
+*/
+
+                int direccion_layer=tsconf_af_ports[0x17+layer]>>3;
+                direccion_layer=direccion_layer & 31;
+                direccion_layer=direccion_layer << 17;
+
+
+	int direccion_graficos=tsconf_af_ports[0x16];
+        direccion_graficos=direccion_graficos << 14;
+
+
+	//sprite_origen=tsconf_ram_mem_table[0];
+
+	z80_byte *puntero_layer;
+	z80_byte *puntero_graficos;
+
+	puntero_layer=tsconf_ram_mem_table[0]+direccion_layer;
+	puntero_graficos=tsconf_ram_mem_table[0]+direccion_graficos;
+
+	int x,y;
+
+	for (y=0;y<32;y++) {
+		for (x=0;x<32;x++) {
+			z80_byte valor1=*puntero_layer;
+			puntero_layer++;
+			z80_byte valor2=*puntero_layer;
+                        puntero_layer++;
+
+			z80_int tnum=valor1+256*(valor2&1);
+
+			z80_byte tpal=(valor2>>4)&3;
+
+			z80_byte tnum_x=tnum&63;
+			z80_byte tnum_y=(tnum>>6)&631;
+
+			if (tnum_x && tnum_y) {
+				printf ("tile x: %d y: %d tnum_x: %d tnum_y: %d\n",x,y,tnum_x,tnum_y);
+
+				z80_byte *sprite_origen;
+				sprite_origen=puntero_graficos+y*256+x;
+
+				//void temp_sprite_xy_putsprite_origen(int x,int y,int ancho, int alto, int tnum_x, int tnum_y,z80_byte spal,z80_byte *sprite_origen)
+				temp_sprite_xy_putsprite_origen(x*8,y*8,8,8,0,0,tpal,sprite_origen);
+			}
+		}
+	}
+
+}
+	
 
 void temp_dice_sprites(void)
 {
@@ -1967,10 +2060,17 @@ void temp_dice_modos_sprites_etc(void)
 	if (tsconfig&32) {
 		printf ("Tile layer 0 enable- ");
 		temp_dice_dir_graficos(0x17);
+		temp_dice_layer(0);
 	}
 	if (tsconfig&8) printf ("Tiles with number 1 display enable- ");
 	if (tsconfig&4) printf ("Tiles with number 0 display enable- ");
 	if (tsconfig&1) printf ("TSU graphics always 360x288- ");
+
+	//Decir donde Tile map page
+        int direccion=tsconf_af_ports[0x16];
+        direccion=direccion << 14;
+        printf ("Tile map page: %06XH - ",direccion);
+	
 
 	printf ("\n");
 
