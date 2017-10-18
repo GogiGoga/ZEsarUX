@@ -34,7 +34,7 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 
--opcion ZRCP que indique que memoria divmmc/divide esta mapeada
+-opcion ZRCP que indique que memoria divmmc/divide esta mapeada: de momento dice divmmc sin mas
 
 
 

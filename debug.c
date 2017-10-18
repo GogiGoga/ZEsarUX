@@ -69,6 +69,7 @@
 
 #include "snap.h"
 #include "kartusho.h"
+#include "diviface.h"
 
 
 struct timeval debug_timer_antes, debug_timer_ahora;
@@ -4523,6 +4524,21 @@ typedef struct s_debug_memory_segment debug_memory_segment;
   			//Fin paginas ram
 
 
+      	//Caso divmmc
+      			
+
+      	if (diviface_enabled.v) {
+      		if ( !   ( (diviface_control_register&128)==0 && diviface_paginacion_automatica_activa.v==0) )  {
+      			strcpy(segmentos[0].longname,"Diviface");
+			strcpy(segmentos[0].shortname,"DIV");	
+
+			//En maquinas de 8 segmentos, bloque 1 es 8192-16383
+			if (segmentos_totales==8) {
+			      	strcpy(segmentos[1].longname,"Diviface");
+				strcpy(segmentos[1].shortname,"DIV");		
+			}
+      		}
+      	}
 
 
 	return segmentos_totales;
