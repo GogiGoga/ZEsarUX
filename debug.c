@@ -3518,7 +3518,7 @@ void debug_registers_get_mem_page(z80_byte segmento,char *texto_pagina)
 {
 
 	//Si es dandanator
-	if (segmento==0 && dandanator_switched_on.v==1) {
+	if (segmento==0 && dandanator_enabled.v && dandanator_switched_on.v==1) {
 		sprintf (texto_pagina,"DB%d",dandanator_active_bank);
 		return;
 	}
@@ -3669,7 +3669,7 @@ void debug_get_memory_pages(char *texto_final)
 
 
   			//Si dandanator y maquina 48kb
-  			if (MACHINE_IS_SPECTRUM_16_48 && dandanator_switched_on.v) {
+  			if (MACHINE_IS_SPECTRUM_16_48 && dandanator_enabled.v && dandanator_switched_on.v) {
   				debug_registers_get_mem_page(0,texto_memoria);
   			}
 
@@ -3682,6 +3682,8 @@ void debug_get_memory_pages(char *texto_final)
   			if (MACHINE_IS_SPECTRUM_16_48 && multiface_enabled.v && multiface_switched_on.v) {
   				debug_registers_get_mem_page(0,texto_memoria);
   			}
+
+
                           //Paginas memoria
                           if (MACHINE_IS_ZXUNO ) {
                                   int pagina;
@@ -3922,7 +3924,7 @@ void debug_registers_get_mem_page_extended(z80_byte segmento,char *texto_pagina,
 {
 
         //Si es dandanator
-        if (segmento==0 && dandanator_switched_on.v==1) {
+        if (segmento==0 && dandanator_enabled.v && dandanator_switched_on.v==1) {
                 sprintf (texto_pagina_short,"DB%d",dandanator_active_bank);
                 sprintf (texto_pagina,"Dandanator Block %d",dandanator_active_bank);
                 return;
@@ -4068,6 +4070,62 @@ typedef struct s_debug_memory_segment debug_memory_segment;
           }
 
     }
+
+
+
+	if (MACHINE_IS_TBBLUE) {
+                                                      int pagina;
+                                                      //4 paginas, texto 5 caracteres max
+				segmentos_totales=8;
+
+                            for (pagina=0;pagina<8;pagina++) {
+
+                                                            //Caso tbblue y modo config en pagina 0
+                                                            if (pagina==0 || pagina==1) {
+                                                                    //z80_byte maquina=(tbblue_config1>>6)&3;
+                                                                    z80_byte maquina=(tbblue_registers[3])&3;
+                                                                    if (maquina==0){
+                                                                            if (tbblue_bootrom.v) {
+											strcpy (segmentos[pagina].shortname,"RO");
+											strcpy (segmentos[pagina].longname,"ROM");
+										}
+                                                                            else {
+                                                                                    z80_byte romram_page=(tbblue_registers[4]&31);
+                                                                                    sprintf (segmentos[pagina].shortname,"SR%d",romram_page);
+                                                                                    sprintf (segmentos[pagina].longname,"SRAM %d",romram_page);
+                                                                            }
+                                                                    }
+                                                                    else debug_registers_get_mem_page_tbblue_extended(pagina,segmentos[pagina].longname,segmentos[pagina].shortname);
+                                                            }
+                                                            else {
+                                                                    debug_registers_get_mem_page_tbblue_extended(pagina,segmentos[pagina].longname,segmentos[pagina].shortname);
+                                                            }
+
+				segmentos[pagina].length=8192;
+                                segmentos[pagina].start=8192*pagina;
+                            }
+
+
+                      //D5
+
+
+      }
+
+
+                 //Si dandanator y maquina 48kb
+                        if (MACHINE_IS_SPECTRUM_16_48 && dandanator_enabled.v && dandanator_switched_on.v) {
+                                debug_registers_get_mem_page_extended(0,segmentos[0].longname,segmentos[0].shortname);
+                        }
+
+                        //Si kartusho y maquina 48kb
+                        if (MACHINE_IS_SPECTRUM_16_48 && kartusho_enabled.v) {
+                                debug_registers_get_mem_page_extended(0,segmentos[0].longname,segmentos[0].shortname);
+                        }
+
+                        //Si multiface y maquina 48kb. TODO. Si esta dandanator y tambien multiface, muestra siempre dandanator
+                        if (MACHINE_IS_SPECTRUM_16_48 && multiface_enabled.v && multiface_switched_on.v) {
+                                debug_registers_get_mem_page_extended(0,segmentos[0].longname,segmentos[0].shortname);
+                        }
 
 
 	return segmentos_totales;
