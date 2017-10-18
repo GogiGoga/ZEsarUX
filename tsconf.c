@@ -545,6 +545,7 @@ void tsconf_hard_reset(void)
        //Borrar toda memoria ram
         int d;
         z80_byte *puntero;
+        
         for (i=0;i<TSCONF_RAM_PAGES;i++) {
                 puntero=tsconf_ram_mem_table[i];
                 for (d=0;d<16384;d++,puntero++) {

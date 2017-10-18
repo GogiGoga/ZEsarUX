@@ -5184,6 +5184,26 @@ void menu_debug_registers_dump_ascii(char *texto,menu_z80_moto_int direccion,int
         }
 }
 
+//Retorna paginas mapeadas (nombres cortos) 
+void menu_debug_get_memory_pages(char *s)
+{
+	debug_memory_segment segmentos[MAX_DEBUG_MEMORY_SEGMENTS];
+        int total_segmentos=debug_get_memory_pages_extended(segmentos);
+
+        int i;
+        int longitud;
+        int indice=0;
+
+        for (i=0;i<total_segmentos;i++) { 
+        	longitud=strlen(segmentos[i].shortname)+1;
+        	sprintf(&s[indice],"%s ",segmentos[i].shortname);
+
+        	indice +=longitud;
+
+        }
+		
+}
+
 
 //Si muestra:
 //
@@ -5457,9 +5477,13 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 
 
 
-    //Paginas memoria
-		debug_get_memory_pages(textoregistros);
-    menu_escribe_linea_opcion(linea++,-1,1,textoregistros);
+    		//Paginas memoria
+		//debug_get_memory_pages(textoregistros);
+                char textopaginasmem[100];
+		menu_debug_get_memory_pages(textopaginasmem);
+		//limitar a 31 por si acaso
+		textopaginasmem[31]=0;
+    		menu_escribe_linea_opcion(linea++,-1,1,textopaginasmem);
 		//Fin paginas memoria
 
 

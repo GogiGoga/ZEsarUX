@@ -3302,49 +3302,37 @@ char buffer_retorno[2048];
 	else if (!strcmp(comando_sin_parametros,"get-memory-pages") || !strcmp(comando_sin_parametros,"gmp")) {
 
                 remote_parse_commands_argvc(parametros);
+
+                debug_memory_segment segmentos[MAX_DEBUG_MEMORY_SEGMENTS];
+                int total_segmentos=debug_get_memory_pages_extended(segmentos);
+
+                int verbose=0;
+
                 if (remote_command_argc>0) {
-			if (!strcmp(remote_command_argv[0],"verbose")) {
-				debug_memory_segment segmentos[MAX_DEBUG_MEMORY_SEGMENTS];
-				int total_segmentos=debug_get_memory_pages_extended(segmentos);
-
-				/*
-				struct s_debug_memory_segment {
-        //texto largo del nombre del segmento
-        char longname[100];
-
-	//texto corto
-	char shortname[32];
-
-	//Primera direccion del segmento
-	int start;
-
-	//Longitud del segmento
-	int length;
+                 if (!strcmp(remote_command_argv[0],"verbose")) {
+                    verbose=1;
+                  }
+                }
 
 
-				*/	
+                 int i;
 
-				int i;
+                for (i=0;i<total_segmentos;i++) { 
 
-				for (i=0;i<total_segmentos;i++) {		
-					escribir_socket_format(misocket,"Segment %d\nLong name: %s\nShort name: %s\nStart: %XH\nEnd: %XH\n\n",
-						i+1,segmentos[i].longname, segmentos[i].shortname, segmentos[i].start, segmentos[i].start+segmentos[i].length-1);
-				}
+                  if (verbose) {
+                    escribir_socket_format(misocket,"Segment %d\nLong name: %s\nShort name: %s\nStart: %XH\nEnd: %XH\n\n",
+            i+1,segmentos[i].longname, segmentos[i].shortname, segmentos[i].start, segmentos[i].start+segmentos[i].length-1);
+                  }
 
-			}
-
-			else {
-				escribir_socket(misocket,"Unknown parameter");
-			}
+                  else {
+                    escribir_socket_format(misocket,"%s ",segmentos[i].shortname);
+                  }
+                }
 		
 
-			return;
-
-		}
-
-		char buffer_temporal[MAX_TEXT_DEBUG_GET_MEMORY_PAGES+1];
-		debug_get_memory_pages(buffer_temporal);
-		escribir_socket (misocket,buffer_temporal);
+		//char buffer_temporal[MAX_TEXT_DEBUG_GET_MEMORY_PAGES+1];
+		//debug_get_memory_pages(buffer_temporal);
+		//escribir_socket (misocket,buffer_temporal);
 	}
 
 	else if (!strcmp(comando_sin_parametros,"get-memory-zones") || !strcmp(comando_sin_parametros,"gmz")) {

@@ -107,29 +107,11 @@ void load_spg_snapshot(char *filename)
 
 
 
-  	//reset(RM_NOCHANGE);
-  	//load_spec_colors();
-  	//reset_sound();
+      tsconf_set_memory_pages();
+      tsconf_set_sizes_display();
+      tsconf_hard_reset();
 
 
-    tsconf_hard_reset();
-
-    /*switch (conf.spg_mem_init)
-    {
-    default:
-      break;
-    case 1: // random memory initialization
-      for (u32 i = 0; i < PAGE * MAX_RAM_PAGES; i++)
-      {
-        srand((unsigned)time(NULL));
-        z80_byte byte = rand();
-        RAM_BASE_M[i] = byte;
-      }
-      break;
-    case 2: // zero memory initialization
-      memset(RAM_BASE_M, 0, PAGE * MAX_RAM_PAGES);
-      break;
-    }*/
 
   	reg_iy=0x5C3A;
     reg_l_shadow=0x58;
@@ -153,8 +135,6 @@ void load_spg_snapshot(char *filename)
       debug_printf(VERBOSE_DEBUG,"Paging RAM %02XH to C000H",hdr10->win3_pg);
 
 
-      tsconf_set_memory_pages();
-      tsconf_set_sizes_display();
 
   		z80_byte *data = &hdr10->data;
       z80_byte i;
