@@ -726,6 +726,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-memory-zones","|gmz",NULL,"Returns list of memory zones of this machine"},
 	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
+  {"get-paging-state",NULL,NULL,"Shows paging state on Spectrum 128k machines: if using screen 5/7 and if paging enabled"},
   {"get-registers","|gr",NULL,"Get CPU registers"},
 	{"get-stack-backtrace",NULL,NULL,"Get last 5 16-bit values from the stack"},
 	  {"get-version",NULL,NULL,"Shows emulator version"},
@@ -3352,6 +3353,12 @@ char buffer_retorno[2048];
 	else if (!strcmp(comando_sin_parametros,"get-os")) {
 		escribir_socket (misocket,COMPILATION_SYSTEM);
 	}
+
+  else if (!strcmp(comando_sin_parametros,"get-paging-state")) {
+    char buffer[32];
+    debug_get_paging_screen_state(buffer);
+    escribir_socket (misocket,buffer);
+  }
 
   else if (!strcmp(comando_sin_parametros,"get-registers") || !strcmp(comando_sin_parametros,"gr")) {
     print_registers(buffer_retorno);

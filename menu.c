@@ -5481,10 +5481,30 @@ if (menu_debug_registers_mostrando==0 || menu_debug_registers_mostrando==1 || me
 		//debug_get_memory_pages(textoregistros);
                 char textopaginasmem[100];
 		menu_debug_get_memory_pages(textopaginasmem);
+
+		int max_longitud=31;
 		//limitar a 31 por si acaso
-		textopaginasmem[31]=0;
+
+
+
+    		//Si paging enabled o no, scr
+    		char buffer_paging_state[32];
+    		debug_get_paging_screen_state(buffer_paging_state);
+
+    		//Si cabe, se escribe
+    		int longitud_texto1=strlen(textopaginasmem);
+    		//int longitud_texto2=strlen(buffer_paging_state);
+
+    		//int longitud_total=longitud_texto1+longitud_texto2+1; //Con un espacio adicional
+		//if (longitud_total<=max_longitud) {
+    		//Lo escribo y ya lo limitará debajo a 31
+			sprintf(&textopaginasmem[longitud_texto1]," %s",buffer_paging_state);
+		//}
+
+
+		textopaginasmem[max_longitud]=0;
     		menu_escribe_linea_opcion(linea++,-1,1,textopaginasmem);
-		//Fin paginas memoria
+    		//Fin paginas memoria
 
 
 			if (MACHINE_IS_PRISM) {

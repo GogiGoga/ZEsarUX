@@ -4528,3 +4528,21 @@ typedef struct s_debug_memory_segment debug_memory_segment;
 	return segmentos_totales;
 
 }
+
+
+//Devuelve texto estado pagina video(5/7) y si paginacion esta activa o no. Solo para maquinas spectrum y que no sean 16/48
+void debug_get_paging_screen_state(char *s)
+{
+
+	//por defecto
+	*s=0;
+
+	if (!MACHINE_IS_SPECTRUM) return;
+
+	if (MACHINE_IS_SPECTRUM_16_48) return;
+
+
+	sprintf (s,"SCR%d %s", ( (puerto_32765&8) ? 7 : 5) ,  ( (puerto_32765&32) ? "PDI" : "PEN"  ) );
+
+
+}

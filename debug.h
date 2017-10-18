@@ -241,6 +241,8 @@ extern int debug_if_breakpoint_action_menu(int index);
 
 extern void debug_run_until_return_interrupt(void);
 
+extern void debug_get_paging_screen_state(char *s);
+
 
 
 #define MAX_DEBUG_MEMORY_SEGMENTS 8
