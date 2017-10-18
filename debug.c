@@ -3917,6 +3917,99 @@ void debug_run_until_return_interrupt(void)
 }
 
 
+//Retorna la pagina mapeada para el segmento
+void debug_registers_get_mem_page_extended(z80_byte segmento,char *texto_pagina,char *texto_pagina_short)
+{
+
+        //Si es dandanator
+        if (segmento==0 && dandanator_switched_on.v==1) {
+                sprintf (texto_pagina_short,"DB%d",dandanator_active_bank);
+                sprintf (texto_pagina,"Dandanator Block %d",dandanator_active_bank);
+                return;
+        }
+
+        //Si es kartusho
+        if (segmento==0 && kartusho_enabled.v==1) {
+                sprintf (texto_pagina_short,"KB%d",kartusho_active_bank);
+                sprintf (texto_pagina,"Kartusho Block %d",kartusho_active_bank);
+                return;
+        }
+
+        //Si es superupgrade
+        if (superupgrade_enabled.v) {
+                if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+                        //ROM
+                        sprintf (texto_pagina_short,"RO%d",debug_paginas_memoria_mapeadas[segmento] & 127);
+                        sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & 127);
+                }
+
+                else {
+                        //RAM
+                        sprintf (texto_pagina_short,"RA%d",debug_paginas_memoria_mapeadas[segmento]);
+                        sprintf (texto_pagina,"RAM %d",debug_paginas_memoria_mapeadas[segmento]);
+                }
+                return;
+
+        }
+
+        //Con multiface
+        if (segmento==0 && multiface_enabled.v && multiface_switched_on.v) {
+                strcpy(texto_pagina_short,"MLTF");
+                strcpy(texto_pagina,"Multiface ROM");
+                return;
+        }
+
+        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+                //ROM
+                sprintf (texto_pagina_short,"RO%X",debug_paginas_memoria_mapeadas[segmento] & 127);
+                sprintf (texto_pagina,"ROM %X",debug_paginas_memoria_mapeadas[segmento] & 127);
+        }
+
+        else {
+                //RAM
+                sprintf (texto_pagina_short,"RA%X",debug_paginas_memoria_mapeadas[segmento]);
+                sprintf (texto_pagina,"RAM %X",debug_paginas_memoria_mapeadas[segmento]);
+        }
+}
+
+
+
+//Retorna la pagina mapeada para el segmento en zxuno
+void debug_registers_get_mem_page_zxuno_extended(z80_byte segmento,char *texto_pagina,char *texto_pagina_short)
+{
+        if (zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 128) {
+                //ROM.
+                sprintf (texto_pagina_short,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 127);
+                sprintf (texto_pagina,"ROM %d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 127);
+        }
+
+        else {
+                //RAM
+                sprintf (texto_pagina_short,"RA%02d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
+                sprintf (texto_pagina,"RAM %02d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
+        }
+
+}
+
+
+//Retorna la pagina mapeada para el segmento en tbblue
+void debug_registers_get_mem_page_tbblue_extended(z80_byte segmento,char *texto_pagina,char *texto_pagina_short)
+{
+        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+                //ROM.
+                sprintf (texto_pagina_short,"O%d",debug_paginas_memoria_mapeadas[segmento] & 127);
+                sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & 127);
+        }
+
+        else {
+                //RAM
+                sprintf (texto_pagina_short,"A%d",debug_paginas_memoria_mapeadas[segmento]);
+                sprintf (texto_pagina,"RAM %d",debug_paginas_memoria_mapeadas[segmento]);
+        }
+
+}
+
+
 //Retorna numero de segmentos en uso
 int debug_get_memory_pages_extended(debug_memory_segment *segmentos)
 {
@@ -3934,7 +4027,6 @@ int debug_get_memory_pages_extended(debug_memory_segment *segmentos)
         segmentos[1].start=16384;
         segmentos[1].length=49152;
 
-	return segmentos_totales;
 
 
 /*
@@ -3959,5 +4051,25 @@ struct s_debug_memory_segment {
 
 typedef struct s_debug_memory_segment debug_memory_segment;
 */
+
+
+
+   //Paginas memoria
+      if (MACHINE_IS_SPECTRUM_128_P2_P2A ||  superupgrade_enabled.v || MACHINE_IS_CHROME || MACHINE_IS_TSCONF) {
+		segmentos_totales=4;
+                                  int pagina;
+
+        for (pagina=0;pagina<4;pagina++) {
+
+                           debug_registers_get_mem_page_extended(pagina,segmentos[pagina].longname,segmentos[pagina].shortname);
+				segmentos[pagina].length=16384;
+				segmentos[pagina].start=16384*pagina;
+
+          }
+
+    }
+
+
+	return segmentos_totales;
 
 }
