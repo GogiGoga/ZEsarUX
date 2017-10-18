@@ -722,7 +722,7 @@ struct s_items_ayuda items_ayuda[]={
 	{"get-io-ports",NULL,NULL,"Returns currently i/o ports used"},
 
 	{"get-machines",NULL,NULL,"Returns list of emulated machines"},
-	{"get-memory-pages","|gmp",NULL,"Returns current state of memory pages"},
+	{"get-memory-pages","|gmp","[verbose]","Returns current state of memory pages. Default output will be the same as on debug menu; verbose output gives a detailed description of every page"},
 	{"get-memory-zones","|gmz",NULL,"Returns list of memory zones of this machine"},
 	{"get-ocr",NULL,NULL,"Get OCR output text"},
 	{"get-os",NULL,NULL,"Shows emulator operating system"},
@@ -3300,6 +3300,48 @@ char buffer_retorno[2048];
 	}
 
 	else if (!strcmp(comando_sin_parametros,"get-memory-pages") || !strcmp(comando_sin_parametros,"gmp")) {
+
+                remote_parse_commands_argvc(parametros);
+                if (remote_command_argc>0) {
+			if (!strcmp(remote_command_argv[0],"verbose")) {
+				debug_memory_segment segmentos[MAX_DEBUG_MEMORY_SEGMENTS];
+				int total_segmentos=debug_get_memory_pages_extended(segmentos);
+
+				/*
+				struct s_debug_memory_segment {
+        //texto largo del nombre del segmento
+        char longname[100];
+
+	//texto corto
+	char shortname[32];
+
+	//Primera direccion del segmento
+	int start;
+
+	//Longitud del segmento
+	int length;
+
+
+				*/	
+
+				int i;
+
+				for (i=0;i<total_segmentos;i++) {		
+					escribir_socket_format(misocket,"Segment %d\nLong name: %s\nShort name: %s\nStart: %XH\nEnd: %XH\n\n",
+						i+1,segmentos[i].longname, segmentos[i].shortname, segmentos[i].start, segmentos[i].start+segmentos[i].length-1);
+				}
+
+			}
+
+			else {
+				escribir_socket(misocket,"Unknown parameter");
+			}
+		
+
+			return;
+
+		}
+
 		char buffer_temporal[MAX_TEXT_DEBUG_GET_MEMORY_PAGES+1];
 		debug_get_memory_pages(buffer_temporal);
 		escribir_socket (misocket,buffer_temporal);

@@ -242,4 +242,27 @@ extern void debug_get_memory_pages(char *texto_final);
 extern void debug_run_until_return_interrupt(void);
 
 
+
+#define MAX_DEBUG_MEMORY_SEGMENTS 8
+struct s_debug_memory_segment {
+        //texto largo del nombre del segmento
+        char longname[100];
+
+	//texto corto
+	char shortname[32];
+
+	//Primera direccion del segmento
+	int start;
+
+	//Longitud del segmento
+	int length;
+
+
+};
+
+typedef struct s_debug_memory_segment debug_memory_segment;
+
+extern int debug_get_memory_pages_extended(debug_memory_segment *segmentos);
+
+
 #endif
