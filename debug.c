@@ -3513,6 +3513,8 @@ int i;
 }
 
 
+//Estas funciones de debug_registers_get_mem_page_XXXX sin extended, son a borrar tambien
+
 //Retorna la pagina mapeada para el segmento
 void debug_registers_get_mem_page(z80_byte segmento,char *texto_pagina)
 {
@@ -3599,7 +3601,7 @@ void debug_registers_get_mem_page_tbblue(z80_byte segmento,char *texto_pagina)
 //Ejemplo: ROM0 RAM5 RAM2 RAM3
 //Maximo tamaño texto: 31 caracteres. Tener en cuenta array de 32 para codigo 0 del final
 //La funcion incluso usa un array temporal mas grande por si algun printf se sale de rango, que no afecte al string final
-void debug_get_memory_pages(char *texto_final)
+void to_delete_debug_get_memory_pages(char *texto_final)
 {
   char texto_memoria[MAX_TEXT_DEBUG_GET_MEMORY_PAGES*2];
 
@@ -3896,6 +3898,8 @@ void debug_get_memory_pages(char *texto_final)
   texto_memoria[MAX_TEXT_DEBUG_GET_MEMORY_PAGES]=0;
   strcpy(texto_final,texto_memoria);
 }
+
+
 
 
 void debug_run_until_return_interrupt(void)

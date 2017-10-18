@@ -237,7 +237,7 @@ extern void debug_run_action_breakpoint(char *comando);
 extern int debug_if_breakpoint_action_menu(int index);
 
 #define MAX_TEXT_DEBUG_GET_MEMORY_PAGES 31
-extern void debug_get_memory_pages(char *texto_final);
+//extern void debug_get_memory_pages(char *texto_final);
 
 extern void debug_run_until_return_interrupt(void);
 

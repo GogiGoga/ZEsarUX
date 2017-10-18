@@ -105,10 +105,9 @@ void load_spg_snapshot(char *filename)
       return;
     }
 
-
-
-      tsconf_set_memory_pages();
-      tsconf_set_sizes_display();
+    current_machine_type=MACHINE_ID_TSCONF;
+        set_machine(NULL);
+        //reset_cpu();
       tsconf_hard_reset();
 
 
