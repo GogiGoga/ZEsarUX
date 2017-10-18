@@ -4128,6 +4128,258 @@ typedef struct s_debug_memory_segment debug_memory_segment;
                         }
 
 
+
+/*
+   if (tbblue_bootrom.v) {
+											strcpy (segmentos[pagina].shortname,"RO");
+											strcpy (segmentos[pagina].longname,"ROM");
+										}
+                                                                            else {
+                                                                                    z80_byte romram_page=(tbblue_registers[4]&31);
+                                                                                    sprintf (segmentos[pagina].shortname,"SR%d",romram_page);
+                                                                                    sprintf (segmentos[pagina].longname,"SRAM %d",romram_page);
+                                                                            }
+                                                                    }
+                                                                    else debug_registers_get_mem_page_tbblue_extended(pagina,segmentos[pagina].longname,segmentos[pagina].shortname);
+*/
+
+
+//Paginas memoria
+                          if (MACHINE_IS_ZXUNO ) {
+                                  int pagina;
+                                  //4 paginas, texto 6 caracteres max
+                                  //char texto_paginas[4][7];
+				segmentos_totales=4;
+
+                                  for (pagina=0;pagina<4;pagina++) {
+                                          debug_registers_get_mem_page_zxuno_extended(pagina,segmentos[pagina].longname,segmentos[pagina].shortname);
+
+				segmentos[pagina].length=16384;
+                                segmentos[pagina].start=16384*pagina;
+                                  }
+				if (ZXUNO_BOOTM_ENABLED) {
+					sprintf (segmentos[0].shortname,"%s","RO");
+					sprintf (segmentos[0].longname,"%s","ROM");
+				}
+
+
+                          }
+
+
+  			//BANK PAGES
+  			if (MACHINE_IS_Z88) {
+				int pagina;
+				segmentos_totales=4;
+				for (pagina=0;pagina<4;pagina++) {
+	  				sprintf (segmentos[pagina].shortname,"BANK%02X",blink_mapped_memory_banks[pagina]);
+	  				sprintf (segmentos[pagina].longname,"BANK %02X",blink_mapped_memory_banks[pagina]);
+	                                segmentos[pagina].length=16384;
+	                                segmentos[pagina].start=16384*pagina;
+				}
+  			}
+
+
+
+  			//Paginas RAM en CHLOE
+  			if (MACHINE_IS_CHLOE) {
+  				//char texto_paginas[8][3];
+  				//char tipo_memoria[3];
+  				int pagina;
+				segmentos_totales=8;
+  				for (pagina=0;pagina<8;pagina++) {
+  					if (chloe_type_memory_paged[pagina]==CHLOE_MEMORY_TYPE_ROM)  {
+						sprintf (segmentos[pagina].shortname,"R%d",debug_chloe_paginas_memoria_mapeadas[pagina]);
+						sprintf (segmentos[pagina].longname,"ROM %d",debug_chloe_paginas_memoria_mapeadas[pagina]);
+					}
+
+  					if (chloe_type_memory_paged[pagina]==CHLOE_MEMORY_TYPE_HOME) {
+						sprintf (segmentos[pagina].shortname,"H%d",debug_chloe_paginas_memoria_mapeadas[pagina]);
+						sprintf (segmentos[pagina].longname,"HOME %d",debug_chloe_paginas_memoria_mapeadas[pagina]);
+					}
+  					if (chloe_type_memory_paged[pagina]==CHLOE_MEMORY_TYPE_DOCK) {
+						sprintf (segmentos[pagina].shortname,"%s","DO");
+						sprintf (segmentos[pagina].longname,"%s","DOCK");
+					}
+  					if (chloe_type_memory_paged[pagina]==CHLOE_MEMORY_TYPE_EX)   {
+						sprintf (segmentos[pagina].shortname,"%s","EX");
+						sprintf (segmentos[pagina].longname,"%s","EX");
+					}
+
+        	                        segmentos[pagina].length=8192;
+	                                segmentos[pagina].start=8192*pagina;
+  				}
+
+  			}
+
+
+
+/*
+*********************
+
+
+  			if (MACHINE_IS_PRISM) {
+  				//Si modo ram en rom
+          if (puerto_8189 & 1) {
+
+
+
+  		                  //Paginas RAM en PRISM
+                                  char texto_paginas[8][4];
+                                  		//char tipo_memoria[3];
+  		                                int pagina;
+
+  				   for (pagina=0;pagina<8;pagina++) {
+                                                  sprintf (texto_paginas[pagina],"A%02d",debug_prism_paginas_memoria_mapeadas[pagina]);
+  				  }
+
+                                  sprintf (texto_memoria,"%s %s %s %s %s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3],
+                                          texto_paginas[4],texto_paginas[5],texto_paginas[6],texto_paginas[7]);
+
+
+  				}
+
+
+
+  			//Informacion VRAM en PRISM
+  			  else {
+  				//char texto_vram[32];
+
+
+
+
+  				//Paginas RAM en PRISM
+                                  char texto_paginas[8][4];
+                                  //char tipo_memoria[3];
+                                  int pagina;
+  				//TODO. como mostrar texto reducido aqui para paginas 2 y 3 segun vram aperture/no aperture??
+                                  for (pagina=0;pagina<8;pagina++) {
+                                          if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_ROM)  sprintf (texto_paginas[pagina],"O%02d",debug_prism_paginas_memoria_mapeadas[pagina]);
+
+                                          if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_HOME) {
+  						sprintf (texto_paginas[pagina],"A%02d",debug_prism_paginas_memoria_mapeadas[pagina]);
+  						if (pagina==2 || pagina==3) {
+  							//La info de segmentos 2 y 3 (vram aperture si/no) se muestra de info anterior
+  							sprintf (texto_paginas[pagina],"VRA");
+  						}
+  					}
+            if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_DOCK) sprintf (texto_paginas[pagina],"%s","DO");
+            if (prism_type_memory_paged[pagina]==PRISM_MEMORY_TYPE_EX)   sprintf (texto_paginas[pagina],"%s","EX");
+
+  					//Si pagina rom failsafe
+  					if (prism_failsafe_mode.v) {
+  						if (pagina==0 || pagina==1) {
+  							sprintf (texto_paginas[pagina],"%s","FS");
+  						}
+  					}
+
+
+  					//Si paginando zona alta c000h con paginas 10,11 (que realmente son vram0 y 1) o paginas 14,15 (que realmente son vram 2 y 3)
+  					if (pagina==6 || pagina==7) {
+  						int pagina_mapeada=debug_prism_paginas_memoria_mapeadas[pagina];
+  						int vram_pagina=-1;
+  						switch (pagina_mapeada) {
+  							case 10:
+  								vram_pagina=0;
+  							break;
+
+  							case 11:
+  								vram_pagina=1;
+  							break;
+
+  							case 14:
+  								vram_pagina=2;
+  							break;
+
+  							case 15:
+  								vram_pagina=3;
+  							break;
+  						}
+
+  						if (vram_pagina!=-1) {
+  							sprintf (texto_paginas[pagina],"V%d",vram_pagina);
+  						}
+  					}
+                                          //sprintf (texto_paginas[pagina],"%c%d",tipo_memoria,debug_prism_paginas_memoria_mapeadas[pagina]);
+                                  }
+
+                                  sprintf (texto_memoria,"%s %s %s %s %s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3],
+                                          texto_paginas[4],texto_paginas[5],texto_paginas[6],texto_paginas[7]);
+
+
+          }
+  			}
+
+  			  //Paginas RAM en TIMEX
+                          if (MACHINE_IS_TIMEX_TS2068) {
+                                  char texto_paginas[8][3];
+                                  //char tipo_memoria;
+                                  int pagina;
+                                  for (pagina=0;pagina<8;pagina++) {
+                                          if (timex_type_memory_paged[pagina]==TIMEX_MEMORY_TYPE_ROM)  sprintf (texto_paginas[pagina],"%s","RO");
+                                          if (timex_type_memory_paged[pagina]==TIMEX_MEMORY_TYPE_HOME) sprintf (texto_paginas[pagina],"%s","HO");
+                                          if (timex_type_memory_paged[pagina]==TIMEX_MEMORY_TYPE_DOCK) sprintf (texto_paginas[pagina],"%s","DO");
+                                          if (timex_type_memory_paged[pagina]==TIMEX_MEMORY_TYPE_EX)   sprintf (texto_paginas[pagina],"%s","EX");
+                                          //sprintf (texto_paginas[pagina],"%c%d",tipo_memoria,debug_timex_paginas_memoria_mapeadas[pagina]);
+                                  }
+
+                                  sprintf (texto_memoria,"MEM %s %s %s %s %s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3],
+                                          texto_paginas[4],texto_paginas[5],texto_paginas[6],texto_paginas[7]);
+
+
+                          }
+
+  			//Paginas RAM en CPC
+  //#define CPC_MEMORY_TYPE_ROM 0
+  //#define CPC_MEMORY_TYPE_RAM 1
+
+  //extern z80_byte debug_cpc_type_memory_paged_read[];
+  //extern z80_byte debug_cpc_paginas_memoria_mapeadas_read[];
+  			if (MACHINE_IS_CPC) {
+                                  char texto_paginas[4][5];
+                                  int pagina;
+                                  for (pagina=0;pagina<4;pagina++) {
+                                          if (debug_cpc_type_memory_paged_read[pagina]==CPC_MEMORY_TYPE_ROM)
+  						sprintf (texto_paginas[pagina],"%s%d","ROM",debug_cpc_paginas_memoria_mapeadas_read[pagina]);
+
+                                          if (debug_cpc_type_memory_paged_read[pagina]==CPC_MEMORY_TYPE_RAM)
+  						sprintf (texto_paginas[pagina],"%s%d","RAM",debug_cpc_paginas_memoria_mapeadas_read[pagina]);
+
+                                  }
+
+                                  sprintf (texto_memoria,"MEM %s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3]);
+
+
+                          }
+
+  			//Paginas RAM en SAM
+  			if (MACHINE_IS_SAM) {
+  				char texto_paginas[4][6];
+                                  int pagina;
+                                  for (pagina=0;pagina<4;pagina++) {
+                                          if (sam_memory_paged_type[pagina]==0)
+                                                  sprintf (texto_paginas[pagina],"%s%02d","RAM",debug_sam_paginas_memoria_mapeadas[pagina]);
+
+                                          if (sam_memory_paged_type[pagina])
+                                                  sprintf (texto_paginas[pagina],"%s%02d","ROM",debug_sam_paginas_memoria_mapeadas[pagina]);
+
+
+                                  }
+
+                                  sprintf (texto_memoria,"MEM %s %s %s %s",texto_paginas[0],texto_paginas[1],texto_paginas[2],texto_paginas[3]);
+
+
+                          }
+
+
+
+  			//Fin paginas ram
+
+
+*****************
+*/
+
+
+
 	return segmentos_totales;
 
 }
