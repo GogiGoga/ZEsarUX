@@ -87,8 +87,6 @@ O quizá setting configurable
 
 
 
-
-
 -probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 
@@ -142,11 +140,11 @@ render de sprites / tiles se hace de momento al final de cada frame de pantalla 
 -tsconf funciona con:
 I only see some images on a few demos/games, like:
 -bomberman: only part of the menu "text start/options/about"
--ny17: appears only the snow man, nothing more (I think this demo uses sprites)
+-ny17: almost perfect: text in the middle doesnt disappear
 -chess: only the top/half part of the screen
 -caleidoscope: runs perfect
--zendloops: show the girl at the beginning and pressing a key turns to black
--socoban: show the image at the beginning and pressing a key turns to black
+-zendloops: almost perfect
+-socoban: almost perfect
 -keftale: seems to run ok
 -fire:seems to run ok
 
