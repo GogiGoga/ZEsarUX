@@ -99,6 +99,8 @@ int snapshot_autosave_interval_current_counter=0;
 #define ZX_HEADER_SIZE 294
 #define Z80_HEADER_SIZE_SAVE 87
 
+z80_bit sna_setting_no_change_machine={0};
+
 void set_snap_file_options(char *filename)
 {
 	set_snaptape_fileoptions(filename);
@@ -1950,6 +1952,18 @@ void load_sna_snapshot_bytes_128k(z80_byte *buffer_lectura,z80_byte pagina_entra
 	}
 }
 
+int load_sna_snapshot_must_change_machine(void)
+{
+                            //Si setting de no cambiar maquina al cargar sna
+                        //Se cambia siempre por defecto. Pero si se activa el setting, no cambiarlo a no ser que maquina no sea spectrum
+                        int cambiar_maquina=1;
+
+                        if (sna_setting_no_change_machine.v) cambiar_maquina=0;
+
+                        if (!MACHINE_IS_SPECTRUM) cambiar_maquina=1;
+    return cambiar_maquina;
+}
+
 //Cargar snapshot sna
 void load_sna_snapshot(char *archivo)
 {
@@ -2006,11 +2020,20 @@ void load_sna_snapshot(char *archivo)
 		                        	return;
                 			}
 
-				        //maquina Spectrum 48k
-				        current_machine_type=1;
 
-				        set_machine(NULL);
+                        //Si setting de no cambiar maquina al cargar sna
+                        
+
+                        if (load_sna_snapshot_must_change_machine() ) {
+
+				            //maquina Spectrum 48k
+				            current_machine_type=1;
+
+				            set_machine(NULL);
+                        }
 				        reset_cpu();
+
+                        
 
         				load_sna_snapshot_common_registers(sna_48k_header);
 
@@ -2072,10 +2095,12 @@ The third RAM bank saved is always the one currently paged, even if this is page
                                                 return;
                                         }
 
-                                        //maquina Spectrum 128k
-                                        current_machine_type=6;
+                                        if (load_sna_snapshot_must_change_machine() ) {
+                                            //maquina Spectrum 128k
+                                            current_machine_type=6;
 
-                                        set_machine(NULL);
+                                            set_machine(NULL);
+                                        }
                                         reset_cpu();
 
                                         load_sna_snapshot_common_registers(sna_48k_header);

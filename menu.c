@@ -23309,6 +23309,11 @@ void menu_settings_display(MENU_ITEM_PARAMETERS)
 
 }
 
+void menu_snapshot_sna_set_machine(MENU_ITEM_PARAMETERS)
+{
+	sna_setting_no_change_machine.v ^=1;
+}
+
 
 void menu_settings_snapshot(MENU_ITEM_PARAMETERS)
 {
@@ -23334,6 +23339,15 @@ void menu_settings_snapshot(MENU_ITEM_PARAMETERS)
 					"Version 4 works on ZEsarUX V1.3 and higher\n"
 					"Version 5 works on ZEsarUX V2 and higher\n"
 				);
+
+                menu_add_item_menu_format(array_menu_settings_snapshot,MENU_OPCION_NORMAL,menu_snapshot_sna_set_machine,NULL,"Set machine sna load: %s",(sna_setting_no_change_machine.v ? "No" : "Yes"));
+                menu_add_item_menu_tooltip(array_menu_settings_snapshot,"If machine is reset to 48k/128k when loading a .sna snapshot file");
+                menu_add_item_menu_ayuda(array_menu_settings_snapshot,"If machine is reset to 48k/128k when loading a .sna snapshot file.\n"
+					"Disabling it, the .sna snapshot is loaded but the machine is not changed, so it allows to load, for example, a 48k snapshot on a Prism machine, or TBBlue, or any Spectrum machine different than 48/128.\n"
+					"If current machine is not a Spectrum, loading a .sna snapshot will always switch to 48k/128k.\n"
+					"This setting only applies to .sna snapshots, but not to .z80, .zx, or any other snapshot type."
+				);
+
 
 
                 menu_add_item_menu(array_menu_settings_snapshot,"",MENU_OPCION_SEPARADOR,NULL,NULL);
