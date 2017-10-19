@@ -79,5 +79,9 @@ extern void tsconf_set_sizes_display(void);
 
 extern z80_byte tsconf_get_rom_bank(void);
 
+extern z80_bit tsconf_with_vdac;
+
+extern z80_byte tsconf_rgb_5_to_8(z80_byte color);
+
 
 #endif

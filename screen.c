@@ -7599,11 +7599,11 @@ Bit 6 GRN1 most  significant bit of green.
 
 
 				//Tenemos tabla de conversion de valor de 5 bits a 8 bits. Temporal aproximado
-				z80_byte tsconf_5_to_8[32];
+				/*z80_byte tsconf_5_to_8[32];
 
 				for (i=0;i<32;i++) {
 					tsconf_5_to_8[i]=i*8;
-				}
+				}*/
 
 				//Colores tsconf
 				for (i=0;i<32768;i++) {
@@ -7612,11 +7612,16 @@ Bit 6 GRN1 most  significant bit of green.
 					g=(i >> 5 ) & 0x1F;
 					r=(i >> 10 ) & 0x1F;
 
-debug_printf (VERBOSE_DEBUG,"tsconf color: %d. 15 bit: r: %d g: %d b: %d",i,r,g,b);
+					debug_printf (VERBOSE_DEBUG,"tsconf color: %d. 15 bit: r: %d g: %d b: %d",i,r,g,b);
 
-r=tsconf_5_to_8[r];
-g=tsconf_5_to_8[g];
-b=tsconf_5_to_8[b];
+//r=tsconf_5_to_8[r];
+//g=tsconf_5_to_8[g];
+//b=tsconf_5_to_8[b];
+
+					//tsconf_rgb_5_to_8
+					r=tsconf_rgb_5_to_8(r);
+					g=tsconf_rgb_5_to_8(g);
+					b=tsconf_rgb_5_to_8(b);
 
 
 					color32=(r<<16)|(g<<8)|b;

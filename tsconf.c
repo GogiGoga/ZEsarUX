@@ -36,6 +36,15 @@ z80_byte tsconf_nvram[256];
 
 z80_byte tsconf_af_ports[256];
 
+//Si se usa vdac con full 15 bits, o sin vdac: en ese caso, cada componente de 5 bits son diferentes hasta valor 24, a partir de ahi son iguales a 255:
+/*
+0  1   2    3   4  5   6   7   8   9   10   11    12  13   14   15   16   17   18   19   20   21   22   23   24
+0, 10, 21, 31, 42, 53, 63, 74, 85, 95, 106, 117, 127, 138, 149, 159, 170, 181, 191, 202, 213, 223, 234, 245, 255,
+
+Y a partir de 24 todos son 255
+*/
+z80_bit tsconf_with_vdac={1};
+
 
 z80_byte tsconf_fmaps[TSCONF_FMAPS_SIZE];
 /*
@@ -590,4 +599,36 @@ void tsconf_hard_reset(void)
   tsconf_set_memory_pages();
   tsconf_set_sizes_display();
   tsconf_set_emulator_setting_turbo();
+}
+
+
+
+//Funcion para convertir paleta de 5 bits de tsconf a 8 bits (rgb15 a rgb24)
+//Tiene en cuenta parametro vdac de tsconf , si esta disponible o no
+z80_byte tsconf_rgb_5_to_8(z80_byte color)
+{
+
+	//Con vdac
+	if (tsconf_with_vdac.v) return color*8;  //5 bits: 0..31. max valor 31*8=248
+
+
+	//Sin vdac
+//Si se usa vdac con full 15 bits, o sin vdac: en ese caso, cada componente de 5 bits son diferentes hasta valor 24, a partir de ahi son iguales a 255:
+/*
+0  1   2    3   4  5   6   7   8   9   10   11    12  13   14   15   16   17   18   19   20   21   22   23   24
+0, 10, 21, 31, 42, 53, 63, 74, 85, 95, 106, 117, 127, 138, 149, 159, 170, 181, 191, 202, 213, 223, 234, 245, 255,
+
+Y a partir de 24 todos son 255
+*/
+
+	if (color>=24) return 255;
+
+
+	//entre 0 y 23
+				 //0  1   2    3   4  5   6   7   8   9   10   11    12  13   14   15   16   17   18   19   20   21   22   23   24
+	z80_byte without_vdac[24]={0, 10, 21, 31, 42, 53, 63, 74, 85, 95, 106, 117, 127, 138, 149, 159, 170, 181, 191, 202, 213, 223, 234, 245};
+
+	return without_vdac[color];
+
+
 }
