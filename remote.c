@@ -2444,6 +2444,8 @@ void remote_help_no_parameters_command(int misocket)
         escribir_socket (misocket,"\n");
     }
 
+    escribir_socket_format(misocket,"\nTotal commands: %d\n",i);
+
 }
 
 //Retorna lista de comandos tabulados en varias columnas
