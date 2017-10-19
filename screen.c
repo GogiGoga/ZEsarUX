@@ -6990,14 +6990,17 @@ void init_vofile(void)
 	//Z88: 640x192 = 122880
 	//Spectrum: 352x296 = 104192
 	//Prism: 640x480 = 307200
+	//QL: 512x512
+	//TSConf: 720x576
+	
 
 	//Si se esta con vofile activo y se cambia de maquina, el buffer tiene que ser suficientemente grande para que quepa,
 	//y este buffer se asigna solo al principio. Sino petaria con segmentation fault seguramente
 
         //ancho=screen_get_emulated_display_width_no_zoom();
         //alto=screen_get_emulated_display_height_no_zoom();
-	ancho=640;
-	alto=480;
+	ancho=720;
+	alto=576;
 	//esto es mucho mas de lo que necesita
 
 
@@ -7194,6 +7197,9 @@ void vofile_send_frame(z80_int *buffer)
 	//z80_byte byte_leido;
 	z80_int color_leido;
 
+
+	//printf ("tamanyo: %d vofile_buffer: %p\n",tamanyo,vofile_buffer);
+
 	for (;origen_buffer<tamanyo;origen_buffer++) {
 		//byte_leido=*buffer++;
 		//convertir_paleta(byte_leido);
@@ -7206,6 +7212,7 @@ void vofile_send_frame(z80_int *buffer)
 
 
         //printf ("buffer: %p ptr_vofile: %p\n",buffer,ptr_vofile);
+
         //escritos=fwrite(buffer, 1, tamanyo, ptr_vofile);
 
 
