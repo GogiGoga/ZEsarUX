@@ -38,4 +38,6 @@ extern z80_bit dandanator_switched_on;
 extern z80_byte dandanator_active_bank;
 extern void dandanator_press_button(void);
 
+extern z80_byte *dandanator_memory_pointer;
+
 #endif

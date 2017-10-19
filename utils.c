@@ -8680,6 +8680,13 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
 	}
     break;
 
+    //dandanator
+    case 7:
+        if (dandanator_enabled.v) {
+          size=DANDANATOR_SIZE;
+        }
+    break;
+
   }
 
   return size;
@@ -8801,6 +8808,12 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
       }
     break;
 
+    //dandanator
+    case 7:
+        if (dandanator_enabled.v) {
+        p=&dandanator_memory_pointer[address];
+      }
+    break;
 
 
 
@@ -8865,6 +8878,13 @@ void machine_get_memory_zone_name(int zone, char *name)
         if (kartusho_enabled.v) {
 		strcpy(name,"Kartusho rom");
 	}
+    break;
+
+    //dandanator
+    case 7:
+        if (dandanator_enabled.v) {
+                strcpy(name,"Dandanator rom");
+        }
     break;
 
 
