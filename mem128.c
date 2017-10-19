@@ -63,10 +63,9 @@ int mem128_multiplicador=1;
 
 
 //Paginas mapeadas en cada zona de RAM. Se solamente usa en menu debug y breakpoints, no para el core de emulacion
-//Si numero pagina >=128, numero pagina=numero pagina-128 y se trata de ROM. Si no, es RAM
+//Si numero pagina >=32768, numero pagina=numero pagina-32768 y se trata de ROM. Si no, es RAM
 //Permitir hasta 8 bloques para compatibilidad con mmu de 8 paginas, como tbblue
-//Hacer que en vez de pagina >=128, sea pagina >=32768 para indicar rom
-z80_byte debug_paginas_memoria_mapeadas[8];
+z80_int debug_paginas_memoria_mapeadas[8];
 
 /*
 El conmutador de hardware esta en la direccion de E/S 7FFDh (32765). El campo del bit
@@ -429,7 +428,7 @@ void mem_set_normal_pages_128k(void)
 		contend_pages_actual[2]=contend_pages_128k_p2a[2];
 		contend_pages_actual[3]=contend_pages_128k_p2a[0];
 
-                debug_paginas_memoria_mapeadas[0]=128+0;
+                debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+0;
                 debug_paginas_memoria_mapeadas[1]=5;
                 debug_paginas_memoria_mapeadas[2]=2;
                 debug_paginas_memoria_mapeadas[3]=0;
@@ -449,7 +448,7 @@ void mem_set_normal_pages_p2a(void)
                 contend_pages_actual[2]=contend_pages_128k_p2a[2];
                 contend_pages_actual[3]=contend_pages_128k_p2a[0];
 
-                debug_paginas_memoria_mapeadas[0]=128+0;
+                debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+0;
                 debug_paginas_memoria_mapeadas[1]=5;
                 debug_paginas_memoria_mapeadas[2]=2;
                 debug_paginas_memoria_mapeadas[3]=0;
@@ -476,7 +475,7 @@ void mem_page_rom_p2a(void)
                         //printf ("Entra rom: %d\n",rom_entra);
 
 			contend_pages_actual[0]=0;
-			debug_paginas_memoria_mapeadas[0]=128+rom_entra;
+			debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+rom_entra;
 }
 
 //En maquinas 128k, devuelve bits 3 bajos de puerto 32765
@@ -556,7 +555,7 @@ void mem_page_rom_128k(void)
 	memory_paged[0]=rom_mem_table[rom_entra];
 
 	contend_pages_actual[0]=0;
-	debug_paginas_memoria_mapeadas[0]=128+rom_entra;
+	debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+rom_entra;
 }
 
 

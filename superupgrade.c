@@ -633,7 +633,7 @@ void superupgrade_set_memory_pages(void)
 
 
 
-                debug_paginas_memoria_mapeadas[0]=128+rom_page;
+                debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+rom_page;
                 debug_paginas_memoria_mapeadas[1]=5;
                 debug_paginas_memoria_mapeadas[2]=2;
                 debug_paginas_memoria_mapeadas[3]=ram_page;

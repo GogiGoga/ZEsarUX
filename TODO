@@ -34,7 +34,7 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 
-
+-FAQ de esxdos handler 
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
@@ -42,18 +42,21 @@ The format of each table entry is as follows:
 pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno si que va bien
 revisar funcion quickload
 
+-Opción para activar kempston mouse 
+
+-Paso a paso cuando hay condición de debug activa no deja salir (en menú)
+Avisar quizá en ZRCP que está activa condición de debug ? 
 
 
+-Nuevo modo prism chunk
 
+-Reportar en faq errores dandanator en Mac y sonido estridente 
 
 
 -memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
 
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
-
-
-
 
 
 
@@ -74,19 +77,23 @@ O quizá setting configurable
 *update bios
 *como se lee valor paleta?
 *como se leen valores paleta? leyendo 40h y 44h?
+*Mmu límite página. Máscara and
 
+*Desactivar puertos viejos de establecer paleta sprites get/set
+* Contended en mmu tbblue?
+*Hard reset en tbblue no debería llamar a reset?
 
 
 -probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 
 
--tsconf: 
+*tsconf: 
 -limite sprites en scanline
 -revisar mapeo rom mediante 32765 porque parece que no hay manera de iniciar la rom del 128kb. creo que ahora mismo el puerto 32765 esta totalmente desactivado
 -para probar sprites/tiles:
 render de sprites / tiles se hace de momento al final de cada frame de pantalla y de manera muy chapucera
-
+-Agregar algún juego o demo de tsconf a extras
 
 
 -tsconf border en modos rainbow
@@ -115,17 +122,10 @@ probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros driver
 
 
 
-
-
-
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
 
 
-
-
 -No leer ratón en menú si driver no lee ratón (como en fbdev)
-
-
 
 
 
@@ -136,8 +136,6 @@ probado lo siguiente:
 ->Quiza solucion es que haga reseteo solo cuando se haya llenado 1 vez el buffer al menos
 
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc
-
-
 
 
 
@@ -154,7 +152,7 @@ probado lo siguiente:
 
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada: de momento dice divmmc sin mas
 
-
+-Opción para indicar otro archivo de configuración 
 
 -smartloadpath en auto save 
 
@@ -163,11 +161,14 @@ probado lo siguiente:
 -Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
 Info de tamaño ventana. Y tamaño ventana sin zoom
 
-
+-Evitar el uso de ../../ etc en esxdos handler para evitar que puedan salir del root de esxdos. Esto también está planteado para zxpand 
 
 -OCR con f4 y ZRCP con ansi?
 
+-Zxpand+ nuevo firmware?
+https://github.com/charlierobson/ZXpand-Vitamins/wiki/ZXpand---Online-Manual
 
+-Multiface rom en tbblue debería leer la de tbblue
 
 -tsconf:
 
@@ -195,7 +196,12 @@ Info de tamaño ventana. Y tamaño ventana sin zoom
           continue;
         }
 
+-capas de tiles/sprites/pixeles
+-Más info tsconf
+http://forum.tslabs.info/viewtopic.php?f=12&t=157 
+-Comandos ZRCP obtener datos sprites tsconf
 
+-Quizá texto de “what’s new” cuando se inicie una versión nueva una vez. Pero esto necesita que config file este en auto guardado 
 
 
 -teclas F11-F15 para fbdev

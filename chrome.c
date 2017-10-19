@@ -185,7 +185,7 @@ void chrome_set_memory_pages(void)
 
 	else {
 		chrome_memory_paged[0]=chrome_rom_mem_table[rom_page];
-		debug_paginas_memoria_mapeadas[0]=128+rom_page;
+		debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+rom_page;
 	}
 
 

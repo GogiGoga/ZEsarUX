@@ -209,12 +209,12 @@ void delete_zxuno_flash_text(void)
 	contend_pages_actual[2]=contend_pages_128k_p2a[2];
 	contend_pages_actual[3]=contend_pages_128k_p2a[0];
 
-	zxuno_debug_paginas_memoria_mapeadas_bootm[0]=128+0;
+	zxuno_debug_paginas_memoria_mapeadas_bootm[0]=DEBUG_PAGINA_MAP_ES_ROM+0;
 	zxuno_debug_paginas_memoria_mapeadas_bootm[1]=5;
 	zxuno_debug_paginas_memoria_mapeadas_bootm[2]=2;
 	zxuno_debug_paginas_memoria_mapeadas_bootm[3]=0;
 
-	debug_paginas_memoria_mapeadas[0]=128+0;
+	debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+0;
 	debug_paginas_memoria_mapeadas[1]=5;
 	debug_paginas_memoria_mapeadas[2]=2;
 	debug_paginas_memoria_mapeadas[3]=0;
@@ -768,7 +768,7 @@ void zxuno_write_port(z80_int puerto, z80_byte value)
 	//printf ("Entra rom: %d\n",rom_entra);
 
 	contend_pages_actual[0]=0;
-	debug_paginas_memoria_mapeadas[0]=128+rom_entra;
+	debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+rom_entra;
 }
 
 //Rutinas de puertos paginacion zxuno pero cuando bootm=0, o sea, como plus2a
@@ -1361,7 +1361,7 @@ void zxuno_set_memory_pages(void)
 		contend_pages_actual[2]=contend_pages_128k_p2a[pagina2];
 		contend_pages_actual[3]=contend_pages_128k_p2a[pagina3&7];
 
-		zxuno_debug_paginas_memoria_mapeadas_new[0]=128+pagina0;
+		zxuno_debug_paginas_memoria_mapeadas_new[0]=DEBUG_PAGINA_MAP_ES_ROM+pagina0;
 		zxuno_debug_paginas_memoria_mapeadas_new[1]=pagina1;
 		zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
 		zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;
@@ -1400,7 +1400,7 @@ void zxuno_set_memory_pages(void)
 			contend_pages_actual[2]=contend_pages_128k_p2a[pagina2];
 			contend_pages_actual[3]=contend_pages_128k_p2a[pagina3&7];
 
-			zxuno_debug_paginas_memoria_mapeadas_new[0]=128+pagina0;
+			zxuno_debug_paginas_memoria_mapeadas_new[0]=DEBUG_PAGINA_MAP_ES_ROM+pagina0;
 			zxuno_debug_paginas_memoria_mapeadas_new[1]=pagina1;
 			zxuno_debug_paginas_memoria_mapeadas_new[2]=pagina2;
 			zxuno_debug_paginas_memoria_mapeadas_new[3]=pagina3;

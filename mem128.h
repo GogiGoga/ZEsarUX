@@ -29,7 +29,9 @@ extern z80_byte *rom_mem_table[];
 extern z80_byte *memory_paged[];
 extern z80_byte *get_base_mem_pantalla(void);
 
-extern z80_byte debug_paginas_memoria_mapeadas[];
+#define DEBUG_PAGINA_MAP_ES_ROM 32768
+#define DEBUG_PAGINA_MAP_MASK 32767
+extern z80_int debug_paginas_memoria_mapeadas[];
 
 extern int mem128_multiplicador;
 

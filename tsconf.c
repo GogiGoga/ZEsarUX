@@ -550,7 +550,7 @@ void tsconf_set_memory_pages(void)
   }
 
 	else {
-    debug_paginas_memoria_mapeadas[0]=128+rom_page;
+    debug_paginas_memoria_mapeadas[0]=DEBUG_PAGINA_MAP_ES_ROM+rom_page;
     tsconf_memory_paged[0]=tsconf_rom_mem_table[rom_page];
   }
 

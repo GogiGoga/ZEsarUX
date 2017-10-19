@@ -3944,10 +3944,10 @@ void debug_registers_get_mem_page_extended(z80_byte segmento,char *texto_pagina,
 
         //Si es superupgrade
         if (superupgrade_enabled.v) {
-                if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+                if (debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_ES_ROM) {
                         //ROM
-                        sprintf (texto_pagina_short,"RO%d",debug_paginas_memoria_mapeadas[segmento] & 127);
-                        sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & 127);
+                        sprintf (texto_pagina_short,"RO%d",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
+                        sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
                 }
 
                 else {
@@ -3966,10 +3966,10 @@ void debug_registers_get_mem_page_extended(z80_byte segmento,char *texto_pagina,
                 return;
         }
 
-        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+        if (debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_ES_ROM) {
                 //ROM
-                sprintf (texto_pagina_short,"RO%X",debug_paginas_memoria_mapeadas[segmento] & 127);
-                sprintf (texto_pagina,"ROM %X",debug_paginas_memoria_mapeadas[segmento] & 127);
+                sprintf (texto_pagina_short,"RO%X",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
+                sprintf (texto_pagina,"ROM %X",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
         }
 
         else {
@@ -3984,10 +3984,10 @@ void debug_registers_get_mem_page_extended(z80_byte segmento,char *texto_pagina,
 //Retorna la pagina mapeada para el segmento en zxuno
 void debug_registers_get_mem_page_zxuno_extended(z80_byte segmento,char *texto_pagina,char *texto_pagina_short)
 {
-        if (zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 128) {
+        if (zxuno_debug_paginas_memoria_mapeadas_new[segmento] & DEBUG_PAGINA_MAP_ES_ROM) {
                 //ROM.
-                sprintf (texto_pagina_short,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 127);
-                sprintf (texto_pagina,"ROM %d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 127);
+                sprintf (texto_pagina_short,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & DEBUG_PAGINA_MAP_MASK);
+                sprintf (texto_pagina,"ROM %d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & DEBUG_PAGINA_MAP_MASK);
         }
 
         else {
@@ -4002,10 +4002,10 @@ void debug_registers_get_mem_page_zxuno_extended(z80_byte segmento,char *texto_p
 //Retorna la pagina mapeada para el segmento en tbblue
 void debug_registers_get_mem_page_tbblue_extended(z80_byte segmento,char *texto_pagina,char *texto_pagina_short)
 {
-        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+        if (debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_ES_ROM) {
                 //ROM.
-                sprintf (texto_pagina_short,"O%d",debug_paginas_memoria_mapeadas[segmento] & 127);
-                sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & 127);
+                sprintf (texto_pagina_short,"O%d",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
+                sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
         }
 
         else {
@@ -4020,10 +4020,10 @@ void debug_registers_get_mem_page_tbblue_extended(z80_byte segmento,char *texto_
 //Retorna la pagina mapeada para el segmento en tsconf
 void debug_registers_get_mem_page_tsconf_extended(z80_byte segmento,char *texto_pagina,char *texto_pagina_short)
 {
-        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
+        if (debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_ES_ROM) {
                 //ROM.
-                sprintf (texto_pagina_short,"O%d",debug_paginas_memoria_mapeadas[segmento] & 127);
-                sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & 127);
+                sprintf (texto_pagina_short,"O%d",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
+                sprintf (texto_pagina,"ROM %d",debug_paginas_memoria_mapeadas[segmento] & DEBUG_PAGINA_MAP_MASK);
         }
 
         else {

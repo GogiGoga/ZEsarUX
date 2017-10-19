@@ -1254,7 +1254,7 @@ void tbblue_set_rom_page(z80_byte segment,z80_byte page)
 
 	if (reg_value==255) {
 		tbblue_memory_paged[segment]=tbblue_rom_memory_pages[page];
-		debug_paginas_memoria_mapeadas[segment]=page+128;
+		debug_paginas_memoria_mapeadas[segment]=DEBUG_PAGINA_MAP_ES_ROM+page;
 	}
 	else {
 	  tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];

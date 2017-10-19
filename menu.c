@@ -5044,61 +5044,6 @@ void menu_breakpoints(MENU_ITEM_PARAMETERS)
 
 
 //Retorna la pagina mapeada para el segmento
-void old_menu_debug_registers_get_mem_page(z80_byte segmento,char *texto_pagina)
-{
-
-	//Si es dandanator
-	if (segmento==0 && dandanator_switched_on.v==1) {
-		sprintf (texto_pagina,"DB%d",dandanator_active_bank);
-		return;
-	}
-
-	//Si es superupgrade
-	if (superupgrade_enabled.v) {
-	        if (debug_paginas_memoria_mapeadas[segmento] & 128) {
-        	        //ROM
-                	sprintf (texto_pagina,"RO%d",debug_paginas_memoria_mapeadas[segmento] & 127);
-	        }
-
-        	else {
-                	//RAM
-	                sprintf (texto_pagina,"RA%d",debug_paginas_memoria_mapeadas[segmento]);
-        	}
-		return;
-
-	}
-
-	//Con multiface
-	if (segmento==0 && multiface_enabled.v && multiface_switched_on.v) {
-		strcpy(texto_pagina,"MLTF");
-		return;
-	}
-
-	if (debug_paginas_memoria_mapeadas[segmento] & 128) {
-		//ROM
-		sprintf (texto_pagina,"RO%X",debug_paginas_memoria_mapeadas[segmento] & 127);
-	}
-
-	else {
-		//RAM
-		sprintf (texto_pagina,"RA%X",debug_paginas_memoria_mapeadas[segmento]);
-	}
-}
-
-//Retorna la pagina mapeada para el segmento en zxuno
-void old_menu_debug_registers_get_mem_page_zxuno(z80_byte segmento,char *texto_pagina)
-{
-        if (zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 128) {
-                //ROM.
-                sprintf (texto_pagina,"RO%d",zxuno_debug_paginas_memoria_mapeadas_new[segmento] & 127);
-        }
-
-        else {
-                //RAM
-                sprintf (texto_pagina,"RA%02d",zxuno_debug_paginas_memoria_mapeadas_new[segmento]);
-        }
-
-}
 
 
 
