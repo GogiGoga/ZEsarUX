@@ -119,6 +119,7 @@ to list it in File Selector
 http://www.ltr-data.se/opencode.html/#ImDisk
 Or find another program to access disk images
 
+
 Q: Where are located the mmc and ide files? Some examples refer to them but I can't found them. Even more, previous versions of ZEsarUX included them
 A: Media folder has been separated from the emulator main distributed file. You have to download the extra-media package
 
@@ -131,6 +132,7 @@ Audio Drivers
 
 Q: Audio has much latency using SDL audio driver. This audio is used on Linux/Unix and Windows. What can I do to reduce latency?
 A: Try setting a lower value for --sdlsamplesize parameter
+
 
 Q: Audio does not sound well on Raspberry pi.
 A: Try using sdl audio driver.
@@ -186,9 +188,11 @@ A: You have two options to solve it:
 1) Open the emulator from Windows console (cmd) and pass at least one parameter, or the --nodisableconsole parameter
 2) If you open the emulator by double clicking on the emulator, set the parameter --nodisableconsole on .zesaruxrc configuration file
 
+
 Q: How can I select files from other drives?
 A: On file selector window, you must switch to File name section (pressing TAB twice) and write letter number and ':', for example: C:
 Remember that : appears pressing symbol shift (Ctrl or Alt)+letter Z
+
 
 Q: I enabled the ZEsarUX remote command protocol, used a telnet client to client, but I only see the Welcome message and I can not type anything
 A: Try disabling Windows firewall
@@ -278,10 +282,12 @@ Q: How can I write files from my local hard disk to a Z88 File Card?
 A: Take a look at this video:
 https://www.youtube.com/watch?v=mxaVURSAO3o
 
+
 Q: How can I use hybrid RAM+EPROM cards for writing?
 A: Although ZEsarUX supports these cards to be written on slot 3, OZ doesn't seem to recognize them to be written. 
 EPROM part is 512kb size and this is not a standard EPROM size. 
 But these cards are recognized for reading when have data like a new oz release (insert it on slot 1 to be boot)
+
 
 Q: I'm very interested in the Cambridge Z88, but I don't know how to use it. Where can I find the documentation?
 A: Look at https://cambridgez88.jira.com/wiki/display/UG45/
@@ -368,6 +374,7 @@ Or you can select it from the command line with:
 
 Note: tbblue.mmc is included on the base package (and not on extras) because it is needed to boot that machine
 
+
 Q: Why can't enable divmmc paging (or full divmmc emulation) from command line/config file on TBBlue? When exiting emulator, these settings are not saved on configuration file. But... if I force them to enable from command line, TBBlue does not boot, and then doing a hard reset it boots ok
 A: TBBlue needs divmmc paging disabled to boot, if not, divmmc firmware will be activated on the tbblue boot and then it hangs. When you do a hard reset, some internal tbblue registers (reg 6, bit 4) are reset to zero. Resetting this register 6, divmmc paging is disabled and so the boot works ok. But when initializing the emulator the sequence is:
 
@@ -422,6 +429,7 @@ A: Key mapping is:
 -Right Alt is Edit on Sam Coupe
 -Keypad numbers are mapped to F numbers on Sam Coupe
 
+
 Q: How can I load from Sam Coupe disk?
 A: Disk emulation is not finished yet. You can only load from tape
 
@@ -435,14 +443,17 @@ QL
 Q: Does keyboard work?
 A: QL low level keyboard handling routines do not fully work yet but tries to do its best
 
+
 Q: Backspace on QL works. But why the native combination (CTRL+Left) does not work? I'm using Mac OS X
 A: You'd better use backspace. But if you want to use the native combination, try:
 -press and hold left key
 -it will move one position to the left
 -before it starts moving quickly to the left, hold CTRL
 
+
 Q: How can I stop a program?
 A: Try CTRL+Space
+
 
 Q: How can I load a program from microdrive or floppy?
 A: Microdrive or floppy emulation does not work. But you can simulate the load command from ZEsarUX menu "Debug->Load binary block".
@@ -468,6 +479,7 @@ A: Install gpmmouse to have mouse support on these drivers.
 Q: I'm using cacalib or curses driver and the position of the kempston mouse is not read when moving it. Only when I push left or right button.
 A: Mouse position on text mode drivers (cacalib and curses) is only read when you push a button, and not when you move the mouse.
 
+
 Q: How is pronounced the name of the emulator?
 A: Phonetically: ZEsarUX is pronounced: θesar´uks
 One by one, every letter:
@@ -480,6 +492,7 @@ U like u on put
 X like x on linux
 And saying the accent on the final syllable 
 You can also play zesarux.mp3 to hear how it sounds
+
 
 Q: What is the origin of the name of the emulator?
 A: ZEsarUX comes from:
@@ -509,6 +522,7 @@ A: There is no manual, and there won't be never. The reason is that, in the past
 -youtube videos showing different features of ZEsarUX. https://www.youtube.com/user/chernandezba
 -And my own help. You can ask me by mail, forums, twitter and Facebook ZEsarUX group
 
+
 Q: Can I use ZEsarUX as a standalone AY player?
 A: Yes, you can run ZEsarUX from command line and enable a setting to exit emulator when finishing playing the ay file. 
 You can also specify a limit for "infinite" tracks (tracks defined with no limit length), for example:
@@ -528,14 +542,14 @@ Q: What is Man Software?
 A: It's the brand name for software I have been making since I was a child on the Spectrum. Many programs and games you can find on folder my_soft/ are signed by this brand. Many others are signed by my real name, but all are made by me.
 You can find also a "Man Software GUI Style" on the ZEsarUX menu, that uses a font type I invented when I was a child.
 
-Q: Why does the emulator size is so big? The uncompressed size is bigger than 300 MB!
-A: The emulator is really very small. But the installed files are:
+
+Q: What are the files required to run the emulator? I see lots of files, even the Extras packages have a lot more
+A: The emulator is really very small. The extras packages is not needed to run it, as it includes:
 -Documentation. docs folder. 37 MB
 -Examples. media folder: 62 MB. snap_tests folder: 34 MB
 -Some .ide, .mmc, .flash image files: 229 MB
-These files are included for different reasons, read file INCLUDEDTAPES.
 
-The emulator only really needs the following files to run:
+The emulator only really needs the following files to run (included in the main package):
 -The executable file: "zesarux" or "zesarux.exe" which is 2 MB size aproximately
 -rom files: 5 MB
 -Some dll files on Windows version
@@ -545,14 +559,13 @@ These three types of files doesn't use more than 10 MB.
 You can even try to delete all the unnecessary files and the emulator will also work. 
 
 
-Q: Why the emulator doesn't use more beautiful menus, like the usual menus on Windows/Mac/Linux etc?  / Why are you limiting all the GUI interface to these simple menus? / Why don't you have a better file selector?
+Q: Why the emulator doesn't use more beautiful menus, like the usual menus on Windows/Mac/Linux etc? / Why are you limiting the GUI interface to these simple menus? / Why don't you have a better file selector?
 A: The GUI interface is a custom one, I did it copying the style of the menus of Spectrum 128k machines. I'm not using any native menus on Mac, Windows, etc, because my menus are integrated inside the emulator Window.
 This has the advantage of having the same style menus (and all the emulator) in all operating systems that you run ZEsarUX. All have the same appearance.
-The file selector is also a custom window, so don't expect a popup appear with your usual File selector windows
+The file selector is also a custom window, so don't expect a popup appear with your usual File selector window.
 Maybe the GUI it's a bit difficult to use, but when you have been using a couple of hours, you won't prefer any other! 
 I recommend you to use hotkeys for faster selection, redefining some F-keys, and using the mouse.
-This could probably be only one piece of ZEsarUX that I won't ever change. I like the GUI; you are using a retro-machines emulator, so.... you must use a retro-GUI ;)
-
+This could probably be the only one piece of ZEsarUX that I won't ever change. I like the GUI; you are using a retro-machines emulator, so.... you must use a retro-GUI ;)
 
 
 Q: I have a question not listed here. What can I do?
