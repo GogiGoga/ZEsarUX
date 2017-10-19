@@ -34,11 +34,7 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 
--opcion ZRCP que indique que memoria divmmc/divide esta mapeada: de momento dice divmmc sin mas
 
-
-
--smartloadpath en auto save 
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
@@ -47,10 +43,7 @@ pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno 
 revisar funcion quickload
 
 
--licencia tipo letra man soft
 
--Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
-Info de tamaño ventana. Y tamaño ventana sin zoom
 
 
 
@@ -59,9 +52,6 @@ Info de tamaño ventana. Y tamaño ventana sin zoom
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
-
-
--OCR con f4 y ZRCP con ansi?
 
 
 
@@ -90,18 +80,6 @@ O quizá setting configurable
 -probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 
--cuando en remote command, se hace run, si cerramos telnet, luego al hacer F5 sale del emulador entero. Parece que el hilo que esta en espera en el menu:
-else if (menu_event_remote_protocol_enterstep.v) {
-		//Entrada
-		menu_espera_no_tecla();
-
-		remote_ack_enter_cpu_step.v=1; //Avisar que nos hemos enterado
-		//Mientras no se salga del modo step to step del remote protocol
-		while (menu_event_remote_protocol_enterstep.v) {
-			sleep(1);
-		}
-
-No sale de ese bucle while y se cierra todo emulador
 
 -tsconf: 
 -limite sprites en scanline
@@ -110,30 +88,10 @@ No sale de ese bucle while y se cierra todo emulador
 render de sprites / tiles se hace de momento al final de cada frame de pantalla y de manera muy chapucera
 
 
-*parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
-->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
-*quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
-
--320 lineas tsconf. ajustar t-estados por linea para que llegue a ser correcto. ajustar timings en cpu.c screen_total_borde_izquierdo, screen_invisible_borde_superior, etc
-
--Cuando se interpreta solo vram y cuando bit shadow de 128k?
-
--Forzado segmento C000 a paginacion tsconf. cuando se lee solo puerto 32765?
 
 -tsconf border en modos rainbow
 
--Ver si depack de hrust esta correcto ahora o antes, o era equivalente. No parece haber diferencia de un metodo al otro:
---- spg_depack.c.anterior       2017-07-29 11:36:46.000000000 +0200
-+++ spg_depack.c        2017-07-29 11:39:40.000000000 +0200
-@@ -89,7 +89,8 @@
-        if( len == 0 )
-        {
-          offset = 0xfff8 + dehrust_getBits( 3 );
--         *to++ = to[offset]; 
-+         *to = to[offset];
-+               to++;
-          continue;
-        }
+
 -tsconf funciona con:
 I only see some images on a few demos/games, like:
 -bomber: only part of the menu "text start/options/about"
@@ -156,32 +114,20 @@ I only see some images on a few demos/games, like:
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
 
 
--teclas F11-F15 para fbdev
-teclas F en general en fbdev driver no raw
 
-
--seguir formato zsf
-
-
--Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense: quiza esto quedara para formato zsf?
 
 
 
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
 
--reducir fifo por defecto de pulse? de 10 a 2?
-reducir fifo por defecto de alsa? de 4 a 2?
+
 
 
 -No leer ratón en menú si driver no lee ratón (como en fbdev)
--revisar mezclado ay+beeper . posiblemente set_value_beeper acaba sacando algun valor beeper 50*2 y se sale todo de rango?
-o bien el mezclado de chip ay
 
 
 
--probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
 
--drivers video texto mouse estará dividido entre 8??
 
 -problema de reseteo de buffer audio al iniciar el emulador, hace un sonido estridente a veces al arrancar. Detectado con coreaudio
 probado lo siguiente:
@@ -191,6 +137,93 @@ probado lo siguiente:
 
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc
 
+
+
+
+
+
+---Fin cosas para version 5.1
+
+
+
+
+
+
+
+--- Cosas para la version 5.2
+
+-opcion ZRCP que indique que memoria divmmc/divide esta mapeada: de momento dice divmmc sin mas
+
+
+
+-smartloadpath en auto save 
+
+-licencia tipo letra man soft
+
+-Estadísticas de diferentes componentes del core, ya sea cpu u otra cosa, como memoria usada para el rainbow buffer, el buffer de audio  y cosas así
+Info de tamaño ventana. Y tamaño ventana sin zoom
+
+
+
+-OCR con f4 y ZRCP con ansi?
+
+
+
+-tsconf:
+
+*parece que cuando se ha entrado una vez en la bios ya no se puede volver a entrar mas (usando el hard reset temporal) -> si deniego la escritura en nvram luego si que vuelve a entrar
+->Parece que es porque intenta boot de SD (lee puerto xx57) y tiene que hacer timeout
+*quiza tsbios no va en modo p2a porque necesita bus idle -> efectivamente
+
+-320 lineas tsconf. ajustar t-estados por linea para que llegue a ser correcto. ajustar timings en cpu.c screen_total_borde_izquierdo, screen_invisible_borde_superior, etc
+
+-Cuando se interpreta solo vram y cuando bit shadow de 128k?
+
+-Forzado segmento C000 a paginacion tsconf. cuando se lee solo puerto 32765?
+
+
+-Ver si depack de hrust esta correcto ahora o antes, o era equivalente. No parece haber diferencia de un metodo al otro:
+--- spg_depack.c.anterior       2017-07-29 11:36:46.000000000 +0200
++++ spg_depack.c        2017-07-29 11:39:40.000000000 +0200
+@@ -89,7 +89,8 @@
+        if( len == 0 )
+        {
+          offset = 0xfff8 + dehrust_getBits( 3 );
+-         *to++ = to[offset]; 
++         *to = to[offset];
++               to++;
+          continue;
+        }
+
+
+
+
+-teclas F11-F15 para fbdev
+teclas F en general en fbdev driver no raw
+
+
+-seguir formato zsf
+
+-Opción para poder cargar snapshot pero sin cambiar la rom actual... útil por si grabamos un snapshot por ejemplo en máquina 128kb pero la rom era la del opense: quiza esto quedara para formato zsf?
+->esto ya esta para .sna
+
+
+
+-reducir fifo por defecto de pulse? de 10 a 2?
+reducir fifo por defecto de alsa? de 4 a 2?
+
+
+
+
+-revisar mezclado ay+beeper . posiblemente set_value_beeper acaba sacando algun valor beeper 50*2 y se sale todo de rango?
+o bien el mezclado de chip ay
+
+
+
+
+-probar a reducir buffer sonido en otros drivers: dsp, alsa, pulse
+
+-drivers video texto mouse estará dividido entre 8??
 
 
 -Full screen cocoa gl
@@ -209,11 +242,10 @@ http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Com
 
 
 
----Fin cosas para version 5.1
 
 
 
-
+--- Fin cosas para version 5.2
 
 
 
