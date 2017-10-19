@@ -124,3 +124,15 @@ So, you have a total window of 360x288 and you enlarge border size (and reducing
 11 - 360x288: border size: 0x0
 
 I think on emulation I will make a window size of 720x576 (to have a 4:3 aspect ratio window), drawing "central" pixels and border with a size of 2x2 and text mode pixels with a size of 1x2.
+
+
+
+Colour palette: 15 bit rgb palette. two conversion table from 15 bit to 24 bit: one multiplies the value *8 (normal vdac) and without vdac, where every 5-bit component are different from 0...23, but 24...31 are always 255
+That setting vdac/not vdac can be enabled per-user in every entry of the palette (setting bit 15), so every palette entry is:
+
+C RRRRR GGGGG BBBBB
+
+Where C enables vdac
+As this requires me to use two color palettes for that (two 32768 size palettes) and needed 65536, I can not do it now. My current palette is limited to exactly 65536 (as I'm using 16-bit indexes to it) . So, I will have a manual setting for the menu to enable/disable vdac. In the real tsconf, you can enable per-color vdac setting, but not on ZEsarUX yet
+I fact, it is not needed all the 65536 entries, as some of them are repeated in both palettes (those with any colour component is less than < 24). But it will be a bit difficult to have a lookup function, to have two 32768 entries palette, but using less than 2x32768
+
