@@ -1550,8 +1550,18 @@ void scr_tsconf_putpixel_sum_border(int x,int y,unsigned color)
 void scr_tsconf_putpixel_text_mode(int x,int y,unsigned color)
 {
 	y*=2;
-	scr_tsconf_putpixel_sum_border(x,y,color);
-	scr_tsconf_putpixel_sum_border(x,y+1,color);
+
+	int border_x=tsconf_current_border_width*2;
+	int border_y=tsconf_current_border_height*2;
+
+	int menu_x=(x+border_x)/8;
+	int menu_y=(y+border_y)/8;
+
+	//Suponemos que y e y+1 van a estar dentro de una cuadricula igual los dos, por tanto la comprobacion siguiente solo la hacemos una vez
+	if (scr_ver_si_refrescar_por_menu_activo(menu_x,menu_y)) {
+		scr_tsconf_putpixel_sum_border(x,y,color);
+		scr_tsconf_putpixel_sum_border(x,y+1,color);
+	}
 }
 
 //Hace putpixel pero teniendo en cuenta tamanyo de 2x2
@@ -1595,15 +1605,6 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit i
         z80_byte line;
         z80_byte byte_leido;
 
-        //margenes de zona interior de pantalla. Para modo rainbow
-        //int margenx_izq=screen_total_borde_izquierdo*border_enabled.v;
-        //int margeny_arr=screen_borde_superior*border_enabled.v;
-
-				//temp
-				//margenx_izq=margeny_arr=0;
-
-        //y=y*8;
-
 				z80_int *puntero_rainbow_orig;
 
         for (line=0;line<alto;line++,y++) {
@@ -1620,6 +1621,7 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit i
 								color=TSCONF_INDEX_FIRST_COLOR+ tsconf_return_cram_color  (tsconf_return_cram_palette_offset()+color);
 
 								if (puntero_rainbow!=NULL) {
+									//Lo mete en buffer rainbow
 
 											scr_tsconf_putpixel_zoom_rainbow_text_mode(color,puntero_rainbow,ancho_rainbow);
 											puntero_rainbow++;
@@ -1628,10 +1630,10 @@ void scr_tsconf_putsprite_comun(z80_byte *puntero,int alto,int x,int y,z80_bit i
 
 
 								else {
-									if (scr_ver_si_refrescar_por_menu_activo((x+bit)/8,y/8)) {
+									//if (scr_ver_si_refrescar_por_menu_activo((x+bit)/8,y/8)) {
 
 										scr_tsconf_putpixel_text_mode(x+bit,y,color);
-									}
+									//}
 								}
 
            }
