@@ -36,4 +36,6 @@ extern char kartusho_rom_file_name[];
 extern z80_byte kartusho_active_bank;
 extern void kartusho_press_button(void);
 
+extern z80_byte *kartusho_memory_pointer;
+
 #endif

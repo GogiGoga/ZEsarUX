@@ -8666,10 +8666,18 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
       }
     break;
 
+    //tsconf fmaps
     case 5:
       if (MACHINE_IS_TSCONF) {
         size=TSCONF_FMAPS_SIZE;
       }
+    break;
+
+    //kartusho
+    case 6:
+	if (kartusho_enabled.v) {
+	  size=KARTUSHO_SIZE;
+	}
     break;
 
   }
@@ -8786,6 +8794,14 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
     break;
 
 
+    //kartusho
+    case 6:
+        if (kartusho_enabled.v) {
+	p=&kartusho_memory_pointer[address];
+      }
+    break;
+
+
 
 
   }
@@ -8843,6 +8859,15 @@ void machine_get_memory_zone_name(int zone, char *name)
         strcpy(name,"TSConf Fmaps");
       }
     break;
+
+    //kartusho
+    case 6:
+        if (kartusho_enabled.v) {
+		strcpy(name,"Kartusho rom");
+	}
+    break;
+
+
 
   }
 
