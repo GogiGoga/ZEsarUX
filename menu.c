@@ -20103,6 +20103,13 @@ cls_menu_overlay();
 }
 
 
+void menu_display_tsconf_dac(MENU_ITEM_PARAMETERS)
+{
+	tsconf_with_vdac.v ^=1;
+
+	menu_interface_rgb_inverse_common();
+}
+
 
 //menu display settings
 void menu_display_settings(MENU_ITEM_PARAMETERS)
@@ -20197,6 +20204,7 @@ void menu_display_settings(MENU_ITEM_PARAMETERS)
 					"as on non-Real Video, but you can have idle bus support on these drivers. "
 					"Curses, stdout and simpletext drivers on ZX80/81 machines do have Real Video display."
 					);
+
 
 		if (MACHINE_IS_CPC) {
 				if (cpc_forzar_modo_video.v==0)
@@ -23008,6 +23016,12 @@ void menu_settings_display(MENU_ITEM_PARAMETERS)
 					"as on non-Real Video, but you can have idle bus support on these drivers. "
 					"Curses, stdout and simpletext drivers on ZX80/81 machines do have Real Video display."
 					);
+
+                if (MACHINE_IS_TSCONF) {
+                        menu_add_item_menu_format(array_menu_settings_display,MENU_OPCION_NORMAL,menu_display_tsconf_dac,NULL,"VDAC: %s",
+                        (tsconf_with_vdac.v ? "Yes" : "No")     );
+                }
+
 
 		if (MACHINE_IS_CPC) {
 				if (cpc_forzar_modo_video.v==0)
