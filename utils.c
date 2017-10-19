@@ -8864,7 +8864,7 @@ void machine_get_memory_zone_name(int zone, char *name)
   //Zona 0, ram speccy
   switch (zone) {
     case 0:
-
+		 //123456789012345
       strcpy(name,"Machine RAM");
 
 
@@ -8872,7 +8872,7 @@ void machine_get_memory_zone_name(int zone, char *name)
 
 
     case 1:
-
+		 //123456789012345
       strcpy(name,"Machine ROM");
 
 
@@ -8880,12 +8880,14 @@ void machine_get_memory_zone_name(int zone, char *name)
 
     case 2:
       if (diviface_enabled.v) {
-        strcpy(name,"Diviface eeprom");
+		   //123456789012345
+        strcpy(name,"Diviface eprom");
       }
     break;
 
     case 3:
       if (diviface_enabled.v) {
+		   //123456789012345
         strcpy(name,"Diviface ram");
       }
     break;
@@ -8893,12 +8895,14 @@ void machine_get_memory_zone_name(int zone, char *name)
     //zxuno flash
     case 4:
       if (MACHINE_IS_ZXUNO) {
+		   //123456789012345
         strcpy(name,"ZX-Uno flash");
       }
     break;
 
     case 5:
       if (MACHINE_IS_TSCONF) {
+		   //123456789012345
         strcpy(name,"TSConf Fmaps");
       }
     break;
@@ -8906,6 +8910,7 @@ void machine_get_memory_zone_name(int zone, char *name)
     //kartusho
     case 6:
         if (kartusho_enabled.v) {
+		           //123456789012345
 		strcpy(name,"Kartusho rom");
 	}
     break;
@@ -8913,6 +8918,7 @@ void machine_get_memory_zone_name(int zone, char *name)
     //dandanator
     case 7:
         if (dandanator_enabled.v) {
+		           //123456789012345
                 strcpy(name,"Dandanator rom");
         }
     break;
@@ -8921,7 +8927,8 @@ void machine_get_memory_zone_name(int zone, char *name)
 	//superupgrade ram
     case 8:
 	if (superupgrade_enabled.v) {
-		strcpy(name,"Superupgrade ram");
+		           //123456789012345
+		strcpy(name,"Superupgr. ram");
 	}
     break;
 
@@ -8929,7 +8936,8 @@ void machine_get_memory_zone_name(int zone, char *name)
         //superupgrade rom
     case 9:
         if (superupgrade_enabled.v) {
-                strcpy(name,"Superupgrade rom");
+		           //123456789012345
+                strcpy(name,"Superupgr. rom");
         }
     break;
 

@@ -36,6 +36,8 @@ The format of each table entry is as follows:
 
 -FAQ de esxdos handler 
 
+-ver si texto memory zone puede ser >15
+
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
 
 -smartload de tbblue desactiva esxdos. esto es porque parece que antes de quickload detecta correctamente que estava divmmc, y se guarda el estado,
