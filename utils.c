@@ -8687,6 +8687,21 @@ unsigned int machine_get_memory_zone_attrib(int zone, int *readwrite)
         }
     break;
 
+
+    //Superupgrade ram
+    case 8:
+        if (superupgrade_enabled.v) {
+          size=SUPERUPGRADE_RAM_SIZE;
+        }
+    break;
+
+    //Superupgrade rom
+    case 9:
+        if (superupgrade_enabled.v) {
+          size=SUPERUPGRADE_ROM_SIZE;
+        }
+    break;
+
   }
 
   return size;
@@ -8816,6 +8831,21 @@ z80_byte *machine_get_memory_zone_pointer(int zone, int address)
     break;
 
 
+    //superupgrade ram
+    case 8:
+        if (superupgrade_enabled.v) {
+        p=&superupgrade_ram_memory_pointer[address];
+      }
+    break;
+
+    //superupgrade rom
+    case 9:
+        if (superupgrade_enabled.v) {
+        p=&superupgrade_rom_memory_pointer[address];
+      }
+    break;
+
+
 
   }
 
@@ -8884,6 +8914,22 @@ void machine_get_memory_zone_name(int zone, char *name)
     case 7:
         if (dandanator_enabled.v) {
                 strcpy(name,"Dandanator rom");
+        }
+    break;
+
+
+	//superupgrade ram
+    case 8:
+	if (superupgrade_enabled.v) {
+		strcpy(name,"Superupgrade ram");
+	}
+    break;
+
+
+        //superupgrade rom
+    case 9:
+        if (superupgrade_enabled.v) {
+                strcpy(name,"Superupgrade rom");
         }
     break;
 
