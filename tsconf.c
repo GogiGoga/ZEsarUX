@@ -289,6 +289,35 @@ ZXPAL      dw  #0000,#0010,#4000,#4010,#0200,#0210,#4200,#4210
 
 z80_byte tsconf_get_af_port(z80_byte index)
 {
+
+  //casos especiales
+  switch(index) {
+      case 0:
+        //status
+        //bit 6: powerup
+        //bit 5: fdrver (0=regular, 1=fdd ripper)
+        //bits 0-2: vdac type
+        /*
+        000 2-bit VDAC + PWM levels 0-24
+001 3-bit VDAC
+010 4-bit VDAC
+011 5-bit VDAC
+100-110 reserved
+111 VDAC2 (FT812)
+mis opciones:
+"without vdac" - 0 (000)
+"with vdac" - 3 (011) or 7 (111)
+
+
+        */
+
+        if (tsconf_with_vdac.v) return 7;
+        else return 0;
+
+      break;
+
+  }
+
   return tsconf_af_ports[index];
 }
 
