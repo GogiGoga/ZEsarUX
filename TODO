@@ -36,6 +36,8 @@ The format of each table entry is as follows:
 
 -FAQ de esxdos handler 
 
+-Comentario en faq sobre gui: no tiene dependencias de librerías 
+
 -ver si texto memory zone puede ser >15
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
@@ -44,7 +46,6 @@ The format of each table entry is as follows:
 pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno si que va bien
 revisar funcion quickload
 
--Opción para activar kempston mouse 
 
 -Paso a paso cuando hay condición de debug activa no deja salir (en menú)
 Avisar quizá en ZRCP que está activa condición de debug ? 
@@ -53,7 +54,6 @@ Avisar quizá en ZRCP que está activa condición de debug ?
 -Nuevo modo prism chunk
 
 -Reportar en faq errores dandanator en Mac y sonido estridente 
-
 
 -memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
 
@@ -151,6 +151,16 @@ probado lo siguiente:
 
 
 --- Cosas para la version 5.2
+
+
+-Comando genérico para alterar algunos settings desde ZRCP hacia settings de menú
+Quizá haver función que mediante una string de entrada (quizá misma que command line) que pueda:
+-establecer valor
+-conmutar valor, en el caso de variables 0/1
+
+Luego se podrá usar en el futuro para nuevos settings de menú y command line, y automáticamente desde ZRCP 
+
+-Puertos debug zx81. Ver hilo sinclairzxworld
 
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada: de momento dice divmmc sin mas
 

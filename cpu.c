@@ -1407,7 +1407,7 @@ printf (
 
 		printf (
 		"\n"
-								"--enablekempstonmouse      Enable kempston mouse emulation\n"
+		"--enablekempstonmouse      Enable kempston mouse emulation\n"
                 "\n"
                 "Memory Settings\n"
                 "-----------------\n"
