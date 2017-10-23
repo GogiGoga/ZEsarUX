@@ -34,10 +34,6 @@ The format of each table entry is as follows:
 -cosas para la version 5.1
 
 
--FAQ de esxdos handler 
-
--Comentario en faq sobre gui: no tiene dependencias de librerías 
-
 -ver si texto memory zone puede ser >15
 
 -revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue?
@@ -53,13 +49,10 @@ Avisar quizá en ZRCP que está activa condición de debug ?
 
 -Nuevo modo prism chunk
 
--Reportar en faq errores dandanator en Mac y sonido estridente 
-
 -memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
 
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
-
 
 
 -Parámetro change slow que no venga por defecto
@@ -96,32 +89,9 @@ O quizá setting configurable
 -para probar sprites/tiles:
 render de sprites / tiles se hace de momento al final de cada frame de pantalla y de manera muy chapucera
 -Agregar algún juego o demo de tsconf a extras
-
-
 -tsconf border en modos rainbow
 
-
--tsconf funciona con:
-I only see some images on a few demos/games, like:
--bomber: only part of the menu "text start/options/about"
--ny17: almost perfect: text in the middle doesnt disappear. * sprites, tiles 
--chess: only the top/half part of the screen
--caleidoscope: runs perfect
--zendloops: almost perfect * sprites/tiles
--socoban: almost perfect. * sprites/tiles
--keftale: seems to run ok
--fire:seems to run ok
--fast: almost everything. * sprites/tiles
--tetris: doesnt erase blocks  * sprites/tiles
--zenloops: almost ok? * sprites/tiles
--copter.trd: seems all ok * text mode
--keft.trd: seems ok
--tsdemo.trd: missing layers * sprites/tiles
--txtdemo.trd: seems ok * text mode
-
-
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
-
 
 
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
@@ -525,6 +495,29 @@ Autoload load "" para chrome
 
 -----------------------
 
+
+
+--- TSConf ---
+
+-tsconf funciona con:
+I only see some images on a few demos/games, like:
+-bomber: only part of the menu "text start/options/about"
+-ny17: almost perfect: text in the middle doesnt disappear. * sprites, tiles
+-chess: only the top/half part of the screen
+-caleidoscope: runs perfect
+-zendloops: almost perfect * sprites/tiles
+-socoban: almost perfect. * sprites/tiles
+-keftale: seems to run ok
+-fire:seems to run ok
+-fast: almost everything. * sprites/tiles
+-tetris: doesnt erase blocks  * sprites/tiles
+-zenloops: almost ok? * sprites/tiles
+-copter.trd: seems all ok * text mode
+-keft.trd: seems ok
+-tsdemo.trd: missing layers * sprites/tiles
+-txtdemo.trd: seems ok * text mode
+
+-----------------------
 
 
 

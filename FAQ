@@ -77,8 +77,8 @@ A: Yes, see file docs/accesibilidad_instrucciones.txt
 ----------------------------------------------------------------------------
 
 
-MMC/SD/IDE/CF emulation
------------------------
+Storage
+-------
 
 Q: How can I use ZXMMC emulation?
 A: Run alternate ROM alternaterom_plus3e_mmcen3eE.rom with machine type Spectrum +2A. Of course you have first to select MMC file, enable MMC emulation,  and enable ZXMMC on the menu
@@ -122,6 +122,11 @@ Or find another program to access disk images
 
 Q: Where are located the mmc and ide files? Some examples refer to them but I can't found them. Even more, previous versions of ZEsarUX included them
 A: Media folder has been separated from the emulator main distributed file. You have to download the extra-media package
+
+
+Q: I want to use dandanator but the emulator is closed when I enable it. I'm using Mac OS X
+A: Seems some versions of Mac OSX closes the emulator when enabling dandanator. It seems related to the real video setting, so disabling real video (and
+also disabling auto-enable real video) solves it. You may also hear some audio noise on the dandanator menu. I haven't found a definitive solution for this
 
 
 ----------------------------------------------------------------------------
@@ -579,6 +584,7 @@ You can even try to delete all the unnecessary files and the emulator will also 
 Q: Why the emulator doesn't use more beautiful menus, like the usual menus on Windows/Mac/Linux etc? / Why are you limiting the GUI interface to these simple menus? / Why don't you have a better file selector?
 A: The GUI interface is a custom one, I did it copying the style of the menus of Spectrum 128k machines. I'm not using any native menus on Mac, Windows, etc, because my menus are integrated inside the emulator window.
 This has the advantage of having the same style menus (and all the emulator) in all operating systems that you run ZEsarUX. All have the same appearance.
+Also, using some GUI needs additional libraries, and I want it to have the minimum dependencies.
 The file selector is also a custom window, so don't expect a popup appear with your usual File selector window.
 Maybe the GUI it's a bit difficult to use, but when you have been using a couple of hours, you won't prefer any other! 
 I recommend you to use hotkeys for faster selection, redefining some F-keys, and using the mouse.
