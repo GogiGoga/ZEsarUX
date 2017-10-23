@@ -128,7 +128,8 @@
 		xor a
 		ld bc,254
 		out (c),a
-		call change_ula2_border_colour
+		ld bc,40507
+		out (c),a
 
 		; Display logo in top 8 lines
 
@@ -494,7 +495,8 @@ clear_8_pages:
 
 clear_page_at_C000:
 		; Change border+paper colour
-		call change_ula2_border_colour
+		ld bc,40507
+		out (c),a
 		ld bc,32765
 		out (c),a
 
@@ -507,11 +509,6 @@ clear_page_at_C000:
 		ret
 
 change_ula2_border_colour:
-		push af
-		ld bc,44603
-		xor a
-		out (c),a
-		pop af
 		ld bc,40507
 		out (c),a
 		ret

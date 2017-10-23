@@ -730,6 +730,9 @@ void hard_reset_cpu_prism(void)
                 int i;
                 for (i=0;i<16;i++) prism_ula2_registers[i]=0;
 
+
+                prism_last_ae3b=0;
+
                 prism_set_memory_pages();
 
 		//Resetear paleta 2
