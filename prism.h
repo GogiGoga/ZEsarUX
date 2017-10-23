@@ -82,7 +82,11 @@ extern void hard_reset_cpu_prism(void);
 #define PRISM_DISPLAY_HEIGHT 384
 
 
-extern z80_byte prism_ula2_border_colour;
+//extern z80_byte prism_ula2_border_colour;
+
+extern z80_byte prism_last_ae3b;
+
+extern z80_byte prism_ae3b_registers[];
 
 extern void init_prism_palettes(void);
 

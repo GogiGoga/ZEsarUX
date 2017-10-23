@@ -86,7 +86,14 @@ z80_byte prism_rom_page;
 The border is set to this colour when the "BORDER 0" command has been issued (BORDER 1, BORDER 2 etc all work as expected on a normal Spectrum). This register defaults to '0' so Spectrum software setting a black border acts as expected unless this registe is explicitly changed by the user/software.
 */
 
-z80_byte prism_ula2_border_colour;
+//z80_byte prism_ula2_border_colour;
+
+//prism_ula2_border_colour se debe sustituir por prism_ae3b_registers[0];
+
+z80_byte get_prism_ula2_border_colour(void)
+{
+	return prism_ae3b_registers[0];
+}
 
 
 //Guardar aqui cada cambio en el out, tal y como se hace con border normal
@@ -147,6 +154,48 @@ OUT 36411,BIN "RRRRxxxx" where RRRR is a 4-bit number selecting the register and
 */
 
 z80_byte prism_ula2_registers[16];
+
+/*
+port AE3BH (44603) (register select) and 9E3B (40507) (data) implement up to 256 x 8 bit registers  (currently 3 are implemented):
+OUT 44603,register - selects register
+	(OUT 44603,0 selects 256 colour border register
+	OUT 44603,1 selects chunk-o mode II colour 1  register
+	OUT 44603,2 selects chunk-o mode II colour 2 register)
+OUT 40507,x Set register selected above to value X
+
+
+Default value of colour register 0 (the one which controls the prism border colour) is BIN "00000000". 
+Default vaulue of colour register 1 is "11000111"    
+Default value of colour register 2 is "11000100".
+*/
+
+z80_byte prism_ae3b_registers[256]={0,199,196};
+
+z80_byte prism_last_ae3b;
+
+
+void prism_out_9e3b(z80_byte value)
+{
+	prism_ae3b_registers[prism_last_ae3b]=value;
+
+	if (prism_last_ae3b==0) {
+
+				modificado_border.v=1;
+
+				int i;
+				i=t_estados;
+	                        //printf ("t_estados %d screen_testados_linea %d bord: %d\n",t_estados,screen_testados_linea,i);
+
+        	                //Este i>=0 no haria falta en teoria
+                	        //pero ocurre a veces que justo al activar rainbow, t_estados_linea_actual tiene un valor descontrolado
+                        	if (i>=0 && i<CURRENT_PRISM_BORDER_BUFFER) {
+
+	                               prism_ula2_border_colour_buffer[i]=value;
+					
+        	                }
+     }
+                        
+}
 
 
 //12 bit palette values
@@ -567,7 +616,7 @@ char *prism_texts_screendatadecoding[16]={
 	"Spectrum","16+16 Colour","32 Colour","Reserved(3)",
 	"256 Colour mode 1","256 Colour mode 2","4 Plane planar mode","3 Plane planar mode",
 	"Overlay mode 1","Overlay mode 2","Gigablend mode","Brainebow",
-	"4 Plane planar mode 256 colour","Jowett mode","Chunk-o-vision 128x192 mode","Reserved(15)"
+	"4 Plane planar mode 256 colour","Jowett mode","Chunk-o-vision 128x192 mode I","Chunk-o-vision 128x192 mode II"
 };
 
 char *prism_texts_linear_modes[16]={

@@ -15,6 +15,7 @@ OUT 36411,BIN "RRRRxxxx" where RRRR is a 4-bit number selecting the register and
  
 The sixteen registers are as follows
 
+******
 0000 - Register 0 - CPU Speed:
 
 0000 - Slowest (always 3.5MHz)
@@ -70,7 +71,8 @@ I'm experimenting with the INT length - at the moment I've got INT staying low f
  
 As Prism only supports speeds up to 56MHz, ALL values from 8 to 15 both odd and even give a 56MHz clock and Interrupts derived from a 69888 t-state frame size.
  
- 
+
+****** 
 0001 - Register 1 - Compatiblity Options
 At bootup, Prism's memory mapping is a little different to that on a Spectrum, Spectrum 128 or Timex. For most applications this won't matter, but some software requres the memory map/MMU to be a little more traditional...
 
@@ -119,7 +121,7 @@ setting that register to x11x basically turns off all the timex additions
 These can be combined, so OUT 36411,25 maps in 16K of VRAM between 0x4000 and 0x7FFF and limits memory paging at 0xC000 to 128K.
 
 　
-
+******
 0010 - Register 2 - Screen type (Pixel clock, address generator and screen data FIFO control)
 
 0000 - 256x192, 8x8 Attributes (ie, normal Spectrum)
@@ -146,7 +148,7 @@ These can be combined, so OUT 36411,25 maps in 16K of VRAM between 0x4000 and 0x
 1001 to 1111 reserved
 
 　
-
+******
 0011 - Register 3 - Screen data decoding method
 
 
@@ -295,9 +297,18 @@ The *standard* version of the mode 128x192 only uses VRAM0
 256x384 - VRAM0+VRAM1+VRAM2+VRAM3  (no shadow screens available)
 
 
+
+1111 - chunk-o II mode - implement exactly the same as the first chunk-o mode but it's selected by OUT 36411,63 (whereas the first mode is 36411,62). Colour "00" is paper, colour "11" is ink. Colour "01" is colour register 1, Colour "01" is colour register 2.
+
+Default value of colour register 0 (the one which controls the prism border colour) is BIN "00000000". Default vaulue of colour register 1 is "11000111"    Default value of colour register 2 is "11000100".
+
+
+
+
 1111 - RESERVED
 
- 
+
+****** 
 0100 - Register 4 - Palette select
 
 0000 - Default (hard-coded) colour palette.
@@ -318,6 +329,7 @@ Colours 32-255 yet to be "officially" defined (but let me know when you implemen
 
 0011 to 1111 - RESERVED
 
+******
 0101 - Register 5 - VRAM write mask options
 
 Implemented to make planar modes quicker to write to, but potentially useful for screen mirroring/overlay modes etc too) This register controls which VRAM page or combination of pages the CPU writes to when writing to memory addresses between 0x4000-0x5AFF:
@@ -348,6 +360,7 @@ etc etc
 
  
 
+******
 0110 - Register 6 - Linear options
 
 0010 - 128x128 res, 8 bits per pixel (256 colour). First 64 lines from VRAM0, next 64 from VRAM1
@@ -357,6 +370,7 @@ etc etc
 
 
 
+******
 0111 - Register 7 - Overlay mode options
 
 0000 - Both layers use STANDARD attribute decoding
@@ -374,21 +388,29 @@ xx11 - Upper layer uses STANDARD attribute decodign but colours 16-31
 11xx - Lower layer uses STANDARD attribute decodign but colours 16-31
 
 　
-
+******
 1000 - RESERVED
 
+******
 1001 - RESERVED
 
+******
 1010 - RESERVED
 
+******
 1011 - RESERVED
 
+******
 1100 - RESERVED
 
+******
 1101 - RESERVED
 
+******
 1110 - RESERVED
 
+
+******
 1111 - Register 16 - Enable FLASH programming mode
 
 0000 to 1001 - NORMAL mode (Flash is paged at 0x0000, FLASH nWR is disabled)
@@ -399,14 +421,31 @@ xx11 - Upper layer uses STANDARD attribute decodign but colours 16-31
 
 　
 
+9E3B - old
 0x9E3B (read) - returns Prism microcode version (I'd suggest returning '0' to indicate emulation)
 
 0x9E3B (write) - ULA2's 256 colour BORDER
 
 The border is set to this colour when the "BORDER 0" command has been issued (BORDER 1, BORDER 2 etc all work as expected on a normal Spectrum). This register defaults to '0' so Spectrum software setting a black border acts as expected unless this registe is explicitly changed by the user/software.
 
- 
+
+
+
+
+AE3B - old 
 0xAE3B (read,write) - RESERVED  (no need to reserve this in emulation at the moment, it's not likely to be needed all going well)
+
+
+
+port AE3B (register select) and 9E3B (data) implement up to 256 x 8 bit registers  (currently 3 are implemented):
+OUT 44603,register - selects register
+	(OUT 44603,0 selects 256 colour border register
+	OUT 44603,1 selects chunk-o mode II colour 1  register
+	OUT 44603,2 selects chunk-o mode II colour 2 register)
+OUT 40507,x Set register selected above to value X
+
+
+
 
  
 0xBE3B ULA2 Palette control - Colour #

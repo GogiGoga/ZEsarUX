@@ -6565,12 +6565,15 @@ After the 3rd value has been written, the colour selected for redefinition incre
 
 
 /*
-0x9E3B (write) - ULA2's 256 colour BORDER
+antiguo: 0x9E3B (write) - ULA2's 256 colour BORDER
 
-The border is set to this colour when the "BORDER 0" command has been issued (BORDER 1, BORDER 2 etc all work as expected on a normal Spectrum). This register defaults to '0' so Spectrum software setting a black border acts as expected unless this registe is explicitly changed by the user/software.
+The border is set to this colour when the "BORDER 0" command has been issued 
+(BORDER 1, BORDER 2 etc all work as expected on a normal Spectrum). 
+This register defaults to '0' so Spectrum software setting a black border 
+acts as expected unless this registe is explicitly changed by the user/software.
 */
 
-			if (puerto==0x9E3B) {
+			/*if (puerto==0x9E3B) {
 				prism_ula2_border_colour=value;
 				modificado_border.v=1;
 
@@ -6584,13 +6587,22 @@ The border is set to this colour when the "BORDER 0" command has been issued (BO
 
 	                               prism_ula2_border_colour_buffer[i]=value;
 
-					//printf ("Metiendo valor border: %d en t_estados: %d\n",value,i);
+					
         	                }
-                        //else printf ("Valor de border scanline fuera de rango: %d\n",i);
+                        
 
 
 
-			}
+			}*/
+
+            if (puerto==0x9E3B) {
+                prism_out_9e3b(value);
+            }
+
+
+            if (puerto==0xAE3B) {
+                prism_last_ae3b=value;
+            }
 
 
         }

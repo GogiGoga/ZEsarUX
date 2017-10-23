@@ -1293,7 +1293,7 @@ void screen_prism_refresca_no_rainbow(void)
 
 			if (color==0) {
 				//tiene que venir de la tabla ula2 de 256 colores
-				color=PRISM_INDEX_FIRST_COLOR+prism_palette_two[prism_ula2_border_colour];
+				color=PRISM_INDEX_FIRST_COLOR+prism_palette_two[get_prism_ula2_border_colour()];
 				//printf ("Color prism %d Index 12 bit: %d   Colour RGB: 0x%X\n",prism_ula2_border_colour,prism_palette_two[prism_ula2_border_colour],
 				//	spectrum_colortable_normal[  PRISM_INDEX_FIRST_COLOR+prism_palette_two[prism_ula2_border_colour]  ] );
 			}
@@ -5393,7 +5393,7 @@ void screen_get_pixel_ink_paper_common_prism(z80_byte screendatadecoding,z80_byt
 	case 4:
 		//256 Colour mode 1 - D0-D7 = ink colour. Paper colour is determined by ULA2 BORDER (IO 0x9E3B)
 		ink0=attribute0;
-		paper0=prism_ula2_border_colour;
+		paper0=get_prism_ula2_border_colour();
 	break;
 	}
 
@@ -5834,7 +5834,7 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 				switch (screendatadecoding) {
 					case 5: //0101 - 256 Colour mode 2 (256 colour overlay mode - 3 colours in each 8x8 square)
 						if ( (byte_leido0&128)==0) {
-							if ( (byte_leido2&128)==0) color=prism_ula2_border_colour;
+							if ( (byte_leido2&128)==0) color=get_prism_ula2_border_colour();
 							else color=attribute2;
 						}
 
@@ -5929,12 +5929,12 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 
 					case 13: //1101 - Jowett mode
 						//TODO. Deberia ser un modo con buffer para poder cambiar el color del border mas de una vez en la linea
-						color=prism_ula2_border_colour;
+						color=get_prism_ula2_border_colour();
 						PRISM_ADJUST_COLOUR_PALETTE
 					break;
 
 
-					case 14:  //1110 - Chunk-o-vision 128x192 mode
+					case 14:  //1110 - Chunk-o-vision 128x192 mode I
 						//Leer los dos bits superiores para saber el offset sobre la paleta
 						color=( byte_leido0 & 128 ? 2 : 0 ) ;
 						//Leer siguiente bit
@@ -5960,6 +5960,43 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 
 							case 3:
 								color=ink0+8;
+								//printf ("cink8 ");
+							break;
+
+						}
+
+						PRISM_ADJUST_COLOUR_PALETTE
+						store_value_rainbow(puntero_buf_rainbow,color);
+						if (ancho_256) store_value_rainbow(puntero_buf_rainbow,color);
+					break;
+
+
+					case 15:  //1110 - Chunk-o-vision 128x192 mode II
+						//Leer los dos bits superiores 
+						color=( byte_leido0 & 128 ? 2 : 0 ) ;
+						//Leer siguiente bit
+						byte_leido0=byte_leido0<<1;
+						bit++;
+						color |=( byte_leido0 & 128 ? 1 : 0 ) ;
+
+						switch (color) {
+							case 0:
+								color=paper0;
+								//printf ("cpaper ");
+							break;
+
+							case 1:
+								color=prism_ae3b_registers[1];
+								
+							break;
+
+							case 2:
+								color=prism_ae3b_registers[2];
+								
+							break;
+
+							case 3:
+								color=ink0;
 								//printf ("cink8 ");
 							break;
 
@@ -6824,7 +6861,7 @@ void screen_store_scanline_rainbow_solo_border(void)
 
 		//screen_border_last_color=out_254 & 7;
 		screen_border_last_color=get_border_colour_from_out();
-		screen_border_last_color_prism=prism_ula2_border_colour;
+		screen_border_last_color_prism=get_prism_ula2_border_colour();
 
 		screen_incremento_border_si_ulaplus();
 		screen_incremento_border_si_spectra();

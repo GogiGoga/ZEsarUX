@@ -1642,7 +1642,7 @@ void load_zx_snapshot(char *archivo)
 	else if (MACHINE_IS_PRISM) {
 		//Leer bytes estado
 		fread(&prism_rom_page,1,1,ptr_zxfile);
-		fread(&prism_ula2_border_colour,1,1,ptr_zxfile);
+		fread(&prism_ae3b_registers[0],1,1,ptr_zxfile);
 		fread(&prism_ula2_palette_control_colour,1,1,ptr_zxfile);
 		fread(&prism_ula2_palette_control_index,1,1,ptr_zxfile);
 		fread(prism_ula2_palette_control_rgb,1,3,ptr_zxfile);
@@ -4239,7 +4239,7 @@ void save_zx_snapshot(char *filename)
 	else if (MACHINE_IS_PRISM) {
 		//Grabar bytes estado
 		fwrite(&prism_rom_page,1,1,ptr_zxfile);
-		fwrite(&prism_ula2_border_colour,1,1,ptr_zxfile);
+		fwrite(&prism_ae3b_registers[0],1,1,ptr_zxfile);
 		fwrite(&prism_ula2_palette_control_colour,1,1,ptr_zxfile);
 		fwrite(&prism_ula2_palette_control_index,1,1,ptr_zxfile);
 		fwrite(prism_ula2_palette_control_rgb,1,3,ptr_zxfile);
