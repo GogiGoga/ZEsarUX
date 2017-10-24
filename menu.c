@@ -15953,7 +15953,7 @@ int menu_load_binary_file(char *binary_file_load,int valor_leido_direccion,int v
 
 
   		char zone_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
-        	int zone=menu_get_current_memory_zone_name_number(zone_name);
+        	menu_get_current_memory_zone_name_number(zone_name);
 
                 debug_printf(VERBOSE_INFO,"Loading %s file at %d address at zone %s with maximum %d bytes",binary_file_load,valor_leido_direccion,zone_name,valor_leido_longitud);
 
@@ -16104,6 +16104,10 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
 
                 cls_menu_overlay();
 
+                menu_debug_set_memory_zone_attr();
+
+  		menu_debug_registers_splash_memory_zone();
+
                 char string_direccion[10];
 
                 sprintf (string_direccion,"%XH",save_binary_last_address);
@@ -16132,12 +16136,18 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
 
                                         //maximo 64kb
 		if (MACHINE_IS_SPECTRUM) {
-                                        if (valor_leido_longitud==0 || valor_leido_longitud>65536) valor_leido_longitud=65536;
+                                        //if (valor_leido_longitud==0 || valor_leido_longitud>65536) valor_leido_longitud=65536;
+                        if (valor_leido_longitud==0) valor_leido_longitud=4194304; //4 MB max
 		}
 
 		save_binary_last_length=valor_leido_longitud;
 
-		debug_printf(VERBOSE_INFO,"Saving %s file at %d address with %d bytes",binary_file_save,valor_leido_direccion,valor_leido_longitud);
+
+		char zone_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
+        	menu_get_current_memory_zone_name_number(zone_name);
+
+
+		debug_printf(VERBOSE_INFO,"Saving %s file at %d address at zone %s with %d bytes",binary_file_save,valor_leido_direccion,zone_name,valor_leido_longitud);
 
                                 FILE *ptr_binaryfile_save;
                                   ptr_binaryfile_save=fopen(binary_file_save,"wb");
@@ -16155,7 +16165,9 @@ void menu_debug_save_binary(MENU_ITEM_PARAMETERS)
                                                 z80_byte byte_leido;
                                                 while (valor_leido_longitud>0 && escritos>0) {
 							//byte_leido=peek_byte_no_time(valor_leido_direccion);
-							byte_leido=peek_byte_z80_moto(valor_leido_direccion);
+							//byte_leido=peek_byte_z80_moto(valor_leido_direccion);
+							byte_leido=menu_debug_get_mapped_byte(valor_leido_direccion);
+
 							escritos=fwrite(&byte_leido,1,1,ptr_binaryfile_save);
                                                         valor_leido_direccion++;
                                                         valor_leido_longitud--;
