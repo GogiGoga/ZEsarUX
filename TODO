@@ -43,10 +43,6 @@ pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno 
 revisar funcion quickload
 
 
--Paso a paso cuando hay condición de debug activa no deja salir (en menú) : ocurre porque sale y al momento salta 
-breakpoint y vuelve a entrar. Es normal
-
-
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
@@ -1455,6 +1451,10 @@ Etc...
 
 
 *** Menu  ***
+
+
+-Paso a paso cuando hay condición de debug activa no deja salir (en menú) : ocurre porque sale y al momento salta 
+breakpoint y vuelve a entrar. Es normal->opcion para poder salir de ahi aun con breakpoint activo? tiene sentido?
 
 -Disassemble a txt
 -Más f funciones. Habrá que hacer lista de funciones con ventana en vez de menú con opciones

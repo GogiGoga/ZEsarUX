@@ -169,6 +169,8 @@ Default vaulue of colour register 1 is "11000111"
 Default value of colour register 2 is "11000100".
 */
 
+
+//Tambien llamados "8-bit registers"
 z80_byte prism_ae3b_registers[256]={0,199,196};
 
 z80_byte prism_last_ae3b;
