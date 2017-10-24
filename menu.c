@@ -5646,10 +5646,8 @@ void menu_debug_registers_next_view(void)
 	if (menu_debug_registers_mostrando==5) menu_debug_registers_mostrando=0;
 }
 
-void menu_debug_registers_change_memory_zone(void)
+void menu_debug_registers_splash_memory_zone(void)
 {
-	menu_debug_change_memory_zone();
-
 
 	menu_debug_set_memory_zone_attr();
 
@@ -5667,6 +5665,15 @@ void menu_debug_registers_change_memory_zone(void)
 
 	//menu_escribe_texto(0,0,3,4,"Zone");
 	//screen_print_splash_text(10,ESTILO_GUI_TINTA_NORMAL,ESTILO_GUI_PAPEL_NORMAL,"hola");
+}
+
+void menu_debug_registers_change_memory_zone(void)
+{
+	menu_debug_change_memory_zone();
+
+	menu_debug_registers_splash_memory_zone();
+
+
 }
 
 
@@ -15917,6 +15924,76 @@ menu_z80_moto_int load_binary_last_length=0;
 menu_z80_moto_int save_binary_last_address=16384;
 menu_z80_moto_int save_binary_last_length=1;
 
+
+
+//Retorna 0 si ok
+//1 si archivo no encontrado
+//2 si error leyendo
+//Tiene en cuenta zonas de memoria
+int menu_load_binary_file(char *binary_file_load,int valor_leido_direccion,int valor_leido_longitud)
+{
+  int returncode=0;
+
+  if (!si_existe_archivo(binary_file_load)) return 1;
+
+  if (valor_leido_longitud==0) valor_leido_longitud=4194304; //4 MB max
+
+                /*if (MACHINE_IS_SPECTRUM) {
+                  if (valor_leido_longitud==0 || valor_leido_longitud>65536) valor_leido_longitud=65536;
+
+                  //maximo hasta direccion 65535
+                  if (valor_leido_direccion+valor_leido_longitud > 65535) valor_leido_longitud=65536-valor_leido_direccion;
+                }
+
+                else { //MOTOROLA
+                  if (valor_leido_longitud==0) valor_leido_longitud=QL_MEM_LIMIT+1;
+                }*/
+
+  		menu_debug_set_memory_zone_attr();
+
+
+  		char zone_name[MACHINE_MAX_MEMORY_ZONE_NAME_LENGHT+1];
+        	int zone=menu_get_current_memory_zone_name_number(zone_name);
+
+                debug_printf(VERBOSE_INFO,"Loading %s file at %d address at zone %s with maximum %d bytes",binary_file_load,valor_leido_direccion,zone_name,valor_leido_longitud);
+
+
+
+                                FILE *ptr_binaryfile_load;
+                                  ptr_binaryfile_load=fopen(binary_file_load,"rb");
+                                  if (!ptr_binaryfile_load)
+                                {
+                                      debug_printf (VERBOSE_ERR,"Unable to open Binary file %s",binary_file_load);
+                                      returncode=2;
+
+                                  }
+                                else {
+
+                                                int leidos=1;
+                                                z80_byte byte_leido;
+                                                while (valor_leido_longitud>0 && leidos>0) {
+                                                        leidos=fread(&byte_leido,1,1,ptr_binaryfile_load);
+                                                        if (leidos>0) {
+                                                                //poke_byte_no_time(valor_leido_direccion,byte_leido);
+                                                                //poke_byte_z80_moto(valor_leido_direccion,byte_leido);
+                                                                menu_debug_write_mapped_byte(valor_leido_direccion,byte_leido);
+
+
+                                                                valor_leido_direccion++;
+                                                                valor_leido_longitud--;
+                                                        }
+                                                }
+
+
+                                  fclose(ptr_binaryfile_load);
+
+                                }
+
+    return returncode;
+
+}
+
+
 void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
 {
 
@@ -15954,6 +16031,10 @@ void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
 
 		cls_menu_overlay();
 
+		menu_debug_set_memory_zone_attr();
+
+  		menu_debug_registers_splash_memory_zone();
+
         	char string_direccion[10];
 
 		sprintf (string_direccion,"%XH",load_binary_last_address);
@@ -15984,7 +16065,7 @@ void menu_debug_load_binary(MENU_ITEM_PARAMETERS)
 
 		load_binary_last_length=valor_leido_longitud;
 
-		load_binary_file(binary_file_load,valor_leido_direccion,valor_leido_longitud);
+		menu_load_binary_file(binary_file_load,valor_leido_direccion,valor_leido_longitud);
 
 
 		//Y salimos de todos los menus

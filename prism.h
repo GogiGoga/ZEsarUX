@@ -86,6 +86,10 @@ extern void hard_reset_cpu_prism(void);
 
 extern z80_byte prism_last_ae3b;
 
+extern void prism_out_9e3b(z80_byte value);
+
+extern z80_byte get_prism_ula2_border_colour(void);
+
 extern z80_byte prism_ae3b_registers[];
 
 extern void init_prism_palettes(void);
