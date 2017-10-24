@@ -47,9 +47,6 @@ revisar funcion quickload
 breakpoint y vuelve a entrar. Es normal
 
 
-
--memory zones en otros comandos de menu: save binary, load binary etc. Ver tambien los similares en ZRCP
-
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
@@ -68,7 +65,6 @@ O quizá setting configurable
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
-*update bios
 *como se lee valor paleta?
 *como se leen valores paleta? leyendo 40h y 44h?
 *Mmu límite página. Máscara and
@@ -132,6 +128,8 @@ Luego se podrá usar en el futuro para nuevos settings de menú y command line, 
 -Puertos debug zx81. Ver hilo sinclairzxworld
 
 -opcion ZRCP que indique que memoria divmmc/divide esta mapeada: de momento dice divmmc sin mas
+
+-opcion ZRCP para cargar y grabar binary
 
 -Opción para indicar otro archivo de configuración 
 
