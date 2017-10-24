@@ -5884,6 +5884,7 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 
 
 						int mezcla=screen_prism_get_blend_color(paper0,ink0);
+						mezcla=mezcla+PRISM_INDEX_FIRST_COLOR;
 
 
 
