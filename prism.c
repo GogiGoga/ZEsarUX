@@ -615,7 +615,7 @@ char *prism_texts_screentype[16]={
 };
 
 char *prism_texts_screendatadecoding[16]={
-	"Spectrum","16+16 Colour","32 Colour","Reserved(3)",
+	"Spectrum","16+16 Colour","32 Colour","Chunk-o-blend",
 	"256 Colour mode 1","256 Colour mode 2","4 Plane planar mode","3 Plane planar mode",
 	"Overlay mode 1","Overlay mode 2","Gigablend mode","Brainebow",
 	"4 Plane planar mode 256 colour","Jowett mode","Chunk-o-vision 128x192 mode I","Chunk-o-vision 128x192 mode II"

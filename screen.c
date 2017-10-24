@@ -5454,6 +5454,12 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 		//z80_int paper1,paper3;
 
 
+		//Para mezcla gigablend
+						int red_a,green_a,blue_a;
+						int red_b,green_b,blue_b;
+						int rgb_a,rgb_b,red_final,green_final,blue_final;
+
+
 
 	        z80_byte screentype=prism_ula2_registers[2];
         	z80_byte screendatadecoding=prism_ula2_registers[3];
@@ -5832,6 +5838,78 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 
 
 				switch (screendatadecoding) {
+					case 3:  //0011 - Chunk-o-blend
+						//Leer los dos bits superiores 
+						color=( byte_leido0 & 128 ? 2 : 0 ) ;
+						//Leer siguiente bit
+						byte_leido0=byte_leido0<<1;
+						bit++;
+						color |=( byte_leido0 & 128 ? 1 : 0 ) ;
+
+
+
+						//Tenemos los dos colores. Obtener componentes RGB
+						//REDa,GREENa,BLUEa
+						//REDb,GREENb,BLUEb
+						
+						//de momento paleta por defecto prism_palette_zero[color]
+						//Obtenemos color 12 bits
+						rgb_a=prism_palette_zero[paper0];
+						red_a=(rgb_a>>8)&15;
+						green_a=(rgb_a>>4)&15;
+						blue_a=(rgb_a)&15;
+
+						rgb_b=prism_palette_zero[ink0];
+						red_b=(rgb_b>>8)&15;
+						green_b=(rgb_b>>4)&15;
+						blue_b=(rgb_b)&15;
+
+						//Y montamos colores finales
+						//RED= REDa(3) & REDb(2) & REDb(1) & REDa(0)
+						//GREEN = REDa(3) & REDb(2) & REDb(1) & REDa(0)
+						//BLUE = REDa(3) & REDb(2) & REDb(1) & REDa(0)
+						red_final=(red_a &8) | (red_b &4) | (red_b & 2) | (red_a & 1);
+						green_final=(green_a &8) | (green_b &4) | (green_b & 2) | (green_a & 1);
+						blue_final=(blue_a &8) | (blue_b &4) | (blue_b & 2) | (blue_a & 1);
+
+
+						//temp mi metodo de gigablend
+						red_final=(red_a+red_b)/2;
+						green_final=(green_a+green_b)/2;
+						blue_final=(blue_a+blue_b)/2;
+
+						//Montamos color final rgb 12 bits
+						int mezcla=(red_final<<8) | (green_final<<4) | (blue_final);
+						
+
+						switch (color) {
+							case 0:
+								color=paper0;
+								//printf ("cpaper ");
+							break;
+
+							case 1:
+								color=mezcla;
+								//printf ("cink16 ");
+							break;
+
+							case 2:
+								color=mezcla;
+								//printf ("cink24 ");
+							break;
+
+							case 3:
+								color=ink0;
+								//printf ("cink8 ");
+							break;
+
+						}
+
+						PRISM_ADJUST_COLOUR_PALETTE
+						store_value_rainbow(puntero_buf_rainbow,color);
+						if (ancho_256) store_value_rainbow(puntero_buf_rainbow,color);
+					break;
+
 					case 5: //0101 - 256 Colour mode 2 (256 colour overlay mode - 3 colours in each 8x8 square)
 						if ( (byte_leido0&128)==0) {
 							if ( (byte_leido2&128)==0) color=get_prism_ula2_border_colour();
@@ -5877,17 +5955,16 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						//Tenemos los dos colores. Obtener componentes RGB
 						//REDa,GREENa,BLUEa
 						//REDb,GREENb,BLUEb
-						int red_a,green_a,blue_a;
-						int red_b,green_b,blue_b;
+
 
 						//de momento paleta por defecto prism_palette_zero[color]
 						//Obtenemos color 12 bits
-						int rgb_a=prism_palette_zero[color];
+						rgb_a=prism_palette_zero[color];
 						red_a=(rgb_a>>8)&15;
 						green_a=(rgb_a>>4)&15;
 						blue_a=(rgb_a)&15;
 
-						int rgb_b=prism_palette_zero[color2];
+						rgb_b=prism_palette_zero[color2];
 						red_b=(rgb_b>>8)&15;
 						green_b=(rgb_b>>4)&15;
 						blue_b=(rgb_b)&15;
@@ -5896,9 +5973,9 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						//RED= REDa(3) & REDb(2) & REDb(1) & REDa(0)
 						//GREEN = REDa(3) & REDb(2) & REDb(1) & REDa(0)
 						//BLUE = REDa(3) & REDb(2) & REDb(1) & REDa(0)
-						int red_final=(red_a &8) | (red_b &4) | (red_b & 2) | (red_a & 1);
-						int green_final=(green_a &8) | (green_b &4) | (green_b & 2) | (green_a & 1);
-						int blue_final=(blue_a &8) | (blue_b &4) | (blue_b & 2) | (blue_a & 1);
+						red_final=(red_a &8) | (red_b &4) | (red_b & 2) | (red_a & 1);
+						green_final=(green_a &8) | (green_b &4) | (green_b & 2) | (green_a & 1);
+						blue_final=(blue_a &8) | (blue_b &4) | (blue_b & 2) | (blue_a & 1);
 
 
 						//temp mi metodo de gigablend
