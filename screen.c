@@ -5410,6 +5410,45 @@ void screen_prism_dibuja_border_central(void)
 	screen_store_scanline_rainbow_border_comun_supinf();
 }
 
+int screen_prism_get_blend_color(int color1, int color2)
+{
+
+	//Para mezcla gigablend
+						int red_a,green_a,blue_a;
+						int red_b,green_b,blue_b;
+						int rgb_a,rgb_b,red_final,green_final,blue_final;
+						int color_final;
+	//de momento paleta por defecto prism_palette_zero[color]
+						//Obtenemos color 12 bits
+						rgb_a=prism_palette_zero[color1];
+						red_a=(rgb_a>>8)&15;
+						green_a=(rgb_a>>4)&15;
+						blue_a=(rgb_a)&15;
+
+						rgb_b=prism_palette_zero[color2];
+						red_b=(rgb_b>>8)&15;
+						green_b=(rgb_b>>4)&15;
+						blue_b=(rgb_b)&15;
+
+						//Y montamos colores finales
+						//RED= REDa(3) & REDb(2) & REDb(1) & REDa(0)
+						//GREEN = REDa(3) & REDb(2) & REDb(1) & REDa(0)
+						//BLUE = REDa(3) & REDb(2) & REDb(1) & REDa(0)
+						red_final=(red_a &8) | (red_b &4) | (red_b & 2) | (red_a & 1);
+						green_final=(green_a &8) | (green_b &4) | (green_b & 2) | (green_a & 1);
+						blue_final=(blue_a &8) | (blue_b &4) | (blue_b & 2) | (blue_a & 1);
+
+
+						//temp mi metodo de gigablend
+						red_final=(red_a+red_b)/2;
+						green_final=(green_a+green_b)/2;
+						blue_final=(blue_a+blue_b)/2;
+
+						//Montamos color final rgb 12 bits
+						color_final=(red_final<<8) | (green_final<<4) | (blue_final);
+	return color_final;						
+}
+
 
 void screen_store_scanline_rainbow_solo_display_prism(void)
 {
@@ -5454,10 +5493,7 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 		//z80_int paper1,paper3;
 
 
-		//Para mezcla gigablend
-						int red_a,green_a,blue_a;
-						int red_b,green_b,blue_b;
-						int rgb_a,rgb_b,red_final,green_final,blue_final;
+		
 
 
 
@@ -5847,6 +5883,9 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						color |=( byte_leido0 & 128 ? 1 : 0 ) ;
 
 
+						int mezcla=screen_prism_get_blend_color(paper0,ink0);
+
+
 
 						//Tenemos los dos colores. Obtener componentes RGB
 						//REDa,GREENa,BLUEa
@@ -5854,6 +5893,7 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						
 						//de momento paleta por defecto prism_palette_zero[color]
 						//Obtenemos color 12 bits
+						/*
 						rgb_a=prism_palette_zero[paper0];
 						red_a=(rgb_a>>8)&15;
 						green_a=(rgb_a>>4)&15;
@@ -5879,12 +5919,13 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						blue_final=(blue_a+blue_b)/2;
 
 						//Montamos color final rgb 12 bits
-						int mezcla=(red_final<<8) | (green_final<<4) | (blue_final);
+						int mezcla=(red_final<<8) | (green_final<<4) | (blue_final);*/
 						
 
 						switch (color) {
 							case 0:
 								color=paper0;
+								PRISM_ADJUST_COLOUR_PALETTE
 								//printf ("cpaper ");
 							break;
 
@@ -5900,12 +5941,13 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 
 							case 3:
 								color=ink0;
+								PRISM_ADJUST_COLOUR_PALETTE
 								//printf ("cink8 ");
 							break;
 
 						}
 
-						PRISM_ADJUST_COLOUR_PALETTE
+						
 						store_value_rainbow(puntero_buf_rainbow,color);
 						if (ancho_256) store_value_rainbow(puntero_buf_rainbow,color);
 					break;
@@ -5952,6 +5994,8 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						color= ( byte_leido0 & 128 ? ink0 : paper0 ) ; //de vram0
 						color2=( byte_leido2 & 128 ? ink2 : paper2 ) ; //de vram2
 
+						color=screen_prism_get_blend_color(color,color2);
+
 						//Tenemos los dos colores. Obtener componentes RGB
 						//REDa,GREENa,BLUEa
 						//REDb,GREENb,BLUEb
@@ -5959,7 +6003,7 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 
 						//de momento paleta por defecto prism_palette_zero[color]
 						//Obtenemos color 12 bits
-						rgb_a=prism_palette_zero[color];
+						/*rgb_a=prism_palette_zero[color];
 						red_a=(rgb_a>>8)&15;
 						green_a=(rgb_a>>4)&15;
 						blue_a=(rgb_a)&15;
@@ -5984,7 +6028,8 @@ void screen_store_scanline_rainbow_solo_display_prism(void)
 						blue_final=(blue_a+blue_b)/2;
 
 						//Montamos color final rgb 12 bits
-						color=(red_final<<8) | (green_final<<4) | (blue_final);
+						color=(red_final<<8) | (green_final<<4) | (blue_final);*/
+
 						color=color+PRISM_INDEX_FIRST_COLOR;
 
 					break;
