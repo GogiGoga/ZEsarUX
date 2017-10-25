@@ -4085,13 +4085,13 @@ int quickload(char *nombre) {
 
        if (antes_divmmc_diviface_enabled.v)  {
 		debug_printf (VERBOSE_DEBUG,"Reenabling divmmc as it was enabled before quickload");
-		//divmmc_diviface_disable();
+		divmmc_diviface_disable();
                 divmmc_diviface_enable();
         }
 
        if (antes_divide_diviface_enabled.v)  {
 		debug_printf (VERBOSE_DEBUG,"Reenabling divide as it was enabled before quickload");
-		//divide_diviface_disable();
+		divide_diviface_disable();
                 divide_diviface_enable();
         }
 

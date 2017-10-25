@@ -81,7 +81,10 @@ void divide_diviface_enable(void)
   }
 
   //Si ya esta habilitado, salir
-  if (divide_diviface_enabled.v) return;
+  if (divide_diviface_enabled.v) {
+    debug_printf(VERBOSE_DEBUG,"Divide already enabled");
+    return;
+  }
 
   debug_printf (VERBOSE_INFO,"Enabling divide diviface ports");
   //Es excluyente con firmware de divmmc
