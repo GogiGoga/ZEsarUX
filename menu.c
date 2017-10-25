@@ -3105,10 +3105,21 @@ int si_menu_mouse_en_ventana(void)
 	return 0;
 }
 
+
+int menu_allows_mouse(void)
+{
+	//Primero, fbdev no permite raton
+	if (!strcmp(scr_driver_name,"fbdev")) return 0;
+
+	//Luego, el resto de los drivers completos (xwindows, sdl, cocoa, ...)
+
+	return si_complete_video_driver();
+}
+
 void menu_calculate_mouse_xy(void)
 {
 	int x,y;
-	if (si_complete_video_driver() ) {
+	if (menu_allows_mouse() ) {
 
 		int mouse_en_emulador=0;
 		//printf ("x: %04d y: %04d\n",mouse_x,mouse_y);

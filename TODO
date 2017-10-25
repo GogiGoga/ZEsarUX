@@ -38,12 +38,6 @@ The format of each table entry is as follows:
 
 
 
--reset despues de tbblue siempre lleva a rom usr0 aun en modo 128k -> no siempre ocurre->solo en quickload,
-pues se vuelve a activar divmmc despues de quickload->esto ocurre tal y como esta el bit de desactivar tbblue definido,
-zesarux cree que esta activado cuando realmente no lo esta del todo
-->ok
-
-
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
@@ -87,10 +81,6 @@ probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros driver
 
 
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
-
-
--No leer ratón en menú si driver no lee ratón (como en fbdev)
-
 
 
 -problema de reseteo de buffer audio al iniciar el emulador, hace un sonido estridente a veces al arrancar. Detectado con coreaudio
