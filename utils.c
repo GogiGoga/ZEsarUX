@@ -4083,6 +4083,14 @@ int quickload(char *nombre) {
 
 	int retorno=quickload_continue(nombre);
 
+	//En tbblue, setting de divmmc desactivado se gestiona mediante bit de registro
+	/*
+	z80_byte diven=tbblue_registers[6]&16;
+	*/
+	if (MACHINE_IS_TBBLUE) {
+		if ((tbblue_registers[6]&16)==0) antes_divmmc_diviface_enabled.v=0;
+	}
+
        if (antes_divmmc_diviface_enabled.v)  {
 		debug_printf (VERBOSE_DEBUG,"Reenabling divmmc as it was enabled before quickload");
 		divmmc_diviface_disable();

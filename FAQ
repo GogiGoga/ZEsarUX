@@ -379,6 +379,11 @@ Or you can select it from the command line with:
 
 Note: tbblue.mmc is included on the base package (and not on extras) because it is needed to boot that machine
 
+Q: I have enabled divmmc on Tbblue bios, but seems it's not working (no esxdos or nextos)
+A: Sometimes, enabling divmmc on tbblue bios requires closing and reopening ZEsarUX. The technical answer for this issue,
+is that enabling/disabling divmmc on tbblue is not done the same way as when you enable/disable it from ZEsarUX menu, 
+tbblue does not disables entirely divmmc, only automatic memory paging
+
 
 Q: Why can't enable divmmc paging (or full divmmc emulation) from command line/config file on TBBlue? When exiting emulator, these settings are not saved on configuration file. But... if I force them to enable from command line, TBBlue does not boot, and then doing a hard reset it boots ok
 A: TBBlue needs divmmc paging disabled to boot, if not, divmmc firmware will be activated on the tbblue boot and then it hangs. When you do a hard reset, some internal tbblue registers (reg 6, bit 4) are reset to zero. Resetting this register 6, divmmc paging is disabled and so the boot works ok. But when initializing the emulator the sequence is:

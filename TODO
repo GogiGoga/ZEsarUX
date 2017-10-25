@@ -36,17 +36,12 @@ The format of each table entry is as follows:
 
 -ver si texto memory zone puede ser >15
 
--revisar tbblue con 128k+divmmc. a veces no arranca esxdos. quiza error del cambio en el bit de paging de divmmc de registro tbblue? , smartload de tbblue desactiva esxdos. esto es porque parece que antes de quickload detecta correctamente que estaba divmmc, y se guarda el estado,
-pero despues dice que ya está activado y por tanto no hace nada. esto en zxuno si que va bien
-revisar funcion quickload
--> el tema es:
-rom de 48 o 128 + divide. Hacemos reset, va a modo usr 0 con esxdos. 
-Si se hace quickload, no va a modo usr0 y no esta a esxdos (en 48k va a rom 48 normal y en 128 va a modo 128)
-probado en zxuno, tbblue y spectrum 48k, en todos activando divmmc. activando y desactivando divmmc paging vuelve
-->Diviface peek/poke no se ven afectadas
-->el problema viene de set_machine_params();
-->supuestamente ya ok
 
+
+-reset despues de tbblue siempre lleva a rom usr0 aun en modo 128k -> no siempre ocurre->solo en quickload,
+pues se vuelve a activar divmmc despues de quickload->esto ocurre tal y como esta el bit de desactivar tbblue definido,
+zesarux cree que esta activado cuando realmente no lo esta del todo
+->ok
 
 
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
