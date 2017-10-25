@@ -44,10 +44,7 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 *como se lee valor paleta?
 *como se leen valores paleta? leyendo 40h y 44h?
-
-
 *Hard reset en tbblue no debería llamar a reset?
-* probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 
 -tsconf
@@ -55,7 +52,6 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 
 
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
-
 
 
 -problema de reseteo de buffer audio al iniciar el emulador, hace un sonido estridente a veces al arrancar. Detectado con coreaudio
@@ -68,6 +64,9 @@ probado lo siguiente:
 
 
 ---Fin cosas para version 5.1
+
+
+
 
 
 
@@ -100,10 +99,7 @@ render de sprites / tiles se hace de momento al final de cada frame de pantalla 
 *TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *Desactivar puertos viejos de establecer paleta sprites get/set
-*Mmu límite página. Máscara and. en tbblue_set_ram_page y tbblue_set_rom_page mascara con el valor maximo
-por determinar hasta que se diga como se puede mapear toda la ram. Actualmente solo es 0-63 y eso permite 512k, y deja
-sin poder mapear otros 128kb
-*Contended en mmu tbblue. De momento la contencion la hace por bloques de 16 kb
+
 
 
 
@@ -609,13 +605,14 @@ Parece que tambien mejora si al lanzar im2 se restan estados... hasta 30 o asi
 --- TBBLUE ---
 
 -sid commodore para tbbue. ver ReSID
--snapshot .zx para tbblue
+-snapshot .zsf para tbblue
 -Sincronizar bits de joystick de puerto config2
 -divmmc tiene 256kb en tbblue real, pero por defecto emulo 128k. Algun problema? Tener en cuenta que en zxuno y resto de spectrum la divmmc es de 128kb.
 quiza hacer que cuando arranque tbblue, divmmc tenga 256k
+-probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 -a veces al arrancar la maquina no encuentra archivos de la sd. Quiza por algun registro de la mmc que no se inicializa correctamente?
--para emulacion de +3e, la sd se utiliza la sd secundaria. emular segunda SD
+-para emulacion de +3e, la sd se utiliza la sd secundaria. emular segunda SD????
 -considerar algunas escrituras de puertos que dicen:
 only in bootrom or config mode:
 
@@ -629,6 +626,10 @@ Ver registro 2:
 
 
 
+-*Mmu límite página. Máscara and. en tbblue_set_ram_page y tbblue_set_rom_page mascara con el valor maximo
+por determinar hasta que se diga como se puede mapear toda la ram. Actualmente solo es 0-63 y eso permite 512k, y deja
+sin poder mapear otros 128kb
+*Contended en mmu tbblue. De momento la contencion la hace por bloques de 16 kb
 
 -------------
 
