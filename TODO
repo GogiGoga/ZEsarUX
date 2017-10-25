@@ -36,51 +36,26 @@ The format of each table entry is as follows:
 
 -ver si texto memory zone puede ser >15
 
-
-
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
 Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
 
--Parámetro change slow que no venga por defecto
-Y lo haga la gente manualmente y/ o se detecte si es rpi1
-
--Tecla escape debería hacer break cuando se está escuchando speech
-O quizá setting configurable 
-
-
 -tbblue:
-*probar que pasa cuando llega a mas de 12 sprites en linea tbblue
-*eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
-*TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
-*y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
-*revisar archivos agregados en carpeta esxdos handler que no esten en imagen tbblue.mmc
 *nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 *como se lee valor paleta?
 *como se leen valores paleta? leyendo 40h y 44h?
 *Mmu límite página. Máscara and
-
-*Desactivar puertos viejos de establecer paleta sprites get/set
-* Contended en mmu tbblue?
+*Contended en mmu tbblue?
 *Hard reset en tbblue no debería llamar a reset?
+* probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
 
 
--probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
+-tsconf
+*Agregar algún juego o demo de tsconf a extras
 
-
-
-*tsconf: 
--limite sprites en scanline
--revisar mapeo rom mediante 32765 porque parece que no hay manera de iniciar la rom del 128kb. creo que ahora mismo el puerto 32765 esta totalmente desactivado
--para probar sprites/tiles:
-render de sprites / tiles se hace de momento al final de cada frame de pantalla y de manera muy chapucera
--Agregar algún juego o demo de tsconf a extras
--tsconf border en modos rainbow
 
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
 
-
--util z80 moto poke pokea en motorola pero sin protección de escritura en rom
 
 
 -problema de reseteo de buffer audio al iniciar el emulador, hace un sonido estridente a veces al arrancar. Detectado con coreaudio
@@ -92,8 +67,6 @@ probado lo siguiente:
 -Quizá resetear puntero escritura latencia siempre que carga, graba, etc
 
 
-
-
 ---Fin cosas para version 5.1
 
 
@@ -103,6 +76,31 @@ probado lo siguiente:
 
 
 --- Cosas para la version 5.2
+
+-util z80 moto poke pokea en motorola pero sin protección de escritura en rom
+
+-Parámetro change slow en rpi que no venga por defecto
+Y lo haga la gente manualmente y/ o se detecte si es rpi1
+
+-Tecla escape debería hacer break cuando se está escuchando speech
+O quizá setting configurable 
+
+
+*tsconf: 
+-limite sprites en scanline
+-revisar mapeo rom mediante 32765 porque parece que no hay manera de iniciar la rom del 128kb. creo que ahora mismo el puerto 32765 esta totalmente desactivado
+-para probar sprites/tiles:
+render de sprites / tiles se hace de momento al final de cada frame de pantalla y de manera muy chapucera
+-tsconf border en modos rainbow
+
+
+-tbblue:
+*probar que pasa cuando llega a mas de 12 sprites en linea tbblue
+*eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
+*TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
+*y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
+*Desactivar puertos viejos de establecer paleta sprites get/set
+
 
 
 -Comando genérico para alterar algunos settings desde ZRCP hacia settings de menú
