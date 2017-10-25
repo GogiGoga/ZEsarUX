@@ -239,7 +239,10 @@ void kartusho_enable(void)
     return;
   }
 
-	if (kartusho_enabled.v) return;
+	if (kartusho_enabled.v) {
+		debug_printf (VERBOSE_DEBUG,"Already enabled");
+		return;
+	}
 
 	if (kartusho_rom_file_name[0]==0) {
 		debug_printf (VERBOSE_ERR,"Trying to enable Kartusho but no ROM file selected");
