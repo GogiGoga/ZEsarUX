@@ -1257,7 +1257,7 @@ Nuevo oct 2017:
 
 int tbblue_get_limit_sram_page(int page)
 {
-	if (page>=224) page=224;
+	if (page>223) page=223;
 
 	return page;
 }
