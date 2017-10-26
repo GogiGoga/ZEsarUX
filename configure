@@ -1428,7 +1428,7 @@ clean:
 
 COMMONFILES=ACKNOWLEDGEMENTS LICENSE LICENSE_MOTOROLA_CORE LICENSE_SCMP_CORE Changelog TODO README HISTORY FEATURES INSTALL INSTALLWINDOWS ALTERNATEROMS INCLUDEDTAPES DONATE FAQ zesarux.odt mantransfev3.bin *.rom zxuno.flash tbblue.mmc speech_filters my_soft zesarux.mp3 zesarux.xcf bin_sprite_to_c.sh
 
-ONLYSOURCEFILES=macos *.c *.m *.h *.tpl DEVELOPMENT CHECKLIST configure generate_install_sh.sh join_tzx.sh testsound.sh txt_to_basic_lines.sh zxuno_roms_bin_a_flash.sh *.asm benchmark_*.txt current_checklist.txt patches prism_change_boot.txt pruebas_screen_rgb32 nuevo_core_zx8081 pruebas_z88_core_topspeed/
+ONLYSOURCEFILES=macos *.c *.m *.h *.tpl DEVELOPMENT CHECKLIST configure generate_install_sh.sh join_tzx.sh testsound.sh txt_to_basic_lines.sh automatic_tests.sh zxuno_roms_bin_a_flash.sh *.asm benchmark_*.txt current_checklist.txt patches prism_change_boot.txt pruebas_screen_rgb32 nuevo_core_zx8081 pruebas_z88_core_topspeed/
 
 
 ONLYUNIXBINARIES=install.sh zesarux
