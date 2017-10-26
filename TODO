@@ -99,6 +99,7 @@ render de sprites / tiles se hace de momento al final de cada frame de pantalla 
 *TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *Desactivar puertos viejos de establecer paleta sprites get/set
+*Color border tbblue debe venir de paper , supongo que en modo extendido
 
 
 
@@ -1948,6 +1949,7 @@ http://www.worldofspectrum.org/forums/showthread.php?t=49966
 cursores para poder subir/bajar instruccion mostrada en vista inicial debug
 * Breakpoint on NMI/INT
 
+-Inves. Ver que juegos se corrompe la memoria debido a interrupción. Quizá ver aquellos que no usan tabla entera de 257
 
 -Mejorar emulación teclado issue 2,3. Etc. Inves
 
