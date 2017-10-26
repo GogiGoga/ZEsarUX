@@ -50,6 +50,7 @@
 #include "timer.h"
 #include "superupgrade.h"
 #include "multiface.h"
+#include "tbblue.h"
 
 #include "autoselectoptions.h"
 
@@ -1560,6 +1561,10 @@ void gestionar_autoload_spectrum(void)
 			case 19:
 				//Para TBBlue. Pasa como Prism
 				        //Para 128k, +2, +2a enviar enter
+                        //Siempre que no este en la rom de arranque, 
+                        //pues acaba creyendose 
+                                //que esta en la rom del basic pues entra en reg_pc==0x12a9
+                if (!tbblue_bootrom.v) {
                                         if (
                                           reg_pc==0x3683 ||
                                           reg_pc==0x36a9 ||
@@ -1574,9 +1579,12 @@ void gestionar_autoload_spectrum(void)
                                         else if (reg_pc==0x25a0) gestionar_autoload_spectrum_start_loadpp();
 
                                         //Para 48k
-                                        else gestionar_autoload_spectrum_48kmode();
+                                        else {
+                                             gestionar_autoload_spectrum_48kmode();
+                                        }
+                }
 
-                                break;
+          break;
 
 
 

@@ -33,6 +33,7 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
+-Puerto de Debug de ZEsarUX, agregar comando que permita alterar cosas del emulador, por ejemplo de momento un valor con bit 0 a 1 que haga cerrar emulador sin fadeout
 
 -ver si texto memory zone puede ser >15
 
@@ -45,6 +46,7 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 *como se lee valor paleta?
 *como se leen valores paleta? leyendo 40h y 44h?
 *Hard reset en tbblue no debería llamar a reset?
+*next opcodes. acesos memoria (para parametros) son 3 o 4 t estados. revisar y actualizar doc
 
 
 -tsconf
