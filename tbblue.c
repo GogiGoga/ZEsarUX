@@ -42,6 +42,24 @@
 //Punteros a los 64 bloques de 8kb de ram de spectrum
 z80_byte *tbblue_ram_memory_pages[TBBLUE_MAX_SRAM_8KB_BLOCKS];
 
+//2MB->224 bloques (16+16+64*3) (3 bloques extra de 512)
+//1.5 MB->160 bloques (2 bloques extra de 512)
+//1 MB->96 bloques (1 bloque extra de 512)
+//512 KB->32 bloques de (0 bloque extra de 512)
+
+z80_byte tbblue_extra_512kb_blocks=3;
+
+z80_byte tbblue_return_max_extra_blocks(void)
+{
+	return 32+tbblue_extra_512kb_blocks*64;
+}
+
+//Retorna ram total en KB
+int tbblue_get_current_ram(void)
+{
+	return 256+8*tbblue_return_max_extra_blocks();
+}
+
 //Punteros a los 8 bloques de 8kb de rom de spectrum
 z80_byte *tbblue_rom_memory_pages[8];
 
@@ -1259,7 +1277,10 @@ Nuevo oct 2017:
 
 int tbblue_get_limit_sram_page(int page)
 {
-	if (page>TBBLUE_MAX_SRAM_8KB_BLOCKS-1) page=TBBLUE_MAX_SRAM_8KB_BLOCKS-1;
+
+	z80_byte max=tbblue_return_max_extra_blocks();
+
+	if (page>max-1) page=max-1;
 
 	return page;
 }

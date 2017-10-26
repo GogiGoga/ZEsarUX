@@ -14363,6 +14363,14 @@ void menu_hardware_memory_128k_multiplier(MENU_ITEM_PARAMETERS)
 	mem_set_multiplicador_128(valor);
 }
 
+void menu_hardware_tbblue_ram(MENU_ITEM_PARAMETERS)
+{
+	if (tbblue_extra_512kb_blocks==3) tbblue_extra_512kb_blocks=0;
+	else tbblue_extra_512kb_blocks++;
+}
+
+
+
 //menu hardware settings
 void menu_hardware_memory_settings(MENU_ITEM_PARAMETERS)
 {
@@ -14382,6 +14390,10 @@ void menu_hardware_memory_settings(MENU_ITEM_PARAMETERS)
 			menu_add_item_menu_format(array_menu_hardware_memory_settings,MENU_OPCION_NORMAL,menu_hardware_memory_128k_multiplier,NULL,"RAM size: %d KB",128*mem128_multiplicador);
 			menu_add_item_menu_tooltip(array_menu_hardware_memory_settings,"Allows setting more than 128k RAM on a 128k type machine");
 			menu_add_item_menu_ayuda(array_menu_hardware_memory_settings,"Allows setting more than 128k RAM on a 128k type machine");
+		}
+
+		if (MACHINE_IS_TBBLUE) {
+			menu_add_item_menu_format(array_menu_hardware_memory_settings,MENU_OPCION_NORMAL,menu_hardware_tbblue_ram,NULL,"RAM size: %d KB",tbblue_get_current_ram() );
 		}
 
 		if (menu_cond_zx8081() ) {

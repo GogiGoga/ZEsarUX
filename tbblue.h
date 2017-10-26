@@ -142,4 +142,8 @@ extern int tbblue_is_active_layer2(void);
 
 extern void screen_store_scanline_rainbow_solo_display_tbblue(void);
 
+extern int tbblue_get_current_ram(void);
+
+extern z80_byte tbblue_extra_512kb_blocks;
+
 #endif
