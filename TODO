@@ -607,9 +607,7 @@ Parece que tambien mejora si al lanzar im2 se restan estados... hasta 30 o asi
 -sid commodore para tbbue. ver ReSID
 -snapshot .zsf para tbblue
 -Sincronizar bits de joystick de puerto config2
--divmmc tiene 256kb en tbblue real, pero por defecto emulo 128k. Algun problema? Tener en cuenta que en zxuno y resto de spectrum la divmmc es de 128kb.
-quiza hacer que cuando arranque tbblue, divmmc tenga 256k
--probablemente divmmc/divide esta emulando 512kb de ram pero tbblue solo tiene 256kb. Esto puede generar que se acceda en memoria divide mas alla de lo normal si un programa quiere
+-no dejar aumentar memoria divmmc mas de 128kb, pues tbblue no tiene mas que eso. sino, se accederia a memoria mas alla del divmmc
 
 -a veces al arrancar la maquina no encuentra archivos de la sd. Quiza por algun registro de la mmc que no se inicializa correctamente?
 -para emulacion de +3e, la sd se utiliza la sd secundaria. emular segunda SD????
