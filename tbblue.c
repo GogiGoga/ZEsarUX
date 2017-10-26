@@ -37,8 +37,10 @@
 #include "timex.h"
 #include "ula.h"
 
+#define TBBLUE_MAX_SRAM_8KB_BLOCKS 224
+
 //Punteros a los 64 bloques de 8kb de ram de spectrum
-z80_byte *tbblue_ram_memory_pages[64];
+z80_byte *tbblue_ram_memory_pages[TBBLUE_MAX_SRAM_8KB_BLOCKS];
 
 //Punteros a los 8 bloques de 8kb de rom de spectrum
 z80_byte *tbblue_rom_memory_pages[8];
@@ -1242,7 +1244,7 @@ Nuevo oct 2017:
 	tbblue_fpga_rom=&memoria_spectrum[1024*1024];
 
 	//224 Paginas RAM spectrum 512k
-	for (i=0;i<224;i++) {
+	for (i=0;i<TBBLUE_MAX_SRAM_8KB_BLOCKS;i++) {
 		indice=0x040000+8192*i;
 		tbblue_ram_memory_pages[i]=&memoria_spectrum[indice];
 	}
@@ -1257,7 +1259,7 @@ Nuevo oct 2017:
 
 int tbblue_get_limit_sram_page(int page)
 {
-	if (page>223) page=223;
+	if (page>TBBLUE_MAX_SRAM_8KB_BLOCKS-1) page=TBBLUE_MAX_SRAM_8KB_BLOCKS-1;
 
 	return page;
 }
