@@ -33,8 +33,6 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
--Puerto de Debug de ZEsarUX, agregar comando que permita alterar cosas del emulador, por ejemplo de momento un valor con bit 0 a 1 que haga cerrar emulador sin fadeout
-
 -ver si texto memory zone puede ser >15
 
 IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
@@ -213,6 +211,15 @@ http://www.rwapadventures.com/ql_wiki/index.php?title=Sinclair%20QL%20Home%20Com
 
 
 
+void debug_dump_nested_functions(char *result)
+  Ver en cada caso que haya algo en la lista y que ademas,
+  el handler (por ejemplo, cpu_core_loop) apunte a handler nested
+  Sucede que si por ejemplo activamos kartusho, y luego hacemos un smartload,
+  el kartusho se desactiva, pero la lista contiene funciones nested, aunque los handler de peek y poke
+  apuntan a los normales y no a kartusho (como debe ser)
+->Se deberia tener algo que , cuando se cambian los handler (peek, poke, cpu etc) se borrase la lista nested,
+aunque no es necesario, pues cuando se crea un elemento y el handler no apunta a nested, se crea lista nueva,
+y ademas, la funcion de debug_dump_nested_functions ya controla esos casos y no retorna nada de la lista
 
 
 

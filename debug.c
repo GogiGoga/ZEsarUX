@@ -2535,27 +2535,27 @@ void debug_dump_nested_functions(char *result)
     result[0]=0;
   }
 
-	if (nested_list_core!=NULL) {
+	if (nested_list_core!=NULL && cpu_core_loop==cpu_core_loop_nested_handler) {
 		debug_dump_nested_print (result,"\nNested Core functions\n");
 		debug_test_needed_adelante(nested_list_core,result);
 	}
 
-	if (nested_list_poke_byte!=NULL) {
+	if (nested_list_poke_byte!=NULL && poke_byte==poke_byte_nested_handler) {
 		debug_dump_nested_print (result,"\nNested poke_byte functions\n");
 		debug_test_needed_adelante(nested_list_poke_byte,result);
 	}
 
-	if (nested_list_poke_byte_no_time!=NULL) {
+	if (nested_list_poke_byte_no_time!=NULL && poke_byte_no_time==poke_byte_no_time_nested_handler) {
 		debug_dump_nested_print (result,"\nNested poke_byte_no_time functions\n");
 		debug_test_needed_adelante(nested_list_poke_byte_no_time,result);
 	}
 
-	if (nested_list_peek_byte!=NULL) {
+	if (nested_list_peek_byte!=NULL && peek_byte==peek_byte_nested_handler) {
 		debug_dump_nested_print (result,"\nNested peek_byte functions\n");
 		debug_test_needed_adelante(nested_list_peek_byte,result);
 	}
 
-	if (nested_list_peek_byte_no_time!=NULL) {
+	if (nested_list_peek_byte_no_time!=NULL && peek_byte_no_time==peek_byte_no_time_nested_handler) {
 		debug_dump_nested_print (result,"\nNested peek_byte_no_time functions\n");
 		debug_test_needed_adelante(nested_list_peek_byte_no_time,result);
 	}
