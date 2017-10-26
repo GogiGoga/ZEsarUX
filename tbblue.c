@@ -1670,10 +1670,13 @@ When the variable 'bootrom' takes '0', page 0 (0-16383) is mapped to the RAM 102
 and the page mapping is configured by bits 5-0 of the I/O port 'config1'.
 These 6 bits maps 64 16K pages the start of 1024K SRAM space 0-16363 the Speccy,
 which allows you access to all SRAM.
+
+->Ampliado a 7 bits (0..128)
 */
-				romram_page=(tbblue_registers[4]&63);
+				//romram_page=(tbblue_registers[4]&63);
+				romram_page=(tbblue_registers[4]&127);
 				indice=romram_page*16384;
-				//printf ("page on 0-16383: %d offset: %X\n",romram_page,indice);
+				printf ("page on 0-16383: %d offset: %06X\n",romram_page,indice);
 				tbblue_memory_paged[0]=&memoria_spectrum[indice];
 				tbblue_memory_paged[1]=&memoria_spectrum[indice+8192];
 				tbblue_low_segment_writable.v=1;
