@@ -1247,6 +1247,16 @@ void tbblue_set_ram_page(z80_byte segment)
 	debug_paginas_memoria_mapeadas[segment]=reg_value;
 }
 
+
+void tbblue_set_rom_page_no_255(z80_byte segment)
+{
+        z80_byte tbblue_register=80+segment;
+        z80_byte reg_value=tbblue_registers[tbblue_register];
+
+	tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];
+	debug_paginas_memoria_mapeadas[segment]=reg_value;
+}
+
 void tbblue_set_rom_page(z80_byte segment,z80_byte page)
 {
 	z80_byte tbblue_register=80+segment;
@@ -1257,8 +1267,7 @@ void tbblue_set_rom_page(z80_byte segment,z80_byte page)
 		debug_paginas_memoria_mapeadas[segment]=DEBUG_PAGINA_MAP_ES_ROM+page;
 	}
 	else {
-	  tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];
-	  debug_paginas_memoria_mapeadas[segment]=reg_value;
+		tbblue_set_rom_page_no_255(segment);
 	}
 }
 
@@ -2255,6 +2264,22 @@ void tbblue_set_value_port(z80_byte value)
 		// (R/W) 0x44 (68) => Palette Lower bit
 		case 68:
 			tbblue_write_palette_value_low1(value);
+		break;
+
+
+		//MMU
+		case 80:
+		case 81:
+			tbblue_set_rom_page_no_255(tbblue_last_register-80);
+		break;
+
+		case 82:
+		case 83:
+		case 84:
+		case 85:
+		case 86:
+		case 87:
+			tbblue_set_ram_page(tbblue_last_register-80);
 		break;
 
 	}
