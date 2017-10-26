@@ -148,7 +148,6 @@ void zesarux_zxi_write_last_register(z80_byte value)
 void zesarux_zxi_write_register_value(z80_byte value)
 {
 
-
   switch (zesarux_zxi_last_register) {
     case 0:
       //Bit 0.
@@ -165,18 +164,28 @@ void zesarux_zxi_write_register_value(z80_byte value)
 
     case 1:
       //HARDWARE_DEBUG_ASCII
-      if (hardware_debug_port.v) {
         printf ("%c",(value>=32 && value<=127 ? value : '?')  );
         fflush(stdout);
-      }
     break;
 
     case 2:
       //HARDWARE_DEBUG_NUMBER
-      if (hardware_debug_port.v) {
         printf ("%d",value);
 			  fflush(stdout);
-      }
+    break;
+
+    case 3:
+	/*
+* Reg 3: ZEsarUX control register
+Bit 0: Set to 1 to exit emulator
+Bit 1-7: Unused
+
+
+	*/
+	if (value&1) {
+		debug_printf(VERBOSE_INFO,"Exiting emulator because of a ZEsarUX ZXI port exit emulator operation");
+		end_emulator();
+	}
     break;
   }
 

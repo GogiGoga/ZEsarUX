@@ -27,4 +27,8 @@ Write this register to output an ascii character to the pc console. Must be enab
 Write this register to output a number to the pc console. Must be enabled on debug settings
 
 
-* Reg 3-255: Unused
+* Reg 3: ZEsarUX control register
+Bit 0: Set to 1 to exit emulator
+Bit 1-7: Unused
+
+* Reg 4-255: Unused

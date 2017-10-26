@@ -5690,8 +5690,10 @@ z80_byte lee_puerto_spectrum_no_time(z80_byte puerto_h,z80_byte puerto_l)
 	z80_byte valor_idle_bus_port=idle_bus_port(puerto_l+256*puerto_h);
 
 	//ZEsarUX ZXI ports
-	if (puerto==ZESARUX_ZXI_PORT_REGISTER) return zesarux_zxi_read_last_register();
-	if (puerto==ZESARUX_ZXI_PORT_DATA)     return zesarux_zxi_read_register_value();
+    if (hardware_debug_port.v) {
+	   if (puerto==ZESARUX_ZXI_PORT_REGISTER) return zesarux_zxi_read_last_register();
+	   if (puerto==ZESARUX_ZXI_PORT_DATA)     return zesarux_zxi_read_register_value();
+    }
 
 
   //Puertos paginacion chrome se pueden leer
@@ -6998,8 +7000,10 @@ acts as expected unless this registe is explicitly changed by the user/software.
 	}*/
 
 //ZEsarUX ZXI ports
-	if (puerto==ZESARUX_ZXI_PORT_REGISTER) zesarux_zxi_write_last_register(value);
-	if (puerto==ZESARUX_ZXI_PORT_DATA)     zesarux_zxi_write_register_value(value);
+    if (hardware_debug_port.v) {
+	   if (puerto==ZESARUX_ZXI_PORT_REGISTER) zesarux_zxi_write_last_register(value);
+	   if (puerto==ZESARUX_ZXI_PORT_DATA)     zesarux_zxi_write_register_value(value);
+    }
 
 
 	//Prueba pentevo
