@@ -2534,6 +2534,12 @@ void debug_dump_nested_functions(char *result)
   if (result!=NULL) {
     result[0]=0;
   }
+  /*Ver en cada caso que haya algo en la lista y que ademas,
+  el handler (por ejemplo, cpu_core_loop) apunte a handler nested
+  Sucede que si por ejemplo activamos kartusho, y luego hacemos un smartload,
+  el kartusho se desactiva, pero la lista contiene funciones nested, aunque los handler de peek y poke
+  apuntan a los normales y no a kartusho (como debe ser)
+  */
 
 	if (nested_list_core!=NULL && cpu_core_loop==cpu_core_loop_nested_handler) {
 		debug_dump_nested_print (result,"\nNested Core functions\n");

@@ -161,7 +161,10 @@ These can be combined, so OUT 36411,25 maps in 16K of VRAM between 0x4000 and 0x
 0010 - 32 Colour ATTR: D0-D2 ink, D3-D5 paper, D6-D7 "CLUT". In the standard palette, colours 0-15 are the same as the normal Spectrum palette and colours 16-31 are darker versions of the normal spectrum palette)
 
 
-0011 - RESERVED
+0011 - "chunk-o-blend" mode. Same concept as
+1110 - Chunk-o-vision 128x192 mode
+but:
+Colour 00 = paper and 11 = ink. Colours 01 and 10 are a mix of the paper and ink colour (the same way gigascreen mode mixes the colours). 
 
 
 0100 - 256 Colour mode 1 - D0-D7 = ink colour. Paper colour is determined by ULA2 BORDER (IO 0x9E3B)
@@ -304,8 +307,6 @@ Default value of colour register 0 (the one which controls the prism border colo
 
 
 
-
-1111 - RESERVED
 
 
 ****** 
