@@ -2212,10 +2212,10 @@ void malloc_mem_machine(void) {
 
         else if (MACHINE_IS_TBBLUE) {
 
-		//1024 KB RAM + 8 KB ROM (8 kb repetido dos veces)
-                malloc_machine( (1024+8*2)*1024);
+		//2048 KB RAM + 8 KB ROM (8 kb repetido dos veces)
+                malloc_machine( (2048+8*2)*1024);
 
-                random_ram(memoria_spectrum,(1024+8*2)*1024);
+                random_ram(memoria_spectrum,(2048+8*2)*1024);
 
 
                 tbblue_init_memory_tables();

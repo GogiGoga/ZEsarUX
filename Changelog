@@ -15,7 +15,7 @@ Added quicksave function
 Added emulation of other DAC chips appart from Specdrum: Covox, etc
 Added setting to set 256kb or 512kb on Spectrum 128k machines
 Added setting to set F keys (F1, F2, etc) to run different actions: reset, nmi, exit emulator, etc
-Added TBBlue features: Sprite chip, Layer2, RTC clock for esxdos, 1 MB RAM, new 8kb block MMU, 9-bit palette, lores mode, layer priorities
+Added TBBlue features: Sprite chip, Layer2, RTC clock for esxdos, 2 MB RAM, new 8kb block MMU, 9-bit palette, lores mode, layer priorities
 Added ZX-Uno features: Radasoffset and Radaspadding registers, to do hardware scrolling
 Added ESXDOS handler so file operations can be done with files stored on your computer hard disk, and not only on virtual mmc/ide files. Examples can be found on extras/media/spectrum/esxdos_handler/. "Classic" mmc/ide emulation by using virtual mmc/ide files can also be used
 Added feature "memory zone" to ZRCP and all menus that inspect memory (debug, disassemble, sprites etc): now you can look at all memory zones, for example: full 128kb ram, 64kb rom of +2A, divmmc ram, etc

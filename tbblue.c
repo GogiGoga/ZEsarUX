@@ -1211,6 +1211,25 @@ Nuevo:
 0x060000 – 0x07FFFF (128K) => ZX Spectrum RAM
 0x080000 – 0x0FFFFF (512K) => Extra RAM
 
+
+Nuevo oct 2017:
+
+    0x000000 – 0x00FFFF (64K) => ZX Spectrum ROM
+    0x010000 – 0x013FFF (16K) => ESXDOS ROM
+    0x014000 – 0x017FFF (16K) => Multiface ROM
+    0x018000 – 0x01BFFF (16K) => Multiface extra ROM
+    0x01c000 – 0x01FFFF (16K) => Multiface RAM
+    0x020000 – 0x03FFFF (128K) => divMMC RAM
+    0x040000 – 0x05FFFF (128K) => ZX Spectrum RAM			(16 paginas) 
+    0x060000 – 0x07FFFF (128K) => Extra RAM				(16 paginas)
+
+    0x080000 – 0x0FFFFF (512K) => 1st Extra IC RAM (if present)		(64 paginas)
+    0x100000 – 0x17FFFF (512K) => 2nd Extra IC RAM (if present)		(64 paginas)
+    0x180000 – 0xFFFFFF (512K) => 3rd Extra IC RAM (if present)		(64 paginas)
+
+    0x200000 (2 MB)
+
+
 */
 
 
@@ -1222,9 +1241,9 @@ Nuevo:
 	//Los 8 KB de la fpga ROM estan al final
 	tbblue_fpga_rom=&memoria_spectrum[1024*1024];
 
-	//64 Paginas RAM spectrum 512k. Hay 128kb mas despues de estos...
-	for (i=0;i<64;i++) {
-		indice=0x060000+8192*i;
+	//224 Paginas RAM spectrum 512k
+	for (i=0;i<224;i++) {
+		indice=0x040000+8192*i;
 		tbblue_ram_memory_pages[i]=&memoria_spectrum[indice];
 	}
 
@@ -1236,12 +1255,20 @@ Nuevo:
 
 }
 
+int tbblue_get_limit_sram_page(int page)
+{
+	if (page>=224) page=224;
+
+	return page;
+}
+
 void tbblue_set_ram_page(z80_byte segment)
 {
 	z80_byte tbblue_register=80+segment;
 	z80_byte reg_value=tbblue_registers[tbblue_register];
 
 	//tbblue_memory_paged[segment]=tbblue_ram_memory_pages[page];
+	reg_value=tbblue_get_limit_sram_page(reg_value);
 	tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];
 
 	debug_paginas_memoria_mapeadas[segment]=reg_value;
@@ -1253,6 +1280,7 @@ void tbblue_set_rom_page_no_255(z80_byte segment)
         z80_byte tbblue_register=80+segment;
         z80_byte reg_value=tbblue_registers[tbblue_register];
 
+	reg_value=tbblue_get_limit_sram_page(reg_value);
 	tbblue_memory_paged[segment]=tbblue_ram_memory_pages[reg_value];
 	debug_paginas_memoria_mapeadas[segment]=reg_value;
 }
@@ -1263,6 +1291,7 @@ void tbblue_set_rom_page(z80_byte segment,z80_byte page)
 	z80_byte reg_value=tbblue_registers[tbblue_register];
 
 	if (reg_value==255) {
+		page=tbblue_get_limit_sram_page(page);
 		tbblue_memory_paged[segment]=tbblue_rom_memory_pages[page];
 		debug_paginas_memoria_mapeadas[segment]=DEBUG_PAGINA_MAP_ES_ROM+page;
 	}
