@@ -22592,18 +22592,27 @@ void menu_about_running_info(MENU_ITEM_PARAMETERS)
 		media_cpu=cpu_use_total_acumulado/cpu_use_total_acumulado_medidas;
 	}
 
+	char mensaje_cpu_usage[100];
+
+	if (screen_show_cpu_usage.v) {
+		sprintf(mensaje_cpu_usage,"Average CPU Use: %d%%\n",media_cpu);
+	}
+	else {
+		mensaje_cpu_usage[0]=0;
+	} 
+
 
 	menu_generic_message_format("Running info",
 		"Video Driver: %s\nAvailable video drivers: %s\n\nAudio Driver: %s\nAvailable audio drivers: %s\n\n"
 		"Configuration file: %s\n\n"
 		"Start time: %s\n"
 		"Uptime %d secs (%d mins)\n"
-		"Average CPU Use: %d%%\n"
+		"%s"
 		,
 		scr_driver_name,string_video_drivers,audio_driver_name,string_audio_drivers,configfile,hora_inicio,
-		uptime_seconds,uptime_seconds/60,media_cpu);
+		uptime_seconds,uptime_seconds/60,mensaje_cpu_usage);
 
-
+	//Average CPU use solo sale si screen_show_cpu_usage.v
 
 
 	//temp prueba

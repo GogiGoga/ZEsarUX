@@ -40,7 +40,6 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 
 
 -tbblue:
-*nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 *como se lee valor paleta?
 *como se leen valores paleta? leyendo 40h y 44h?
 *Hard reset en tbblue no debería llamar a reset?
@@ -94,6 +93,7 @@ render de sprites / tiles se hace de momento al final de cada frame de pantalla 
 
 
 -tbblue:
+*seguir nuevos opcodes next https://dailly.blogspot.com.es/2017/08/version-04-of-cspect.html?m=1  ,  https://github.com/z88dk/z88dk/issues/312
 *probar que pasa cuando llega a mas de 12 sprites en linea tbblue
 *eliminar puerto 55h. Corregir demo tosprram para que use 5bh en vez de 55h
 *TODO. Temporal . pagina sram y shadow para layer2 forzada a 32 en reset. 32*16384=0x80000
