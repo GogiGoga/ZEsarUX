@@ -65,7 +65,7 @@ Drivers audio:
 -probar turbosound, 3 chips ay
 -probar specdrum, covox
 -probar opcion ay speech on/off con chase hq por ejemplo
--probar view ay keyboard con media/spectrum/myself/testpiano.tap  y demos turbosound
+-probar view ay keyboard con extras/media/spectrum/myself/testpiano.tap  y demos turbosound
 -probar autoactivado de chip ay: en spectrum (ay, fuller), zx8081 (en zx80/81 solo con bi-pak)
 -probar sonido vsync en zx81. probar vsync sound detection
 -probar snaps de spectrum, zx80, zx81, z88. Cargar y grabar. .zx, .o, .p, .z80, solo carga: .z81, .sna. En grabar, generar los mismos p** que hay en snap_tests/ en una carpeta temporal y luego probar a cargarlos (desde zesarux, fuse y eightyone). Probar snaps grabados en otros emuladores: Fuse, Eightyone, etc. 
@@ -87,7 +87,7 @@ Drivers audio:
 config "O=X" donde X es 0, 1 o 2 y probar a sobreescribir archivos, dragons lair version lenta y rapida (optimizada). zxpand linea comandos --enable-zxpand y --zxpand-root-dir (y este probando con path completo, relativo, y con y sin / al final)
 Probar delete, rename, etc y resto de acciones con CMDR, con archivos en minusculas y mayusculas
 -probar dandanator
--probar superupgrade. Básico, programa de modificación de rom. Programa en basic media/spectrum/tests/superupgrade-test.tap y usando 512kb de rom que sean siempre la misma rom de spectrum 48k. Probar con rman.tap
+-probar superupgrade. Básico, programa de modificación de rom. Programa en basic extras/media/spectrum/tests/superupgrade-test.tap y usando 512kb de rom que sean siempre la misma rom de spectrum 48k. Probar con rman.tap
 
 -probar spectra. Test modos. Comparar con ZXSP. X128 NO es correcto del todo, falla la implementacion del flash
 Comparar test 128 pantalla con tabla docs/spectra/SPECTRA 128 Test.txt
@@ -150,10 +150,10 @@ nota: cacalib, curses  en consola texto (no X) el mouse solo notifica al pulsar 
 -probar breakpoint condicionales (=,<,> y con registros indirectos (hl), con and or xor)  
 -probar desactivar breakpoints con espacio
 -probar watches
--probar remote command protocol
--probar zxi ports con media/spectrum/tests/zesarux-zxi-ports.tap
--probar rzx files con media/spectrum/rzx
--probar hardware debug port con media/spectrum/tests/hardwaredebugport.tap
+-probar remote command protocol ZRCP
+-probar zxi ports con extras/media/spectrum/tests/zesarux-zxi-ports.tap
+-probar rzx files con extras/media/spectrum/rzx
+-probar hardware debug port con extras/media/spectrum/tests/hardwaredebugport.tap
 -probar todas opciones de menu en general
 -probar fallback de drivers graficos y de sonido
 -probar impresora: en zx spectrum, zx81
@@ -213,12 +213,15 @@ nota: cacalib, curses  en consola texto (no X) el mouse solo notifica al pulsar 
 -probar Jupiter Ace. centipede (chip ay) y valkyr (speaker y chip ay). cargar y grabar ace. cargar wav
 -probar Chloe 140, 280. Tests, carga trap, grabar tap, chloe keyboard
 -probar Timex. Tests, carga trap, grabar tap
--Probar Prism: media/spectrum/prism/allvideotests.tap. Tests de chloe. Failsafe mode. Modos lineales de video media/spectrum/prism/linear_modes/
+-Probar Prism: extras/media/spectrum/prism/allvideotests.tap. Tests de chloe. Failsafe mode. Modos lineales de video extras/media/spectrum/prism/linear_modes/
 -Probar TBBlue
 -Probar Amstrad cpc. Todas teclas
 -Probar Sam Coupe. Todas teclas. Probar atomlite
 -probar ZX-Uno. diferentes maquinas (48k, 128k, +2a), juegos rom. Probar spi flash file, default y custom. En 48k, 128k, +2a: probar carga tap y grabacion tap, y autosend LOAD"". Probar rutina carga de cinta desde la BIOS
 -Probar demos Pentagon
+-Probar TSConf
+-Probar Chrome
+-Probar MK14
 
 -probar Sprite chip con demo
 -probar textos splash en cambio de modo de video por ejemplo
