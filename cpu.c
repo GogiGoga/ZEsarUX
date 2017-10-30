@@ -5704,7 +5704,7 @@ void print_funny_message(void)
 		"Detected 4 MB expanded memory (EMS)",
 		"64K High Memory Area is available",								//4
 		"Detected Hercules Video Card 720x350",
-		"Detected Enhanced Graphics Adapter (EGA) 640X350",	//6
+		"Detected Enhanced Graphics Adapter (EGA) 640x350",	//6
 		"Uncompressing Linux... done, booting the kernel",
 		"PhoenixBIOS 4.0 Release 6.0",											//8
 		"301-Keyboard not detected. Press F1 to continue",
