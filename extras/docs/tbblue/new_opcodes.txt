@@ -1,4 +1,5 @@
 New Z80 opcodes on the NEXT (more to come)
+(Note: those with a - on the first column are emulated in ZEsarUX)
 ======================================================================================
    ld  a32,dehl      ED 20           transfer DEHL into A32
    ld  dehl,a32      ED 21           transfer A32 into DEHL
