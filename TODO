@@ -40,10 +40,8 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 
 
 -tbblue:
-*como se lee valor paleta?
-*como se leen valores paleta? leyendo 40h y 44h?
 *Hard reset en tbblue no debería llamar a reset?
-*next opcodes. acesos memoria (para parametros) son 3 o 4 t estados. revisar y actualizar doc
+
 
 
 -tsconf
@@ -100,6 +98,8 @@ render de sprites / tiles se hace de momento al final de cada frame de pantalla 
 *y otras novedades * New machine type: Pentagon 128K.. Ver registros 3, 7, 21
 *Desactivar puertos viejos de establecer paleta sprites get/set
 *Color border tbblue debe venir de paper , supongo que en modo extendido
+*como se leen valores paleta? leyendo 40h y 44h? como se lee bit bajo y luego los 8 bits altos?
+*next opcodes. acesos memoria (para parametros) son 3 o 4 t estados. revisar y actualizar doc
 
 
 

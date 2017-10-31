@@ -5189,7 +5189,7 @@ void parse_cmdline_options(void) {
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--cpu-usage")) {
-																screen_show_cpu_usage.v=1;
+				screen_show_cpu_usage.v=1;
 			}
 
 			else if (!strcmp(argv[puntero_parametro],"--nowelcomemessage")) {
