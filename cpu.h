@@ -357,6 +357,7 @@ extern z80_bit stdout_simpletext_automatic_redraw;
 
 #define CPU_IS_MOTOROLA (MACHINE_IS_QL)
 #define CPU_IS_SCMP (MACHINE_IS_MK14)
+#define CPU_IS_Z80 (!CPU_IS_MOTOROLA && !CPU_IS_SCMP)
 
 
 extern int machine_emulate_memory_refresh;

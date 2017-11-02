@@ -17848,6 +17848,7 @@ int menu_debug_view_basic_cond(void)
 	if (MACHINE_IS_CPC) return 0;
 	if (MACHINE_IS_SAM) return 0;
 	if (MACHINE_IS_QL) return 0;
+	if (MACHINE_IS_MK14) return 0;
 	return 1;
 }
 
@@ -17902,12 +17903,12 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 
 					);
 
-		if (!CPU_IS_MOTOROLA) {
-		menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_debug_ioports,NULL,"Debug ~~I/O Ports");
-		menu_add_item_menu_shortcut(array_menu_debug_settings,'i');
+		if (CPU_IS_Z80) {
+			menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_debug_ioports,NULL,"Debug ~~I/O Ports");
+			menu_add_item_menu_shortcut(array_menu_debug_settings,'i');
 
-		menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_cpu_transaction_log,NULL,"~~CPU Transaction Log");
-		menu_add_item_menu_shortcut(array_menu_debug_settings,'c');
+			menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_cpu_transaction_log,NULL,"~~CPU Transaction Log");
+			menu_add_item_menu_shortcut(array_menu_debug_settings,'c');
 		}
 
 		menu_add_item_menu(array_menu_debug_settings,"View He~~xdump",MENU_OPCION_NORMAL,menu_debug_hexdump,NULL);
@@ -17922,7 +17923,7 @@ void menu_debug_settings(MENU_ITEM_PARAMETERS)
 		}
 
 #ifdef EMULATE_CPU_STATS
-		if (!CPU_IS_MOTOROLA) {
+		if (CPU_IS_Z80) {
 		menu_add_item_menu_format(array_menu_debug_settings,MENU_OPCION_NORMAL,menu_debug_cpu_stats,NULL,"View CPU S~~tatistics");
 		menu_add_item_menu_shortcut(array_menu_debug_settings,'t');
 		}
