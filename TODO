@@ -40,7 +40,15 @@ Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulad
 
 
 -tbblue:
-*Hard reset en tbblue no debería llamar a reset?
+*Hard reset en tbblue no debería llamar a reset? no necesariamente, por ejemplo registro 2 tiene valor diferente en caso
+reset o hard reset
+(R/W) 02 => Reset:
+  bits 7-3 = Reserved, must be 0
+  bit 2 = (R) Power-on reset (PoR)
+  bit 1 = (R/W) Reading 1 indicates a Hard-reset. If written 1 causes a Hard Reset.
+  bit 0 = (R/W) Reading 1 indicates a Soft-reset. If written 1 causes a Soft Reset.
+
+  ->casi , llama a rutina comun de reset que cambia casi todo menos ese registro
 
 
 

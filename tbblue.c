@@ -1858,24 +1858,9 @@ void tbblue_set_emulator_setting_turbo(void)
 	cpu_set_turbo_speed();
 }
 
-void tbblue_reset(void)
+void tbblue_reset_common(void)
 {
 
-	//Los bits reservados los metemos a 0 también
-
-	/*
-	(R/W) 02 => Reset:
-  bits 7-3 = Reserved, must be 0
-  bit 2 = (R) Power-on reset (PoR)
-  bit 1 = (R/W) Reading 1 indicates a Hard-reset. If written 1 causes a Hard Reset.
-  bit 0 = (R/W) Reading 1 indicates a Soft-reset. If written 1 causes a Soft Reset.
-	*/
-	tbblue_registers[2]=1;
-	/*
-	(R/W) 0x14 (20) => Global transparency color
-  bits 7-0 = Transparency color value (Reset to 0xE3, after a reset)
-
-	*/
 	tbblue_registers[20]=TBBLUE_DEFAULT_TRANSPARENT;
 
 	tbblue_registers[21]=0;
@@ -1890,38 +1875,7 @@ void tbblue_reset(void)
 	tbblue_registers[51]=0;
 	tbblue_registers[66]=15;
 
-	/*
-	(R/W) 21 => Sprite system
-  bits 7-2 = Reserved, must be 0
-  bit 1 = Over border (1 = yes)(Reset to 0 after a reset)
-  bit 0 = Sprites visible (1 = visible)(Reset to 0 after a reset)
-
-(R/W) 22 => Layer2 Offset X
-  bits 7-0 = X Offset (0-255)(Reset to 0 after a reset)
-
-(R/W) 23 => Layer2 Offset Y
-  bist 7-6 = Reserved, must be 0
-  bits 5-0 = Y Offset (0-63)(Reset to 0 after a reset)
-
-(R) 30 => Raster video line (MSB)
-  bits 7-1 = Reserved, always 0
-  bit 0 = Raster line MSB (Reset to 0 after a reset)
-
-(R) 31 = Raster video line (LSB)
-  bits 7-0 = Raster line LSB (0-255)(Reset to 0 after a reset)
-
-(R/W) 34 => Raster line interrupt control
-  bit 7 = (R) INT flag, 1=During INT (even if the processor has interrupt disabled)
-  bits 6-3 = Reserved, must be 0
-  bit 2 = If 1 disables original ULA interrupt (Reset to 0 after a reset)
-  bit 1 = If 1 enables Raster line interrupt (Reset to 0 after a reset)
-  bit 0 = MSB of Raster line interrupt value (Reset to 0 after a reset)
-(R/W) 35 => Raster line interrupt value LSB
-  bits 7-0 = Raster line value LSB (0-255)(Reset to 0 after a reset)
-	*/
-
-
-//(R/W) 0x50 (80) => MMU slot 0 (Reset to 255 after a reset)
+	
 	tbblue_set_mmu_128k_default();
 
 	tbblue_was_in_p2a_ram_in_rom.v=0;
@@ -1929,12 +1883,29 @@ void tbblue_reset(void)
 
 }
 
+void tbblue_reset(void)
+{
+
+	//Los bits reservados los metemos a 0 también
+
+	/*
+	(R/W) 02 => Reset:
+  bits 7-3 = Reserved, must be 0
+  bit 2 = (R) Power-on reset (PoR)
+  bit 1 = (R/W) Reading 1 indicates a Hard-reset. If written 1 causes a Hard Reset.
+  bit 0 = (R/W) Reading 1 indicates a Soft-reset. If written 1 causes a Soft Reset.
+	*/
+	tbblue_registers[2]=1;
+	
+
+	tbblue_reset_common();
+
+
+
+}
+
 void tbblue_hard_reset(void)
 {
-	//tbblue_config1=0;
-	//tbblue_config2=0;
-	//tbblue_port_24df=0;
-	//tbblue_hardsoftreset=0;
 
 	/*
 	(R/W) 02 => Reset:
@@ -1955,43 +1926,26 @@ void tbblue_hard_reset(void)
 	tbblue_registers[7]=0;
 	tbblue_registers[8]=0;
 
-//TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
+	//TODO. Temporal . pagina sram para layer2 forzada a 32. 32*16384=0x80000
 	//0x080000 – 0x0FFFFF (512K) => Extra RAM
 	tbblue_registers[18]=32;
 	tbblue_registers[19]=32;
 
 
-	tbblue_registers[20]=TBBLUE_DEFAULT_TRANSPARENT;
-
-	tbblue_registers[21]=0;
-	tbblue_registers[22]=0;
-	tbblue_registers[23]=0;
-
-	tbblue_registers[30]=0;
-	tbblue_registers[31]=0;
-	tbblue_registers[34]=0;
-	tbblue_registers[50]=0;
-	tbblue_registers[51]=0;
-	tbblue_registers[66]=15;
-
-	tbblue_port_123b=0;
+	tbblue_reset_common();
 
 
 	tbblue_reset_palette_write_state();
 
-
-	//(R/W) 0x50 (80) => MMU slot 0 (Reset to 255 after a reset)
-	tbblue_set_mmu_128k_default();
+	tbblue_port_123b=0;
 
 
 	tbblue_bootrom.v=1;
 	//printf ("----setting bootrom to 1\n");
 
-	tbblue_was_in_p2a_ram_in_rom.v=0;
+	
 
 	tbblue_set_memory_pages();
-
-
 
 	tbblue_set_emulator_setting_divmmc();
 	tbblue_set_emulator_setting_ulaplus();
