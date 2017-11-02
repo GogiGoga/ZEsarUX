@@ -33,22 +33,6 @@ The format of each table entry is as follows:
 
 -cosas para la version 5.1
 
--ver si texto memory zone puede ser >15
-
-IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
-Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
-
-
--tbblue:
-*Hard reset en tbblue no debería llamar a reset? no necesariamente, por ejemplo registro 2 tiene valor diferente en caso
-reset o hard reset
-(R/W) 02 => Reset:
-  bits 7-3 = Reserved, must be 0
-  bit 2 = (R) Power-on reset (PoR)
-  bit 1 = (R/W) Reading 1 indicates a Hard-reset. If written 1 causes a Hard Reset.
-  bit 0 = (R/W) Reading 1 indicates a Soft-reset. If written 1 causes a Soft Reset.
-
-  ->casi , llama a rutina comun de reset que cambia casi todo menos ese registro
 
 
 
@@ -58,6 +42,9 @@ reset o hard reset
 
 probar fbdev -blanco y negro con menu sin multitask acabar de hacer otros drivers: fbdev, sdl, sdl2,.... 
 
+
+IMPORTANTE: ruido al iniciar emulador, no siempre, debido al agregar rutina de autoresize audio puntero
+Quiza solo permitir cuando hayan pasado unos segundos desde el inicio del emulador
 
 -problema de reseteo de buffer audio al iniciar el emulador, hace un sonido estridente a veces al arrancar. Detectado con coreaudio
 probado lo siguiente:
@@ -82,6 +69,8 @@ probado lo siguiente:
 --- Cosas para la version 5.2
 
 -util z80 moto poke pokea en motorola pero sin protección de escritura en rom
+
+-ver si texto memory zone puede ser >15. hay alguna zona de memoria que queda cortada
 
 -Parámetro change slow en rpi que no venga por defecto
 Y lo haga la gente manualmente y/ o se detecte si es rpi1

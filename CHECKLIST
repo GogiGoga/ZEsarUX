@@ -82,12 +82,14 @@ Drivers audio:
 -probar fallback de cinta standard a real tape, juegos: dracula tzx, Death Wish 3 (Erbe - Serie Leyenda).tzx  (DeathWish3(IBSA).tzx.zip), mortadelo y filemon II, Rambo. Parece que silent service si se mete como standard tape no detecta como cargador
 -probar ZXMMC menor de 1 GB y mayor de 1 GB. Probar snap_tests/pruebasplus3e.mmc. cat tab, load, format to 0,4, etc
 -probar divmmc con zxuno y sin zxuno. tambien en instalado en /Applications en Mac y en /usr/ de Linux. Probar reload mmc
+-probar esxdos handler
 -probar divide. Probar reload ide
 -probar zxpand: config "V", config "D=", CAT, CAT "+DIR", DELETE, load "NOMBRE", SAVE "NOMBRE" etc. En zx80, zx81
 config "O=X" donde X es 0, 1 o 2 y probar a sobreescribir archivos, dragons lair version lenta y rapida (optimizada). zxpand linea comandos --enable-zxpand y --zxpand-root-dir (y este probando con path completo, relativo, y con y sin / al final)
 Probar delete, rename, etc y resto de acciones con CMDR, con archivos en minusculas y mayusculas
 -probar dandanator
 -probar superupgrade. Básico, programa de modificación de rom. Programa en basic extras/media/spectrum/tests/superupgrade-test.tap y usando 512kb de rom que sean siempre la misma rom de spectrum 48k. Probar con rman.tap
+-probar kartusho
 
 -probar spectra. Test modos. Comparar con ZXSP. X128 NO es correcto del todo, falla la implementacion del flash
 Comparar test 128 pantalla con tabla docs/spectra/SPECTRA 128 Test.txt
@@ -145,6 +147,7 @@ paginacion, se pone pantalla en negro
 nota: curses, lightgun no va muy fino en los juegos debido al tiempo de retencion del boton de fire
 -probar kempston mouse, para todos drivers que lo soportan: xwindows, cocoa, sdl, caca (consola texto y X), curses (consola texto y X). con demo kempston, art studio
 nota: cacalib, curses  en consola texto (no X) el mouse solo notifica al pulsar fire (y no al mover)
+-probar buscador vidas infinitas
 -probar debug i/o ports: spectrum zx80/81, z88, zx-uno, etc
 -probar debugger, step over interrupt
 -probar breakpoint condicionales (=,<,> y con registros indirectos (hl), con and or xor)  
